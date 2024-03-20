@@ -34,7 +34,7 @@ Before starting the installation process, make sure you have the following insta
 3. **Clone the Repository:**
    - Clone the repository of your web application from GitHub to your local machine using the following command in your terminal or command prompt:
      ```
-     git clone <[repository-url](https://github.com/ESI-FAR/INA-tool.git)>
+     git clone <https://github.com/ESI-FAR/INA-tool.git>
      ```
    
 4. **Move Files to XAMPP's `htdocs` Directory:**
