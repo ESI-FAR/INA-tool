@@ -12,8 +12,7 @@ INA Tool is an open-source digital tool developed by the eScience Center aimed a
 
 ## Download and Installation
 
-To begin using this software, choose one of the following options to get started:
-
+work in progress...
 
 ## Usage
 
@@ -33,4 +32,4 @@ Have a bug or an issue with this software? [Open a new issue](https://github.com
 
 ## Copyright and License
 
-work in progress
+work in progress...
