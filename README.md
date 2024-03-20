@@ -4,7 +4,7 @@ INA Tool is an open source digital tool developed by the eScience Center aimed a
 
 ## Preview
 
-![INA](assets/demo/preview.PNG)
+![INA](assets/img/preview.PNG)
 
 ## Status
 
