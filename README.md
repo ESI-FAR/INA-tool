@@ -1,6 +1,6 @@
 # INA Tool
 
-INA Tool is an open source digital tool developed by the eScience Center aimed at supporting of the regulatory framework design process by facilitating study, analysis, and decision-making through data visualization and interaction.
+INA Tool is an open-source digital tool developed by the eScience Center aimed at supporting the regulatory framework design process by facilitating the study, analysis, and decision-making through data visualization and interaction.
 
 ## Preview
 
