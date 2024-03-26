@@ -81,16 +81,12 @@ include_once 'includes/header.php';
                                         }
                                         echo "</tbody>";
                                         echo "</table>";  
-                                        
-                                                                         
                                     }
                                 } else {
                                     echo "<table id='tableData' class='display' style='width:100%'></table>";
                                     // echo "<p>No table data available.</p>";
                                 }
                                 ?>
-
-
                             
                             </div>
                         </div>
