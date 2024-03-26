@@ -222,9 +222,9 @@ if (isset($_POST['destroy_session'])) {
                     <div class="alert alert-danger" role="alert" id="fileModalBody"></div>
                 
                     <hr>
-                    <div id='column_names'></div>
+                    <div id='column_names' hidden></div>
                     <hr>
-                    <div id='rows_values'></div>
+                    <div id='rows_values' hidden></div>
 
                     
                 </div>
