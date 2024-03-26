@@ -36,6 +36,8 @@
 <div id="chartcontainer">
     
     <svg id="network-svg-container" width="1200" height="1400"></svg>
+    <hr>
+    <div id='clicked_node'></div>
 </div>
 
 <!-- Add a div to display the clicked node ID -->
