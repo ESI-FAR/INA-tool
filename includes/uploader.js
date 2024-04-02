@@ -132,6 +132,9 @@ var rowValues = [];
 
 // Function to display column names in the preliminary table (the one in the modal) with types
 function displayColumnNames() {
+    // Prepend "ID" column by default
+    columnNames.unshift("ID");
+
     var columnNamesDiv = document.getElementById('column_names');
     columnNamesDiv.innerHTML = '<h3>Column Names:</h3>';
 
@@ -207,6 +210,7 @@ function displayColumnNames() {
 }
 
 
+
 // Function to determine the type of the column (customize this function based on your needs)
 function determineColumnType(columnName) {
     // Implement logic to determine the type based on the columnName
@@ -224,13 +228,18 @@ function inspectRowsContent(columnName) {
 }
 
 
-
 // Function to display rows
 function displayRows() {
     var rowsValuesDiv = document.getElementById('rows_values');
     rowsValuesDiv.innerHTML = '<h3>Row Values:</h3><ul>' +
-        rowValues.map(row => '<li>' + row.join(', ') + '</li>').join('') + '</ul>';
+        rowValues.map((row, index) => '<li>' + (index + 1) + ', ' + row.join(', ') + '</li>').join('') + '</ul>';
+
+    // Update rowValues array to include ID values for each row
+    var rowsWithID = rowValues.map((row, index) => [(index + 1)].concat(row));
+    rowValues = rowsWithID;
 }
+
+
 
 
 
@@ -275,6 +284,8 @@ function confirmUpload() {
             }, 5000);
 
         }
+
+        
        
         // Clear the existing table content
         $('#tableData').empty();
