@@ -68,6 +68,8 @@ function handleFileUpload(files) {
             displayErrorMessage('Invalid file type. Please select a CSV or TXT file.');
         }
     }
+    
+
 }
 
 
@@ -87,8 +89,14 @@ function displayErrorMessage(message) {
 
 
 function check_file_content(isValidFile) {
+
+    // initialize flag to check if it is comma separated
+    var isValidContent = false;
+
     // Check the flag status
+
     if (isValidFile) {
+
         // Flag is positive, proceed with file content checking... 
         var fileInput = document.getElementById('fileInput');
         var file = fileInput.files[0];
@@ -104,11 +112,17 @@ function check_file_content(isValidFile) {
                 columnNames = content.split('\n')[0].split(',');
 
                 // Log column names
-                console.log('Column Names:', columnNames);
+                //console.log('Column Names:', columnNames);
 
                 // Extract and log each row
                 rowValues = content.split('\n').slice(1).map(row => row.split(','));
-                console.log('Row Values:', rowValues);
+                //console.log('Row Values:', rowValues);
+
+                // Rows and columns are properly separated, check columns names
+                isValidContent = true;
+                if (isValidContent) {
+                    check_columns_names(isValidContent);
+                }
 
                 // Call the display functions
                 displayColumnNames();
@@ -121,11 +135,55 @@ function check_file_content(isValidFile) {
 
         reader.readAsText(file);
     }
+
 }
 
 
 
-// Check file content 
+function check_columns_names(isValidContent) {
+    if (isValidContent) {
+        // Define the names accepted for the columns
+        const columns_names_reference_list = [
+            "Statement Type",
+            "Attribute",
+            "Deontic",
+            "Aim",
+            "Direct Object",
+            "Type of Direct Object",
+            "Indirect Object",
+            "Type of Indirect Object",
+            "Activation Condition",
+            "Execution constraint",
+            "Or else\r"
+
+        ];
+
+        // Array to store unrecognized column names
+        const unrecognizedColumns = [];
+
+        // Iterate through columnNames and check correspondence
+        columnNames.forEach(function (name, index) {
+            console.log(name);
+
+            console.log(columnNames);
+            if (!columns_names_reference_list.includes(name)) {
+                // Add the unrecognized column name to the list
+                unrecognizedColumns.push(name);
+            }
+        });
+
+        // Now you have all unrecognized column names in the 'unrecognizedColumns' array
+        console.log("Unrecognized columns:", unrecognizedColumns);
+        // Alert the name of the column which is not recognized
+        // Display an error message if not a CSV file
+        if (unrecognizedColumns.length > 0) {
+            const errorMessage = "Unrecognized column names: <i>" + unrecognizedColumns.join(", ") + "</i>";
+            displayErrorMessage(errorMessage);
+        }
+    }
+}
+
+
 // Initialise global variables to store column names and row values
 var columnNames = [];
 var rowValues = [];
