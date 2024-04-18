@@ -97,15 +97,11 @@ function check_file_content() {
             // Extract column names
             columnNames = content.split('\n')[0].split(',');
 
-            // Log column names
-            //console.log('Column Names:', columnNames);
+            // Rows and columns are properly separated, check columns names
+            check_columns_names();
 
             // Extract and log each row
             rowValues = content.split('\n').slice(1).map(row => row.split(','));
-            //console.log('Row Values:', rowValues);
-
-            // Rows and columns are properly separated, check columns names
-            check_columns_names();
 
             // Call the display functions
             displayColumnNames();
@@ -379,11 +375,6 @@ function confirmUpload() {
             }
         });
     }
-
-
-
-
-
 
 }
 
