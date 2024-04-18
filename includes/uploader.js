@@ -122,7 +122,7 @@ function check_file_content() {
 function check_columns_names(columnNames) {
 
     // Define the names accepted for the columns
-    const expectedColumnNames = [
+    const expectedColumnNames = new Set([
         "Statement Type",
         "Attribute",
         "Deontic",
@@ -135,21 +135,9 @@ function check_columns_names(columnNames) {
         "Execution constraint",
         "Or else\r"
 
-    ];
+    ]);
 
-    // Array to store unrecognized column names
-    const unrecognizedColumns = [];
-
-    // Iterate through columnNames and check correspondence
-    columnNames.forEach(function (name, index) {
-        console.log(name);
-
-        console.log(columnNames);
-        if (!expectedColumnNames.includes(name)) {
-            // Add the unrecognized column name to the list
-            unrecognizedColumns.push(name);
-        }
-    });
+    var unrecognizedColumns = new Set(columnNames).difference(expectedColumnNames);
 
     // Now you have all unrecognized column names in the 'unrecognizedColumns' array
     console.log("Unrecognized columns:", unrecognizedColumns);
