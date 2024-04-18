@@ -122,7 +122,7 @@ function check_file_content() {
 function check_columns_names() {
 
     // Define the names accepted for the columns
-    const columns_names_reference_list = [
+    const expectedColumnNames = [
         "Statement Type",
         "Attribute",
         "Deontic",
@@ -145,7 +145,7 @@ function check_columns_names() {
         console.log(name);
 
         console.log(columnNames);
-        if (!columns_names_reference_list.includes(name)) {
+        if (!expectedColumnNames.includes(name)) {
             // Add the unrecognized column name to the list
             unrecognizedColumns.push(name);
         }
