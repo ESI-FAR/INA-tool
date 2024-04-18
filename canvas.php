@@ -36,7 +36,7 @@ const nodes = [
     { id: 'node1', x: 180, y: 100, size: '10px', color: '#ffc70f', tooltip: 'tooltip text 1' },
     { id: 'node2', x: 460, y: 50, size: '5px', color: '#0fafff', tooltip: 'tooltip text 2 medium length text' },
     { id: 'node3', x: 450, y: 70, size: '15px', color: '#ffc70f', tooltip: 'tooltip text 3' },
-    { id: 'node4', x: 650, y: 200, size: '7px', color: '#0fafff', tooltip: 'tooltip text 4' }
+    { id: 'node4', x: 350, y: 100, size: '7px', color: '#0fafff', tooltip: 'tooltip text 4' }
 ];
 
 // Define links
@@ -105,10 +105,15 @@ function addNodesAndLinks() {
     });
 }
 
-function highlightNode() {
-    var node1 = document.getElementById("node1");
-    node1.setAttribute("stroke", "green");
-}
+    // Function to highlight node1
+    function highlightNode() {
+        var node1 = document.getElementById("node1");
+        if (node1.getAttribute("stroke") === "green") {
+            node1.removeAttribute("stroke");
+        } else {
+            node1.setAttribute("stroke", "green");
+        }
+    }
 </script>
 
 </body>
