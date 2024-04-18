@@ -98,13 +98,13 @@ function check_file_content() {
             columnNames = content.split('\n')[0].split(',');
 
             // Rows and columns are properly separated, check columns names
-            check_columns_names();
+            check_columns_names(columnNames);
 
             // Extract and log each row
             rowValues = content.split('\n').slice(1).map(row => row.split(','));
 
             // Call the display functions
-            displayColumnNames();
+            displayColumnNames(columnNames);
             displayRows();
         } else {
             // Display an error message if not a CSV file
@@ -119,7 +119,7 @@ function check_file_content() {
 
 
 
-function check_columns_names() {
+function check_columns_names(columnNames) {
 
     // Define the names accepted for the columns
     const expectedColumnNames = [
@@ -163,12 +163,11 @@ function check_columns_names() {
 }
 
 
-// Initialise global variables to store column names and row values
-var columnNames = [];
+// Initialise global variables to store row values
 var rowValues = [];
 
 // Function to display column names in the preliminary table (the one in the modal) with types
-function displayColumnNames() {
+function displayColumnNames(columnNames) {
     // Prepend "ID" column by default
     columnNames.unshift("ID");
 
