@@ -1,19 +1,19 @@
 // uploader.js  - ANNO DOMINI 2024 - eScience Center, AMS
 // Authors - Ermanno Lo Cascio, Suvayu Ali, Sander van Rijn
 
-/*          
+/*
                               o
           ######    #######  ###   ######    ####     ##   #######  #########
 ######    ##       ##        ###   ##        ## ##    ##  ##        ##
 #    ##   ##       ##        ###   ##        ##  ##   ##  ##        ##
 ######    #######  ##        ###   ######    ##   ##  ##  ##        #########
 #              ##  ##        ###   ##        ##    #####  ##        ##
-######    #######  ########  ###   #######   ##     ####  ########  #########   Center Amsterdam    
+######    #######  ########  ###   #######   ##     ####  ########  #########   Center Amsterdam
 -----------------------------------------------------------------------------
 
-// NOTES 
+// NOTES
 
-The uploader.js contains all the functions to execute the data uploading process. 
+The uploader.js contains all the functions to execute the data uploading process.
 The operations executed here are:
     1. Open the modal dialog to select the file from the local
     2. Validations and feedback to user
@@ -31,7 +31,7 @@ function openFileUpload() {
 
 // File handling and Preliminary check on file type
 function handleFileUpload(files) {
-    
+
     // Check if any file is selected
     if (files.length > 0) {
         // Check the file type
@@ -42,21 +42,14 @@ function handleFileUpload(files) {
             // Display the modal
             $('#fileModal').modal('show');
             var fileModalBody = document.getElementById("fileModalBody");
-        
+
             // Change class to alert-primary
              fileModalBody.classList.remove("alert-danger");
              fileModalBody.classList.add("alert-primary");
-    
+
             // Get the file name and display it in the modal
             fileModalBody.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> File Name: ' + fileName;
-
-            // Set the flag status to true
-            var isValidFile = true;
-
-            // Execute the rest of the function if the file is valid
-            if (isValidFile) {
-                check_file_content(isValidFile);
-            }
+            check_file_content();
         } else {
             // Provide negatice feedback to user
             var fileModalBody = document.getElementById("fileModalBody");
@@ -68,7 +61,7 @@ function handleFileUpload(files) {
             displayErrorMessage('Invalid file type. Please select a CSV or TXT file.');
         }
     }
-    
+
 
 }
 
@@ -81,106 +74,96 @@ function getFileType(fileName) {
 }
 
 function displayErrorMessage(message) {
-   
+
      // Display error message in the modal
     document.getElementById('fileModalBody').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/><path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/></svg> Error: ' + message;
     $('#fileModal').modal('show');
 }
 
 
-function check_file_content(isValidFile) {
+function check_file_content() {
 
-    // initialize flag to check if it is comma separated
-    var isValidContent = false;
+    // Flag is positive, proceed with file content checking...
+    var fileInput = document.getElementById('fileInput');
+    var file = fileInput.files[0];
 
-    // Check the flag status
+    // Use FileReader to read the file content
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        var content = e.target.result;
 
-    if (isValidFile) {
+        // Check if the file content has comma as a separator
+        if (content.includes(',')) {
+            // Extract column names
+            columnNames = content.split('\n')[0].split(',');
 
-        // Flag is positive, proceed with file content checking... 
-        var fileInput = document.getElementById('fileInput');
-        var file = fileInput.files[0];
-        
-        // Use FileReader to read the file content
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            var content = e.target.result;
+            // Log column names
+            //console.log('Column Names:', columnNames);
 
-            // Check if the file content has comma as a separator
-            if (content.includes(',')) {
-                // Extract column names
-                columnNames = content.split('\n')[0].split(',');
+            // Extract and log each row
+            rowValues = content.split('\n').slice(1).map(row => row.split(','));
+            //console.log('Row Values:', rowValues);
 
-                // Log column names
-                //console.log('Column Names:', columnNames);
+            // Rows and columns are properly separated, check columns names
+            check_columns_names();
 
-                // Extract and log each row
-                rowValues = content.split('\n').slice(1).map(row => row.split(','));
-                //console.log('Row Values:', rowValues);
+            // Call the display functions
+            displayColumnNames();
+            displayRows();
+        } else {
+            // Display an error message if not a CSV file
+            displayErrorMessage('Invalid file content. Please select a valid CSV file.');
+        }
+    };
 
-                // Rows and columns are properly separated, check columns names
-                isValidContent = true;
-                if (isValidContent) {
-                    check_columns_names(isValidContent);
-                }
+    reader.readAsText(file);
 
-                // Call the display functions
-                displayColumnNames();
-                displayRows();
-            } else {
-                // Display an error message if not a CSV file
-                displayErrorMessage('Invalid file content. Please select a valid CSV file.');
-            }
-        };
-
-        reader.readAsText(file);
-    }
 
 }
 
 
 
-function check_columns_names(isValidContent) {
-    if (isValidContent) {
-        // Define the names accepted for the columns
-        const columns_names_reference_list = [
-            "Statement Type",
-            "Attribute",
-            "Deontic",
-            "Aim",
-            "Direct Object",
-            "Type of Direct Object",
-            "Indirect Object",
-            "Type of Indirect Object",
-            "Activation Condition",
-            "Execution constraint",
-            "Or else\r"
+function check_columns_names() {
 
-        ];
+    // Define the names accepted for the columns
+    const columns_names_reference_list = [
+        "Statement Type",
+        "Attribute",
+        "Deontic",
+        "Aim",
+        "Direct Object",
+        "Type of Direct Object",
+        "Indirect Object",
+        "Type of Indirect Object",
+        "Activation Condition",
+        "Execution constraint",
+        "Or else\r"
 
-        // Array to store unrecognized column names
-        const unrecognizedColumns = [];
+    ];
 
-        // Iterate through columnNames and check correspondence
-        columnNames.forEach(function (name, index) {
-            console.log(name);
+    // Array to store unrecognized column names
+    const unrecognizedColumns = [];
 
-            console.log(columnNames);
-            if (!columns_names_reference_list.includes(name)) {
-                // Add the unrecognized column name to the list
-                unrecognizedColumns.push(name);
-            }
-        });
+    // Iterate through columnNames and check correspondence
+    columnNames.forEach(function (name, index) {
+        console.log(name);
 
-        // Now you have all unrecognized column names in the 'unrecognizedColumns' array
-        console.log("Unrecognized columns:", unrecognizedColumns);
-        // Alert the name of the column which is not recognized
-        // Display an error message if not a CSV file
-        if (unrecognizedColumns.length > 0) {
-            const errorMessage = "Unrecognized column names: <i>" + unrecognizedColumns.join(", ") + "</i>";
-            displayErrorMessage(errorMessage);
+        console.log(columnNames);
+        if (!columns_names_reference_list.includes(name)) {
+            // Add the unrecognized column name to the list
+            unrecognizedColumns.push(name);
         }
+    });
+
+    // Now you have all unrecognized column names in the 'unrecognizedColumns' array
+    console.log("Unrecognized columns:", unrecognizedColumns);
+    // Alert the name of the column which is not recognized
+    // Display an error message if not a CSV file
+    if (unrecognizedColumns.length > 0) {
+        const errorMessage = "Unrecognized column names: <i>" + unrecognizedColumns.join(", ") + "</i>";
+        displayErrorMessage(errorMessage);
     }
+
 }
 
 
@@ -238,7 +221,7 @@ function displayColumnNames() {
         columnNameCell.style.width = columnNameWidth;
 
         // Determine the type of the value in the column (you may need to customize this part)
-        var type = determineColumnType(name); // Execute type analysis 
+        var type = determineColumnType(name); // Execute type analysis
         // Add type information to the second cell
         var typeCell = row.insertCell(1);
         typeCell.innerHTML = type;
@@ -256,7 +239,7 @@ function displayColumnNames() {
         selectCell.appendChild(checkboxElement);
         selectCell.style.width = selectWidth;
 
-        
+
         var reportContent = inspectRowsContent(name); // Pass the column and do extra analysis if needed
         var reportCell = row.insertCell(3);
         reportCell.innerHTML = reportContent; // Pass result of the inspectRowsContent() analysis
@@ -280,8 +263,8 @@ function determineColumnType(columnName) {
 function inspectRowsContent(columnName) {
     // Implement logic to analyse the rows content for columnName
     // work in progress... (to be discussed, probably not needed)
-   
- 
+
+
     return "NA";
 }
 
@@ -312,7 +295,7 @@ function confirmUpload() {
     columnNames.forEach(function (name, index) {
         var checkboxId = 'checkbox_' + index;
         var checkboxElement = document.getElementById(checkboxId);
-        
+
         // Check if the checkbox is selected
         if (checkboxElement.checked) {
             // Add the column name to the selectedColumns array
@@ -324,10 +307,10 @@ function confirmUpload() {
     setTableHeaders(selectedColumns);
 
     function setTableHeaders(columnNames) {
-        
+
         // Execute loaderStarter
         loaderStarter()
-      
+
         function loaderStarter(){
             // Start the loader and remove the text in quoteBlock
             var loader = document.getElementById("loader");
@@ -338,13 +321,13 @@ function confirmUpload() {
             // Hide the loader and the quote block after 3 seconds
             setTimeout(function() {
                 loader.setAttribute("hidden", "true");
-                
+
             }, 5000);
 
         }
 
-        
-       
+
+
         // Clear the existing table content
         $('#tableData').empty();
 
@@ -359,23 +342,23 @@ function confirmUpload() {
                 title: columnNames[i] // Set the column name using the provided columnNames length
             });
         }
-        
+
 
         console.log(rowValues);
 
-        // This guy set the columns. More info at: https://datatables.net/ 
+        // This guy set the columns. More info at: https://datatables.net/
         var dataTable = $('#tableData').DataTable({
             columns: columnsArray // Set the columns using the generated array
-           
+
         });
 
         // Set the table rows
        dataTable.rows.add(rowValues).draw();
-       
+
        // Store table data in session
        storeDatainSession(columnsArray);
     }
-  
+
 
     // Now we need to store the session data into a php variable via Javascript
     function storeDatainSession(columnsArray){
@@ -401,7 +384,7 @@ function confirmUpload() {
 
 
 
-    
+
 }
 
 
