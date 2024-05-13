@@ -1,5 +1,5 @@
 // uploader.js  - ANNO DOMINI 2024 - eScience Center, AMS
-// Authors - Ermanno Lo Cascio, Suvayu Ali, Sander van Rijn
+// Authors - Ermanno Lo Cascio, Suvayu Ali, Sander van Rijn, Ole Mussmann
 
 /*
                               o

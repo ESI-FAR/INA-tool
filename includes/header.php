@@ -6,7 +6,7 @@ session_start();
 if (!isset($_SESSION['visited'])) {
     // This is a new session
     $user_session_message = "Welcome to the website!";
-    
+
 
     // Set a session variable to mark that the user has visited
     $_SESSION['visited'] = true;
@@ -45,7 +45,7 @@ if (isset($_POST['destroy_session'])) {
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
         <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-      
+
         <!-- Include DataTables CSS and JS -->
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
@@ -57,7 +57,7 @@ if (isset($_POST['destroy_session'])) {
             <a class="navbar-brand ps-3" href="index.php">INA tool</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-            <!-- 
+            <!--
             <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
                 <div class="input-group">
                     <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
@@ -81,13 +81,13 @@ if (isset($_POST['destroy_session'])) {
                                 </form>
                             </a>
                         </li>
-                    
+
 
                     </ul>
                 </li>
             </ul>
         </nav>
-        
+
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
@@ -158,14 +158,17 @@ if (isset($_POST['destroy_session'])) {
                                 <div class="sb-nav-link-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book-fill" viewBox="0 0 16 16">
                                     <path d="M8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/>
-                                    </svg>    
+                                    </svg>
                                 </div>
                                 Help
                             </a>
                             <hr>
                             <!-- Include JavaScript code to perform operations on uplaoded file -->
                             <script src="includes/uploader.js"></script>
-                            
+
+                            <!-- Include JavaScript code to render the flowchart based on uploaded file -->
+                            <script src="includes/chart.js"></script>
+
                             <a class="nav-link">
                                 <div class="sb-nav-link-icon">
                                     <button type="button" class="btn btn-outline-primary" onclick="openFileUpload()">
@@ -183,7 +186,7 @@ if (isset($_POST['destroy_session'])) {
 
                             <!-- Include JavaScript code to perform project download operations -->
                             <script src="includes/downloader.js"></script>
-                            
+
                             <!-- Project download button -->
                             <a class="nav-link">
                                 <div class="sb-nav-link-icon">
@@ -208,7 +211,7 @@ if (isset($_POST['destroy_session'])) {
                 </nav>
             </div>
 
-                        
+
             <!-- Modal displaying the uploaded file -->
             <div class="modal fade" data-bs-backdrop="static" id="fileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -220,13 +223,13 @@ if (isset($_POST['destroy_session'])) {
                 <div class="modal-body" >
                     <!-- File name will be displayed here -->
                     <div class="alert alert-danger" role="alert" id="fileModalBody"></div>
-                
+
                     <hr>
                     <div id='column_names' hidden></div>
                     <hr>
                     <div id='rows_values' hidden></div>
 
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -238,4 +241,4 @@ if (isset($_POST['destroy_session'])) {
 
 
 
-            
+
