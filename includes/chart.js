@@ -21,212 +21,196 @@ The operations executed here are:
 
 */
 
-
-
-
-
-
 // Define nodes following the template
+const row_template = {
+    nodes: [
+        {id: 1, type: 'activation condition', x:   0, y: 50, color: '#ffc70f', shape: 'polygon', points: '50,100 15,50 50,0 150,0 185,50 150,100'},
+        {id: 2, type: 'attribute', x: 200, y: 50, color: '#0fafff',  size: '5px', shape: 'circle', radiusX: 80, radiusY: 60},  // Add radiusX and radiusY for ellipse
+        {id: 3, type: 'aim', x: 400, y:  0, color: '#ffc70f', shape: 'rect', width: 170, height: 100},  // Add width and height for rectangle
+        {id: 4, type: 'object', x: 700, y:  0, color: '#0fafff', shape: 'rect', width: 180, height: 100,  rx: 50, ry: 50},  // Add width and height for rectangle
+        // {id: 5, ...},  //execution constraint
+        // {id: 6, ...},  //indirect object
+    ],
+    links:  [
+        { source: 1, target: 2 },
+        { source: 2, target: 3 },  // include deontic info here
+        { source: 3, target: 4 },
+        // { source: 5, target: 3 },
+        // { source: 4, target: 6 },
+    ],
+};
 
-
-const nodes = [
-    { id: 'node1', x: 200, y: 150, size: '10px', color: '#ffc70f', type: 'activation condition', tooltip: 'tooltip text 1', shape: 'polygon', points: '50,100 15,50 50,0 150,0 185,50 150,100' },
-    { id: 'node2', x: 400, y: 150, size: '5px', color: '#0fafff',  type: 'attribute', tooltip: 'tooltip text 2 medium length text', shape: 'circle', radiusX: 80, radiusY: 60 }, // Add radiusX and radiusY for ellipse
-    { id: 'node3', x: 600, y: 100, size: '15px', color: '#ffc70f', type: 'aim', tooltip: 'tooltip text 3', shape: 'rect', width: 170, height: 100}, // Add width and height for rectangle
-    { id: 'node4', x: 900, y: 100, size: '7px', color: '#0fafff',  type: 'object', tooltip: 'tooltip text 4', shape: 'rect', width: 180, height: 100,  rx: 50, ry: 50 }, // Add width and height for rectangle
-
-    { id: 'node5', x: 300, y: 350, size: '10px', color: '#ffc70f', type: 'activation condition', tooltip: 'tooltip text 5', shape: 'polygon', points: '50,100 15,50 50,0 150,0 185,50 150,100' },
-    { id: 'node6', x: 500, y: 350, size: '5px', color: '#0fafff',  type: 'attribute', tooltip: 'tooltip text 6 medium length text', shape: 'circle', radiusX: 80, radiusY: 60 }, // Add radiusX and radiusY for ellipse
-    { id: 'node7', x: 700, y: 300, size: '15px', color: '#ffc70f', type: 'aim', tooltip: 'tooltip text 7', shape: 'rect', width: 170, height: 100}, // Add width and height for rectangle
-    { id: 'node8', x: 1000, y: 300, size: '7px', color: '#0fafff', type: 'object', tooltip: 'tooltip text 8', shape: 'rect', width: 180, height: 100,  rx: 50, ry: 50 }, // Add width and height for rectangle
-
+const sample_rows = [
+    {
+        id: 'row1',
+        start_coords: {x: 200, y: 100},
+        color: '#60dd60',
+        activation_condition: 'activation 1',
+        attribute: 'attribute 1',
+        aim: 'aim 1',
+        object: 'object 1',
+    },
+    {
+        id: 'row2',
+        start_coords: {x: 300, y: 300},
+        color: '#ffa000',
+        activation_condition: 'activation 2',
+        attribute: 'attribute 2',
+        aim: 'aim 2',
+        object: 'object 2',
+    }
 ];
 
+window.onload = addNodesAndLinks(sample_rows);
 
-// Define links
-const links = [
-    { source: 'node1', target: 'node2' },
-    { source: 'node2', target: 'node3' },
-    { source: 'node3', target: 'node4' },
-    { source: 'node3', target: 'node4' },
-
-    { source: 'node5', target: 'node6' },
-    { source: 'node6', target: 'node7' },
-    { source: 'node7', target: 'node8' }
-
-
-];
-
-function addNodesAndLinks() {
+function addNodesAndLinks(rows) {
     var svgContainer = document.getElementById("svgContainer");
     var svg = svgContainer.querySelector("svg");
 
     // Add nodes
-    nodes.forEach(function(node) {
-        var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    rows.forEach(function(row) {
+        row_template.nodes.forEach(function(template_node) {
 
-        var newNode;
-        if (node.shape === 'polygon') {
-            // Create a polygon for the node
-            newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-            newNode.setAttribute("points", node.points);
-            // Calculate centroid of the polygon
-            var centroid = calculatePolygonCentroid(newNode);
+            var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            var newNode;
+            if (template_node.shape === 'polygon') {
+                // Create a polygon for the node
+                newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                newNode.setAttribute("points", template_node.points);
+                // Calculate centroid of the polygon
+                var centroid = calculatePolygonCentroid(newNode);
 
-            // Calculate translation needed to move the centroid to (x, y)
-            var translationX = node.x - centroid.x;
-            var translationY = node.y - centroid.y;
+                // Calculate translation needed to move the centroid to (x, y)
+                var translationX = template_node.x - centroid.x;
+                var translationY = template_node.y - centroid.y;
 
-            // Apply translation to the polygon
-            newNode.setAttribute("transform", "translate(" + translationX + "," + translationY + ")");
-        } else if (node.shape === 'circle') {
-            /// Create an ellipse for the node
-            newNode = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-            newNode.setAttribute("rx", node.radiusX); // Use the horizontal radius attribute
-            newNode.setAttribute("ry", node.radiusY); // Use the vertical radius attribute
-            newNode.setAttribute("cx", node.x);
-            newNode.setAttribute("cy", node.y);
-        } else if (node.shape === 'rect') {
-            // Create a rectangle for the node
-            newNode = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            newNode.setAttribute("x", node.x);
-            newNode.setAttribute("y", node.y);
-            newNode.setAttribute("width", node.width); // Use the width attribute
-            newNode.setAttribute("height", node.height); // Use the height attribute
-            if (node.rx && node.ry) {
-                newNode.setAttribute("rx", node.rx); // Set horizontal radius for rounded corners
-                newNode.setAttribute("ry", node.ry); // Set vertical radius for rounded corners
+                // Apply translation to the polygon
+                newNode.setAttribute("transform", "translate(" + translationX + "," + translationY + ")");
+            } else if (template_node.shape === 'circle') {
+                /// Create an ellipse for the node
+                newNode = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                newNode.setAttribute("rx", template_node.radiusX); // Use the horizontal radius attribute
+                newNode.setAttribute("ry", template_node.radiusY); // Use the vertical radius attribute
+                newNode.setAttribute("cx", template_node.x);
+                newNode.setAttribute("cy", template_node.y);
+            } else if (template_node.shape === 'rect') {
+                // Create a rectangle for the node
+                newNode = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                newNode.setAttribute("x", template_node.x);
+                newNode.setAttribute("y", template_node.y);
+                newNode.setAttribute("width", template_node.width); // Use the width attribute
+                newNode.setAttribute("height", template_node.height); // Use the height attribute
+                if (template_node.rx && template_node.ry) {
+                    newNode.setAttribute("rx", template_node.rx); // Set horizontal radius for rounded corners
+                    newNode.setAttribute("ry", template_node.ry); // Set vertical radius for rounded corners
+                }
             }
-        }
 
-        newNode.setAttribute("id", node.id);
-        newNode.setAttribute("fill", node.color);
-        newNode.setAttribute("data-tooltip", node.tooltip);
+            newNode.setAttribute("id", template_node.id);
+            newNode.setAttribute("fill", template_node.color);
 
-        // Add text inside the shape
-        var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.textContent = node.type;
-        text.setAttribute("fill", "white");
-        text.setAttribute("font-size", "18px");
-        text.setAttribute("font-family", "calibri");
-        text.setAttribute("text-anchor", "middle"); // Center align the text
+            // Add text inside the shape
+            var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.textContent = template_node.type;
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18px");
+            text.setAttribute("font-family", "calibri");
+            text.setAttribute("text-anchor", "middle"); // Center align the text
 
-        var textX, textY;
-        if (node.shape === 'rect') {
-            if (node.rx && node.ry) {
-                // Calculate center position for rectangles with rounded corners
-                textX = node.x + node.rx + (node.width - 2 * node.rx) / 2;
-                textY = node.y + node.ry + (node.height - 2 * node.ry) / 2;
+            var textX, textY;
+            if (template_node.shape === 'rect') {
+                if (template_node.rx && template_node.ry) {
+                    // Calculate center position for rectangles with rounded corners
+                    textX = template_node.x + template_node.rx + (template_node.width - 2 * template_node.rx) / 2;
+                    textY = template_node.y + template_node.ry + (template_node.height - 2 * template_node.ry) / 2;
+                } else {
+                    // Calculate center position for rectangles without rounded corners
+                    textX = template_node.x + template_node.width / 2;
+                    textY = template_node.y + template_node.height / 2;
+                }
             } else {
-                // Calculate center position for rectangles without rounded corners
-                textX = node.x + node.width / 2;
-                textY = node.y + node.height / 2;
+                // Calculate center position for other shapes
+                textX = template_node.x;
+                textY = template_node.y;
             }
-        } else {
-            // Calculate center position for other shapes
-            textX = node.x;
-            textY = node.y;
-        }
-        text.setAttribute("x", textX);
-        text.setAttribute("y", textY);
+            text.setAttribute("x", textX);
+            text.setAttribute("y", textY);
 
-        group.appendChild(newNode);
-        group.appendChild(text);
-        svg.appendChild(group);
+            group.appendChild(newNode);
+            group.appendChild(text);
+            svg.appendChild(group);
 
-        /*
+            // Add click event to display the clicked node
+            newNode.addEventListener('click', function() {
+                document.getElementById("clicked-node").textContent = "Clicked Node: " + template_node.id;
+            });
 
-        // Add tooltip on mouseover (!!!this goes in conflict with the text inside the shape at the moment)
-        newNode.addEventListener('mouseover', function() {
-            var tooltip = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            tooltip.textContent = node.tooltip;
-            tooltip.setAttribute("x", node.x + 10); // Adjust tooltip position
-            tooltip.setAttribute("y", node.y - 10); // Adjust tooltip position
-            tooltip.setAttribute("fill", "black");
-            tooltip.setAttribute("font-size", "13px");
-            svg.appendChild(tooltip);
-        });
+            // Make the group draggable
+            group.addEventListener('mousedown', function(event) {
+                var offsetX, offsetY;
 
-        // Remove tooltip on mouseout
-        newNode.addEventListener('mouseout', function() {
-            var tooltip = svg.querySelector("text");
-            if (tooltip) {
-                tooltip.remove();
-            }
-        });
-
-        */
-
-        // Add click event to display the clicked node
-        newNode.addEventListener('click', function() {
-            document.getElementById("clicked-node").textContent = "Clicked Node: " + node.id;
-        });
-
-        // Make the group draggable
-        group.addEventListener('mousedown', function(event) {
-            var offsetX, offsetY;
-
-            if (newNode.tagName === 'ellipse') {
-                offsetX = event.clientX - parseFloat(newNode.getAttribute("cx"));
-                offsetY = event.clientY - parseFloat(newNode.getAttribute("cy"));
-            } else if (newNode.tagName === 'polygon') {
-                var bbox = newNode.getBoundingClientRect();
-                offsetX = event.clientX - bbox.left;
-                offsetY = event.clientY - bbox.top;
-            } else if (newNode.tagName === 'rect') {
-                offsetX = event.clientX - parseFloat(newNode.getAttribute("x"));
-                offsetY = event.clientY - parseFloat(newNode.getAttribute("y"));
-            }
-
-            function moveNode(event) {
                 if (newNode.tagName === 'ellipse') {
-                    newNode.setAttribute("cx", event.clientX - offsetX);
-                    newNode.setAttribute("cy", event.clientY - offsetY);
-                    // Update text position for ellipse
-                    text.setAttribute("x", parseFloat(newNode.getAttribute("cx")));
-                    text.setAttribute("y", parseFloat(newNode.getAttribute("cy")));
+                    offsetX = event.clientX - parseFloat(newNode.getAttribute("cx"));
+                    offsetY = event.clientY - parseFloat(newNode.getAttribute("cy"));
                 } else if (newNode.tagName === 'polygon') {
-                    var centroid = calculatePolygonCentroid(newNode);
-                    var deltaX = event.clientX - offsetX - centroid.x;
-                    var deltaY = event.clientY - offsetY - centroid.y;
-                    // Update polygon points
-                    var points = newNode.points;
-                    var numPoints = points.numberOfItems;
-                    for (var i = 0; i < numPoints; i++) {
-                        points.getItem(i).x += deltaX;
-                        points.getItem(i).y += deltaY;
-                    }
-                    // Update text position for polygon
-                    text.setAttribute("x", parseFloat(text.getAttribute("x")) + deltaX);
-                    text.setAttribute("y", parseFloat(text.getAttribute("y")) + deltaY);
-
+                    var bbox = newNode.getBoundingClientRect();
+                    offsetX = event.clientX - bbox.left;
+                    offsetY = event.clientY - bbox.top;
                 } else if (newNode.tagName === 'rect') {
-                    newNode.setAttribute("x", event.clientX - offsetX);
-                    newNode.setAttribute("y", event.clientY - offsetY);
-                    // Update text position for rectangle
-                    text.setAttribute("x", parseFloat(newNode.getAttribute("x")) + parseFloat(newNode.getAttribute("width")) / 2);
-                    text.setAttribute("y", parseFloat(newNode.getAttribute("y")) + parseFloat(newNode.getAttribute("height")) / 2);
+                    offsetX = event.clientX - parseFloat(newNode.getAttribute("x"));
+                    offsetY = event.clientY - parseFloat(newNode.getAttribute("y"));
                 }
 
-                updateEdges();
-            }
+                function moveNode(event) {
+                    if (newNode.tagName === 'ellipse') {
+                        newNode.setAttribute("cx", event.clientX - offsetX);
+                        newNode.setAttribute("cy", event.clientY - offsetY);
+                        // Update text position for ellipse
+                        text.setAttribute("x", parseFloat(newNode.getAttribute("cx")));
+                        text.setAttribute("y", parseFloat(newNode.getAttribute("cy")));
+                    } else if (newNode.tagName === 'polygon') {
+                        var centroid = calculatePolygonCentroid(newNode);
+                        var deltaX = event.clientX - offsetX - centroid.x;
+                        var deltaY = event.clientY - offsetY - centroid.y;
+                        // Update polygon points
+                        var points = newNode.points;
+                        var numPoints = points.numberOfItems;
+                        for (var i = 0; i < numPoints; i++) {
+                            points.getItem(i).x += deltaX;
+                            points.getItem(i).y += deltaY;
+                        }
+                        // Update text position for polygon
+                        text.setAttribute("x", parseFloat(text.getAttribute("x")) + deltaX);
+                        text.setAttribute("y", parseFloat(text.getAttribute("y")) + deltaY);
+
+                    } else if (newNode.tagName === 'rect') {
+                        newNode.setAttribute("x", event.clientX - offsetX);
+                        newNode.setAttribute("y", event.clientY - offsetY);
+                        // Update text position for rectangle
+                        text.setAttribute("x", parseFloat(newNode.getAttribute("x")) + parseFloat(newNode.getAttribute("width")) / 2);
+                        text.setAttribute("y", parseFloat(newNode.getAttribute("y")) + parseFloat(newNode.getAttribute("height")) / 2);
+                    }
+
+                    updateEdges();
+                }
 
 
 
 
-            function stopMove() {
-                document.removeEventListener('mousemove', moveNode);
-                document.removeEventListener('mouseup', stopMove);
-            }
+                function stopMove() {
+                    document.removeEventListener('mousemove', moveNode);
+                    document.removeEventListener('mouseup', stopMove);
+                }
 
-            document.addEventListener('mousemove', moveNode);
-            document.addEventListener('mouseup', stopMove);
+                document.addEventListener('mousemove', moveNode);
+                document.addEventListener('mouseup', stopMove);
+            });
+
         });
-
     });
 
     // Add links
-    links.forEach(function(link) {
+    row_template.links.forEach(function(link) {
         updateEdges();
     });
 }
