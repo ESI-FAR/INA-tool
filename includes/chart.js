@@ -25,9 +25,9 @@ The operations executed here are:
 const row_template = {
     nodes: [
         {id: 1, type: 'activation condition', x:   0, y: 50, color: '#ffc70f', shape: 'polygon', points: '50,100 15,50 50,0 150,0 185,50 150,100'},
-        {id: 2, type: 'attribute', x: 200, y: 50, color: '#0fafff',  size: '5px', shape: 'circle', radiusX: 80, radiusY: 60},  // Add radiusX and radiusY for ellipse
-        {id: 3, type: 'aim', x: 400, y:  0, color: '#ffc70f', shape: 'rect', width: 170, height: 100},  // Add width and height for rectangle
-        {id: 4, type: 'object', x: 700, y:  0, color: '#0fafff', shape: 'rect', width: 180, height: 100,  rx: 50, ry: 50},  // Add width and height for rectangle
+        {id: 2, type: 'attribute',            x: 200, y: 50, color: '#0fafff', shape: 'circle', size:  '5px', radiusX: 80, radiusY: 60},
+        {id: 3, type: 'aim',                  x: 400, y:  0, color: '#ffc70f', shape: 'rect', width: 170, height: 100},
+        {id: 4, type: 'object',               x: 700, y:  0, color: '#0fafff', shape: 'rect', width: 180, height: 100, rx: 50, ry: 50},  // rx/ry for rounded corners
         // {id: 5, ...},  //execution constraint
         // {id: 6, ...},  //indirect object
     ],
