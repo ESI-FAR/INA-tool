@@ -110,8 +110,8 @@ function addNodesAndLinks() {
                 }
             }
 
-            newNode.setAttribute("id", template_node.id);
-            newNode.setAttribute("fill", template_node.color);
+            newNode.setAttribute("id", `${row.id}_${template_node.id}`);
+            newNode.setAttribute("fill", row.color);
 
             // Add text inside the shape
             var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -142,7 +142,7 @@ function addNodesAndLinks() {
 
             // Add click event to display the clicked node
             newNode.addEventListener('click', function() {
-                document.getElementById("clicked-node").textContent = "Clicked Node: " + template_node.id;
+                document.getElementById("clicked-node").textContent = "Clicked Node: " + `${row.id}_${template_node.id}`;
             });
 
             // Make the group draggable
@@ -191,11 +191,8 @@ function addNodesAndLinks() {
                         text.setAttribute("y", parseFloat(newNode.getAttribute("y")) + parseFloat(newNode.getAttribute("height")) / 2);
                     }
 
-                    updateEdges();
+                    updateEdges(row.id);
                 }
-
-
-
 
                 function stopMove() {
                     document.removeEventListener('mousemove', moveNode);
@@ -207,22 +204,17 @@ function addNodesAndLinks() {
             });
 
         });
-    });
 
-    // Add links
-    row_template.links.forEach(function(link) {
-        updateEdges();
+        updateEdges(row.id);
     });
 }
 
 
-
-
 // Function to update edge positions
-function updateEdges() {
-    links.forEach(function(link) {
-        var sourceNode = document.getElementById(link.source);
-        var targetNode = document.getElementById(link.target);
+function updateEdges(rowID) {
+    row_template.links.forEach(function(link) {
+        var sourceNode = document.getElementById(`${rowID}_${link.source}`);
+        var targetNode = document.getElementById(`${rowID}_${link.target}`);
 
         var sourceX, sourceY, targetX, targetY;
 
@@ -238,8 +230,7 @@ function updateEdges() {
             // Calculate the center of the bounding box with the offset
             sourceX = sourceBBox.left + sourceBBox.width / 2 - offsetX;
             sourceY = sourceBBox.top + sourceBBox.height / 2 - offsetY;
-        }
-         else if (sourceNode.tagName === 'rect') {
+        } else if (sourceNode.tagName === 'rect') {
             sourceX = parseFloat(sourceNode.getAttribute("x")) + parseFloat(sourceNode.getAttribute("width")) / 2;
             sourceY = parseFloat(sourceNode.getAttribute("y")) + parseFloat(sourceNode.getAttribute("height")) / 2;
         }
@@ -256,13 +247,13 @@ function updateEdges() {
             targetY = parseFloat(targetNode.getAttribute("y")) + parseFloat(targetNode.getAttribute("height")) / 2;
         }
 
-        var line = document.querySelector(`line[data-source="${link.source}"][data-target="${link.target}"]`);
+        var line = document.querySelector(`line[data-source="${rowID}_${link.source}"][data-target="${rowID}_${link.target}"]`);
         if (!line) {
             line = document.createElementNS("http://www.w3.org/2000/svg", "line");
             line.setAttribute("stroke", "gray");
             line.setAttribute("stroke-width", "2");
-            line.setAttribute("data-source", link.source);
-            line.setAttribute("data-target", link.target);
+            line.setAttribute("data-source", `${rowID}_${link.source}`);
+            line.setAttribute("data-target", `${rowID}_${link.target}`);
         }
 
         line.setAttribute("x1", sourceX);
