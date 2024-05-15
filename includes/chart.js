@@ -169,9 +169,9 @@ function addNodesAndLinks() {
                         text.setAttribute("x", parseFloat(newNode.getAttribute("cx")));
                         text.setAttribute("y", parseFloat(newNode.getAttribute("cy")));
                     } else if (newNode.tagName === 'polygon') {
-                        var centroid = calculatePolygonCentroid(newNode);
-                        var deltaX = event.clientX - offsetX - centroid.x;
-                        var deltaY = event.clientY - offsetY - centroid.y;
+                        var bbox = newNode.getBoundingClientRect();
+                        var deltaX = event.clientX - offsetX - bbox.x;
+                        var deltaY = event.clientY - offsetY - bbox.y;
                         // Update polygon points
                         var points = newNode.points;
                         var numPoints = points.numberOfItems;
