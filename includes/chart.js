@@ -24,7 +24,7 @@ The operations executed here are:
 // Define nodes following the template
 const row_template = {
     nodes: [
-        {id: 1, type: 'activation condition', x:   0, y: 50, color: '#ffc70f', shape: 'polygon', points: '50,100 15,50 50,0 150,0 185,50 150,100'},
+        {id: 1, type: 'activation_condition', x:   0, y: 50, color: '#ffc70f', shape: 'polygon', points: '50,100 15,50 50,0 150,0 185,50 150,100'},
         {id: 2, type: 'attribute',            x: 200, y: 50, color: '#0fafff', shape: 'circle', size:  '5px', radiusX: 80, radiusY: 60},
         {id: 3, type: 'aim',                  x: 400, y:  0, color: '#ffc70f', shape: 'rect', width: 170, height: 100},
         {id: 4, type: 'object',               x: 700, y:  0, color: '#0fafff', shape: 'rect', width: 180, height: 100, rx: 50, ry: 50},  // rx/ry for rounded corners
@@ -115,7 +115,7 @@ function addNodesAndLinks() {
 
             // Add text inside the shape
             var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.textContent = template_node.type;
+            text.textContent = row[template_node.type];
             text.setAttribute("fill", "white");
             text.setAttribute("font-size", "18px");
             text.setAttribute("font-family", "calibri");
