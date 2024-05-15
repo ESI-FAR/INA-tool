@@ -65,8 +65,6 @@ function handleFileUpload(files) {
 
 }
 
-
-
 function getFileType(fileName) {
     // Extract the file extension
     var fileExtension = fileName.split('.').pop().toLowerCase();

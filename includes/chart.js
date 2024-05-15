@@ -61,11 +61,13 @@ const sample_rows = [
     }
 ];
 
-window.onload = addNodesAndLinks(sample_rows);
+// window.onload = addNodesAndLinks(sample_rows);
 
-function addNodesAndLinks(rows) {
+function addNodesAndLinks() {
     var svgContainer = document.getElementById("svgContainer");
     var svg = svgContainer.querySelector("svg");
+
+    var rows = sample_rows;
 
     // Add nodes
     rows.forEach(function(row) {
@@ -73,6 +75,8 @@ function addNodesAndLinks(rows) {
 
             var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
             var newNode;
+            var x = template_node.x + row.start_coords.x;
+            var y = template_node.y + row.start_coords.y;
             if (template_node.shape === 'polygon') {
                 // Create a polygon for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
@@ -81,8 +85,8 @@ function addNodesAndLinks(rows) {
                 var centroid = calculatePolygonCentroid(newNode);
 
                 // Calculate translation needed to move the centroid to (x, y)
-                var translationX = template_node.x - centroid.x;
-                var translationY = template_node.y - centroid.y;
+                var translationX = x - centroid.x;
+                var translationY = y - centroid.y;
 
                 // Apply translation to the polygon
                 newNode.setAttribute("transform", "translate(" + translationX + "," + translationY + ")");
@@ -91,13 +95,13 @@ function addNodesAndLinks(rows) {
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
                 newNode.setAttribute("rx", template_node.radiusX); // Use the horizontal radius attribute
                 newNode.setAttribute("ry", template_node.radiusY); // Use the vertical radius attribute
-                newNode.setAttribute("cx", template_node.x);
-                newNode.setAttribute("cy", template_node.y);
+                newNode.setAttribute("cx", x);
+                newNode.setAttribute("cy", y);
             } else if (template_node.shape === 'rect') {
                 // Create a rectangle for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                newNode.setAttribute("x", template_node.x);
-                newNode.setAttribute("y", template_node.y);
+                newNode.setAttribute("x", x);
+                newNode.setAttribute("y", y);
                 newNode.setAttribute("width", template_node.width); // Use the width attribute
                 newNode.setAttribute("height", template_node.height); // Use the height attribute
                 if (template_node.rx && template_node.ry) {
@@ -117,21 +121,17 @@ function addNodesAndLinks(rows) {
             text.setAttribute("font-family", "calibri");
             text.setAttribute("text-anchor", "middle"); // Center align the text
 
-            var textX, textY;
+            var textX = x, textY = y;
             if (template_node.shape === 'rect') {
                 if (template_node.rx && template_node.ry) {
                     // Calculate center position for rectangles with rounded corners
-                    textX = template_node.x + template_node.rx + (template_node.width - 2 * template_node.rx) / 2;
-                    textY = template_node.y + template_node.ry + (template_node.height - 2 * template_node.ry) / 2;
+                    textX += template_node.rx + (template_node.width - 2 * template_node.rx) / 2;
+                    textY += template_node.ry + (template_node.height - 2 * template_node.ry) / 2;
                 } else {
                     // Calculate center position for rectangles without rounded corners
-                    textX = template_node.x + template_node.width / 2;
-                    textY = template_node.y + template_node.height / 2;
+                    textX += template_node.width / 2;
+                    textY += template_node.height / 2;
                 }
-            } else {
-                // Calculate center position for other shapes
-                textX = template_node.x;
-                textY = template_node.y;
             }
             text.setAttribute("x", textX);
             text.setAttribute("y", textY);
@@ -300,7 +300,6 @@ function calculatePolygonCentroid(polygon) {
 
     return { x: x, y: y };
 }
-
 
 
 // Function to highlight node1
