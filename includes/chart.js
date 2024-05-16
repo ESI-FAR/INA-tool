@@ -43,7 +43,6 @@ const row_template = {
 const sample_rows = [
     {
         id: 'row1',
-        start_coords: {x: 200, y: 100},
         color: '#60dd60',
         activation_condition: 'activation 1',
         attribute: 'attribute 1',
@@ -52,7 +51,6 @@ const sample_rows = [
     },
     {
         id: 'row2',
-        start_coords: {x: 300, y: 300},
         color: '#ffa000',
         activation_condition: 'activation 2',
         attribute: 'attribute 2',
@@ -68,15 +66,17 @@ function addNodesAndLinks() {
     var svg = svgContainer.querySelector("svg");
 
     var rows = sample_rows;
+    const rowHeight = 300;
+    const rowX = 100, rowY = 50;
 
     // Add nodes
-    rows.forEach(function(row) {
+    rows.forEach(function(row, i) {
         row_template.nodes.forEach(function(template_node) {
 
             var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
             var newNode;
-            var x = template_node.x + row.start_coords.x;
-            var y = template_node.y + row.start_coords.y;
+            var x = template_node.x + rowX;
+            var y = template_node.y + rowY + i*rowHeight;
             if (template_node.shape === 'polygon') {
                 // Create a polygon for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
