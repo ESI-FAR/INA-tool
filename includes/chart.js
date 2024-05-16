@@ -24,19 +24,39 @@ The operations executed here are:
 // Define nodes following the template
 const row_template = {
     nodes: [
-        {id: 1, type: 'activation_condition', x:   0, y: 50, color: '#ffc70f', shape: 'polygon', points: '50,100 15,50 50,0 150,0 185,50 150,100'},
-        {id: 2, type: 'attribute',            x: 200, y: 50, color: '#0fafff', shape: 'circle', size:  '5px', radiusX: 80, radiusY: 60},
-        {id: 3, type: 'aim',                  x: 400, y:  0, color: '#ffc70f', shape: 'rect', width: 170, height: 100},
-        {id: 4, type: 'object',               x: 700, y:  0, color: '#0fafff', shape: 'rect', width: 180, height: 100, rx: 50, ry: 50},  // rx/ry for rounded corners
-        // {id: 5, ...},  //execution constraint
-        // {id: 6, ...},  //indirect object
+        {
+            id: 1, x:   0, y: 50, color: '#ffc70f', shape: 'polygon', type: 'activation_condition',
+            points: '50,100 15,50 50,0 150,0 185,50 150,100',
+
+        },
+        {
+            id: 2, x: 200, y: 50, color: '#0fafff', shape: 'circle', type: 'attribute',
+            size:  '5px', radiusX: 80, radiusY: 60,
+
+        },
+        {   id: 3, x: 400, y:  0, color: '#ffc70f', shape: 'rect', type: 'aim',
+            width: 170, height: 100,
+
+        },
+        {
+            id: 4, x: 700, y:  0, color: '#0fafff', shape: 'rect', type: 'object',
+            width: 180, height: 100, rx: 50, ry: 50,  // rx/ry for rounded corners
+        },
+        {
+            id: 5, x: 400, y:  150, color: '#0fafff', shape: 'rect', type: 'execution_constraint',
+            width: 180, height: 100, rx: 50, ry: 50,  // rx/ry for rounded corners
+        },
+        {
+            id: 6, x: 700, y:  150, color: '#0fafff', shape: 'rect', type: 'indirect_object',
+            width: 180, height: 100, rx: 50, ry: 50,  // rx/ry for rounded corners
+        },
     ],
     links:  [
         { source: 1, target: 2 },
         { source: 2, target: 3 },  // include deontic info here
         { source: 3, target: 4 },
-        // { source: 5, target: 3 },
-        // { source: 4, target: 6 },
+        { source: 5, target: 3 },
+        { source: 4, target: 6 },
     ],
 };
 
@@ -48,6 +68,8 @@ const sample_rows = [
         attribute: 'attribute 1',
         aim: 'aim 1',
         object: 'object 1',
+        indirect_object: 'indirect object 1',
+        execution_constraint: 'execution constraint 1',
     },
     {
         id: 'row2',
@@ -56,7 +78,29 @@ const sample_rows = [
         attribute: 'attribute 2',
         aim: 'aim 2',
         object: 'object 2',
-    }
+        indirect_object: '',
+        execution_constraint: 'execution constraint 2',
+    },
+    {
+        id: 'row3',
+        color: '#ffa000',
+        activation_condition: 'activation 3',
+        attribute: 'attribute 3',
+        aim: 'aim 3',
+        object: 'object 3',
+        indirect_object: 'indirect object 3',
+        execution_constraint: '',
+    },
+    {
+        id: 'row4',
+        color: '#ffa000',
+        activation_condition: 'activation 4',
+        attribute: 'attribute 4',
+        aim: 'aim 4',
+        object: 'object 4',
+        indirect_object: '',
+        execution_constraint: '',
+    },
 ];
 
 // window.onload = addNodesAndLinks(sample_rows);
@@ -72,6 +116,11 @@ function addNodesAndLinks() {
     // Add nodes
     rows.forEach(function(row, i) {
         row_template.nodes.forEach(function(template_node) {
+
+            if (!row[template_node.type]) {
+                console.log(`no node of type ${template_node.type}`);
+                return;
+            }
 
             var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
             var newNode;
@@ -215,6 +264,11 @@ function updateEdges(rowID) {
     row_template.links.forEach(function(link) {
         var sourceNode = document.getElementById(`${rowID}_${link.source}`);
         var targetNode = document.getElementById(`${rowID}_${link.target}`);
+
+        if (!sourceNode || !targetNode) {
+            console.log(link.source, link.target);
+            return;
+        }
 
         var sourceX, sourceY, targetX, targetY;
 
