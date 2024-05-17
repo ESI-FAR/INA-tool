@@ -22,6 +22,22 @@ The operations executed here are:
 */
 
 
+const expectedColumnNames = [
+    "ID",
+    "Statement Type",
+    "Attribute",
+    "Deontic",
+    "Aim",
+    "Direct Object",
+    "Type of Direct Object",
+    "Indirect Object",
+    "Type of Indirect Object",
+    "Activation Condition",
+    "Execution Constraint",
+    "Or Else",
+];
+
+
 // -- Open the user dialog to select a file onclick of the button on the left menu
 function openFileUpload() {
     // Trigger the click event of the hidden file input
@@ -44,8 +60,8 @@ function handleFileUpload(files) {
             var fileModalBody = document.getElementById("fileModalBody");
 
             // Change class to alert-primary
-             fileModalBody.classList.remove("alert-danger");
-             fileModalBody.classList.add("alert-primary");
+            fileModalBody.classList.remove("alert-danger");
+            fileModalBody.classList.add("alert-primary");
 
             // Get the file name and display it in the modal
             fileModalBody.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> File Name: ' + fileName;
@@ -61,8 +77,6 @@ function handleFileUpload(files) {
             displayErrorMessage('Invalid file type. Please select a CSV or TXT file.');
         }
     }
-
-
 }
 
 function getFileType(fileName) {
@@ -72,16 +86,12 @@ function getFileType(fileName) {
 }
 
 function displayErrorMessage(message) {
-
-     // Display error message in the modal
+    // Display error message in the modal
     document.getElementById('fileModalBody').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/><path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/></svg> Error: ' + message;
     $('#fileModal').modal('show');
 }
 
-
 function check_file_content() {
-
-    // Flag is positive, proceed with file content checking...
     var fileInput = document.getElementById('fileInput');
     var file = fileInput.files[0];
 
@@ -92,10 +102,7 @@ function check_file_content() {
 
         // Check if the file content has comma as a separator
         if (content.includes(',')) {
-            // Extract column names
             columnNames = content.split('\n')[0].split(',');
-
-            // Rows and columns are properly separated, check columns names
             check_columns_names(columnNames);
 
             // Extract and log each row
@@ -110,32 +117,16 @@ function check_file_content() {
         }
     };
 
+    console.log(rowValues);
     reader.readAsText(file);
-
-
 }
-
 
 
 function check_columns_names(columnNames) {
 
     // Define the names accepted for the columns
-    const expectedColumnNames = new Set([
-        "Statement Type",
-        "Attribute",
-        "Deontic",
-        "Aim",
-        "Direct Object",
-        "Type of Direct Object",
-        "Indirect Object",
-        "Type of Indirect Object",
-        "Activation Condition",
-        "Execution constraint",
-        "Or else\r"
-
-    ]);
-
-    var unrecognizedColumns = new Set(columnNames).difference(expectedColumnNames);
+    var expectedNames = new Set(expectedColumnNames);
+    var unrecognizedColumns = new Set(columnNames).difference(expectedNames);
 
     // Now you have all unrecognized column names in the 'unrecognizedColumns' array
     console.log("Unrecognized columns:", unrecognizedColumns);
@@ -259,15 +250,12 @@ function displayRows() {
     // Update rowValues array to include ID values for each row
     var rowsWithID = rowValues.map((row, index) => [(index + 1)].concat(row));
     rowValues = rowsWithID;
+    window.rowValues = rowsWithID;
 }
-
-
-
 
 
 // Function to confirm upload and fill rows in an existing table
 function confirmUpload() {
-
 
     // Initialize an array to hold selected column names
     var selectedColumns = [];
@@ -292,7 +280,7 @@ function confirmUpload() {
         // Execute loaderStarter
         loaderStarter()
 
-        function loaderStarter(){
+        function loaderStarter() {
             // Start the loader and remove the text in quoteBlock
             var loader = document.getElementById("loader");
             var quoteBlock = document.getElementById("quoteBlock");
@@ -300,18 +288,15 @@ function confirmUpload() {
             // Show the loader and the quote block
             loader.removeAttribute("hidden");
             // Hide the loader and the quote block after 3 seconds
-            setTimeout(function() {
+            setTimeout(function () {
                 loader.setAttribute("hidden", "true");
 
             }, 5000);
 
         }
 
-
-
         // Clear the existing table content
         $('#tableData').empty();
-
 
         // Get the length of columnNames list
         var numColumns = columnNames.length;
@@ -324,9 +309,6 @@ function confirmUpload() {
             });
         }
 
-
-        console.log(rowValues);
-
         // This guy set the columns. More info at: https://datatables.net/
         var dataTable = $('#tableData').DataTable({
             columns: columnsArray // Set the columns using the generated array
@@ -334,37 +316,30 @@ function confirmUpload() {
         });
 
         // Set the table rows
-       dataTable.rows.add(rowValues).draw();
+        dataTable.rows.add(rowValues).draw();
 
-       // Store table data in session
-       storeDatainSession(columnsArray);
+        // Store table data in session
+        storeDatainSession(columnsArray);
     }
 
 
     // Now we need to store the session data into a php variable via Javascript
-    function storeDatainSession(columnsArray){
+    function storeDatainSession(columnsArray) {
 
         // Send the generated table data to PHP script via AJAX
         $.ajax({
             url: 'includes/store_session_data.php',
             method: 'POST',
-            data: { TableColumns: columnsArray,
-                    TableRows: rowValues
-
-                  },
-            success: function(response) {
+            data: {
+                TableColumns: columnsArray,
+                TableRows: rowValues
+            },
+            success: function (response) {
                 console.log('Session data stored successfullyy');
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('Error storing session data:', error);
             }
         });
     }
-
 }
-
-
-
-
-
-
