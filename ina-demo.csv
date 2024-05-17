@@ -1,0 +1,7 @@
+Statement Type,Attribute,Deontic,Aim,Direct Object,Type of Direct Object,Indirect Object,Type of Indirect Object,Activation Condition,Execution Constraint,Or Else
+formal,VROMI minister,must,order,infrastructure dept to execute clean-up,animate,,,if necessary after a storm event,,
+informal,Governor,,requests,financial aid,inanimate,from Dutch Kingdom,animate,if requested by Prime minister,,
+formal,Property owners,must,insure,their properties,inanimate,,,,,
+informal,NGOs,,help,,,,,if requested by inhabitants,in reconstruction,
+formal,VROMI infrastructure dept.,must,clean,gutters,inanimate,,,,before June (start hurricane season),
+formal,ACER,must,update,the recommendations,inanimate,,,,at least once every two years,
