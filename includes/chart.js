@@ -25,28 +25,28 @@ The operations executed here are:
 const row_template = {
     nodes: [
         {
-            id: 1, x: 0, y: 50, color: '#ffc70f', shape: 'polygon', type: 'activationCondition',
-            points: '50,100 15,50 50,0 150,0 185,50 150,100',
+            id: 1, x: 0, y: 30, color: '#ffc70f', shape: 'polygon', type: 'activationCondition',
+            points: '30,60 9,30 30,0 90,0 111,30 90,60',
         },
         {
-            id: 2, x: 200, y: 50, color: '#0fafff', shape: 'circle', type: 'attribute',
-            size: '5px', radiusX: 80, radiusY: 60,
+            id: 2, x: 120, y: 30, color: '#0fafff', shape: 'circle', type: 'attribute',
+            size: '5px', radiusX: 48, radiusY: 36,
         },
         {
-            id: 3, x: 400, y: 0, color: '#ffc70f', shape: 'rect', type: 'aim',
-            width: 170, height: 100,
+            id: 3, x: 240, y: 0, color: '#ffc70f', shape: 'rect', type: 'aim',
+            width: 100, height: 60,
         },
         {
-            id: 4, x: 700, y: 0, color: '#0fafff', shape: 'rect', type: 'directObject',
-            width: 180, height: 100, rx: 50, ry: 50,  // rx/ry for rounded corners
+            id: 4, x: 420, y: 0, color: '#0fafff', shape: 'rect', type: 'directObject',
+            width: 110, height: 60, rx: 30, ry: 30,  // rx/ry for rounded corners
         },
         {
-            id: 5, x: 400, y: 150, color: '#0fafff', shape: 'rect', type: 'executionConstraint',
-            width: 180, height: 100, rx: 50, ry: 50,  // rx/ry for rounded corners
+            id: 5, x: 240, y: 90, color: '#0fafff', shape: 'rect', type: 'executionConstraint',
+            width: 110, height: 60, rx: 30, ry: 30,  // rx/ry for rounded corners
         },
         {
-            id: 6, x: 700, y: 150, color: '#0fafff', shape: 'rect', type: 'indirectObject',
-            width: 180, height: 100, rx: 50, ry: 50,  // rx/ry for rounded corners
+            id: 6, x: 420, y: 90, color: '#0fafff', shape: 'rect', type: 'indirectObject',
+            width: 110, height: 60, rx: 30, ry: 30,  // rx/ry for rounded corners
         },
     ],
     links: [
@@ -79,8 +79,8 @@ function addNodesAndLinks() {
     var svgContainer = document.getElementById("svgContainer");
     var svg = svgContainer.querySelector("svg");
 
-    const rowHeight = 300;
-    const rowX = 100, rowY = 50;
+    const rowHeight = 180;
+    const rowX = 75, rowY = 30;
 
     // Add nodes
     window.rowValues.forEach(function (row, i) {
@@ -139,7 +139,7 @@ function addNodesAndLinks() {
             var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
             text.textContent = row[template_node.type];
             text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18px");
+            text.setAttribute("font-size", "12px");
             text.setAttribute("font-family", "calibri");
             text.setAttribute("text-anchor", "middle"); // Center align the text
 
@@ -251,8 +251,8 @@ function updateEdges(rowID) {
             // Get the bounding box of the polygon
             var sourceBBox = sourceNode.getBoundingClientRect();
             // Define an offset to adjust the initial edge position (empirical adjustment)
-            var offsetX = 250; // Adjust this value as needed (!!! This is a little temporary hack !!!)
-            var offsetY = 250; // Adjust this value as needed (!!! This is a little temporary hack !!!)
+            var offsetX = 275; // Adjust this value as needed (!!! This is a little temporary hack !!!)
+            var offsetY = 225; // Adjust this value as needed (!!! This is a little temporary hack !!!)
             // Calculate the center of the bounding box with the offset
             sourceX = sourceBBox.left + sourceBBox.width / 2 - offsetX;
             sourceY = sourceBBox.top + sourceBBox.height / 2 - offsetY;

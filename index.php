@@ -37,13 +37,13 @@ include_once 'includes/header.php';
                                     #svgContainer {
                                         overflow: auto;
                                         max-width: 100%; /* Adjust as needed */
-                                        max-height: 80vh; /* Adjust as needed */
+                                        max-height: 60vh; /* Adjust as needed */
                                     }
 
                                     /* Added styles for the inner svg */
                                     #svgContainer svg {
-                                        min-width: 1500px; /* Set a minimum width to enable horizontal scrolling */
-                                        min-height: 600px; /* Set a minimum height to enable vertical scrolling */
+                                        min-width: 1200px; /* Set a minimum width to enable horizontal scrolling */
+                                        min-height: 1600px; /* Set a minimum height to enable vertical scrolling */
                                     }
                                 </style>
 
