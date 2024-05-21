@@ -21,7 +21,6 @@ The operations executed here are:
     4. Data storage in PHP SESSION
 */
 
-
 const expectedColumnNames = [
     "ID",
     "Statement Type",
@@ -274,72 +273,73 @@ function confirmUpload() {
 
     // Call setTableHeaders function with the selected column names
     setTableHeaders(selectedColumns);
+    addNodesAndLinks();
+}
 
-    function setTableHeaders(columnNames) {
 
-        // Execute loaderStarter
-        loaderStarter()
+function storeDatainSession(columnsArray) {
 
-        function loaderStarter() {
-            // Start the loader and remove the text in quoteBlock
-            var loader = document.getElementById("loader");
-            var quoteBlock = document.getElementById("quoteBlock");
-            quoteBlock.setAttribute("hidden", "true");
-            // Show the loader and the quote block
-            loader.removeAttribute("hidden");
-            // Hide the loader and the quote block after 3 seconds
-            setTimeout(function () {
-                loader.setAttribute("hidden", "true");
-
-            }, 5000);
-
+    // Send the generated table data to PHP script via AJAX
+    $.ajax({
+        url: 'includes/store_session_data.php',
+        method: 'POST',
+        data: {
+            TableColumns: columnsArray,
+            TableRows: rowValues
+        },
+        success: function (response) {
+            console.log('Session data stored successfullyy');
+        },
+        error: function (xhr, status, error) {
+            console.error('Error storing session data:', error);
         }
+    });
+}
 
-        // Clear the existing table content
-        $('#tableData').empty();
 
-        // Get the length of columnNames list
-        var numColumns = columnNames.length;
-        // Initialize an array to hold column definitions
-        var columnsArray = [];
-        // Set up columns based on the provided columnNames length
-        for (var i = 0; i < numColumns; i++) {
-            columnsArray.push({
-                title: columnNames[i] // Set the column name using the provided columnNames length
-            });
-        }
+function setTableHeaders(columnNames) {
 
-        // This guy set the columns. More info at: https://datatables.net/
-        var dataTable = $('#tableData').DataTable({
-            columns: columnsArray // Set the columns using the generated array
+    // Execute loaderStarter
+    loaderStarter()
 
-        });
+    function loaderStarter() {
+        // Start the loader and remove the text in quoteBlock
+        var loader = document.getElementById("loader");
+        var quoteBlock = document.getElementById("quoteBlock");
+        quoteBlock.setAttribute("hidden", "true");
+        // Show the loader and the quote block
+        loader.removeAttribute("hidden");
+        // Hide the loader and the quote block after 3 seconds
+        setTimeout(function () {
+            loader.setAttribute("hidden", "true");
 
-        // Set the table rows
-        dataTable.rows.add(rowValues).draw();
+        }, 5000);
 
-        // Store table data in session
-        storeDatainSession(columnsArray);
     }
 
+    // Clear the existing table content
+    $('#tableData').empty();
 
-    // Now we need to store the session data into a php variable via Javascript
-    function storeDatainSession(columnsArray) {
-
-        // Send the generated table data to PHP script via AJAX
-        $.ajax({
-            url: 'includes/store_session_data.php',
-            method: 'POST',
-            data: {
-                TableColumns: columnsArray,
-                TableRows: rowValues
-            },
-            success: function (response) {
-                console.log('Session data stored successfullyy');
-            },
-            error: function (xhr, status, error) {
-                console.error('Error storing session data:', error);
-            }
+    // Get the length of columnNames list
+    var numColumns = columnNames.length;
+    // Initialize an array to hold column definitions
+    var columnsArray = [];
+    // Set up columns based on the provided columnNames length
+    for (var i = 0; i < numColumns; i++) {
+        columnsArray.push({
+            title: columnNames[i] // Set the column name using the provided columnNames length
         });
     }
+
+    // This guy set the columns. More info at: https://datatables.net/
+    var dataTable = $('#tableData').DataTable({
+        columns: columnsArray // Set the columns using the generated array
+
+    });
+
+    // Set the table rows
+    dataTable.rows.add(rowValues).draw();
+
+    // Store table data in session
+    storeDatainSession(columnsArray);
 }

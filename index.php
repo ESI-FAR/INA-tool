@@ -1,7 +1,11 @@
 <?php
 // Include the header which contains the left menu, header
-include_once 'includes/header.php'; 
+include_once 'includes/header.php';
 ?>
+
+<script type='text/javascript'>
+    window.rowValues = [];
+</script>
 
             <div id="layoutSidenav_content">
                 <main>
@@ -12,7 +16,7 @@ include_once 'includes/header.php';
                         </ol>
                         <div class="card">
                             <div class="card-body">
-                       
+
                             <!-- Spinner loader -->
                                 <div class="d-flex justify-content-center align-items-center" >
                                     <div class="spinner-border text-warning" id="loader" role="status" hidden>
@@ -25,8 +29,27 @@ include_once 'includes/header.php';
                                 </blockquote>
 
                                 <!-- Chart here -->
+                                <div id="svgContainer">
+                                    <svg xmlns="http://www.w3.org/2000/svg"></svg>
+                                </div>
+                                <style>
+                                    /* Added custom CSS for the svgContainer */
+                                    #svgContainer {
+                                        overflow: auto;
+                                        max-width: 100%; /* Adjust as needed */
+                                        max-height: 80vh; /* Adjust as needed */
+                                    }
 
-                                
+                                    /* Added styles for the inner svg */
+                                    #svgContainer svg {
+                                        min-width: 1500px; /* Set a minimum width to enable horizontal scrolling */
+                                        min-height: 600px; /* Set a minimum height to enable vertical scrolling */
+                                    }
+                                </style>
+
+                                <hr>
+                                <div id="clicked-node"></div>
+                                <hr>
                                 <!-- End of chart -->
 
                             </div>
@@ -39,7 +62,7 @@ include_once 'includes/header.php';
                             </div>
                             <div class="card-body">
                                 <div style="overflow-x: auto;">
-                                    <?php 
+                                    <?php
                                     // Check if the session variable is set and not empty
                                     if (isset($_SESSION['Columns']) && !empty($_SESSION['Columns'])) {
                                         // Check if $_SESSION['Columns'] is an array
@@ -51,10 +74,10 @@ include_once 'includes/header.php';
                                             echo "<script> $(document).ready(function() {
                                                 $('#tableData').DataTable();
                                                 });
-                                            </script>";  
+                                            </script>";
 
 
-                                            echo "<thead>"; 
+                                            echo "<thead>";
                                             echo "<tr>";
                                             foreach ($_SESSION['Columns'] as $column) {
                                                 // Extract the 'title' property from the object
@@ -80,7 +103,7 @@ include_once 'includes/header.php';
                                                 echo "</tr>";
                                             }
                                             echo "</tbody>";
-                                            echo "</table>";  
+                                            echo "</table>";
                                         }
                                     } else {
                                         echo "<table id='tableData' class='display' style='width:100%'></table>";
@@ -93,9 +116,9 @@ include_once 'includes/header.php';
                         </div>
                     </div>
                 </main>
-                
-                
+
+
                 <?php
                 // Include the footer
-                include_once 'includes/footer.php'; 
+                include_once 'includes/footer.php';
                 ?>

@@ -58,7 +58,7 @@ const row_template = {
     ],
 };
 
-const colors = { formal: '#60dd60', informal: '#ffa000' }
+const colors = { formal: '#99cc00', informal: '#f4b183' }
 
 const rowAttributes = [
     "id",
@@ -91,7 +91,6 @@ function addNodesAndLinks() {
         row_template.nodes.forEach(function (template_node) {
 
             if (!row[template_node.type]) {
-                console.log(`no node of type ${template_node.type}`);
                 return;
             }
 
@@ -134,6 +133,7 @@ function addNodesAndLinks() {
 
             newNode.setAttribute("id", `${row.id}_${template_node.id}`);
             newNode.setAttribute("fill", colors[row.statementType]);
+            newNode.setAttribute("stroke", "black")
 
             // Add text inside the shape
             var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -320,8 +320,8 @@ function calculatePolygonCentroid(polygon) {
 
 
 // Function to highlight node1
-function highlightNode() {
-    var node1 = document.getElementById("node1");
+function highlightNode(nodeID) {
+    var node1 = document.getElementById(nodeID);
     if (node1.getAttribute("stroke") === "green") {
         node1.removeAttribute("stroke");
     } else {
