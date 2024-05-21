@@ -120,7 +120,6 @@ function checkFileContent() {
         }
     };
 
-    console.log(rowValues);
     reader.readAsText(file);
 }
 
@@ -143,14 +142,33 @@ function checkColumnNames(columnNames) {
 }
 
 
+function loadDemo() {
+    confirmUpload(
+        ["Statement Type", "Attribute", "Deontic", "Aim", "Direct Object", "Type of Direct Object", "Indirect Object", "Type of Indirect Object", "Activation Condition", "Execution Constraint", "Or Else\r"],
+        [
+            [1, "formal", "VROMI minister", "must", "order", "infrastructure dept to execute clean-up", "animate", "", "", "if necessary after a storm event", "", "\r"],
+            [2, "informal", "Governor", "", "requests", "financial aid", "inanimate", "from Dutch Kingdom", "animate", "if requested by Prime minister", "", "\r"],
+            [3, "formal", "Property owners", "must", "insure", "their properties", "inanimate", "", "", "", "", "\r"],
+            [4, "informal", "NGOs", "", "help", "", "", "", "", "if requested by inhabitants", "in reconstruction", "\r"],
+            [5, "formal", "VROMI infrastructure dept.", "must", "clean", "gutters", "inanimate", "", "", "", "before June (start hurricane season)", "\r"],
+            [6, "formal", "ACER", "must", "update", "the recommendations", "inanimate", "", "", "", "at least once every two years", ""]
+        ]
+    )
+
+}
+
+
 // Function to confirm upload and fill rows in an existing table
-function confirmUpload() {
+function confirmUpload(uploadedColumnNames, uploadedRowValues) {
+    if (!uploadedColumnNames) {
+        uploadedColumnNames = columnNames;
+    }
+    if (!uploadedRowValues) {
+        uploadedRowValues = rowValues;
+    }
 
-    populateTable(columnNames);
-
-
-
-    addNodesAndLinks();
+    populateTable(uploadedColumnNames, uploadedRowValues);
+    addNodesAndLinks(uploadedRowValues);
 }
 
 
@@ -174,7 +192,7 @@ function storeDatainSession(columnsArray) {
 }
 
 
-function populateTable(columnNames) {
+function populateTable(uploadedColumnNames, uploadedRowValues) {
 
     // Execute loaderStarter
     loaderStarter()
@@ -198,13 +216,13 @@ function populateTable(columnNames) {
     $('#tableData').empty();
 
     // Get the length of columnNames list
-    var numColumns = columnNames.length;
+    var numColumns = uploadedColumnNames.length;
     // Initialize an array to hold column definitions
     var columnsArray = [];
     // Set up columns based on the provided columnNames length
     for (var i = 0; i < numColumns; i++) {
         columnsArray.push({
-            title: columnNames[i] // Set the column name using the provided columnNames length
+            title: uploadedColumnNames[i] // Set the column name using the provided columnNames length
         });
     }
 
@@ -215,7 +233,7 @@ function populateTable(columnNames) {
     });
 
     // Set the table rows
-    dataTable.rows.add(rowValues).draw();
+    dataTable.rows.add(uploadedRowValues).draw();
 
     // Store table data in session
     storeDatainSession(columnsArray);

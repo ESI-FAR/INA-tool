@@ -75,7 +75,7 @@ const rowAttributes = [
     "orElse"
 ];
 
-function addNodesAndLinks() {
+function addNodesAndLinks(rowValues) {
     var svgContainer = document.getElementById("svgContainer");
     var svg = svgContainer.querySelector("svg");
 
@@ -83,7 +83,7 @@ function addNodesAndLinks() {
     const rowX = 75, rowY = 30;
 
     // Add nodes
-    window.rowValues.forEach(function (row, i) {
+    rowValues.forEach(function (row, i) {
         entries = rowAttributes.map((attribute, idx) => {
             return [attribute, row[idx]];
         });
