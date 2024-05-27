@@ -111,7 +111,11 @@ function checkFileContent() {
 
             // Extract and log each row
             rowValues = content.split('\n').slice(1).map(row => row.split(','));
+
+            // Add an ID column in front
+            columnNames.unshift("ID");
             var rowsWithID = rowValues.map((row, index) => [(index + 1)].concat(row));
+
             rowValues = rowsWithID;
             window.rowValues = rowsWithID;
         } else {
@@ -144,7 +148,7 @@ function checkColumnNames(columnNames) {
 
 function loadDemo() {
     confirmUpload(
-        ["Statement Type", "Attribute", "Deontic", "Aim", "Direct Object", "Type of Direct Object", "Indirect Object", "Type of Indirect Object", "Activation Condition", "Execution Constraint", "Or Else\r"],
+        ["ID", "Statement Type", "Attribute", "Deontic", "Aim", "Direct Object", "Type of Direct Object", "Indirect Object", "Type of Indirect Object", "Activation Condition", "Execution Constraint", "Or Else\r"],
         [
             [1, "formal", "VROMI minister", "must", "order", "infrastructure dept to execute clean-up", "animate", "", "", "if necessary after a storm event", "", "\r"],
             [2, "informal", "Governor", "", "requests", "financial aid", "inanimate", "from Dutch Kingdom", "animate", "if requested by Prime minister", "", "\r"],
