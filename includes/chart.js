@@ -137,8 +137,12 @@ function addNodesAndLinks(rowValues) {
 
             // Add text inside the shape
             var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.textContent = row[template_node.type];
-            text.setAttribute("fill", "white");
+            var textContent = row[template_node.type];
+            if (textContent.length >= 17) {
+                textContent = textContent.slice(0, 14) + "...";
+            }
+            text.textContent = textContent;
+            text.setAttribute("fill", "black");
             text.setAttribute("font-size", "12px");
             text.setAttribute("font-family", "calibri");
             text.setAttribute("text-anchor", "middle"); // Center align the text
