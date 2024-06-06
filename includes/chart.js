@@ -304,17 +304,17 @@ function updateEdges(rowID) {
 function calculatePolygonCentroid(polygon) {
     let points = polygon.points;
     let numPoints = points.numberOfItems;
-    let x = 0, y = 0;
+    let sumX = 0, sumY = 0;
 
     for (let i = 0; i < numPoints; i++) {
-        x += points.getItem(i).x;
-        y += points.getItem(i).y;
+        sumX += points.getItem(i).x;
+        sumY += points.getItem(i).y;
     }
 
-    x /= numPoints;
-    y /= numPoints;
+    let centerX = sumX / numPoints;
+    let centerY = sumY / numPoints;
 
-    return { x: x, y: y };
+    return { x: centerX, y: centerY };
 }
 
 
