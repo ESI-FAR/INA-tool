@@ -166,11 +166,6 @@ function addNodesAndLinks(rowValues) {
             group.appendChild(text);
             svg.appendChild(group);
 
-            // Add click event to display the clicked node
-            newNode.addEventListener('click', function () {
-                document.getElementById("clicked-node").textContent = "Clicked Node: " + `${row.id}_${template_node.id}`;
-            });
-
             // Make the group draggable
             group.addEventListener('mousedown', function (event) {
                 var offsetX, offsetY;

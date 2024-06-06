@@ -11,9 +11,6 @@ include_once 'includes/header.php';
                 <main>
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Dashboard</h1>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Dashboard</li>
-                        </ol>
                         <div class="card">
                             <div class="card-body">
 
@@ -46,10 +43,6 @@ include_once 'includes/header.php';
                                         min-height: 1600px; /* Set a minimum height to enable vertical scrolling */
                                     }
                                 </style>
-
-                                <hr>
-                                <div id="clicked-node"></div>
-                                <hr>
                                 <!-- End of chart -->
 
                             </div>
