@@ -80,7 +80,7 @@ function addNodesAndLinks(rowValues) {
     let svg = svgContainer.querySelector("svg");
 
     const rowHeight = 180;
-    const rowX = 75, rowY = 30;
+    const startDrawingAt = { x: 75, y: 30 };
 
     // Add nodes
     rowValues.forEach(function (row, i) {
@@ -96,8 +96,8 @@ function addNodesAndLinks(rowValues) {
 
             let group = document.createElementNS("http://www.w3.org/2000/svg", "g");
             let newNode;
-            let nodeX = template_node.x + rowX;
-            let nodeY = template_node.y + rowY + (i * rowHeight);
+            let nodeX = startDrawingAt.x + template_node.x;
+            let nodeY = startDrawingAt.y + (i * rowHeight) + template_node.y;
             if (template_node.shape === 'polygon') {
                 // Create a polygon for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
