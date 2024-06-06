@@ -76,8 +76,8 @@ const rowAttributes = [
 ];
 
 function addNodesAndLinks(rowValues) {
-    var svgContainer = document.getElementById("svgContainer");
-    var svg = svgContainer.querySelector("svg");
+    let svgContainer = document.getElementById("svgContainer");
+    let svg = svgContainer.querySelector("svg");
 
     const rowHeight = 180;
     const rowX = 75, rowY = 30;
@@ -94,20 +94,20 @@ function addNodesAndLinks(rowValues) {
                 return;
             }
 
-            var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            var newNode;
-            var x = template_node.x + rowX;
-            var y = template_node.y + rowY + (i * rowHeight);
+            let group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            let newNode;
+            let x = template_node.x + rowX;
+            let y = template_node.y + rowY + (i * rowHeight);
             if (template_node.shape === 'polygon') {
                 // Create a polygon for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
                 newNode.setAttribute("points", template_node.points);
                 // Calculate centroid of the polygon
-                var centroid = calculatePolygonCentroid(newNode);
+                let centroid = calculatePolygonCentroid(newNode);
 
                 // Calculate translation needed to move the centroid to (x, y)
-                var translationX = x - centroid.x;
-                var translationY = y - centroid.y;
+                let translationX = x - centroid.x;
+                let translationY = y - centroid.y;
 
                 // Apply translation to the polygon
                 newNode.setAttribute("transform", "translate(" + translationX + "," + translationY + ")");
@@ -136,8 +136,8 @@ function addNodesAndLinks(rowValues) {
             newNode.setAttribute("stroke", "black")
 
             // Add text inside the shape
-            var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            var textContent = row[template_node.type];
+            let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            let textContent = row[template_node.type];
             if (textContent.length >= 17) {
                 textContent = textContent.slice(0, 14) + "...";
             }
@@ -147,7 +147,7 @@ function addNodesAndLinks(rowValues) {
             text.setAttribute("font-family", "calibri");
             text.setAttribute("text-anchor", "middle"); // Center align the text
 
-            var textX = x, textY = y;
+            let textX = x, textY = y;
             if (template_node.shape === 'rect') {
                 if (template_node.rx && template_node.ry) {
                     // Calculate center position for rectangles with rounded corners
@@ -168,13 +168,13 @@ function addNodesAndLinks(rowValues) {
 
             // Make the group draggable
             group.addEventListener('mousedown', function (event) {
-                var offsetX, offsetY;
+                let offsetX, offsetY;
 
                 if (newNode.tagName === 'ellipse') {
                     offsetX = event.clientX - parseFloat(newNode.getAttribute("cx"));
                     offsetY = event.clientY - parseFloat(newNode.getAttribute("cy"));
                 } else if (newNode.tagName === 'polygon') {
-                    var bbox = newNode.getBoundingClientRect();
+                    let bbox = newNode.getBoundingClientRect();
                     offsetX = event.clientX - bbox.left;
                     offsetY = event.clientY - bbox.top;
                 } else if (newNode.tagName === 'rect') {
@@ -190,13 +190,13 @@ function addNodesAndLinks(rowValues) {
                         text.setAttribute("x", parseFloat(newNode.getAttribute("cx")));
                         text.setAttribute("y", parseFloat(newNode.getAttribute("cy")));
                     } else if (newNode.tagName === 'polygon') {
-                        var bbox = newNode.getBoundingClientRect();
-                        var deltaX = event.clientX - offsetX - bbox.x;
-                        var deltaY = event.clientY - offsetY - bbox.y;
+                        let bbox = newNode.getBoundingClientRect();
+                        let deltaX = event.clientX - offsetX - bbox.x;
+                        let deltaY = event.clientY - offsetY - bbox.y;
                         // Update polygon points
-                        var points = newNode.points;
-                        var numPoints = points.numberOfItems;
-                        for (var i = 0; i < numPoints; i++) {
+                        let points = newNode.points;
+                        let numPoints = points.numberOfItems;
+                        for (let i = 0; i < numPoints; i++) {
                             points.getItem(i).x += deltaX;
                             points.getItem(i).y += deltaY;
                         }
@@ -234,24 +234,24 @@ function addNodesAndLinks(rowValues) {
 // Function to update edge positions
 function updateEdges(rowID) {
     row_template.links.forEach(function (link) {
-        var sourceNode = document.getElementById(`${rowID}_${link.source}`);
-        var targetNode = document.getElementById(`${rowID}_${link.target}`);
+        let sourceNode = document.getElementById(`${rowID}_${link.source}`);
+        let targetNode = document.getElementById(`${rowID}_${link.target}`);
 
         if (!sourceNode || !targetNode) {
             return;
         }
 
-        var sourceX, sourceY, targetX, targetY;
+        let sourceX, sourceY, targetX, targetY;
 
         if (sourceNode.tagName === 'ellipse') {
             sourceX = parseFloat(sourceNode.getAttribute("cx"));
             sourceY = parseFloat(sourceNode.getAttribute("cy"));
         } else if (sourceNode.tagName === 'polygon') {
             // Get the bounding box of the polygon
-            var sourceBBox = sourceNode.getBoundingClientRect();
+            let sourceBBox = sourceNode.getBoundingClientRect();
             // Define an offset to adjust the initial edge position (empirical adjustment)
-            var offsetX = 275; // Adjust this value as needed (!!! This is a little temporary hack !!!)
-            var offsetY = 225; // Adjust this value as needed (!!! This is a little temporary hack !!!)
+            let offsetX = 275; // Adjust this value as needed (!!! This is a little temporary hack !!!)
+            let offsetY = 225; // Adjust this value as needed (!!! This is a little temporary hack !!!)
             // Calculate the center of the bounding box with the offset
             sourceX = sourceBBox.left + sourceBBox.width / 2 - offsetX;
             sourceY = sourceBBox.top + sourceBBox.height / 2 - offsetY;
@@ -264,7 +264,7 @@ function updateEdges(rowID) {
             targetX = parseFloat(targetNode.getAttribute("cx"));
             targetY = parseFloat(targetNode.getAttribute("cy"));
         } else if (targetNode.tagName === 'polygon') {
-            var targetBBox = targetNode.getBoundingClientRect();
+            let targetBBox = targetNode.getBoundingClientRect();
             targetX = targetBBox.left + targetBBox.width / 2;
             targetY = targetBBox.top + targetBBox.height / 2;
         } else if (targetNode.tagName === 'rect') {
@@ -272,7 +272,7 @@ function updateEdges(rowID) {
             targetY = parseFloat(targetNode.getAttribute("y")) + parseFloat(targetNode.getAttribute("height")) / 2;
         }
 
-        var line = document.querySelector(`line[data-source="${rowID}_${link.source}"][data-target="${rowID}_${link.target}"]`);
+        let line = document.querySelector(`line[data-source="${rowID}_${link.source}"][data-target="${rowID}_${link.target}"]`);
         if (!line) {
             line = document.createElementNS("http://www.w3.org/2000/svg", "line");
             line.setAttribute("stroke", "gray");
@@ -287,7 +287,7 @@ function updateEdges(rowID) {
         line.setAttribute("y2", targetY);
 
         // Find the first shape node (ellipse, polygon, or rect)
-        var firstShape = document.querySelector("svg ellipse, svg polygon, svg rect");
+        let firstShape = document.querySelector("svg ellipse, svg polygon, svg rect");
 
         // Insert the line before the first shape node
         if (firstShape) {
@@ -302,11 +302,11 @@ function updateEdges(rowID) {
 
 // Function to calculate polygon centroid
 function calculatePolygonCentroid(polygon) {
-    var points = polygon.points;
-    var numPoints = points.numberOfItems;
-    var x = 0, y = 0;
+    let points = polygon.points;
+    let numPoints = points.numberOfItems;
+    let x = 0, y = 0;
 
-    for (var i = 0; i < numPoints; i++) {
+    for (let i = 0; i < numPoints; i++) {
         x += points.getItem(i).x;
         y += points.getItem(i).y;
     }
@@ -320,7 +320,7 @@ function calculatePolygonCentroid(polygon) {
 
 // Function to highlight node1
 function highlightNode(nodeID) {
-    var node1 = document.getElementById(nodeID);
+    let node1 = document.getElementById(nodeID);
     if (node1.getAttribute("stroke") === "green") {
         node1.removeAttribute("stroke");
     } else {
