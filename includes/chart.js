@@ -112,8 +112,8 @@ const rowAttributes = [
 ];
 
 function addNodesAndLinks(rowValues) {
-    var svgContainer = document.getElementById("svgContainer");
-    var svg = svgContainer.querySelector("svg");
+    let svgContainer = document.getElementById("svgContainer");
+    let svg = svgContainer.querySelector("svg");
 
     const rowHeight = 300;
     const rowX = 75, rowY = 30;
@@ -131,12 +131,12 @@ function addNodesAndLinks(rowValues) {
         let yOffset = rowY + (rowIndex * rowHeight);
 
         // Create a group for the row
-        var rowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        let rowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         svg.appendChild(rowGroup);
 
         // Create groups for nodes and edges within the row group
-        var nodesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        var edgesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        let nodesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        let edgesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         rowGroup.appendChild(nodesGroup); // Append nodes group first
         rowGroup.appendChild(edgesGroup); // Append edges group second
 
@@ -146,10 +146,10 @@ function addNodesAndLinks(rowValues) {
                 return;
             }
 
-            var newNode;
-            var x = template_node.x + rowX;
-            var y = template_node.y + yOffset;
-            var textContent = rowObj[template_node.type];
+            let newNode;
+            let x = template_node.x + rowX;
+            let y = template_node.y + yOffset;
+            let textContent = rowObj[template_node.type];
 
             if (template_node.shape === 'polygon') {
                 // Create a polygon for the node
@@ -192,7 +192,6 @@ function addNodesAndLinks(rowValues) {
             // Append the new node to the nodes group
             nodesGroup.appendChild(newNode);
 
-
             // Add click event to display the clicked node
             newNode.addEventListener('click', function () {
                 // Update clicked node text content
@@ -214,8 +213,8 @@ function addNodesAndLinks(rowValues) {
 
 
             // Add text to the node
-            var textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            var textX = x, textY = y;
+            let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            let textX = x, textY = y;
 
             if (template_node.shape === 'rect') {
                 if (template_node.rx && template_node.ry) {
@@ -232,19 +231,19 @@ function addNodesAndLinks(rowValues) {
             // Adjust text position for polygons and rectangles
             if (template_node.shape === 'polygon') {
                 // Calculate polygon center as average of vertex coordinates
-                var points = template_node.points.split(' ').map(point => {
+                let points = template_node.points.split(' ').map(point => {
                     let [px, py] = point.split(',');
                     return { x: parseFloat(px) + x, y: parseFloat(py) + y };
                 });
 
-                var totalX = 0, totalY = 0;
+                let totalX = 0, totalY = 0;
                 points.forEach(point => {
                     totalX += point.x;
                     totalY += point.y;
                 });
 
-                var centerX = totalX / points.length;
-                var centerY = totalY / points.length;
+                let centerX = totalX / points.length;
+                let centerY = totalY / points.length;
 
                 textX = centerX-70;
                 textY = centerY-30; // Adjust vertical position as needed
@@ -259,17 +258,17 @@ function addNodesAndLinks(rowValues) {
 
             // Wrap text if longer than 20 characters
             if (textContent.length > 20) {
-                var words = textContent.split(' ');
-                var line = '';
-                var lineNumber = 0;
-                var lineHeight = 10; // Adjust as needed
-                var maxLineLength = 25; // Maximum characters per line
+                let words = textContent.split(' ');
+                let line = '';
+                let lineNumber = 0;
+                let lineHeight = 10; // Adjust as needed
+                let maxLineLength = 25; // Maximum characters per line
 
                 words.forEach(function (word, index) {
-                    var testLine = line + word + ' ';
+                    let testLine = line + word + ' ';
                     if (testLine.length > maxLineLength) {
                         // Create tspan for current line
-                        var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+                        let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
                         tspan.setAttribute("x", textX);
                         tspan.setAttribute("y", textY + lineHeight * lineNumber);
                         tspan.textContent = line;
@@ -282,7 +281,7 @@ function addNodesAndLinks(rowValues) {
                 });
 
                 // Add the last line
-                var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+                let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
                 tspan.setAttribute("x", textX);
                 tspan.setAttribute("y", textY + lineHeight * lineNumber);
                 tspan.textContent = line;
@@ -299,9 +298,9 @@ function addNodesAndLinks(rowValues) {
         updateEdges(row[0], edgesGroup); // Pass edgesGroup instead of rowGroup
 
         // Enable dragging of the entire row group
-        var isDragging = false;
-        var startX, startY;
-        var startTransform;
+        let isDragging = false;
+        let startX, startY;
+        let startTransform;
 
         rowGroup.addEventListener('mousedown', function (event) {
             isDragging = true;
@@ -315,8 +314,8 @@ function addNodesAndLinks(rowValues) {
         window.addEventListener('mousemove', function (event) {
             if (!isDragging) return;
 
-            var dx = event.clientX - startX;
-            var dy = event.clientY - startY;
+            let dx = event.clientX - startX;
+            let dy = event.clientY - startY;
 
             rowGroup.setAttribute('transform', `translate(${startTransform.translateX + dx}, ${startTransform.translateY + dy})`);
         });
@@ -331,14 +330,14 @@ function addNodesAndLinks(rowValues) {
 
 function updateEdges(rowID, edgesGroup) {
     row_template.links.forEach(function (link) {
-        var sourceNode = document.getElementById(`${rowID}_${link.source}`);
-        var targetNode = document.getElementById(`${rowID}_${link.target}`);
+        let sourceNode = document.getElementById(`${rowID}_${link.source}`);
+        let targetNode = document.getElementById(`${rowID}_${link.target}`);
 
         if (!sourceNode || !targetNode) {
             return;
         }
 
-        var sourceX, sourceY, targetX, targetY;
+        let sourceX, sourceY, targetX, targetY;
 
         // Determine source node center
         if (sourceNode.tagName === 'ellipse') {
@@ -346,11 +345,11 @@ function updateEdges(rowID, edgesGroup) {
             sourceY = parseFloat(sourceNode.getAttribute("cy"));
         } else if (sourceNode.tagName === 'polygon') {
             // Calculate polygon centroid
-            var points = sourceNode.getAttribute("points").split(' ').map(point => {
+            let points = sourceNode.getAttribute("points").split(' ').map(point => {
                 let [px, py] = point.split(',');
                 return { x: parseFloat(px), y: parseFloat(py) };
             });
-            var centroid = calculatePolygonCentroid(points);
+            let centroid = calculatePolygonCentroid(points);
 
             sourceX = centroid.x;
             sourceY = centroid.y;
@@ -365,11 +364,11 @@ function updateEdges(rowID, edgesGroup) {
             targetY = parseFloat(targetNode.getAttribute("cy"));
         } else if (targetNode.tagName === 'polygon') {
             // Calculate polygon centroid
-            var points = targetNode.getAttribute("points").split(' ').map(point => {
+            let points = targetNode.getAttribute("points").split(' ').map(point => {
                 let [px, py] = point.split(',');
                 return { x: parseFloat(px), y: parseFloat(py) };
             });
-            var centroid = calculatePolygonCentroid(points);
+            let centroid = calculatePolygonCentroid(points);
 
             targetX = centroid.x;
             targetY = centroid.y;
@@ -379,7 +378,7 @@ function updateEdges(rowID, edgesGroup) {
         }
 
         // Create or update line element
-        var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line.setAttribute("stroke", "gray");
         line.setAttribute("stroke-width", "2");
         line.setAttribute("data-source", `${rowID}_${link.source}`);
@@ -394,8 +393,8 @@ function updateEdges(rowID, edgesGroup) {
         edgesGroup.appendChild(line);
 
         // Find the first shape node within the current row group
-        var rowGroup = edgesGroup.parentNode; // Get the row group containing edges and nodes
-        var firstShape = rowGroup.querySelector("ellipse, polygon, rect");
+        let rowGroup = edgesGroup.parentNode; // Get the row group containing edges and nodes
+        let firstShape = rowGroup.querySelector("ellipse, polygon, rect");
 
         // Insert the line before the first shape node in the current row group
         if (firstShape) {
@@ -408,8 +407,8 @@ function updateEdges(rowID, edgesGroup) {
 }
 
 function calculatePolygonCentroid(points) {
-    var centroid = { x: 0, y: 0 };
-    var area = 0;
+    let centroid = { x: 0, y: 0 };
+    let area = 0;
 
     for (let i = 0; i < points.length; i++) {
         let current = points[i];
@@ -429,9 +428,9 @@ function calculatePolygonCentroid(points) {
 
 // Helper function to get current transform of the node
 function getTransform(node) {
-    var transform = node.getAttribute('transform');
+    let transform = node.getAttribute('transform');
     if (transform) {
-        var translateMatch = transform.match(/translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/);
+        let translateMatch = transform.match(/translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/);
         if (translateMatch) {
             return {
                 translateX: parseFloat(translateMatch[1]),

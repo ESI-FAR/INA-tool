@@ -55,12 +55,12 @@ function handleFileUpload(files) {
     if (files.length <= 0) { return; }
 
     // Check the file type
-    var fileName = files[0].name;
-    var fileType = getFileType(fileName);
+    let fileName = files[0].name;
+    let fileType = getFileType(fileName);
 
     if (fileType !== 'csv' && fileType !== 'txt') {
         // Provide negatice feedback to user
-        var fileModalBody = document.getElementById("fileModalBody");
+        let fileModalBody = document.getElementById("fileModalBody");
         // Change class to alert-danger
         fileModalBody.classList.remove("alert-primary");
         fileModalBody.classList.add("alert-danger");
@@ -72,7 +72,7 @@ function handleFileUpload(files) {
 
     // Display the modal
     $('#fileModal').modal('show');
-    var fileModalBody = document.getElementById("fileModalBody");
+    let fileModalBody = document.getElementById("fileModalBody");
 
     // Change class to alert-primary
     fileModalBody.classList.remove("alert-danger");
@@ -85,7 +85,7 @@ function handleFileUpload(files) {
 
 function getFileType(fileName) {
     // Extract the file extension
-    var fileExtension = fileName.split('.').pop().toLowerCase();
+    let fileExtension = fileName.split('.').pop().toLowerCase();
     return fileExtension;
 }
 
@@ -96,13 +96,13 @@ function displayErrorMessage(message) {
 }
 
 function checkFileContent() {
-    var fileInput = document.getElementById('fileInput');
-    var file = fileInput.files[0];
+    let fileInput = document.getElementById('fileInput');
+    let file = fileInput.files[0];
 
     // Use FileReader to read the file content
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = function (e) {
-        var content = e.target.result;
+        let content = e.target.result;
 
         // Check if the file content has comma as a separator
         if (content.includes(',')) {
@@ -114,7 +114,7 @@ function checkFileContent() {
 
             // Add an ID column in front
             columnNames.unshift("ID");
-            var rowsWithID = rowValues.map((row, index) => [(index + 1)].concat(row));
+            let rowsWithID = rowValues.map((row, index) => [(index + 1)].concat(row));
 
             rowValues = rowsWithID;
             window.rowValues = rowsWithID;
@@ -131,8 +131,8 @@ function checkFileContent() {
 function checkColumnNames(columnNames) {
 
     // Define the names accepted for the columns
-    var expectedNames = new Set(expectedColumnNames);
-    var unrecognizedColumns = new Set(columnNames).difference(expectedNames);
+    let expectedNames = new Set(expectedColumnNames);
+    let unrecognizedColumns = new Set(columnNames).difference(expectedNames);
 
     // Now you have all unrecognized column names in the 'unrecognizedColumns' array
     console.log("Unrecognized columns:", unrecognizedColumns);
@@ -203,8 +203,8 @@ function populateTable(uploadedColumnNames, uploadedRowValues) {
 
     function loaderStarter() {
         // Start the loader and remove the text in quoteBlock
-        var loader = document.getElementById("loader");
-        var quoteBlock = document.getElementById("quoteBlock");
+        let loader = document.getElementById("loader");
+        let quoteBlock = document.getElementById("quoteBlock");
         quoteBlock.setAttribute("hidden", "true");
         // Show the loader and the quote block
         loader.removeAttribute("hidden");
@@ -220,18 +220,18 @@ function populateTable(uploadedColumnNames, uploadedRowValues) {
     $('#tableData').empty();
 
     // Get the length of columnNames list
-    var numColumns = uploadedColumnNames.length;
+    let numColumns = uploadedColumnNames.length;
     // Initialize an array to hold column definitions
-    var columnsArray = [];
+    let columnsArray = [];
     // Set up columns based on the provided columnNames length
-    for (var i = 0; i < numColumns; i++) {
+    for (let i = 0; i < numColumns; i++) {
         columnsArray.push({
             title: uploadedColumnNames[i] // Set the column name using the provided columnNames length
         });
     }
 
     // This guy set the columns. More info at: https://datatables.net/
-    var dataTable = $('#tableData').DataTable({
+    let dataTable = $('#tableData').DataTable({
         columns: columnsArray // Set the columns using the generated array
 
     });
