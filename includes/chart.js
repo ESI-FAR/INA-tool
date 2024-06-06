@@ -147,8 +147,8 @@ function addNodesAndLinks(rowValues) {
             }
 
             let newNode;
-            let x = template_node.x + rowX;
-            let y = template_node.y + yOffset;
+            let nodeX = template_node.x + rowX;
+            let nodeY = template_node.y + yOffset;
             let textContent = rowObj[template_node.type];
 
             if (template_node.shape === 'polygon') {
@@ -157,23 +157,23 @@ function addNodesAndLinks(rowValues) {
                 // Adjust points based on row position
                 let points = template_node.points.split(' ').map(point => {
                     let [px, py] = point.split(',');
-                    px = parseInt(px) + x;
-                    py = parseInt(py) + y;
+                    px = parseInt(px) + nodeX;
+                    py = parseInt(py) + nodeY;
                     return `${px-70},${py-30}`;
                 }).join(' ');
                 newNode.setAttribute("points", points);
             } else if (template_node.shape === 'circle') {
                 // Create an ellipse for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-                newNode.setAttribute("cx", x);
-                newNode.setAttribute("cy", y);
+                newNode.setAttribute("cx", nodeX);
+                newNode.setAttribute("cy", nodeY);
                 newNode.setAttribute("rx", template_node.radiusX);
                 newNode.setAttribute("ry", template_node.radiusY);
             } else if (template_node.shape === 'rect') {
                 // Create a rectangle for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                newNode.setAttribute("x", x);
-                newNode.setAttribute("y", y);
+                newNode.setAttribute("x", nodeX);
+                newNode.setAttribute("y", nodeY);
                 newNode.setAttribute("width", template_node.width);
                 newNode.setAttribute("height", template_node.height);
 
@@ -214,7 +214,7 @@ function addNodesAndLinks(rowValues) {
 
             // Add text to the node
             let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            let textX = x, textY = y;
+            let textX = nodeX, textY = nodeY;
 
             if (template_node.shape === 'rect') {
                 if (template_node.rx && template_node.ry) {
@@ -233,7 +233,7 @@ function addNodesAndLinks(rowValues) {
                 // Calculate polygon center as average of vertex coordinates
                 let points = template_node.points.split(' ').map(point => {
                     let [px, py] = point.split(',');
-                    return { x: parseFloat(px) + x, y: parseFloat(py) + y };
+                    return { x: parseFloat(px) + nodeX, y: parseFloat(py) + nodeY };
                 });
 
                 let totalX = 0, totalY = 0;
