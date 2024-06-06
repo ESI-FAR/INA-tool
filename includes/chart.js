@@ -96,8 +96,8 @@ function addNodesAndLinks(rowValues) {
 
             let group = document.createElementNS("http://www.w3.org/2000/svg", "g");
             let newNode;
-            let x = template_node.x + rowX;
-            let y = template_node.y + rowY + (i * rowHeight);
+            let nodeX = template_node.x + rowX;
+            let nodeY = template_node.y + rowY + (i * rowHeight);
             if (template_node.shape === 'polygon') {
                 // Create a polygon for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
@@ -106,8 +106,8 @@ function addNodesAndLinks(rowValues) {
                 let centroid = calculatePolygonCentroid(newNode);
 
                 // Calculate translation needed to move the centroid to (x, y)
-                let translationX = x - centroid.x;
-                let translationY = y - centroid.y;
+                let translationX = nodeX - centroid.x;
+                let translationY = nodeY - centroid.y;
 
                 // Apply translation to the polygon
                 newNode.setAttribute("transform", "translate(" + translationX + "," + translationY + ")");
@@ -116,13 +116,13 @@ function addNodesAndLinks(rowValues) {
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
                 newNode.setAttribute("rx", template_node.radiusX); // Use the horizontal radius attribute
                 newNode.setAttribute("ry", template_node.radiusY); // Use the vertical radius attribute
-                newNode.setAttribute("cx", x);
-                newNode.setAttribute("cy", y);
+                newNode.setAttribute("cx", nodeX);
+                newNode.setAttribute("cy", nodeY);
             } else if (template_node.shape === 'rect') {
                 // Create a rectangle for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                newNode.setAttribute("x", x);
-                newNode.setAttribute("y", y);
+                newNode.setAttribute("x", nodeX);
+                newNode.setAttribute("y", nodeY);
                 newNode.setAttribute("width", template_node.width); // Use the width attribute
                 newNode.setAttribute("height", template_node.height); // Use the height attribute
                 if (template_node.rx && template_node.ry) {
@@ -147,7 +147,7 @@ function addNodesAndLinks(rowValues) {
             text.setAttribute("font-family", "calibri");
             text.setAttribute("text-anchor", "middle"); // Center align the text
 
-            let textX = x, textY = y;
+            let textX = nodeX, textY = nodeY;
             if (template_node.shape === 'rect') {
                 if (template_node.rx && template_node.ry) {
                     // Calculate center position for rectangles with rounded corners
