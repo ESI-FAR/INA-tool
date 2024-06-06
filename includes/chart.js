@@ -116,7 +116,7 @@ function addNodesAndLinks(rowValues) {
     let svg = svgContainer.querySelector("svg");
 
     const rowHeight = 300;
-    const rowX = 75, rowY = 30;
+    const startDrawingAt = { x: 75, y: 30 };
 
     // Add nodes and links for each row
     rowValues.forEach(function (row, rowIndex) {
@@ -128,7 +128,7 @@ function addNodesAndLinks(rowValues) {
         let rowObj = Object.fromEntries(entries);
 
         // Calculate y offset for this row
-        let yOffset = rowY + (rowIndex * rowHeight);
+        let yOffset = startDrawingAt.y + (rowIndex * rowHeight);
 
         // Create a group for the row
         let rowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -147,7 +147,7 @@ function addNodesAndLinks(rowValues) {
             }
 
             let newNode;
-            let nodeX = template_node.x + rowX;
+            let nodeX = template_node.x + startDrawingAt.x;
             let nodeY = template_node.y + yOffset;
             let textContent = rowObj[template_node.type];
 
