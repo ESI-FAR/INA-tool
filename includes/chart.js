@@ -25,40 +25,76 @@ The operations executed here are:
 const row_template = {
     nodes: [
         {
-            id: 1, x: 0, y: 30, color: '#ffc70f', shape: 'polygon', type: 'activationCondition',
-            points: '30,60 9,30 30,0 90,0 111,30 90,60',
+            id: 1,
+            x: 0, y: 0,
+            color: '#ffc70f',
+            shape: 'polygon',
+            type: 'activationCondition',
+            points: '60,120 18,60 60,0 180,0 222,60 180,120',  // Adjusted points for 2 times bigger
         },
         {
-            id: 2, x: 120, y: 30, color: '#0fafff', shape: 'circle', type: 'attribute',
-            size: '5px', radiusX: 48, radiusY: 36,
+            id: 2,
+            x: 120*2.3, y: 30,
+            color: '#0fafff',
+            shape: 'circle',
+            type: 'attribute',
+            radiusX: 48 * 2,  // Adjusted radiusX for 2 times bigger
+            radiusY: 36 * 1.7,  // Adjusted radiusY for 2 times bigger
         },
         {
-            id: 3, x: 240, y: 0, color: '#ffc70f', shape: 'rect', type: 'aim',
-            width: 100, height: 60,
+            id: 3,
+            x: 240*1.7, y: -30,
+            color: '#ffc70f',
+            shape: 'rect',
+            type: 'aim',
+            width: 100 * 2,   // Adjusted width for 2 times bigger
+            height: 60 * 2,   // Adjusted height for 2 times bigger
         },
         {
-            id: 4, x: 420, y: 0, color: '#0fafff', shape: 'rect', type: 'directObject',
-            width: 110, height: 60, rx: 30, ry: 30,  // rx/ry for rounded corners
+            id: 4,
+            x: 420*1.5, y: -30,
+            color: '#0fafff',
+            shape: 'rect',
+            type: 'directObject',
+            width: 110 * 2,   // Adjusted width for 2 times bigger
+            height: 60 * 2,   // Adjusted height for 2 times bigger
+            rx: 30 * 2,       // Adjusted rx for 2 times bigger
+            ry: 30 * 2,       // Adjusted ry for 2 times bigger
         },
         {
-            id: 5, x: 240, y: 90, color: '#0fafff', shape: 'rect', type: 'executionConstraint',
-            width: 110, height: 60, rx: 30, ry: 30,  // rx/ry for rounded corners
+            id: 5,
+            x: 240*1.65, y: 120,
+            color: '#0fafff',
+            shape: 'rect',
+            type: 'executionConstraint',
+            width: 110 * 2,   // Adjusted width for 2 times bigger
+            height: 60 * 2,   // Adjusted height for 2 times bigger
+            rx: 30 * 2,       // Adjusted rx for 2 times bigger
+            ry: 30 * 2,       // Adjusted ry for 2 times bigger
         },
         {
-            id: 6, x: 420, y: 90, color: '#0fafff', shape: 'rect', type: 'indirectObject',
-            width: 110, height: 60, rx: 30, ry: 30,  // rx/ry for rounded corners
+            id: 6,
+            x: 420*1.5, y: 120,
+            color: '#0fafff',
+            shape: 'rect',
+            type: 'indirectObject',
+            width: 110 * 2,   // Adjusted width for 2 times bigger
+            height: 60 * 2,   // Adjusted height for 2 times bigger
+            rx: 30 * 2,       // Adjusted rx for 2 times bigger
+            ry: 30 * 2,       // Adjusted ry for 2 times bigger
         },
     ],
     links: [
         { source: 1, target: 2 },
-        { source: 2, target: 3 },  // include deontic info here
+        { source: 2, target: 3 },
         { source: 3, target: 4 },
         { source: 5, target: 3 },
         { source: 4, target: 6 },
     ],
 };
 
-const colors = { formal: '#99cc00', informal: '#f4b183' }
+
+const colors = { formal: '#5896E8', informal: '#EDBA2F' }
 
 const rowAttributes = [
     "id",
@@ -79,75 +115,87 @@ function addNodesAndLinks(rowValues) {
     var svgContainer = document.getElementById("svgContainer");
     var svg = svgContainer.querySelector("svg");
 
-    const rowHeight = 180;
+    const rowHeight = 300;
     const rowX = 75, rowY = 30;
 
-    // Add nodes
-    rowValues.forEach(function (row, i) {
-        entries = rowAttributes.map((attribute, idx) => {
+    // Add nodes and links for each row
+    rowValues.forEach(function (row, rowIndex) {
+
+        // Map row attributes to their respective values
+        let entries = rowAttributes.map((attribute, idx) => {
             return [attribute, row[idx]];
         });
-        row = Object.fromEntries(entries);
-        row_template.nodes.forEach(function (template_node) {
+        let rowObj = Object.fromEntries(entries);
 
-            if (!row[template_node.type]) {
+        // Calculate y offset for this row
+        let yOffset = rowY + (rowIndex * rowHeight);
+
+        // Create a group for the row
+        var rowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        svg.appendChild(rowGroup);
+
+        // Create groups for nodes and edges within the row group
+        var nodesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        var edgesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        rowGroup.appendChild(nodesGroup); // Append nodes group first
+        rowGroup.appendChild(edgesGroup); // Append edges group second
+
+        // Add nodes to the nodes group
+        row_template.nodes.forEach(function (template_node) {
+            if (!rowObj[template_node.type]) {
                 return;
             }
 
-            var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
             var newNode;
             var x = template_node.x + rowX;
-            var y = template_node.y + rowY + (i * rowHeight);
+            var y = template_node.y + yOffset;
+            var textContent = rowObj[template_node.type];
+
             if (template_node.shape === 'polygon') {
                 // Create a polygon for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-                newNode.setAttribute("points", template_node.points);
-                // Calculate centroid of the polygon
-                var centroid = calculatePolygonCentroid(newNode);
-
-                // Calculate translation needed to move the centroid to (x, y)
-                var translationX = x - centroid.x;
-                var translationY = y - centroid.y;
-
-                // Apply translation to the polygon
-                newNode.setAttribute("transform", "translate(" + translationX + "," + translationY + ")");
+                // Adjust points based on row position
+                let points = template_node.points.split(' ').map(point => {
+                    let [px, py] = point.split(',');
+                    px = parseInt(px) + x;
+                    py = parseInt(py) + y;
+                    return `${px-70},${py-30}`;
+                }).join(' ');
+                newNode.setAttribute("points", points);
             } else if (template_node.shape === 'circle') {
-                /// Create an ellipse for the node
+                // Create an ellipse for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-                newNode.setAttribute("rx", template_node.radiusX); // Use the horizontal radius attribute
-                newNode.setAttribute("ry", template_node.radiusY); // Use the vertical radius attribute
                 newNode.setAttribute("cx", x);
                 newNode.setAttribute("cy", y);
+                newNode.setAttribute("rx", template_node.radiusX);
+                newNode.setAttribute("ry", template_node.radiusY);
             } else if (template_node.shape === 'rect') {
                 // Create a rectangle for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                 newNode.setAttribute("x", x);
                 newNode.setAttribute("y", y);
-                newNode.setAttribute("width", template_node.width); // Use the width attribute
-                newNode.setAttribute("height", template_node.height); // Use the height attribute
+                newNode.setAttribute("width", template_node.width);
+                newNode.setAttribute("height", template_node.height);
+
                 if (template_node.rx && template_node.ry) {
-                    newNode.setAttribute("rx", template_node.rx); // Set horizontal radius for rounded corners
-                    newNode.setAttribute("ry", template_node.ry); // Set vertical radius for rounded corners
+                    newNode.setAttribute("rx", template_node.rx);
+                    newNode.setAttribute("ry", template_node.ry);
                 }
             }
 
-            newNode.setAttribute("id", `${row.id}_${template_node.id}`);
-            newNode.setAttribute("fill", colors[row.statementType]);
-            newNode.setAttribute("stroke", "black")
+            // Set common attributes for all shapes
+            newNode.setAttribute("fill", colors[rowObj.statementType]); // Use rowObj.statementType to get the correct color
+            newNode.setAttribute("stroke", "lightgray");
+            newNode.setAttribute("stroke-width", "2");
+            newNode.setAttribute("id", `${row[0]}_${template_node.id}`);
 
-            // Add text inside the shape
-            var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            var textContent = row[template_node.type];
-            if (textContent.length >= 17) {
-                textContent = textContent.slice(0, 14) + "...";
-            }
-            text.textContent = textContent;
-            text.setAttribute("fill", "black");
-            text.setAttribute("font-size", "12px");
-            text.setAttribute("font-family", "calibri");
-            text.setAttribute("text-anchor", "middle"); // Center align the text
+            // Append the new node to the nodes group
+            nodesGroup.appendChild(newNode);
 
+            // Add text to the node
+            var textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
             var textX = x, textY = y;
+
             if (template_node.shape === 'rect') {
                 if (template_node.rx && template_node.ry) {
                     // Calculate center position for rectangles with rounded corners
@@ -159,85 +207,108 @@ function addNodesAndLinks(rowValues) {
                     textY += template_node.height / 2;
                 }
             }
-            text.setAttribute("x", textX);
-            text.setAttribute("y", textY);
 
-            group.appendChild(newNode);
-            group.appendChild(text);
-            svg.appendChild(group);
+            // Adjust text position for polygons and rectangles
+            if (template_node.shape === 'polygon') {
+                // Calculate polygon center as average of vertex coordinates
+                var points = template_node.points.split(' ').map(point => {
+                    let [px, py] = point.split(',');
+                    return { x: parseFloat(px) + x, y: parseFloat(py) + y };
+                });
 
-            // Add click event to display the clicked node
-            newNode.addEventListener('click', function () {
-                document.getElementById("clicked-node").textContent = "Clicked Node: " + `${row.id}_${template_node.id}`;
-            });
+                var totalX = 0, totalY = 0;
+                points.forEach(point => {
+                    totalX += point.x;
+                    totalY += point.y;
+                });
 
-            // Make the group draggable
-            group.addEventListener('mousedown', function (event) {
-                var offsetX, offsetY;
+                var centerX = totalX / points.length;
+                var centerY = totalY / points.length;
 
-                if (newNode.tagName === 'ellipse') {
-                    offsetX = event.clientX - parseFloat(newNode.getAttribute("cx"));
-                    offsetY = event.clientY - parseFloat(newNode.getAttribute("cy"));
-                } else if (newNode.tagName === 'polygon') {
-                    var bbox = newNode.getBoundingClientRect();
-                    offsetX = event.clientX - bbox.left;
-                    offsetY = event.clientY - bbox.top;
-                } else if (newNode.tagName === 'rect') {
-                    offsetX = event.clientX - parseFloat(newNode.getAttribute("x"));
-                    offsetY = event.clientY - parseFloat(newNode.getAttribute("y"));
-                }
+                textX = centerX-70;
+                textY = centerY-30; // Adjust vertical position as needed
+            }
 
-                function moveNode(event) {
-                    if (newNode.tagName === 'ellipse') {
-                        newNode.setAttribute("cx", event.clientX - offsetX);
-                        newNode.setAttribute("cy", event.clientY - offsetY);
-                        // Update text position for ellipse
-                        text.setAttribute("x", parseFloat(newNode.getAttribute("cx")));
-                        text.setAttribute("y", parseFloat(newNode.getAttribute("cy")));
-                    } else if (newNode.tagName === 'polygon') {
-                        var bbox = newNode.getBoundingClientRect();
-                        var deltaX = event.clientX - offsetX - bbox.x;
-                        var deltaY = event.clientY - offsetY - bbox.y;
-                        // Update polygon points
-                        var points = newNode.points;
-                        var numPoints = points.numberOfItems;
-                        for (var i = 0; i < numPoints; i++) {
-                            points.getItem(i).x += deltaX;
-                            points.getItem(i).y += deltaY;
-                        }
-                        // Update text position for polygon
-                        text.setAttribute("x", parseFloat(text.getAttribute("x")) + deltaX);
-                        text.setAttribute("y", parseFloat(text.getAttribute("y")) + deltaY);
+            textElement.setAttribute("x", textX);
+            textElement.setAttribute("y", textY);
+            textElement.setAttribute("fill", "black");
+            textElement.setAttribute("font-size", "10px");
+            textElement.setAttribute("text-anchor", "middle");
+            textElement.setAttribute("alignment-baseline", "middle");
 
-                    } else if (newNode.tagName === 'rect') {
-                        newNode.setAttribute("x", event.clientX - offsetX);
-                        newNode.setAttribute("y", event.clientY - offsetY);
-                        // Update text position for rectangle
-                        text.setAttribute("x", parseFloat(newNode.getAttribute("x")) + parseFloat(newNode.getAttribute("width")) / 2);
-                        text.setAttribute("y", parseFloat(newNode.getAttribute("y")) + parseFloat(newNode.getAttribute("height")) / 2);
+            // Wrap text if longer than 20 characters
+            if (textContent.length > 20) {
+                var words = textContent.split(' ');
+                var line = '';
+                var lineNumber = 0;
+                var lineHeight = 10; // Adjust as needed
+                var maxLineLength = 25; // Maximum characters per line
+
+                words.forEach(function (word, index) {
+                    var testLine = line + word + ' ';
+                    if (testLine.length > maxLineLength) {
+                        // Create tspan for current line
+                        var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+                        tspan.setAttribute("x", textX);
+                        tspan.setAttribute("y", textY + lineHeight * lineNumber);
+                        tspan.textContent = line;
+                        textElement.appendChild(tspan);
+                        line = word + ' ';
+                        lineNumber++;
+                    } else {
+                        line = testLine;
                     }
+                });
 
-                    updateEdges(row.id);
-                }
+                // Add the last line
+                var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+                tspan.setAttribute("x", textX);
+                tspan.setAttribute("y", textY + lineHeight * lineNumber);
+                tspan.textContent = line;
+                textElement.appendChild(tspan);
+            } else {
+                // If text is short, just add it as a single tspan
+                textElement.textContent = textContent;
+            }
 
-                function stopMove() {
-                    document.removeEventListener('mousemove', moveNode);
-                    document.removeEventListener('mouseup', stopMove);
-                }
-
-                document.addEventListener('mousemove', moveNode);
-                document.addEventListener('mouseup', stopMove);
-            });
-
+            nodesGroup.appendChild(textElement);
         });
 
-        updateEdges(row.id);
+        // Add edges to the edges group after nodes
+        updateEdges(row[0], edgesGroup); // Pass edgesGroup instead of rowGroup
+
+        // Enable dragging of the entire row group
+        var isDragging = false;
+        var startX, startY;
+        var startTransform;
+
+        rowGroup.addEventListener('mousedown', function (event) {
+            isDragging = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            startTransform = getTransform(rowGroup);
+
+            event.stopPropagation(); // Prevent nodes from receiving this event
+        });
+
+        window.addEventListener('mousemove', function (event) {
+            if (!isDragging) return;
+
+            var dx = event.clientX - startX;
+            var dy = event.clientY - startY;
+
+            rowGroup.setAttribute('transform', `translate(${startTransform.translateX + dx}, ${startTransform.translateY + dy})`);
+        });
+
+        window.addEventListener('mouseup', function (event) {
+            if (isDragging) {
+                isDragging = false;
+            }
+        });
     });
 }
 
-
-// Function to update edge positions
-function updateEdges(rowID) {
+function updateEdges(rowID, edgesGroup) {
     row_template.links.forEach(function (link) {
         var sourceNode = document.getElementById(`${rowID}_${link.source}`);
         var targetNode = document.getElementById(`${rowID}_${link.target}`);
@@ -246,89 +317,92 @@ function updateEdges(rowID) {
             return;
         }
 
-        var sourceX, sourceY, targetX, targetY;
+        // Determine target node center
+        let [sourceX, sourceY] = determineCenter(sourceNode);
+        let [targetX, targetY] = determineCenter(targetNode);
 
-        if (sourceNode.tagName === 'ellipse') {
-            sourceX = parseFloat(sourceNode.getAttribute("cx"));
-            sourceY = parseFloat(sourceNode.getAttribute("cy"));
-        } else if (sourceNode.tagName === 'polygon') {
-            // Get the bounding box of the polygon
-            var sourceBBox = sourceNode.getBoundingClientRect();
-            // Define an offset to adjust the initial edge position (empirical adjustment)
-            var offsetX = 275; // Adjust this value as needed (!!! This is a little temporary hack !!!)
-            var offsetY = 225; // Adjust this value as needed (!!! This is a little temporary hack !!!)
-            // Calculate the center of the bounding box with the offset
-            sourceX = sourceBBox.left + sourceBBox.width / 2 - offsetX;
-            sourceY = sourceBBox.top + sourceBBox.height / 2 - offsetY;
-        } else if (sourceNode.tagName === 'rect') {
-            sourceX = parseFloat(sourceNode.getAttribute("x")) + parseFloat(sourceNode.getAttribute("width")) / 2;
-            sourceY = parseFloat(sourceNode.getAttribute("y")) + parseFloat(sourceNode.getAttribute("height")) / 2;
-        }
-
-        if (targetNode.tagName === 'ellipse') {
-            targetX = parseFloat(targetNode.getAttribute("cx"));
-            targetY = parseFloat(targetNode.getAttribute("cy"));
-        } else if (targetNode.tagName === 'polygon') {
-            var targetBBox = targetNode.getBoundingClientRect();
-            targetX = targetBBox.left + targetBBox.width / 2;
-            targetY = targetBBox.top + targetBBox.height / 2;
-        } else if (targetNode.tagName === 'rect') {
-            targetX = parseFloat(targetNode.getAttribute("x")) + parseFloat(targetNode.getAttribute("width")) / 2;
-            targetY = parseFloat(targetNode.getAttribute("y")) + parseFloat(targetNode.getAttribute("height")) / 2;
-        }
-
-        var line = document.querySelector(`line[data-source="${rowID}_${link.source}"][data-target="${rowID}_${link.target}"]`);
-        if (!line) {
-            line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("stroke", "gray");
-            line.setAttribute("stroke-width", "2");
-            line.setAttribute("data-source", `${rowID}_${link.source}`);
-            line.setAttribute("data-target", `${rowID}_${link.target}`);
-        }
+        // Create or update line element
+        var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("stroke", "gray");
+        line.setAttribute("stroke-width", "2");
+        line.setAttribute("data-source", `${rowID}_${link.source}`);
+        line.setAttribute("data-target", `${rowID}_${link.target}`);
 
         line.setAttribute("x1", sourceX);
         line.setAttribute("y1", sourceY);
         line.setAttribute("x2", targetX);
         line.setAttribute("y2", targetY);
 
-        // Find the first shape node (ellipse, polygon, or rect)
-        var firstShape = document.querySelector("svg ellipse, svg polygon, svg rect");
+        // Append the line to the edges group
+        edgesGroup.appendChild(line);
 
-        // Insert the line before the first shape node
+        // Find the first shape node within the current row group
+        var rowGroup = edgesGroup.parentNode; // Get the row group containing edges and nodes
+        var firstShape = rowGroup.querySelector("ellipse, polygon, rect");
+
+        // Insert the line before the first shape node in the current row group
         if (firstShape) {
             firstShape.parentNode.insertBefore(line, firstShape);
         } else {
-            // If no shape is found, append the line to the end of the SVG
-            document.querySelector("svg").appendChild(line);
+            // If no shape is found, append the line to the end of the edges group
+            edgesGroup.appendChild(line);
         }
     });
 }
 
+function determineCenter(node) {
+    let nodeX, nodeY;
+    if (node.tagName === 'ellipse') {
+        nodeX = parseFloat(node.getAttribute("cx"));
+        nodeY = parseFloat(node.getAttribute("cy"));
+    } else if (node.tagName === 'polygon') {
+        // Calculate polygon centroid
+        let points = node.getAttribute("points").split(' ').map(point => {
+            let [px, py] = point.split(',');
+            return { x: parseFloat(px), y: parseFloat(py) };
+        });
+        let centroid = calculatePolygonCentroid(points);
 
-// Function to calculate polygon centroid
-function calculatePolygonCentroid(polygon) {
-    var points = polygon.points;
-    var numPoints = points.numberOfItems;
-    var x = 0, y = 0;
-
-    for (var i = 0; i < numPoints; i++) {
-        x += points.getItem(i).x;
-        y += points.getItem(i).y;
+        nodeX = centroid.x;
+        nodeY = centroid.y;
+    } else if (node.tagName === 'rect') {
+        nodeX = parseFloat(node.getAttribute("x")) + parseFloat(node.getAttribute("width")) / 2;
+        nodeY = parseFloat(node.getAttribute("y")) + parseFloat(node.getAttribute("height")) / 2;
     }
-
-    x /= numPoints;
-    y /= numPoints;
-
-    return { x: x, y: y };
+    return [nodeX, nodeY];
 }
 
+function calculatePolygonCentroid(points) {
+    var centroid = { x: 0, y: 0 };
+    var area = 0;
 
-// Function to highlight node1
-function highlightNode(nodeID) {
-    var node1 = document.getElementById(nodeID);
-    if (node1.getAttribute("stroke") === "green") {
-        node1.removeAttribute("stroke");
-    } else {
-        node1.setAttribute("stroke", "green");
+    for (let i = 0; i < points.length; i++) {
+        let current = points[i];
+        let next = points[(i + 1) % points.length];
+        let crossProduct = (current.x * next.y) - (current.y * next.x);
+        area += crossProduct;
+        centroid.x += (current.x + next.x) * crossProduct;
+        centroid.y += (current.y + next.y) * crossProduct;
     }
+
+    area /= 2;
+    centroid.x /= (6 * area);
+    centroid.y /= (6 * area);
+
+    return centroid;
+}
+
+// Helper function to get current transform of the node
+function getTransform(node) {
+    var transform = node.getAttribute('transform');
+    if (transform) {
+        var translateMatch = transform.match(/translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/);
+        if (translateMatch) {
+            return {
+                translateX: parseFloat(translateMatch[1]),
+                translateY: parseFloat(translateMatch[2])
+            };
+        }
+    }
+    return { translateX: 0, translateY: 0 };
 }

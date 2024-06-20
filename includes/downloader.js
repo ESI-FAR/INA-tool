@@ -18,6 +18,7 @@ It generate a .PNG of the current webview.
 */
 
 function downloadProject() {
+    resetZoom();
     // Get the SVG element
     const svgElement = document.querySelector('#svgContainer svg');
 

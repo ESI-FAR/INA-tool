@@ -14,8 +14,27 @@ include_once 'includes/header.php';
                         <ol class="breadcrumb mb-4">
                             <li class="breadcrumb-item active">Dashboard</li>
                         </ol>
+
                         <div class="card">
                             <div class="card-body">
+
+                            <!-- Zoom Controls -->
+                            <div class="row mb-3">
+                                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                                    <div class="zoom-controls">
+                                        <button class="btn btn-primary me-2" onclick="zoomIn()">Zoom In</button>
+                                        <button class="btn btn-primary me-2" onclick="zoomOut()">Zoom Out</button>
+                                        <button class="btn btn-secondary" onclick="resetZoom()">Reset Zoom</button>
+                                    </div>
+
+                                    <button class="btn btn-sm btn-outline-dark" onclick="downloadProject()">
+                                    <i class="fa-solid fa-file-arrow-down"></i>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+
+                            <hr>
 
                             <!-- Spinner loader -->
                                 <div class="d-flex justify-content-center align-items-center" >
@@ -29,7 +48,7 @@ include_once 'includes/header.php';
                                 </blockquote>
 
                                 <!-- Chart here -->
-                                <div id="svgContainer">
+                                <div id="svgContainer" style="overflow-y: scroll; height:400px;">
                                     <svg xmlns="http://www.w3.org/2000/svg"></svg>
                                 </div>
                                 <style>
@@ -37,13 +56,15 @@ include_once 'includes/header.php';
                                     #svgContainer {
                                         overflow: auto;
                                         max-width: 100%; /* Adjust as needed */
-                                        max-height: 60vh; /* Adjust as needed */
                                     }
 
                                     /* Added styles for the inner svg */
                                     #svgContainer svg {
-                                        min-width: 1200px; /* Set a minimum width to enable horizontal scrolling */
-                                        min-height: 1600px; /* Set a minimum height to enable vertical scrolling */
+                                        min-width: 1800px; /* Set a minimum width to enable horizontal scrolling */
+                                        min-height: 8000px; /* Set a minimum height to enable vertical scrolling */
+                                        transform-origin: 0 0; /* Set transform origin to top left corner */
+                                        transform: scale(1); /* Initial scale */
+                                        transition: transform 0.3s ease; /* Smooth transition for scaling */
                                     }
                                 </style>
 
@@ -51,7 +72,30 @@ include_once 'includes/header.php';
                                 <div id="clicked-node"></div>
                                 <hr>
                                 <!-- End of chart -->
+                                <script>
+                                    // JavaScript to handle zooming of the SVG
+                                    let scale = 1; // Initial scale factor
 
+                                    function zoomIn() {
+                                        scale += 0.1;
+                                        updateScale();
+                                    }
+
+                                    function zoomOut() {
+                                        scale -= 0.1;
+                                        updateScale();
+                                    }
+
+                                    function resetZoom() {
+                                        scale = 1; // Reset scale to 1 (initial zoom level)
+                                        updateScale();
+                                    }
+
+                                    function updateScale() {
+                                        const svg = document.querySelector('#svgContainer svg');
+                                        svg.style.transform = `scale(${scale})`;
+                                    }
+                                </script>
                             </div>
                         </div>
                         <hr>
