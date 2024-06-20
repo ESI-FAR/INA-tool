@@ -11,10 +11,6 @@ include_once 'includes/header.php';
                 <main>
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Dashboard</h1>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Dashboard</li>
-                        </ol>
-
                         <div class="card">
                             <div class="card-body">
 
@@ -67,10 +63,6 @@ include_once 'includes/header.php';
                                         transition: transform 0.3s ease; /* Smooth transition for scaling */
                                     }
                                 </style>
-
-                                <hr>
-                                <div id="clicked-node"></div>
-                                <hr>
                                 <!-- End of chart -->
                                 <script>
                                     // JavaScript to handle zooming of the SVG

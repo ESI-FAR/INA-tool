@@ -95,9 +95,7 @@ if (isset($_POST['destroy_session'])) {
 
                             <a class="nav-link" href="help.php">
                                 <div class="sb-nav-link-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book-fill" viewBox="0 0 16 16">
-                                    <path d="M8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/>
-                                    </svg>
+                                    <i class="fa-solid fa-book-open"></i>
                                 </div>
                                 Help
                             </a>
@@ -112,9 +110,7 @@ if (isset($_POST['destroy_session'])) {
                                 <div class="sb-nav-link-icon">
                                     <button type="button" class="btn btn-outline-primary" onclick="openFileUpload()">
                                         <!-- Add upload svg icon -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-up-fill" viewBox="0 0 16 16">
-                                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M6.354 9.854a.5.5 0 0 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 8.707V12.5a.5.5 0 0 1-1 0V8.707z"/>
-                                        </svg>
+                                        <i class="fa-solid fa-file-arrow-up"></i>
                                         Upload file
                                     </button>
                                 </div>
@@ -131,10 +127,7 @@ if (isset($_POST['destroy_session'])) {
                                 <div class="sb-nav-link-icon">
                                     <button type="button" class="btn btn-outline-secondary" onclick="downloadProject()">
                                         <!-- Add download svg icon -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
-                                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
-                                        </svg>
+                                        <i class="fa-solid fa-file-arrow-down"></i>
                                         Download
                                     </button>
                                 </div>
@@ -144,9 +137,7 @@ if (isset($_POST['destroy_session'])) {
                                 <div class="sb-nav-link-icon">
                                     <button type="button" class="btn btn-outline-primary" onclick="loadDemo()">
                                         <!-- Add upload svg icon -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-up-fill" viewBox="0 0 16 16">
-                                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M6.354 9.854a.5.5 0 0 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 8.707V12.5a.5.5 0 0 1-1 0V8.707z"/>
-                                        </svg>
+                                        <i class="fa-solid fa-file-arrow-up"></i>
                                         load demo
                                     </button>
                                 </div>
