@@ -43,7 +43,7 @@ const row_template = {
         },
         {
             id: 3,
-            x: 240*1.7, y: -30,
+            x: 240*2, y: -30,
             color: '#ffc70f',
             shape: 'rect',
             type: 'aim',
@@ -52,7 +52,7 @@ const row_template = {
         },
         {
             id: 4,
-            x: 420*1.5, y: -30,
+            x: 420*1.7, y: -30,
             color: '#0fafff',
             shape: 'rect',
             type: 'directObject',
@@ -63,7 +63,7 @@ const row_template = {
         },
         {
             id: 5,
-            x: 240*1.65, y: 120,
+            x: 240*1.95, y: 120,
             color: '#0fafff',
             shape: 'rect',
             type: 'executionConstraint',
@@ -74,7 +74,7 @@ const row_template = {
         },
         {
             id: 6,
-            x: 420*1.5, y: 120,
+            x: 420*1.7, y: 120,
             color: '#0fafff',
             shape: 'rect',
             type: 'indirectObject',
@@ -335,6 +335,43 @@ function updateEdges(rowID, edgesGroup) {
 
         // Append the line to the edges group
         edgesGroup.appendChild(line);
+
+        // Add deontic text between second and third nodes
+        if (link.source === 2 && link.target === 3) {
+
+            // Find the row object that corresponds to the current rowID
+            let rowObj = rowValues.find(row => row[0] === rowID);
+
+            // Check if 'deontic' attribute is defined in the array
+            if (rowObj && rowAttributes.indexOf('deontic') !== -1) {
+
+                let deonticIndex = rowAttributes.indexOf('deontic'); // Get the index of the 'deontic'
+                let deonticValue = rowObj[deonticIndex]; // Get the deontic value
+
+                if (deonticValue) {
+
+                    let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text"); // Create a new SVG text element
+
+                    // Calculate the midpoint of the line connecting source and target nodes
+                    let midX = (sourceX + targetX) / 2;
+                    let midY = (sourceY + targetY) / 2 - 6; // Slightly adjust the y-position to avoid overlap
+
+                    // Set attributes for the text element
+                    textElement.setAttribute("x", midX);  // Set the x-coordinate to the midpoint
+                    textElement.setAttribute("y", midY);  // Set the y-coordinate to the midpoint
+                    textElement.setAttribute("fill", "gray");  // Set the text color to black
+                    textElement.setAttribute("font-size", "12px");  // Set the font size
+                    textElement.setAttribute("font-weight", "bold");  // Set the font weight to bold
+                    textElement.setAttribute("text-anchor", "middle");  // Center the text horizontally
+                    textElement.setAttribute("alignment-baseline", "middle");  // Center the text vertically
+                    textElement.textContent = deonticValue.toUpperCase();  // Set Text and add uppercase
+
+                    // Append the text element to the edges group in the SVG
+                    edgesGroup.appendChild(textElement);
+                }
+            }
+        }
+
 
         // Find the first shape node within the current row group
         let rowGroup = edgesGroup.parentNode; // Get the row group containing edges and nodes
