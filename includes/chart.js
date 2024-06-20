@@ -192,26 +192,6 @@ function addNodesAndLinks(rowValues) {
             // Append the new node to the nodes group
             nodesGroup.appendChild(newNode);
 
-            // Add click event to display the clicked node
-            newNode.addEventListener('click', function () {
-                // Update clicked node text content
-                document.getElementById("clicked-node").textContent = "Clicked Node: " + `${row[0]}_${template_node.id}`;
-
-                // Get the current stroke color
-                let currentStrokeColor = newNode.getAttribute("stroke");
-
-                // Toggle stroke color
-                if (currentStrokeColor !== "green") {
-                    // Change stroke color to light green
-                    newNode.setAttribute("stroke", "green");
-                } else {
-                    // Restore the original stroke color (assuming it was lightgray initially)
-                    newNode.setAttribute("stroke", "lightgray");
-                }
-            });
-
-
-
             // Add text to the node
             let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
             let textX = nodeX, textY = nodeY;
@@ -337,45 +317,9 @@ function updateEdges(rowID, edgesGroup) {
             return;
         }
 
-        let sourceX, sourceY, targetX, targetY;
-
-        // Determine source node center
-        if (sourceNode.tagName === 'ellipse') {
-            sourceX = parseFloat(sourceNode.getAttribute("cx"));
-            sourceY = parseFloat(sourceNode.getAttribute("cy"));
-        } else if (sourceNode.tagName === 'polygon') {
-            // Calculate polygon centroid
-            let points = sourceNode.getAttribute("points").split(' ').map(point => {
-                let [px, py] = point.split(',');
-                return { x: parseFloat(px), y: parseFloat(py) };
-            });
-            let centroid = calculatePolygonCentroid(points);
-
-            sourceX = centroid.x;
-            sourceY = centroid.y;
-        } else if (sourceNode.tagName === 'rect') {
-            sourceX = parseFloat(sourceNode.getAttribute("x")) + parseFloat(sourceNode.getAttribute("width")) / 2;
-            sourceY = parseFloat(sourceNode.getAttribute("y")) + parseFloat(sourceNode.getAttribute("height")) / 2;
-        }
-
         // Determine target node center
-        if (targetNode.tagName === 'ellipse') {
-            targetX = parseFloat(targetNode.getAttribute("cx"));
-            targetY = parseFloat(targetNode.getAttribute("cy"));
-        } else if (targetNode.tagName === 'polygon') {
-            // Calculate polygon centroid
-            let points = targetNode.getAttribute("points").split(' ').map(point => {
-                let [px, py] = point.split(',');
-                return { x: parseFloat(px), y: parseFloat(py) };
-            });
-            let centroid = calculatePolygonCentroid(points);
-
-            targetX = centroid.x;
-            targetY = centroid.y;
-        } else if (targetNode.tagName === 'rect') {
-            targetX = parseFloat(targetNode.getAttribute("x")) + parseFloat(targetNode.getAttribute("width")) / 2;
-            targetY = parseFloat(targetNode.getAttribute("y")) + parseFloat(targetNode.getAttribute("height")) / 2;
-        }
+        let [sourceX, sourceY] = determineCenter(sourceNode);
+        let [targetX, targetY] = determineCenter(targetNode);
 
         // Create or update line element
         let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -404,6 +348,28 @@ function updateEdges(rowID, edgesGroup) {
             edgesGroup.appendChild(line);
         }
     });
+}
+
+function determineCenter(node) {
+    let nodeX, nodeY;
+    if (node.tagName === 'ellipse') {
+        nodeX = parseFloat(node.getAttribute("cx"));
+        nodeY = parseFloat(node.getAttribute("cy"));
+    } else if (node.tagName === 'polygon') {
+        // Calculate polygon centroid
+        let points = node.getAttribute("points").split(' ').map(point => {
+            let [px, py] = point.split(',');
+            return { x: parseFloat(px), y: parseFloat(py) };
+        });
+        let centroid = calculatePolygonCentroid(points);
+
+        nodeX = centroid.x;
+        nodeY = centroid.y;
+    } else if (node.tagName === 'rect') {
+        nodeX = parseFloat(node.getAttribute("x")) + parseFloat(node.getAttribute("width")) / 2;
+        nodeY = parseFloat(node.getAttribute("y")) + parseFloat(node.getAttribute("height")) / 2;
+    }
+    return [nodeX, nodeY];
 }
 
 function calculatePolygonCentroid(points) {

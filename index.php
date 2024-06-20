@@ -14,18 +14,8 @@ include_once 'includes/header.php';
                         <div class="card">
                             <div class="card-body">
 
-                            <!-- Adjust Height Slider -->
-                            <div class="form-group row">
-
-                                <div class="col-sm-2">
-                                    <input type="range" class="form-range" id="heightSlider" min="100" max="1800" value="400">
-                                    <span id="heightValue">400px</span>
-                                </div>
-
-                            </div>
-
-                           <!-- Zoom Controls -->
-                           <div class="row mb-3">
+                            <!-- Zoom Controls -->
+                            <div class="row mb-3">
                                 <div class="col-sm-12 d-flex justify-content-between align-items-center">
                                     <div class="zoom-controls">
                                         <button class="btn btn-primary me-2" onclick="zoomIn()">Zoom In</button>
@@ -34,10 +24,7 @@ include_once 'includes/header.php';
                                     </div>
 
                                     <button class="btn btn-sm btn-outline-dark" onclick="downloadProject()">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-1" viewBox="0 0 16 16">
-                                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
-                                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
-                                        </svg>
+                                    <i class="fa-solid fa-file-arrow-down"></i>
                                         Download
                                     </button>
                                 </div>
@@ -77,20 +64,6 @@ include_once 'includes/header.php';
                                     }
                                 </style>
                                 <!-- End of chart -->
-
-                                <script>
-                                    // JavaScript to handle card heigh via slider
-                                    const svgContainer = document.getElementById('svgContainer');
-                                    const heightSlider = document.getElementById('heightSlider');
-                                    const heightValue = document.getElementById('heightValue');
-
-                                    heightSlider.addEventListener('input', function() {
-                                        const newHeight = `${this.value}px`;
-                                        svgContainer.style.height = newHeight;
-                                        heightValue.textContent = newHeight;
-                                    });
-                                </script>
-
                                 <script>
                                     // JavaScript to handle zooming of the SVG
                                     let scale = 1; // Initial scale factor
@@ -115,9 +88,6 @@ include_once 'includes/header.php';
                                         svg.style.transform = `scale(${scale})`;
                                     }
                                 </script>
-
-
-
                             </div>
                         </div>
                         <hr>
