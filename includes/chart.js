@@ -192,27 +192,6 @@ function addNodesAndLinks(rowValues) {
             // Append the new node to the nodes group
             nodesGroup.appendChild(newNode);
 
-
-            // Add click event to display the clicked node
-            newNode.addEventListener('click', function () {
-                // Update clicked node text content
-                document.getElementById("clicked-node").textContent = "Clicked Node: " + `${row[0]}_${template_node.id}`;
-
-                // Get the current stroke color
-                let currentStrokeColor = newNode.getAttribute("stroke");
-
-                // Toggle stroke color
-                if (currentStrokeColor !== "green") {
-                    // Change stroke color to light green
-                    newNode.setAttribute("stroke", "green");
-                } else {
-                    // Restore the original stroke color (assuming it was lightgray initially)
-                    newNode.setAttribute("stroke", "lightgray");
-                }
-            });
-
-
-
             // Add text to the node
             var textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
             var textX = x, textY = y;
