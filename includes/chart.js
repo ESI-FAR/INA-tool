@@ -189,6 +189,14 @@ function addNodesAndLinks(rowValues) {
             newNode.setAttribute("stroke-width", "2");
             newNode.setAttribute("id", `${row[0]}_${template_node.id}`);
 
+            // Add event listener for right-click context menu
+            newNode.addEventListener('contextmenu', function (event) {
+                event.preventDefault();
+                showContextMenu(event, newNode);
+            });
+
+
+
             // Append the new node to the nodes group
             nodesGroup.appendChild(newNode);
 
@@ -405,4 +413,50 @@ function getTransform(node) {
         }
     }
     return { translateX: 0, translateY: 0 };
+}
+
+function showContextMenu(event, node) {
+    // Create or get the context menu
+    let contextMenu = document.getElementById('contextMenu');
+    if (!contextMenu) {
+        contextMenu = document.createElement('div');
+        contextMenu.id = 'contextMenu';
+        contextMenu.className = 'dropdown-menu';
+        document.body.appendChild(contextMenu);
+    }
+
+    // Set the position and show the menu
+    contextMenu.style.left = `${event.pageX}px`;
+    contextMenu.style.top = `${event.pageY}px`;
+    contextMenu.style.display = 'block';
+    contextMenu.classList.add('show');
+
+    // Add options to the context menu
+    contextMenu.innerHTML = `
+        <a class="dropdown-item" href="#" id="drawConnection">Draw Connection</a>
+        <a class="dropdown-item" href="#" id="deleteConnection">Delete Connection</a>
+    `;
+
+    // Handle menu option clicks
+    document.getElementById('drawConnection').onclick = function () {
+        contextMenu.style.display = 'none';
+        contextMenu.classList.remove('show');
+        // Implement the logic to draw a connection
+        console.log('Draw Connection clicked for node', node.id);
+    };
+    document.getElementById('deleteConnection').onclick = function () {
+        contextMenu.style.display = 'none';
+        contextMenu.classList.remove('show');
+        // Implement the logic to delete a connection
+        console.log('Delete Connection clicked for node', node.id);
+    };
+
+    // Hide the context menu when clicking outside
+    window.addEventListener('click', function hideContextMenu(event) {
+        if (event.target !== contextMenu && !contextMenu.contains(event.target)) {
+            contextMenu.style.display = 'none';
+            contextMenu.classList.remove('show');
+            window.removeEventListener('click', hideContextMenu);
+        }
+    });
 }
