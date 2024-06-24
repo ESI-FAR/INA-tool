@@ -27,7 +27,6 @@ const row_template = {
         {
             id: 1,
             x: 0, y: 0,
-            color: '#ffc70f',
             shape: 'polygon',
             type: 'activationCondition',
             points: [[60,120], [18,60], [60,0], [180,0], [222,60], [180,120]],
@@ -35,7 +34,6 @@ const row_template = {
         {
             id: 2,
             x: 120*2.3, y: 30,
-            color: '#0fafff',
             shape: 'circle',
             type: 'attribute',
             radiusX: 48 * 2,  // Adjusted radiusX for 2 times bigger
@@ -44,7 +42,6 @@ const row_template = {
         {
             id: 3,
             x: 240*1.7, y: -30,
-            color: '#ffc70f',
             shape: 'rect',
             type: 'aim',
             width: 100 * 2,   // Adjusted width for 2 times bigger
@@ -53,7 +50,6 @@ const row_template = {
         {
             id: 4,
             x: 420*1.5, y: -30,
-            color: '#0fafff',
             shape: 'rect',
             type: 'directObject',
             width: 110 * 2,   // Adjusted width for 2 times bigger
@@ -64,7 +60,6 @@ const row_template = {
         {
             id: 5,
             x: 240*1.65, y: 120,
-            color: '#0fafff',
             shape: 'rect',
             type: 'executionConstraint',
             width: 110 * 2,   // Adjusted width for 2 times bigger
@@ -75,7 +70,6 @@ const row_template = {
         {
             id: 6,
             x: 420*1.5, y: 120,
-            color: '#0fafff',
             shape: 'rect',
             type: 'indirectObject',
             width: 110 * 2,   // Adjusted width for 2 times bigger
