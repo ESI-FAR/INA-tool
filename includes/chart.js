@@ -132,6 +132,10 @@ function addNodesAndLinks(rowValues) {
 
         // Create a group for the row
         let rowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+        // Add id to enable dragging of connected lines further
+        rowGroup.setAttribute("group_id", rowIndex);
+
         svg.appendChild(rowGroup);
 
         // Create groups for nodes and edges within the row group
@@ -306,6 +310,17 @@ function addNodesAndLinks(rowValues) {
             let dy = event.clientY - startY;
 
             rowGroup.setAttribute('transform', `translate(${startTransform.translateX + dx}, ${startTransform.translateY + dy})`);
+
+
+            // Get the row number of the dragged group --------------------------------------------------
+
+            // Identify all the added connections that belong to the group_id
+
+            // update the current position of the line adding the dx and dy resulting from the translate function of the node.
+
+            console.log(rowGroup);
+
+
         });
 
         window.addEventListener('mouseup', function (event) {
@@ -415,6 +430,8 @@ function getTransform(node) {
     return { translateX: 0, translateY: 0 };
 }
 
+
+
 function showContextMenu(event, node) {
     // Create or get the context menu
     let contextMenu = document.getElementById('contextMenu');
@@ -441,9 +458,12 @@ function showContextMenu(event, node) {
     document.getElementById('drawConnection').onclick = function () {
         contextMenu.style.display = 'none';
         contextMenu.classList.remove('show');
-        // Implement the logic to draw a connection
+        // Start the drawing process
+        isDrawingConnection = true;
+        startShapeId = node.id;
         console.log('Draw Connection clicked for node', node.id);
     };
+
     document.getElementById('deleteConnection').onclick = function () {
         contextMenu.style.display = 'none';
         contextMenu.classList.remove('show');
@@ -460,3 +480,102 @@ function showContextMenu(event, node) {
         }
     });
 }
+
+let isDrawingConnection = false;
+let startShapeId = null;
+
+// ShowContextMenu function to initiate the drawing process
+function showContextMenu(event, node) {
+    // Create or get the context menu
+    let contextMenu = document.getElementById('contextMenu');
+    if (!contextMenu) {
+        contextMenu = document.createElement('div');
+        contextMenu.id = 'contextMenu';
+        contextMenu.className = 'dropdown-menu';
+        document.body.appendChild(contextMenu);
+    }
+
+    // Set the position and show the menu
+    contextMenu.style.left = `${event.pageX}px`;
+    contextMenu.style.top = `${event.pageY}px`;
+    contextMenu.style.display = 'block';
+    contextMenu.classList.add('show');
+
+    // Add options to the context menu
+    contextMenu.innerHTML = `
+        <a class="dropdown-item" href="#" id="drawConnection">Draw Connection</a>
+        <a class="dropdown-item" href="#" id="deleteConnection">Delete Connection</a>
+    `;
+
+    // Handle menu option clicks
+    document.getElementById('drawConnection').onclick = function () {
+        contextMenu.style.display = 'none';
+        contextMenu.classList.remove('show');
+        // Start the drawing process
+        isDrawingConnection = true;
+        startShapeId = node.id;
+        console.log('Draw Connection clicked for node', node.id);
+    };
+
+    document.getElementById('deleteConnection').onclick = function () {
+        contextMenu.style.display = 'none';
+        contextMenu.classList.remove('show');
+        // Implement the logic to delete a connection
+        console.log('Delete Connection clicked for node', node.id);
+    };
+
+    // Hide the context menu when clicking outside
+    window.addEventListener('click', function hideContextMenu(event) {
+        if (event.target !== contextMenu && !contextMenu.contains(event.target)) {
+            contextMenu.style.display = 'none';
+            contextMenu.classList.remove('show');
+            window.removeEventListener('click', hideContextMenu);
+        }
+    });
+}
+
+// Add event listener for double-click to select the destination node and draw the line
+document.addEventListener('dblclick', function(event) {
+    if (isDrawingConnection) {
+        let destinationNode = event.target;
+        let destinationId = destinationNode.id;
+
+        if (destinationNode.tagName === 'ellipse' || destinationNode.tagName === 'polygon' || destinationNode.tagName === 'rect') {
+            console.log('Selected destination node:', destinationId);
+
+            let startNode = document.getElementById(startShapeId);
+            let [startX, startY] = determineCenter(startNode);
+            let [endX, endY] = determineCenter(destinationNode);
+
+            // Create a line element and append it to the SVG
+            let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("stroke", "gray");
+            line.setAttribute("stroke-width", "2");
+            line.setAttribute("x1", startX);
+            line.setAttribute("y1", startY);
+            line.setAttribute("x2", endX);
+            line.setAttribute("y2", endY);
+
+            // Add custom attributes for initial and destination shape IDs and line unique ID
+            line.setAttribute("data-start-shape-id", startShapeId);
+            line.setAttribute("data-end-shape-id", destinationId);
+            line.setAttribute("id", "connector_" + startShapeId + "-" + destinationId);
+
+            // Append the line to the edges group or svg container
+            let svgContainer = document.getElementById("svgContainer");
+            let svg = svgContainer.querySelector("svg");
+            svg.appendChild(line);
+
+            // Reset the drawing state
+            isDrawingConnection = false;
+            startShapeId = null;
+        }
+    }
+});
+
+
+
+
+
+
+
