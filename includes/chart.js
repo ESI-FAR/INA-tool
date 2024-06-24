@@ -339,11 +339,8 @@ function updateEdges(rowObj, edgesGroup) {
 
         // Add deontic text between second and third nodes
         if (link.source === 2 && link.target === 3) {
-
-            // Access the 4th value (index 3) from rowValues
-            let deonticValue = rowObj.deontic;
-
             // Check if deonticValue is not empty
+            let deonticValue = rowObj.deontic;
             if (deonticValue !== "") {
 
                 let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text"); // Create a new SVG text element
