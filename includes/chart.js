@@ -30,7 +30,7 @@ const row_template = {
             color: '#ffc70f',
             shape: 'polygon',
             type: 'activationCondition',
-            points: '60,120 18,60 60,0 180,0 222,60 180,120',  // Adjusted points for 2 times bigger
+            points: [[60,120], [18,60], [60,0], [180,0], [222,60], [180,120]],
         },
         {
             id: 2,
@@ -155,11 +155,9 @@ function addNodesAndLinks(rowValues) {
                 // Create a polygon for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
                 // Adjust points based on row position
-                let points = template_node.points.split(' ').map(point => {
-                    let [px, py] = point.split(',');
-                    px = parseInt(px) + nodeX;
-                    py = parseInt(py) + nodeY;
-                    return `${px-70},${py-30}`;
+                let points = template_node.points.map(point => {
+                    let [px, py] = point;
+                    return `${px + nodeX - 70},${py + nodeY - 30}`;
                 }).join(' ');
                 newNode.setAttribute("points", points);
             } else if (template_node.shape === 'circle') {
@@ -211,9 +209,9 @@ function addNodesAndLinks(rowValues) {
             // Adjust text position for polygons and rectangles
             if (template_node.shape === 'polygon') {
                 // Calculate polygon center as average of vertex coordinates
-                let points = template_node.points.split(' ').map(point => {
-                    let [px, py] = point.split(',');
-                    return { x: parseFloat(px) + nodeX, y: parseFloat(py) + nodeY };
+                let points = template_node.points.map(point => {
+                    let [px, py] = point;
+                    return { x: px + nodeX, y: py + nodeY };
                 });
 
                 let totalX = 0, totalY = 0;
