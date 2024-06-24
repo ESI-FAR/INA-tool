@@ -275,7 +275,7 @@ function addNodesAndLinks(rowValues) {
         });
 
         // Add edges to the edges group after nodes
-        updateEdges(row[0], edgesGroup); // Pass edgesGroup instead of rowGroup
+        updateEdges(rowObj, edgesGroup);
 
         // Enable dragging of the entire row group
         let isDragging = false;
@@ -308,7 +308,8 @@ function addNodesAndLinks(rowValues) {
     });
 }
 
-function updateEdges(rowID, edgesGroup) {
+function updateEdges(rowObj, edgesGroup) {
+    let rowID = rowObj.id;
     row_template.links.forEach(function (link) {
         let sourceNode = document.getElementById(`${rowID}_${link.source}`);
         let targetNode = document.getElementById(`${rowID}_${link.target}`);
@@ -336,39 +337,33 @@ function updateEdges(rowID, edgesGroup) {
         // Append the line to the edges group
         edgesGroup.appendChild(line);
 
-
-
         // Add deontic text between second and third nodes
         if (link.source === 2 && link.target === 3) {
 
-            // Ensure rowValues and the specific rowID entry are defined
-            if (rowValues[rowID] && rowValues[rowID].length > 3) {
-                // Access the 4th value (index 3) from rowValues
-                let deonticValue = rowValues[rowID][3];
+            // Access the 4th value (index 3) from rowValues
+            let deonticValue = rowObj.deontic;
 
-                // Check if deonticValue is not empty
-                if (deonticValue !== "") {
+            // Check if deonticValue is not empty
+            if (deonticValue !== "") {
 
-                    let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text"); // Create a new SVG text element
+                let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text"); // Create a new SVG text element
 
-                    // Calculate the midpoint of the line connecting source and target nodes
-                    let midX = (sourceX + targetX) / 2;
-                    let midY = (sourceY + targetY) / 2 - 6; // Slightly adjust the y-position to avoid overlap
+                // Calculate the midpoint of the line connecting source and target nodes
+                let midX = (sourceX + targetX) / 2;
+                let midY = (sourceY + targetY) / 2 - 6; // Slightly adjust the y-position to avoid overlap
 
-                    // Set attributes for the text element
-                    textElement.setAttribute("x", midX);  // Set the x-coordinate to the midpoint
-                    textElement.setAttribute("y", midY);  // Set the y-coordinate to the midpoint
-                    textElement.setAttribute("fill", "gray");  // Set the text color to gray
-                    textElement.setAttribute("font-size", "12px");  // Set the font size
-                    textElement.setAttribute("font-weight", "bold");  // Set the font weight to bold
-                    textElement.setAttribute("text-anchor", "middle");  // Center the text horizontally
-                    textElement.setAttribute("alignment-baseline", "middle");  // Center the text vertically
-                    textElement.textContent = deonticValue;  // Set Text
+                // Set attributes for the text element
+                textElement.setAttribute("x", midX);  // Set the x-coordinate to the midpoint
+                textElement.setAttribute("y", midY);  // Set the y-coordinate to the midpoint
+                textElement.setAttribute("fill", "gray");  // Set the text color to gray
+                textElement.setAttribute("font-size", "12px");  // Set the font size
+                textElement.setAttribute("font-weight", "bold");  // Set the font weight to bold
+                textElement.setAttribute("text-anchor", "middle");  // Center the text horizontally
+                textElement.setAttribute("alignment-baseline", "middle");  // Center the text vertically
+                textElement.textContent = deonticValue;  // Set Text
 
-                    // Append the text element to the edges group in the SVG
-                    edgesGroup.appendChild(textElement);
-                }
-
+                // Append the text element to the edges group in the SVG
+                edgesGroup.appendChild(textElement);
             }
         }
 
