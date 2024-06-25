@@ -262,32 +262,32 @@ function setTextWithLineWrap(textContent, textX, textY, textElement) {
 
     let words = textContent.split(' ');
     let line = '';
-    let lineNumber = 0;
     const lineHeight = 10;
     const maxLineLength = 25; // Maximum characters per line
+    let lines = [];
 
     words.forEach(word => {
         let testLine = line + word + ' ';
         if (testLine.length > maxLineLength) {
-            // Create tspan for current line
-            let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-            tspan.setAttribute("x", textX);
-            tspan.setAttribute("y", textY + lineHeight * lineNumber);
-            tspan.textContent = line;
-            textElement.appendChild(tspan);
+            lines.push(line);
             line = word + ' ';
-            lineNumber++;
         } else {
             line = testLine;
         }
     });
+    lines.push(line);  // Ensure last line is added too
 
-    // Add the last line
-    let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-    tspan.setAttribute("x", textX);
-    tspan.setAttribute("y", textY + lineHeight * lineNumber);
-    tspan.textContent = line;
-    textElement.appendChild(tspan);
+    // Each line moves up by half the number of lines, adjusted for adding lineHeight
+    const lineOffset = lines.length/2 - 1;
+    lines.forEach(function (line, lineNumber) {
+        // Create tspan for each line
+        let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspan.setAttribute("x", textX);
+        tspan.setAttribute("y", textY + lineHeight * (lineNumber - lineOffset));
+        tspan.textContent = line;
+        textElement.appendChild(tspan);
+    })
+
 }
 
 function updateEdges(rowObj, edgesGroup) {
