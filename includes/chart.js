@@ -213,40 +213,8 @@ function addNodesAndLinks(rowValues) {
             textElement.setAttribute("text-anchor", "middle");
             textElement.setAttribute("alignment-baseline", "middle");
 
-            // Wrap text if longer than 20 characters
-            if (textContent.length > 20) {
-                let words = textContent.split(' ');
-                let line = '';
-                let lineNumber = 0;
-                let lineHeight = 10; // Adjust as needed
-                let maxLineLength = 25; // Maximum characters per line
-
-                words.forEach(function (word, index) {
-                    let testLine = line + word + ' ';
-                    if (testLine.length > maxLineLength) {
-                        // Create tspan for current line
-                        let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-                        tspan.setAttribute("x", textX);
-                        tspan.setAttribute("y", textY + lineHeight * lineNumber);
-                        tspan.textContent = line;
-                        textElement.appendChild(tspan);
-                        line = word + ' ';
-                        lineNumber++;
-                    } else {
-                        line = testLine;
-                    }
-                });
-
-                // Add the last line
-                let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-                tspan.setAttribute("x", textX);
-                tspan.setAttribute("y", textY + lineHeight * lineNumber);
-                tspan.textContent = line;
-                textElement.appendChild(tspan);
-            } else {
-                // If text is short, just add it as a single tspan
-                textElement.textContent = textContent;
-            }
+            // Wrap text if too long
+            setTextWithLineWrap(textContent, textX, textY, textElement);
 
             nodesGroup.appendChild(textElement);
         });
@@ -283,6 +251,43 @@ function addNodesAndLinks(rowValues) {
             }
         });
     });
+}
+
+function setTextWithLineWrap(textContent, textX, textY, textElement) {
+    if (textContent.length <= 20) {
+        // If text is short, just add it as a single tspan
+        textElement.textContent = textContent;
+        return;
+    }
+
+    let words = textContent.split(' ');
+    let line = '';
+    let lineNumber = 0;
+    const lineHeight = 10;
+    const maxLineLength = 25; // Maximum characters per line
+
+    words.forEach(word => {
+        let testLine = line + word + ' ';
+        if (testLine.length > maxLineLength) {
+            // Create tspan for current line
+            let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+            tspan.setAttribute("x", textX);
+            tspan.setAttribute("y", textY + lineHeight * lineNumber);
+            tspan.textContent = line;
+            textElement.appendChild(tspan);
+            line = word + ' ';
+            lineNumber++;
+        } else {
+            line = testLine;
+        }
+    });
+
+    // Add the last line
+    let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+    tspan.setAttribute("x", textX);
+    tspan.setAttribute("y", textY + lineHeight * lineNumber);
+    tspan.textContent = line;
+    textElement.appendChild(tspan);
 }
 
 function updateEdges(rowObj, edgesGroup) {
