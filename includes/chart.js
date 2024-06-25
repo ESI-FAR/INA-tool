@@ -41,7 +41,7 @@ const row_template = {
         },
         {
             id: 3,
-            x: 240*1.7, y: -30,
+            x: 240*2, y: -30,
             shape: 'rect',
             type: 'aim',
             width: 100 * 2,   // Adjusted width for 2 times bigger
@@ -49,7 +49,7 @@ const row_template = {
         },
         {
             id: 4,
-            x: 420*1.5, y: -30,
+            x: 420*1.7, y: -30,
             shape: 'rect',
             type: 'directObject',
             width: 110 * 2,   // Adjusted width for 2 times bigger
@@ -59,7 +59,7 @@ const row_template = {
         },
         {
             id: 5,
-            x: 240*1.65, y: 120,
+            x: 240*1.95, y: 120,
             shape: 'rect',
             type: 'executionConstraint',
             width: 110 * 2,   // Adjusted width for 2 times bigger
@@ -69,7 +69,7 @@ const row_template = {
         },
         {
             id: 6,
-            x: 420*1.5, y: 120,
+            x: 420*1.7, y: 120,
             shape: 'rect',
             type: 'indirectObject',
             width: 110 * 2,   // Adjusted width for 2 times bigger
@@ -267,7 +267,7 @@ function addNodesAndLinks(rowValues) {
         });
 
         // Add edges to the edges group after nodes
-        updateEdges(row[0], edgesGroup); // Pass edgesGroup instead of rowGroup
+        updateEdges(rowObj, edgesGroup);
 
         // Enable dragging of the entire row group
         let isDragging = false;
@@ -300,7 +300,8 @@ function addNodesAndLinks(rowValues) {
     });
 }
 
-function updateEdges(rowID, edgesGroup) {
+function updateEdges(rowObj, edgesGroup) {
+    let rowID = rowObj.id;
     row_template.links.forEach(function (link) {
         let sourceNode = document.getElementById(`${rowID}_${link.source}`);
         let targetNode = document.getElementById(`${rowID}_${link.target}`);
@@ -327,6 +328,35 @@ function updateEdges(rowID, edgesGroup) {
 
         // Append the line to the edges group
         edgesGroup.appendChild(line);
+
+        // Add deontic text between second and third nodes
+        if (link.source === 2 && link.target === 3) {
+            // Check if deonticValue is not empty
+            let deonticValue = rowObj.deontic;
+            if (deonticValue !== "") {
+
+                let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text"); // Create a new SVG text element
+
+                // Calculate the midpoint of the line connecting source and target nodes
+                let midX = (sourceX + targetX) / 2;
+                let midY = (sourceY + targetY) / 2 - 6; // Slightly adjust the y-position to avoid overlap
+
+                // Set attributes for the text element
+                textElement.setAttribute("x", midX);  // Set the x-coordinate to the midpoint
+                textElement.setAttribute("y", midY);  // Set the y-coordinate to the midpoint
+                textElement.setAttribute("fill", "gray");  // Set the text color to gray
+                textElement.setAttribute("font-size", "12px");  // Set the font size
+                textElement.setAttribute("font-weight", "bold");  // Set the font weight to bold
+                textElement.setAttribute("text-anchor", "middle");  // Center the text horizontally
+                textElement.setAttribute("alignment-baseline", "middle");  // Center the text vertically
+                textElement.textContent = deonticValue;  // Set Text
+
+                // Append the text element to the edges group in the SVG
+                edgesGroup.appendChild(textElement);
+            }
+        }
+
+
 
         // Find the first shape node within the current row group
         let rowGroup = edgesGroup.parentNode; // Get the row group containing edges and nodes
