@@ -134,7 +134,7 @@ function addNodesAndLinks(rowValues) {
         let rowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
         // Add id to enable dragging of connected lines further
-        rowGroup.setAttribute("group_id", rowIndex);
+        rowGroup.setAttribute("id", rowIndex);
 
         svg.appendChild(rowGroup);
 
@@ -309,16 +309,44 @@ function addNodesAndLinks(rowValues) {
             let dx = event.clientX - startX;
             let dy = event.clientY - startY;
 
+           // Move the dragged group
             rowGroup.setAttribute('transform', `translate(${startTransform.translateX + dx}, ${startTransform.translateY + dy})`);
 
+            // Get the row number of the dragged group
+            let rowNumber = rowGroup.id;
 
-            // Get the row number of the dragged group --------------------------------------------------
+            // Select all <line> elements with the attributes data-start-row-id and data-end-row-id
+            let lines = document.querySelectorAll('line[data-start-row-id][data-end-row-id]');
 
-            // Identify all the added connections that belong to the group_id
+            lines.forEach(line => {
+                let startShape = line.getAttribute('data-start-row-id');
+                let endShape = line.getAttribute('data-end-row-id');
 
-            // update the current position of the line adding the dx and dy resulting from the translate function of the node.
+                // Extract the row number from the start and end shape ids
+                let startRow = startShape.split('_')[0];
+                let endRow = endShape.split('_')[0];
 
-            console.log(rowGroup);
+
+
+                // Check if the given row number matches the line start point
+                if (startRow == rowNumber) {
+
+                    // Translate line: add dx to x1 and dy to y1
+
+                    // TO BE COMPLETED //
+
+
+
+                }
+
+                // Check if the given row number matches the line end point
+                if (endRow == rowNumber) {
+                   // Translate line: add dx to x2 and dy to y2
+
+                   // TO BE COMPLETED //
+
+                }
+            });
 
 
         });
@@ -538,10 +566,10 @@ function showContextMenu(event, node) {
 document.addEventListener('dblclick', function(event) {
     if (isDrawingConnection) {
         let destinationNode = event.target;
-        let destinationId = destinationNode.id;
+        let destinationShapeId = destinationNode.id;
 
         if (destinationNode.tagName === 'ellipse' || destinationNode.tagName === 'polygon' || destinationNode.tagName === 'rect') {
-            console.log('Selected destination node:', destinationId);
+            console.log('Selected destination node:', destinationShapeId);
 
             let startNode = document.getElementById(startShapeId);
             let [startX, startY] = determineCenter(startNode);
@@ -556,10 +584,26 @@ document.addEventListener('dblclick', function(event) {
             line.setAttribute("x2", endX);
             line.setAttribute("y2", endY);
 
-            // Add custom attributes for initial and destination shape IDs and line unique ID
-            line.setAttribute("data-start-shape-id", startShapeId);
-            line.setAttribute("data-end-shape-id", destinationId);
-            line.setAttribute("id", "connector_" + startShapeId + "-" + destinationId);
+            // Convert startShapeId and destinationShapeId to numbers
+            let startRowIdNum = parseInt(startShapeId, 10);
+            let destinationRowIdNum = parseInt(destinationShapeId, 10);
+
+            // Check if the conversion was successful
+            if (!isNaN(startRowIdNum) && !isNaN(destinationRowIdNum)) {
+                startRowIdNum -= 1;
+                destinationRowIdNum -= 1;
+            } else {
+                console.error("Invalid startShapeId or destinationShapeId");
+            }
+
+            // Set the attributes with the updated values
+            line.setAttribute("data-start-row-id", startRowIdNum);
+            line.setAttribute("data-end-row-id", destinationRowIdNum);
+            line.setAttribute("id", "connector_" + startRowIdNum + "-" + destinationRowIdNum);
+            line.setAttribute("start-shape-id_", startShapeId);
+            line.setAttribute("end-shape-id_", destinationShapeId);
+
+
 
             // Append the line to the edges group or svg container
             let svgContainer = document.getElementById("svgContainer");
