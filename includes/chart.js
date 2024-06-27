@@ -87,8 +87,7 @@ const row_template = {
     ],
 };
 
-
-const colors = { formal: '#5896E8', informal: '#EDBA2F' }
+const colors = { formal: '#009DDD', informal: '#FFB213' }
 
 const rowAttributes = [
     "id",
