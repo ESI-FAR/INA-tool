@@ -513,7 +513,7 @@ function showContextMenu(event, node) {
 }
 
 // Add event listener for double-click to select the destination node and draw the line
-document.addEventListener('dblclick', function(event) {
+document.addEventListener('click', function(event) {
     if (isDrawingConnection) {
         let destinationNode = event.target;
         let destinationShapeId = destinationNode.id;
@@ -527,8 +527,8 @@ document.addEventListener('dblclick', function(event) {
 
             // Create a line element and append it to the SVG
             let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("stroke", "gray");
-            line.setAttribute("stroke-width", "2");
+            line.setAttribute("stroke", "green");
+            line.setAttribute("stroke-width", "5");
             line.setAttribute("x1", startX);
             line.setAttribute("y1", startY);
             line.setAttribute("x2", endX);
@@ -553,8 +553,6 @@ document.addEventListener('dblclick', function(event) {
             line.setAttribute("start-shape-id_", startShapeId);
             line.setAttribute("end-shape-id_", destinationShapeId);
 
-
-
             // Append the line to the edges group or svg container
             let svgContainer = document.getElementById("svgContainer");
             let svg = svgContainer.querySelector("svg");
@@ -566,10 +564,3 @@ document.addEventListener('dblclick', function(event) {
         }
     }
 });
-
-
-
-
-
-
-
