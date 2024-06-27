@@ -141,8 +141,8 @@ function addNodesAndLinks(rowValues) {
         // Create groups for nodes and edges within the row group
         let nodesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         let edgesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        rowGroup.appendChild(nodesGroup); // Append nodes group first
-        rowGroup.appendChild(edgesGroup); // Append edges group second
+        rowGroup.appendChild(edgesGroup); // Append edges group first
+        rowGroup.appendChild(nodesGroup); // Append nodes group second
 
         // Add nodes to the nodes group
         row_template.nodes.forEach(function (template_node) {
@@ -287,7 +287,7 @@ function addNodesAndLinks(rowValues) {
         });
 
         // Add edges to the edges group after nodes
-        updateEdges(row[0], edgesGroup); // Pass edgesGroup instead of rowGroup
+        updateEdges(row[0], edgesGroup);
 
         // Enable dragging of the entire row group
         let isDragging = false;
@@ -385,18 +385,6 @@ function updateEdges(rowID, edgesGroup) {
 
         // Append the line to the edges group
         edgesGroup.appendChild(line);
-
-        // Find the first shape node within the current row group
-        let rowGroup = edgesGroup.parentNode; // Get the row group containing edges and nodes
-        let firstShape = rowGroup.querySelector("ellipse, polygon, rect");
-
-        // Insert the line before the first shape node in the current row group
-        if (firstShape) {
-            firstShape.parentNode.insertBefore(line, firstShape);
-        } else {
-            // If no shape is found, append the line to the end of the edges group
-            edgesGroup.appendChild(line);
-        }
     });
 }
 
