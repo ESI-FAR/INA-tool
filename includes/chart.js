@@ -227,6 +227,7 @@ function addNodesAndLinks(rowValues) {
             textElement.setAttribute("font-size", "10px");
             textElement.setAttribute("text-anchor", "middle");
             textElement.setAttribute("alignment-baseline", "middle");
+            textElement.setAttribute("style", "user-select: none;");
 
             // Wrap text if longer than 20 characters
             if (textContent.length > 20) {
@@ -349,6 +350,7 @@ function updateEdges(rowObj, edgesGroup) {
                 textElement.setAttribute("font-weight", "bold");  // Set the font weight to bold
                 textElement.setAttribute("text-anchor", "middle");  // Center the text horizontally
                 textElement.setAttribute("alignment-baseline", "middle");  // Center the text vertically
+                textElement.setAttribute("style", "user-select: none;");
                 textElement.textContent = deonticValue;  // Set Text
 
                 // Append the text element to the edges group in the SVG
