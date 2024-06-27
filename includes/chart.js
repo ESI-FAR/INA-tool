@@ -114,6 +114,9 @@ const rowAttributes = [
 function addNodesAndLinks(rowValues) {
     let svgContainer = document.getElementById("svgContainer");
     let svg = svgContainer.querySelector("svg");
+    let connectionGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    connectionGroup.setAttribute('id', 'connectionGroup');
+    svg.appendChild(connectionGroup); // All inter-staement connections must render behind statements
 
     const rowHeight = 300;
     const startDrawingAt = { x: 75, y: 30 };
@@ -541,9 +544,7 @@ document.addEventListener('click', function(event) {
             line.setAttribute("end-shape-id_", destinationShapeId);
 
             // Append the line to the edges group or svg container
-            let svgContainer = document.getElementById("svgContainer");
-            let svg = svgContainer.querySelector("svg");
-            svg.appendChild(line);
+            connectionGroup.appendChild(line);
 
             // Reset the drawing state
             isDrawingConnection = false;
