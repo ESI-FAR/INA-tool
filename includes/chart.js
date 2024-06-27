@@ -309,9 +309,8 @@ function addNodesAndLinks(rowValues) {
             let dx = event.clientX - startX;
             let dy = event.clientY - startY;
 
-           // Move the dragged group
+            // Move the dragged group
             rowGroup.setAttribute('transform', `translate(${startTransform.translateX + dx}, ${startTransform.translateY + dy})`);
-
             // Get the row number of the dragged group
             let rowNumber = rowGroup.id;
 
@@ -447,7 +446,7 @@ function calculatePolygonCentroid(points) {
 function getTransform(node) {
     let transform = node.getAttribute('transform');
     if (transform) {
-        let translateMatch = transform.match(/translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/);
+        let translateMatch = transform.match(/translate\(\s*([^\s,)]+), ([^\s,)]+)/);
         if (translateMatch) {
             return {
                 translateX: parseFloat(translateMatch[1]),
