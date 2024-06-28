@@ -138,6 +138,8 @@ function addNodesAndLinks(rowValues) {
 
         // Add id to enable dragging of connected lines further
         rowGroup.setAttribute("id", rowIndex);
+        // Initialize empty transform for detection by getParentTransform
+        rowGroup.setAttribute("transform", "translate(0, 0)")
 
         svg.appendChild(rowGroup);
 
@@ -502,6 +504,15 @@ function showContextMenu(event, node) {
     });
 }
 
+// Report the transform attribute of the first parent to have one
+function getParentTransform(node) {
+    while (!node.getAttribute('transform')) {
+        node = node.parentNode;
+    }
+    return getTransform(node);
+}
+
+
 // Add event listener for double-click to select the destination node and draw the line
 document.addEventListener('click', function(event) {
     if (isDrawingConnection) {
@@ -513,16 +524,18 @@ document.addEventListener('click', function(event) {
 
             let startNode = document.getElementById(startShapeId);
             let [startX, startY] = determineCenter(startNode);
+            let startTransform = getParentTransform(startNode);
             let [endX, endY] = determineCenter(destinationNode);
+            let destinationTransform = getParentTransform(destinationNode);
 
             // Create a line element and append it to the SVG
             let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
             line.setAttribute("stroke", "green");
             line.setAttribute("stroke-width", "5");
-            line.setAttribute("x1", startX);
-            line.setAttribute("y1", startY);
-            line.setAttribute("x2", endX);
-            line.setAttribute("y2", endY);
+            line.setAttribute("x1", startX + startTransform.translateX);
+            line.setAttribute("y1", startY + startTransform.translateY);
+            line.setAttribute("x2", endX + destinationTransform.translateX);
+            line.setAttribute("y2", endY + destinationTransform.translateY);
 
             // Convert startShapeId and destinationShapeId to numbers
             let startRowIdNum = parseInt(startShapeId, 10);
