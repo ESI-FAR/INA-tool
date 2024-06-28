@@ -30,6 +30,7 @@ const row_template = {
             shape: 'polygon',
             type: 'activationCondition',
             points: [[60,120], [18,60], [60,0], [180,0], [222,60], [180,120]],
+            centroid: {x: 120, y: 60},
         },
         {
             id: 2,
@@ -188,6 +189,7 @@ function addNodesAndLinks(rowValues) {
             let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
             let textX = nodeX, textY = nodeY;
 
+            // Adjust text position for polygons and rectangles
             if (template_node.shape === 'rect') {
                 if (template_node.rx && template_node.ry) {
                     // Calculate center position for rectangles with rounded corners
@@ -198,27 +200,10 @@ function addNodesAndLinks(rowValues) {
                     textX += template_node.width / 2;
                     textY += template_node.height / 2;
                 }
-            }
-
-            // Adjust text position for polygons and rectangles
-            if (template_node.shape === 'polygon') {
-                // Calculate polygon center as average of vertex coordinates
-                let points = template_node.points.map(point => {
-                    let [px, py] = point;
-                    return { x: px + nodeX, y: py + nodeY };
-                });
-
-                let totalX = 0, totalY = 0;
-                points.forEach(point => {
-                    totalX += point.x;
-                    totalY += point.y;
-                });
-
-                let centerX = totalX / points.length;
-                let centerY = totalY / points.length;
-
-                textX = centerX-70;
-                textY = centerY-30; // Adjust vertical position as needed
+            } else if (template_node.shape === 'polygon') {
+                // Calculate center position based on polygon centroid
+                textX += template_node.centroid.x - 70;
+                textY += template_node.centroid.y - 30;
             }
 
             textElement.setAttribute("x", textX);
@@ -228,40 +213,8 @@ function addNodesAndLinks(rowValues) {
             textElement.setAttribute("text-anchor", "middle");
             textElement.setAttribute("alignment-baseline", "middle");
 
-            // Wrap text if longer than 20 characters
-            if (textContent.length > 20) {
-                let words = textContent.split(' ');
-                let line = '';
-                let lineNumber = 0;
-                let lineHeight = 10; // Adjust as needed
-                let maxLineLength = 25; // Maximum characters per line
-
-                words.forEach(function (word, index) {
-                    let testLine = line + word + ' ';
-                    if (testLine.length > maxLineLength) {
-                        // Create tspan for current line
-                        let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-                        tspan.setAttribute("x", textX);
-                        tspan.setAttribute("y", textY + lineHeight * lineNumber);
-                        tspan.textContent = line;
-                        textElement.appendChild(tspan);
-                        line = word + ' ';
-                        lineNumber++;
-                    } else {
-                        line = testLine;
-                    }
-                });
-
-                // Add the last line
-                let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-                tspan.setAttribute("x", textX);
-                tspan.setAttribute("y", textY + lineHeight * lineNumber);
-                tspan.textContent = line;
-                textElement.appendChild(tspan);
-            } else {
-                // If text is short, just add it as a single tspan
-                textElement.textContent = textContent;
-            }
+            // Wrap text if too long
+            setTextWithLineWrap(textContent, textX, textY, textElement);
 
             nodesGroup.appendChild(textElement);
         });
@@ -298,6 +251,43 @@ function addNodesAndLinks(rowValues) {
             }
         });
     });
+}
+
+function setTextWithLineWrap(textContent, textX, textY, textElement) {
+    if (textContent.length <= 20) {
+        // If text is short, just add it as a single tspan
+        textElement.textContent = textContent;
+        return;
+    }
+
+    let words = textContent.split(' ');
+    let line = '';
+    const lineHeight = 10;
+    const maxLineLength = 25; // Maximum characters per line
+    let lines = [];
+
+    words.forEach(word => {
+        let testLine = line + word + ' ';
+        if (testLine.length > maxLineLength) {
+            lines.push(line);
+            line = word + ' ';
+        } else {
+            line = testLine;
+        }
+    });
+    lines.push(line);  // Ensure last line is added too
+
+    // Each line moves up by half the number of lines, adjusted for adding lineHeight
+    const lineOffset = lines.length/2 - 1;
+    lines.forEach(function (line, lineNumber) {
+        // Create tspan for each line
+        let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspan.setAttribute("x", textX);
+        tspan.setAttribute("y", textY + lineHeight * (lineNumber - lineOffset));
+        tspan.textContent = line;
+        textElement.appendChild(tspan);
+    })
+
 }
 
 function updateEdges(rowObj, edgesGroup) {
