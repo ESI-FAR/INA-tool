@@ -40,9 +40,72 @@ const expectedColumnNames = [
 // Initialise global variables to store row values
 var rowValues = [];
 
+// Check table and initialize session variable to handle file upload properly
+function checkPreviousSessions() {
+    // Get the table element by its ID
+    let table = document.getElementById('tableData');
+
+    // Check if the table element exists
+    if (!table) {
+        console.error('Table with id "tableData" not found.');
+        return;
+    }
+
+    // Get the tbody element, if it exists
+    let tbody = table.getElementsByTagName('tbody')[0];
+
+    // Check if the tbody exists and if it has rows
+    let isEmpty = !tbody || tbody.rows.length === 0;
+
+    // Output the result
+    if (isEmpty) {
+
+        sessionState = false;
+        return sessionState;
+    } else {
+
+        sessionState = true;
+        return sessionState;
+    }
+}
 
 // -- Open the user dialog to select a file onclick of the button on the left menu
 function openFileUpload() {
+
+    checkPreviousSessions();
+
+    if(sessionState === true){
+
+        var modalHtml = `
+            <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-exclamation-triangle"></i> Open session</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    <p>You have an open session. Destroy the session before uploading a new file. Your data will be lost.</p>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form method='post'>
+                        <input type='submit' class="btn btn-danger" name='destroy_session' value='Reset Session'>
+                    </form>
+
+                    </div>
+                </div>
+                </div>
+            </div>
+            `;
+
+    document.getElementById('upload_alert').innerHTML = modalHtml;
+
+    var dynamicModal = new bootstrap.Modal(document.getElementById('dynamicModal'));
+    dynamicModal.show();
+        return;
+    }
+
     // Trigger the click event of the hidden file input
     document.getElementById('fileInput').click();
 }
@@ -187,7 +250,8 @@ function storeDatainSession(columnsArray) {
             TableRows: rowValues
         },
         success: function (response) {
-            console.log('Session data stored successfullyy');
+            console.log('Session data stored successfully');
+            sessionState = true;
         },
         error: function (xhr, status, error) {
             console.error('Error storing session data:', error);

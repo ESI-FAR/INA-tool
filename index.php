@@ -32,6 +32,9 @@ include_once 'includes/header.php';
 
                             <hr>
 
+                            <!-- Uploader alert -->
+                            <div id="upload_alert"></div>
+
                             <!-- Spinner loader -->
                                 <div class="d-flex justify-content-center align-items-center" >
                                     <div class="spinner-border text-warning" id="loader" role="status" hidden>
