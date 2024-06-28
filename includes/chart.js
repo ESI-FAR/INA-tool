@@ -297,13 +297,24 @@ function addNodesAndLinks(rowValues) {
         // Enable dragging of the entire row group
         let isDragging = false;
         let startX, startY;
-        let startTransform;
+        let startTransform, connectionStartPositions;
 
         rowGroup.addEventListener('mousedown', function (event) {
             isDragging = true;
             startX = event.clientX;
             startY = event.clientY;
             startTransform = getTransform(rowGroup);
+
+            // Get the row number of the dragged group
+            let rowNumber = rowGroup.id;
+
+            // Select all <line> elements with the attributes data-start-row-id and data-end-row-id
+            let lines = document.querySelectorAll('line[data-start-row-id][data-end-row-id]');
+            connectionStartPositions = [];
+            lines.forEach(line => {
+                let connectionStartPosition = determineConnectionStartPosition(line, rowNumber);
+                if (connectionStartPosition) connectionStartPositions.push(connectionStartPosition);
+            });
 
             event.stopPropagation(); // Prevent nodes from receiving this event
         });
@@ -316,43 +327,9 @@ function addNodesAndLinks(rowValues) {
 
             // Move the dragged group
             rowGroup.setAttribute('transform', `translate(${startTransform.translateX + dx}, ${startTransform.translateY + dy})`);
-            // Get the row number of the dragged group
-            let rowNumber = rowGroup.id;
-
-            // Select all <line> elements with the attributes data-start-row-id and data-end-row-id
-            let lines = document.querySelectorAll('line[data-start-row-id][data-end-row-id]');
-
-            lines.forEach(line => {
-                let startShape = line.getAttribute('data-start-row-id');
-                let endShape = line.getAttribute('data-end-row-id');
-
-                // Extract the row number from the start and end shape ids
-                let startRow = startShape.split('_')[0];
-                let endRow = endShape.split('_')[0];
-
-
-
-                // Check if the given row number matches the line start point
-                if (startRow == rowNumber) {
-
-                    // Translate line: add dx to x1 and dy to y1
-
-                    // TO BE COMPLETED //
-
-
-
-                }
-
-                // Check if the given row number matches the line end point
-                if (endRow == rowNumber) {
-                   // Translate line: add dx to x2 and dy to y2
-
-                   // TO BE COMPLETED //
-
-                }
+            connectionStartPositions.forEach(connectionStartPosition => {
+                updateConnection(connectionStartPosition, dx, dy);
             });
-
-
         });
 
         window.addEventListener('mouseup', function (event) {
@@ -361,6 +338,44 @@ function addNodesAndLinks(rowValues) {
             }
         });
     });
+}
+
+function determineConnectionStartPosition(line, rowNumber) {
+    let lineID = line.getAttribute('id');
+    let startShape = line.getAttribute('data-start-row-id');
+    let endShape = line.getAttribute('data-end-row-id');
+    let connectionStartPosition;
+
+    // Extract the row number from the start and end shape ids
+    let startRow = startShape.split('_')[0];
+    let endRow = endShape.split('_')[0];
+
+    // Prepare line start or end point to be moved, depending on which statement is moved
+    if (startRow == rowNumber) {
+        connectionStartPosition = {
+            id: lineID,
+            num: 1,
+            x: parseFloat(line.getAttribute('x1')),
+            y: parseFloat(line.getAttribute('y1')),
+        };
+    } else if (endRow == rowNumber) {
+        // Translate line: add dx to x2 and dy to y2
+        connectionStartPosition = {
+            id: lineID,
+            num: 2,
+            x: parseFloat(line.getAttribute('x2')),
+            y: parseFloat(line.getAttribute('y2')),
+        };
+    } else {
+        return null;  // return 'null' if this connection is not associated with the statement being moved
+    }
+    return connectionStartPosition;
+}
+
+function updateConnection(connectionStartPosition, dx, dy) {
+    line = document.getElementById(connectionStartPosition.id);
+    line.setAttribute(`x${connectionStartPosition.num}`, connectionStartPosition.x + dx);
+    line.setAttribute(`y${connectionStartPosition.num}`, connectionStartPosition.y + dy);
 }
 
 function updateEdges(rowID, edgesGroup) {
