@@ -32,6 +32,9 @@ include_once 'includes/header.php';
 
                             <hr>
 
+                            <!-- Uploader alert -->
+                            <div id="upload_alert"></div>
+
                             <!-- Spinner loader -->
                                 <div class="d-flex justify-content-center align-items-center" >
                                     <div class="spinner-border text-warning" id="loader" role="status" hidden>
@@ -140,6 +143,14 @@ include_once 'includes/header.php';
                                             }
                                             echo "</tbody>";
                                             echo "</table>";
+
+                                            // Render also chart
+
+                                            echo "<script>document.getElementById('quoteBlock').hidden = true;</script>";
+                                            $rows_json = json_encode($_SESSION['Rows']);
+                                            echo "<script>addNodesAndLinks($rows_json)</script>";
+
+
                                         }
                                     } else {
                                         echo "<table id='tableData' class='display' style='width:100%'></table>";
@@ -148,7 +159,6 @@ include_once 'includes/header.php';
                                     ?>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </main>

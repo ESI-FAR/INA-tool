@@ -27,15 +27,14 @@ const row_template = {
         {
             id: 1,
             x: 0, y: 0,
-            color: '#ffc70f',
             shape: 'polygon',
             type: 'activationCondition',
-            points: '60,120 18,60 60,0 180,0 222,60 180,120',  // Adjusted points for 2 times bigger
+            points: [[60,120], [18,60], [60,0], [180,0], [222,60], [180,120]],
+            centroid: {x: 120, y: 60},
         },
         {
             id: 2,
             x: 120*2.3, y: 30,
-            color: '#0fafff',
             shape: 'circle',
             type: 'attribute',
             radiusX: 48 * 2,  // Adjusted radiusX for 2 times bigger
@@ -43,8 +42,7 @@ const row_template = {
         },
         {
             id: 3,
-            x: 240*1.7, y: -30,
-            color: '#ffc70f',
+            x: 240*2, y: -30,
             shape: 'rect',
             type: 'aim',
             width: 100 * 2,   // Adjusted width for 2 times bigger
@@ -52,8 +50,7 @@ const row_template = {
         },
         {
             id: 4,
-            x: 420*1.5, y: -30,
-            color: '#0fafff',
+            x: 420*1.7, y: -30,
             shape: 'rect',
             type: 'directObject',
             width: 110 * 2,   // Adjusted width for 2 times bigger
@@ -63,8 +60,7 @@ const row_template = {
         },
         {
             id: 5,
-            x: 240*1.65, y: 120,
-            color: '#0fafff',
+            x: 240*1.95, y: 120,
             shape: 'rect',
             type: 'executionConstraint',
             width: 110 * 2,   // Adjusted width for 2 times bigger
@@ -74,8 +70,7 @@ const row_template = {
         },
         {
             id: 6,
-            x: 420*1.5, y: 120,
-            color: '#0fafff',
+            x: 420*1.7, y: 120,
             shape: 'rect',
             type: 'indirectObject',
             width: 110 * 2,   // Adjusted width for 2 times bigger
@@ -93,8 +88,7 @@ const row_template = {
     ],
 };
 
-
-const colors = { formal: '#5896E8', informal: '#EDBA2F' }
+const colors = { formal: '#009DDD', informal: '#FFB213' }
 
 const rowAttributes = [
     "id",
@@ -164,11 +158,9 @@ function addNodesAndLinks(rowValues) {
                 // Create a polygon for the node
                 newNode = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
                 // Adjust points based on row position
-                let points = template_node.points.split(' ').map(point => {
-                    let [px, py] = point.split(',');
-                    px = parseInt(px) + nodeX;
-                    py = parseInt(py) + nodeY;
-                    return `${px-70},${py-30}`;
+                let points = template_node.points.map(point => {
+                    let [px, py] = point;
+                    return `${px + nodeX - 70},${py + nodeY - 30}`;
                 }).join(' ');
                 newNode.setAttribute("points", points);
             } else if (template_node.shape === 'circle') {
@@ -213,6 +205,7 @@ function addNodesAndLinks(rowValues) {
             let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
             let textX = nodeX, textY = nodeY;
 
+            // Adjust text position for polygons and rectangles
             if (template_node.shape === 'rect') {
                 if (template_node.rx && template_node.ry) {
                     // Calculate center position for rectangles with rounded corners
@@ -223,27 +216,10 @@ function addNodesAndLinks(rowValues) {
                     textX += template_node.width / 2;
                     textY += template_node.height / 2;
                 }
-            }
-
-            // Adjust text position for polygons and rectangles
-            if (template_node.shape === 'polygon') {
-                // Calculate polygon center as average of vertex coordinates
-                let points = template_node.points.split(' ').map(point => {
-                    let [px, py] = point.split(',');
-                    return { x: parseFloat(px) + nodeX, y: parseFloat(py) + nodeY };
-                });
-
-                let totalX = 0, totalY = 0;
-                points.forEach(point => {
-                    totalX += point.x;
-                    totalY += point.y;
-                });
-
-                let centerX = totalX / points.length;
-                let centerY = totalY / points.length;
-
-                textX = centerX-70;
-                textY = centerY-30; // Adjust vertical position as needed
+            } else if (template_node.shape === 'polygon') {
+                // Calculate center position based on polygon centroid
+                textX += template_node.centroid.x - 70;
+                textY += template_node.centroid.y - 30;
             }
 
             textElement.setAttribute("x", textX);
@@ -252,47 +228,16 @@ function addNodesAndLinks(rowValues) {
             textElement.setAttribute("font-size", "10px");
             textElement.setAttribute("text-anchor", "middle");
             textElement.setAttribute("alignment-baseline", "middle");
+            textElement.setAttribute("style", "user-select: none;");
 
-            // Wrap text if longer than 20 characters
-            if (textContent.length > 20) {
-                let words = textContent.split(' ');
-                let line = '';
-                let lineNumber = 0;
-                let lineHeight = 10; // Adjust as needed
-                let maxLineLength = 25; // Maximum characters per line
-
-                words.forEach(function (word, index) {
-                    let testLine = line + word + ' ';
-                    if (testLine.length > maxLineLength) {
-                        // Create tspan for current line
-                        let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-                        tspan.setAttribute("x", textX);
-                        tspan.setAttribute("y", textY + lineHeight * lineNumber);
-                        tspan.textContent = line;
-                        textElement.appendChild(tspan);
-                        line = word + ' ';
-                        lineNumber++;
-                    } else {
-                        line = testLine;
-                    }
-                });
-
-                // Add the last line
-                let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
-                tspan.setAttribute("x", textX);
-                tspan.setAttribute("y", textY + lineHeight * lineNumber);
-                tspan.textContent = line;
-                textElement.appendChild(tspan);
-            } else {
-                // If text is short, just add it as a single tspan
-                textElement.textContent = textContent;
-            }
+            // Wrap text if too long
+            setTextWithLineWrap(textContent, textX, textY, textElement);
 
             nodesGroup.appendChild(textElement);
         });
 
         // Add edges to the edges group after nodes
-        updateEdges(row[0], edgesGroup);
+        updateEdges(rowObj, edgesGroup);
 
         // Enable dragging of the entire row group
         let isDragging = false;
@@ -378,7 +323,45 @@ function updateConnection(connectionStartPosition, dx, dy) {
     line.setAttribute(`y${connectionStartPosition.num}`, connectionStartPosition.y + dy);
 }
 
-function updateEdges(rowID, edgesGroup) {
+function setTextWithLineWrap(textContent, textX, textY, textElement) {
+    if (textContent.length <= 20) {
+        // If text is short, just add it as a single tspan
+        textElement.textContent = textContent;
+        return;
+    }
+
+    let words = textContent.split(' ');
+    let line = '';
+    const lineHeight = 10;
+    const maxLineLength = 25; // Maximum characters per line
+    let lines = [];
+
+    words.forEach(word => {
+        let testLine = line + word + ' ';
+        if (testLine.length > maxLineLength) {
+            lines.push(line);
+            line = word + ' ';
+        } else {
+            line = testLine;
+        }
+    });
+    lines.push(line);  // Ensure last line is added too
+
+    // Each line moves up by half the number of lines, adjusted for adding lineHeight
+    const lineOffset = lines.length/2 - 1;
+    lines.forEach(function (line, lineNumber) {
+        // Create tspan for each line
+        let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspan.setAttribute("x", textX);
+        tspan.setAttribute("y", textY + lineHeight * (lineNumber - lineOffset));
+        tspan.textContent = line;
+        textElement.appendChild(tspan);
+    })
+
+}
+
+function updateEdges(rowObj, edgesGroup) {
+    let rowID = rowObj.id;
     row_template.links.forEach(function (link) {
         let sourceNode = document.getElementById(`${rowID}_${link.source}`);
         let targetNode = document.getElementById(`${rowID}_${link.target}`);
@@ -405,6 +388,34 @@ function updateEdges(rowID, edgesGroup) {
 
         // Append the line to the edges group
         edgesGroup.appendChild(line);
+
+        // Add deontic text between second and third nodes
+        if (link.source === 2 && link.target === 3) {
+            // Check if deonticValue is not empty
+            let deonticValue = rowObj.deontic;
+            if (deonticValue !== "") {
+
+                let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text"); // Create a new SVG text element
+
+                // Calculate the midpoint of the line connecting source and target nodes
+                let midX = (sourceX + targetX) / 2;
+                let midY = (sourceY + targetY) / 2 - 6; // Slightly adjust the y-position to avoid overlap
+
+                // Set attributes for the text element
+                textElement.setAttribute("x", midX);  // Set the x-coordinate to the midpoint
+                textElement.setAttribute("y", midY);  // Set the y-coordinate to the midpoint
+                textElement.setAttribute("fill", "gray");  // Set the text color to gray
+                textElement.setAttribute("font-size", "12px");  // Set the font size
+                textElement.setAttribute("font-weight", "bold");  // Set the font weight to bold
+                textElement.setAttribute("text-anchor", "middle");  // Center the text horizontally
+                textElement.setAttribute("alignment-baseline", "middle");  // Center the text vertically
+                textElement.setAttribute("style", "user-select: none;");
+                textElement.textContent = deonticValue;  // Set Text
+
+                // Append the text element to the edges group in the SVG
+                edgesGroup.appendChild(textElement);
+            }
+        }
     });
 }
 
