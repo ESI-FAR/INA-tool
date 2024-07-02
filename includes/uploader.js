@@ -58,15 +58,7 @@ function checkPreviousSessions() {
     let isEmpty = !tbody || tbody.rows.length === 0;
 
     // Output the result
-    if (isEmpty) {
-
-        sessionState = false;
-        return sessionState;
-    } else {
-
-        sessionState = true;
-        return sessionState;
-    }
+    sessionState = !isEmpty;
 }
 
 // -- Open the user dialog to select a file onclick of the button on the left menu
