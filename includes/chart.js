@@ -131,7 +131,7 @@ function addNodesAndLinks(rowValues) {
         let rowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
         // Add id to enable dragging of connected lines further
-        rowGroup.setAttribute("id", rowIndex);
+        rowGroup.setAttribute("id", rowObj.id);
         // Initialize empty transform for detection by getParentTransform
         rowGroup.setAttribute("transform", "translate(0, 0)")
 
@@ -188,7 +188,7 @@ function addNodesAndLinks(rowValues) {
             newNode.setAttribute("fill", colors[rowObj.statementType]); // Use rowObj.statementType to get the correct color
             newNode.setAttribute("stroke", "lightgray");
             newNode.setAttribute("stroke-width", "2");
-            newNode.setAttribute("id", `${row[0]}_${template_node.id}`);
+            newNode.setAttribute("id", `${rowObj.id}_${template_node.id}`);
 
             // Add event listener for right-click context menu
             newNode.addEventListener('contextmenu', function (event) {
@@ -478,6 +478,7 @@ function getTransform(node) {
 
 
 let isDrawingConnection = false;
+let isDeletingConnection = false;
 let startShapeId = null;
 
 // ShowContextMenu function to initiate the drawing process
@@ -517,6 +518,8 @@ function showContextMenu(event, node) {
         contextMenu.style.display = 'none';
         contextMenu.classList.remove('show');
         // Implement the logic to delete a connection
+        isDeletingConnection = true;
+        startShapeId = node.id;
         console.log('Delete Connection clicked for node', node.id);
     };
 
@@ -542,52 +545,85 @@ function getParentTransform(node) {
 // Add event listener for double-click to select the destination node and draw the line
 document.addEventListener('click', function(event) {
     if (isDrawingConnection) {
-        let destinationNode = event.target;
-        let destinationShapeId = destinationNode.id;
-
-        if (destinationNode.tagName === 'ellipse' || destinationNode.tagName === 'polygon' || destinationNode.tagName === 'rect') {
-            console.log('Selected destination node:', destinationShapeId);
-
-            let startNode = document.getElementById(startShapeId);
-            let [startX, startY] = determineCenter(startNode);
-            let startTransform = getParentTransform(startNode);
-            let [endX, endY] = determineCenter(destinationNode);
-            let destinationTransform = getParentTransform(destinationNode);
-
-            // Create a line element and append it to the SVG
-            let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("stroke", "green");
-            line.setAttribute("stroke-width", "5");
-            line.setAttribute("x1", startX + startTransform.translateX);
-            line.setAttribute("y1", startY + startTransform.translateY);
-            line.setAttribute("x2", endX + destinationTransform.translateX);
-            line.setAttribute("y2", endY + destinationTransform.translateY);
-
-            // Convert startShapeId and destinationShapeId to numbers
-            let startRowIdNum = parseInt(startShapeId, 10);
-            let destinationRowIdNum = parseInt(destinationShapeId, 10);
-
-            // Check if the conversion was successful
-            if (!isNaN(startRowIdNum) && !isNaN(destinationRowIdNum)) {
-                startRowIdNum -= 1;
-                destinationRowIdNum -= 1;
-            } else {
-                console.error("Invalid startShapeId or destinationShapeId");
-            }
-
-            // Set the attributes with the updated values
-            line.setAttribute("data-start-row-id", startRowIdNum);
-            line.setAttribute("data-end-row-id", destinationRowIdNum);
-            line.setAttribute("id", "connector_" + startRowIdNum + "-" + destinationRowIdNum);
-            line.setAttribute("start-shape-id_", startShapeId);
-            line.setAttribute("end-shape-id_", destinationShapeId);
-
-            // Append the line to the edges group or svg container
-            connectionGroup.appendChild(line);
-
-            // Reset the drawing state
-            isDrawingConnection = false;
-            startShapeId = null;
-        }
+        drawConnection(event);
+    } else if (isDeletingConnection) {
+        deleteConnection(event);
     }
 });
+
+function drawConnection(event) {
+    let destinationNode = event.target;
+    let destinationShapeId = destinationNode.id;
+
+    if (destinationNode.tagName !== 'ellipse' && destinationNode.tagName !== 'polygon' && destinationNode.tagName !== 'rect') {
+        return;
+    }
+
+    console.log('Selected destination node:', destinationShapeId);
+    let startNode = document.getElementById(startShapeId);
+    let [startX, startY] = determineCenter(startNode);
+    let startTransform = getParentTransform(startNode);
+    let [endX, endY] = determineCenter(destinationNode);
+    let destinationTransform = getParentTransform(destinationNode);
+
+    // Create a line element and append it to the SVG
+    let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("stroke", "green");
+    line.setAttribute("stroke-width", "5");
+    line.setAttribute("x1", startX + startTransform.translateX);
+    line.setAttribute("y1", startY + startTransform.translateY);
+    line.setAttribute("x2", endX + destinationTransform.translateX);
+    line.setAttribute("y2", endY + destinationTransform.translateY);
+
+    // Convert startShapeId and destinationShapeId to numbers
+    let startRowIdNum = parseInt(startShapeId, 10);
+    let destinationRowIdNum = parseInt(destinationShapeId, 10);
+
+    // Check if the conversion was successful
+    if (isNaN(startRowIdNum) || isNaN(destinationRowIdNum)) {
+        console.error("Invalid startShapeId or destinationShapeId");
+    }
+
+    // Set the attributes with the updated values
+    line.setAttribute("data-start-row-id", startRowIdNum);
+    line.setAttribute("data-end-row-id", destinationRowIdNum);
+    line.setAttribute("id", "connector_" + startRowIdNum + "-" + destinationRowIdNum);
+    line.setAttribute("start-shape-id_", startShapeId);
+    line.setAttribute("end-shape-id_", destinationShapeId);
+
+    console.log(line.getAttribute('id'));
+    // Append the line to the edges group or svg container
+    connectionGroup.appendChild(line);
+
+    // Reset the drawing state
+    isDrawingConnection = false;
+    startShapeId = null;
+}
+
+function deleteConnection(event) {
+    let destinationNode = event.target;
+    let destinationShapeId = destinationNode.id;
+
+    if (destinationNode.tagName !== 'ellipse' && destinationNode.tagName !== 'polygon' && destinationNode.tagName !== 'rect') {
+        console.log(destinationNode);
+        return;
+    }
+
+    let startRowIdNum = parseInt(startShapeId, 10);
+    let destinationRowIdNum = parseInt(destinationShapeId, 10);
+
+    console.log(`connector_${startRowIdNum}-${destinationRowIdNum}`);
+    line = document.getElementById(`connector_${startRowIdNum}-${destinationRowIdNum}`);
+    // If no such line, try finding a line the other way around
+    if (!line) {
+        line = document.getElementById(`connector_${destinationRowIdNum}-${startRowIdNum}`);
+    }
+
+    if (line) {
+        line.remove();
+
+        // Reset the drawing state
+        isDeletingConnection = false;
+        startShapeId = null;
+    }
+}
