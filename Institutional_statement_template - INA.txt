@@ -1,0 +1,2 @@
+Statement Type,Attribute,Deontic,Aim,Direct Object,Type of Direct Object,Indirect Object,Type of Indirect Object,Activation Condition,Execution constraint,Or else
+,,,,,,,,,,
