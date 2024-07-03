@@ -480,6 +480,7 @@ function getTransform(node) {
 let isDrawingConnection = false;
 let isDeletingConnection = false;
 let startShapeId = null;
+let connectionColor = null;
 
 // ShowContextMenu function to initiate the drawing process
 function showContextMenu(event, node) {
@@ -500,17 +501,24 @@ function showContextMenu(event, node) {
 
     // Add options to the context menu
     contextMenu.innerHTML = `
-        <a class="dropdown-item" href="#" id="drawConnection">Draw Connection</a>
+        <a class="dropdown-item" href="#" id="drawGreenConnection">Draw Green Connection</a>
+        <a class="dropdown-item" href="#" id="drawPurpleConnection">Draw Purple Connection</a>
+        <a class="dropdown-item" href="#" id="drawRedConnection">Draw Red Connection</a>
         <a class="dropdown-item" href="#" id="deleteConnection">Delete Connection</a>
     `;
 
     // Handle menu option clicks
-    document.getElementById('drawConnection').onclick = function () {
+    document.getElementById('drawGreenConnection').onclick = function () { startDrawConnection('green') };
+    document.getElementById('drawPurpleConnection').onclick = function () { startDrawConnection('purple') };
+    document.getElementById('drawRedConnection').onclick = function () { startDrawConnection('red') };
+
+    function startDrawConnection (color) {
         contextMenu.style.display = 'none';
         contextMenu.classList.remove('show');
         // Start the drawing process
         isDrawingConnection = true;
         startShapeId = node.id;
+        connectionColor = color;
         console.log('Draw Connection clicked for node', node.id);
     };
 
@@ -568,7 +576,7 @@ function drawConnection(event) {
 
     // Create a line element and append it to the SVG
     let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("stroke", "green");
+    line.setAttribute("stroke", connectionColor);
     line.setAttribute("stroke-width", "5");
     line.setAttribute("x1", startX + startTransform.translateX);
     line.setAttribute("y1", startY + startTransform.translateY);
@@ -597,6 +605,7 @@ function drawConnection(event) {
     // Reset the drawing state
     isDrawingConnection = false;
     startShapeId = null;
+    connectionColor = null;
 }
 
 function deleteConnection(event) {
