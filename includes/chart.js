@@ -591,7 +591,6 @@ function drawConnection(event) {
     line.setAttribute("start-shape-id_", startShapeId);
     line.setAttribute("end-shape-id_", destinationShapeId);
 
-    console.log(line.getAttribute('id'));
     // Append the line to the edges group or svg container
     connectionGroup.appendChild(line);
 
@@ -605,14 +604,12 @@ function deleteConnection(event) {
     let destinationShapeId = destinationNode.id;
 
     if (destinationNode.tagName !== 'ellipse' && destinationNode.tagName !== 'polygon' && destinationNode.tagName !== 'rect') {
-        console.log(destinationNode);
         return;
     }
 
     let startRowIdNum = parseInt(startShapeId, 10);
     let destinationRowIdNum = parseInt(destinationShapeId, 10);
 
-    console.log(`connector_${startRowIdNum}-${destinationRowIdNum}`);
     line = document.getElementById(`connector_${startRowIdNum}-${destinationRowIdNum}`);
     // If no such line, try finding a line the other way around
     if (!line) {
