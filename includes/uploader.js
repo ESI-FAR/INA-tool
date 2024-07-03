@@ -252,25 +252,25 @@ function storeDatainSession(columnsArray) {
 }
 
 
+document.addEventListener("DOMContentLoaded", function() {
+    loaderStarter();
+});
+
+function loaderStarter() {
+    // Start the loader and remove the text in quoteBlock
+    let loader = document.getElementById("loader");
+    let quoteBlock = document.getElementById("quoteBlock");
+    quoteBlock.setAttribute("hidden", "true");
+    // Show the loader
+    loader.removeAttribute("hidden");
+
+    // Add an event listener for the window's load event to hide the loader once the page is fully loaded
+    window.addEventListener('load', function () {
+        loader.setAttribute("hidden", "true");
+    });
+}
+
 function populateTable(uploadedColumnNames, uploadedRowValues) {
-
-    // Execute loaderStarter
-    loaderStarter()
-
-    function loaderStarter() {
-        // Start the loader and remove the text in quoteBlock
-        let loader = document.getElementById("loader");
-        let quoteBlock = document.getElementById("quoteBlock");
-        quoteBlock.setAttribute("hidden", "true");
-        // Show the loader and the quote block
-        loader.removeAttribute("hidden");
-        // Hide the loader and the quote block after 3 seconds
-        setTimeout(function () {
-            loader.setAttribute("hidden", "true");
-
-        }, 5000);
-
-    }
 
     // Clear the existing table content
     $('#tableData').empty();
