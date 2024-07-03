@@ -18,14 +18,14 @@ include_once 'includes/header.php';
                             <div class="row mb-3">
                                 <div class="col-sm-12 d-flex justify-content-between align-items-center">
                                     <div class="zoom-controls">
-                                        <button class="btn btn-primary me-2" onclick="zoomIn()">Zoom In</button>
-                                        <button class="btn btn-primary me-2" onclick="zoomOut()">Zoom Out</button>
-                                        <button class="btn btn-secondary" onclick="resetZoom()">Reset Zoom</button>
+                                        <button class="btn btn-primary btn-sm" onclick="zoomIn()">Zoom In</button>
+                                        <button class="btn btn-primary btn-sm" onclick="zoomOut()">Zoom Out</button>
+                                        <button class="btn btn-secondary btn-sm" onclick="resetZoom()">Reset Zoom</button>
                                     </div>
 
                                     <button class="btn btn-sm btn-outline-dark" onclick="downloadProject()">
                                     <i class="fa-solid fa-file-arrow-down"></i>
-                                        Download
+                                        Download PNG
                                     </button>
                                 </div>
                             </div>

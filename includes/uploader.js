@@ -200,23 +200,6 @@ function checkColumnNames(columnNames) {
 
 }
 
-
-function loadDemo() {
-    confirmUpload(
-        ["ID", "Statement Type", "Attribute", "Deontic", "Aim", "Direct Object", "Type of Direct Object", "Indirect Object", "Type of Indirect Object", "Activation Condition", "Execution Constraint", "Or Else\r"],
-        [
-            [1, "formal", "VROMI minister", "must", "order", "infrastructure dept to execute clean-up", "animate", "", "", "if necessary after a storm event", "", "\r"],
-            [2, "informal", "Governor", "", "requests", "financial aid", "inanimate", "from Dutch Kingdom", "animate", "if requested by Prime minister", "", "\r"],
-            [3, "formal", "Property owners", "must", "insure", "their properties", "inanimate", "", "", "", "", "\r"],
-            [4, "informal", "NGOs", "", "help", "", "", "", "", "if requested by inhabitants", "in reconstruction", "\r"],
-            [5, "formal", "VROMI infrastructure dept.", "must", "clean", "gutters", "inanimate", "", "", "", "before June (start hurricane season)", "\r"],
-            [6, "formal", "ACER", "must", "update", "the recommendations", "inanimate", "", "", "", "at least once every two years", ""]
-        ]
-    )
-
-}
-
-
 // Function to confirm upload and fill rows in an existing table
 function confirmUpload(uploadedColumnNames, uploadedRowValues) {
     if (!uploadedColumnNames) {
