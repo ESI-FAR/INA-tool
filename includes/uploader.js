@@ -186,14 +186,10 @@ function checkColumnNames(columnNames) {
 
     // Define the names accepted for the columns
     let expectedNames = new Set(expectedColumnNames);
-    let unrecognizedColumns = new Set(columnNames).difference(expectedNames);
+    let missingColumns = expectedNames.difference(new Set(columnNames));
 
-    // Now you have all unrecognized column names in the 'unrecognizedColumns' array
-    console.log("Unrecognized columns:", unrecognizedColumns);
-    // Alert the name of the column which is not recognized
-    // Display an error message if not a CSV file
-    if (unrecognizedColumns.length > 0) {
-        const errorMessage = "Unrecognized column names: <i>" + unrecognizedColumns.join(", ") + "</i>";
+    // Alert with the missing column names
+    if (missingColumns.size > 0) {        const errorMessage = "Missing column names: <i>" + Array.from(missingColumns).join(", ") + "</i>";
         displayErrorMessage(errorMessage);
     }
 
