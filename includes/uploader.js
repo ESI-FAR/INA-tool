@@ -172,7 +172,6 @@ function checkFileContent() {
             let rowsWithID = rowValues.map((row, index) => [(index + 1)].concat(row));
 
             rowValues = rowsWithID;
-            window.rowValues = rowsWithID;
         } else {
             // Display an error message if not a CSV file
             displayErrorMessage('Invalid file content. Please select a valid CSV file.');

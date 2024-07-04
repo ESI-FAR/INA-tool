@@ -3,9 +3,6 @@
 include_once 'includes/header.php';
 ?>
 
-<script type='text/javascript'>
-    window.rowValues = [];
-</script>
 
             <div id="layoutSidenav_content">
                 <main>
