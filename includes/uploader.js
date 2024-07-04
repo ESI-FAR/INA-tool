@@ -161,17 +161,17 @@ function checkFileContent() {
 
         // Check if the file content has comma as a separator
         if (content.includes(',')) {
-            columnNames = content.split('\n')[0].split(',');
+            let lines = content.split('\n');
+            columnNames = lines[0].split(',');
+            rowValues = lines.slice(1).map(row => row.split(','));
+
+            // Add an ID column in front if not already present
+            if (!columnNames.includes('ID')) {
+                columnNames.unshift("ID");
+                rowValues = rowValues.map((row, index) => [(index + 1)].concat(row));
+            }
+
             checkColumnNames(columnNames);
-
-            // Extract and log each row
-            rowValues = content.split('\n').slice(1).map(row => row.split(','));
-
-            // Add an ID column in front
-            columnNames.unshift("ID");
-            let rowsWithID = rowValues.map((row, index) => [(index + 1)].concat(row));
-
-            rowValues = rowsWithID;
         } else {
             // Display an error message if not a CSV file
             displayErrorMessage('Invalid file content. Please select a valid CSV file.');
