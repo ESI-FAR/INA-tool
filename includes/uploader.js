@@ -39,6 +39,7 @@ const expectedColumnNames = [
 
 // Initialise global variables to store row values
 var rowValues = [];
+var statements;
 
 // Check table and initialize session variable to handle file upload properly
 function checkPreviousSessions() {
@@ -163,6 +164,7 @@ function checkFileContent() {
         if (content.includes(',')) {
             let lines = content.split('\n');
             columnNames = lines[0].split(',');
+            columnNames = columnNames.map(name => toTitleCase(name));
             rowValues = lines.slice(1).map(row => row.split(','));
 
             // Add an ID column in front if not already present
@@ -170,6 +172,16 @@ function checkFileContent() {
                 columnNames.unshift("ID");
                 rowValues = rowValues.map((row, index) => [(index + 1)].concat(row));
             }
+
+            statements = [];
+            rowValues.forEach(row => {
+                // Map row attributes to their respective values
+                let entries = columnNames.map((attribute, idx) => {
+                    return [attribute, row[idx]];
+                });
+                statements.push(Object.fromEntries(entries));
+            });
+
 
             checkColumnNames(columnNames);
         } else {
@@ -181,6 +193,13 @@ function checkFileContent() {
     reader.readAsText(file);
 }
 
+// Transform string to TitleCase. Source: https://stackoverflow.com/a/196991/1044698
+function toTitleCase(str) {
+    return str.replace(
+      /\w\S*/g,
+      text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+    );
+  }
 
 function checkColumnNames(columnNames) {
 
