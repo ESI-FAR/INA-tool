@@ -28,7 +28,7 @@ const row_template = {
             id: 1,
             x: 0, y: 0,
             shape: 'polygon',
-            type: 'activationCondition',
+            type: 'Activation Condition',
             points: [[60,120], [18,60], [60,0], [180,0], [222,60], [180,120]],
             centroid: {x: 120, y: 60},
         },
@@ -36,7 +36,7 @@ const row_template = {
             id: 2,
             x: 120*2.3, y: 30,
             shape: 'circle',
-            type: 'attribute',
+            type: 'Attribute',
             radiusX: 48 * 2,  // Adjusted radiusX for 2 times bigger
             radiusY: 36 * 1.7,  // Adjusted radiusY for 2 times bigger
         },
@@ -44,7 +44,7 @@ const row_template = {
             id: 3,
             x: 240*2, y: -30,
             shape: 'rect',
-            type: 'aim',
+            type: 'Aim',
             width: 100 * 2,   // Adjusted width for 2 times bigger
             height: 60 * 2,   // Adjusted height for 2 times bigger
         },
@@ -52,7 +52,7 @@ const row_template = {
             id: 4,
             x: 420*1.7, y: -30,
             shape: 'rect',
-            type: 'directObject',
+            type: 'Direct Object',
             width: 110 * 2,   // Adjusted width for 2 times bigger
             height: 60 * 2,   // Adjusted height for 2 times bigger
             rx: 30 * 2,       // Adjusted rx for 2 times bigger
@@ -62,7 +62,7 @@ const row_template = {
             id: 5,
             x: 240*1.95, y: 120,
             shape: 'rect',
-            type: 'executionConstraint',
+            type: 'Execution Constraint',
             width: 110 * 2,   // Adjusted width for 2 times bigger
             height: 60 * 2,   // Adjusted height for 2 times bigger
             rx: 30 * 2,       // Adjusted rx for 2 times bigger
@@ -72,7 +72,7 @@ const row_template = {
             id: 6,
             x: 420*1.7, y: 120,
             shape: 'rect',
-            type: 'indirectObject',
+            type: 'Indirect Object',
             width: 110 * 2,   // Adjusted width for 2 times bigger
             height: 60 * 2,   // Adjusted height for 2 times bigger
             rx: 30 * 2,       // Adjusted rx for 2 times bigger
@@ -90,27 +90,12 @@ const row_template = {
 
 const colors = { formal: '#009DDD', informal: '#FFB213' }
 
-const rowAttributes = [
-    "id",
-    "statementType",
-    "attribute",
-    "deontic",
-    "aim",
-    "directObject",
-    "typeOfDirectObject",
-    "indirectObject",
-    "typeOfIndirectObject",
-    "activationCondition",
-    "executionConstraint",
-    "orElse"
-];
-
 // Add connection drawing state variables to global INA namespace
 INA.isDrawingConnection = false;
 INA.isDeletingConnection = false;
 INA.startShapeId = null;
 
-function addNodesAndLinks(rowValues) {
+function addNodesAndLinks(statementObjects) {
     let svgContainer = document.getElementById("svgContainer");
     let svg = svgContainer.querySelector("svg");
     let connectionGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -121,13 +106,7 @@ function addNodesAndLinks(rowValues) {
     const startDrawingAt = { x: 75, y: 30 };
 
     // Add nodes and links for each row
-    rowValues.forEach(function (row, rowIndex) {
-
-        // Map row attributes to their respective values
-        let entries = rowAttributes.map((attribute, idx) => {
-            return [attribute, row[idx]];
-        });
-        let rowObj = Object.fromEntries(entries);
+    statementObjects.forEach(function (rowObj, rowIndex) {
 
         // Calculate y offset for this row
         let yOffset = startDrawingAt.y + (rowIndex * rowHeight);
@@ -136,7 +115,7 @@ function addNodesAndLinks(rowValues) {
         let rowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
         // Add id to enable dragging of connected lines further
-        rowGroup.setAttribute("id", rowObj.id);
+        rowGroup.setAttribute("id", rowObj.Id);
         // Initialize empty transform for detection by getParentTransform
         rowGroup.setAttribute("transform", "translate(0, 0)")
 
@@ -190,10 +169,10 @@ function addNodesAndLinks(rowValues) {
             }
 
             // Set common attributes for all shapes
-            newNode.setAttribute("fill", colors[rowObj.statementType]); // Use rowObj.statementType to get the correct color
+            newNode.setAttribute("fill", colors[rowObj["Statement Type"]]); // Use rowObj.statementType to get the correct color
             newNode.setAttribute("stroke", "lightgray");
             newNode.setAttribute("stroke-width", "2");
-            newNode.setAttribute("id", `${rowObj.id}_${template_node.id}`);
+            newNode.setAttribute("id", `${rowObj.Id}_${template_node.id}`);
 
             // Add event listener for right-click context menu
             newNode.addEventListener('contextmenu', function (event) {
@@ -366,7 +345,7 @@ function setTextWithLineWrap(textContent, textX, textY, textElement) {
 }
 
 function updateEdges(rowObj, edgesGroup) {
-    let rowID = rowObj.id;
+    let rowID = rowObj.Id;
     row_template.links.forEach(function (link) {
         let sourceNode = document.getElementById(`${rowID}_${link.source}`);
         let targetNode = document.getElementById(`${rowID}_${link.target}`);
@@ -397,7 +376,7 @@ function updateEdges(rowObj, edgesGroup) {
         // Add deontic text between second and third nodes
         if (link.source === 2 && link.target === 3) {
             // Check if deonticValue is not empty
-            let deonticValue = rowObj.deontic;
+            let deonticValue = rowObj.Deontic;
             if (deonticValue !== "") {
 
                 let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text"); // Create a new SVG text element

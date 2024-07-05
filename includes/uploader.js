@@ -22,15 +22,15 @@ The operations executed here are:
 */
 
 const expectedColumnNames = [
-    "ID",
+    "Id",
     "Statement Type",
     "Attribute",
     "Deontic",
     "Aim",
     "Direct Object",
-    "Type of Direct Object",
+    "Type Of Direct Object",
     "Indirect Object",
-    "Type of Indirect Object",
+    "Type Of Indirect Object",
     "Activation Condition",
     "Execution Constraint",
     "Or Else",
@@ -39,7 +39,6 @@ const expectedColumnNames = [
 
 // Initialise a global namespace variable 'INA' to store global variables during the session
 window.INA = {};
-INA.rowValues = [];
 INA.statements;
 
 // Check table and initialize session variable to handle file upload properly
@@ -164,25 +163,24 @@ function checkFileContent() {
         // Check if the file content has comma as a separator
         if (content.includes(',')) {
             let lines = content.split('\n');
-            INA.columnNames = lines[0].split(',');
+            INA.columnNames = lines[0].replace('\r', '').split(',');
             INA.columnNames = INA.columnNames.map(name => toTitleCase(name));
-            INA.rowValues = lines.slice(1).map(row => row.split(','));
+            let rowValues = lines.slice(1).map(row => row.split(','));
 
             // Add an ID column in front if not already present
-            if (!INA.columnNames.includes('ID')) {
-                INA.columnNames.unshift("ID");
-                INA.rowValues = INA.rowValues.map((row, index) => [(index + 1)].concat(row));
+            if (!INA.columnNames.includes('Id')) {
+                INA.columnNames.unshift("Id");
+                rowValues = rowValues.map((row, index) => [(index + 1)].concat(row));
             }
 
             INA.statements = [];
-            INA.rowValues.forEach(row => {
+            rowValues.forEach(row => {
                 // Map row attributes to their respective values
                 let entries = INA.columnNames.map((attribute, idx) => {
                     return [attribute, row[idx]];
                 });
                 INA.statements.push(Object.fromEntries(entries));
             });
-
 
             checkColumnNames(INA.columnNames);
         } else {
@@ -194,7 +192,7 @@ function checkFileContent() {
     reader.readAsText(file);
 }
 
-// Transform string to TitleCase. Source: https://stackoverflow.com/a/196991/1044698
+// Transform string to Title Case. Source: https://stackoverflow.com/a/196991/1044698
 function toTitleCase(str) {
     return str.replace(
       /\w\S*/g,
@@ -238,7 +236,7 @@ function confirmUpload(uploadedColumnNames, uploadedRowValues) {
         uploadedColumnNames = INA.columnNames;
     }
     if (!uploadedRowValues) {
-        uploadedRowValues = INA.rowValues;
+        uploadedRowValues = INA.statements;
     }
 
     populateTable(uploadedColumnNames, uploadedRowValues);
@@ -246,15 +244,15 @@ function confirmUpload(uploadedColumnNames, uploadedRowValues) {
 }
 
 
-function storeDatainSession(columnsArray) {
+function storeDatainSession() {
 
     // Send the generated table data to PHP script via AJAX
     $.ajax({
         url: 'includes/store_session_data.php',
         method: 'POST',
         data: {
-            TableColumns: columnsArray,
-            TableRows: INA.rowValues
+            TableColumns: INA.columnNames,
+            TableRows: INA.statements
         },
         success: function (response) {
             console.log('Session data stored successfully');
@@ -285,31 +283,29 @@ function loaderStarter() {
     });
 }
 
-function populateTable(uploadedColumnNames, uploadedRowValues) {
+function populateTable(uploadedColumnNames, uploadedStatementObjects) {
 
     // Clear the existing table content
     $('#tableData').empty();
 
-    // Get the length of columnNames list
-    let numColumns = uploadedColumnNames.length;
-    // Initialize an array to hold column definitions
-    let columnsArray = [];
-    // Set up columns based on the provided columnNames length
-    for (let i = 0; i < numColumns; i++) {
-        columnsArray.push({
-            title: uploadedColumnNames[i] // Set the column name using the provided columnNames length
-        });
-    }
+    let columnsArray = uploadedColumnNames.map(columnName => {
+        return {title: columnName}
+    })
 
     // This guy set the columns. More info at: https://datatables.net/
     let dataTable = $('#tableData').DataTable({
-        columns: columnsArray // Set the columns using the generated array
+        columns: columnsArray // Set the columns based on the given array
+    });
 
+    let uploadedRowValues = [];
+    uploadedStatementObjects.forEach(statementObj => {
+        let row = uploadedColumnNames.map(column => statementObj[column]);
+        uploadedRowValues.push(row);
     });
 
     // Set the table rows
     dataTable.rows.add(uploadedRowValues).draw();
 
     // Store table data in session
-    storeDatainSession(columnsArray);
+    storeDatainSession();
 }

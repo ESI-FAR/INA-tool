@@ -116,10 +116,8 @@ include_once 'includes/header.php';
                                             echo "<thead>";
                                             echo "<tr>";
                                             foreach ($_SESSION['Columns'] as $column) {
-                                                // Extract the 'title' property from the object
-                                                $title = isset($column['title']) ? $column['title'] : '';
-                                                if (!empty($title)) {
-                                                    echo "<th>$title</th>";
+                                                if (!empty($column)) {
+                                                    echo "<th>$column</th>";
                                                 }
                                             }
                                             echo "</tr>";
@@ -133,8 +131,8 @@ include_once 'includes/header.php';
                                             foreach ($_SESSION['Rows'] as $row) {
                                                 echo "<tr>";
                                                 // Loop through each column value in the row
-                                                foreach ($row as $columnValue) {
-                                                    echo "<td>$columnValue</td>";
+                                                foreach ($_SESSION['Columns'] as $column) {
+                                                    echo "<td>$row[$column]</td>";
                                                 }
                                                 echo "</tr>";
                                             }
