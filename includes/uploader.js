@@ -37,9 +37,10 @@ const expectedColumnNames = [
 ];
 
 
-// Initialise global variables to store row values
-var rowValues = [];
-var statements;
+// Initialise a global namespace variable 'INA' to store global variables during the session
+window.INA = {};
+INA.rowValues = [];
+INA.statements;
 
 // Check table and initialize session variable to handle file upload properly
 function checkPreviousSessions() {
@@ -163,27 +164,27 @@ function checkFileContent() {
         // Check if the file content has comma as a separator
         if (content.includes(',')) {
             let lines = content.split('\n');
-            columnNames = lines[0].split(',');
-            columnNames = columnNames.map(name => toTitleCase(name));
-            rowValues = lines.slice(1).map(row => row.split(','));
+            INA.columnNames = lines[0].split(',');
+            INA.columnNames = INA.columnNames.map(name => toTitleCase(name));
+            INA.rowValues = lines.slice(1).map(row => row.split(','));
 
             // Add an ID column in front if not already present
-            if (!columnNames.includes('ID')) {
-                columnNames.unshift("ID");
-                rowValues = rowValues.map((row, index) => [(index + 1)].concat(row));
+            if (!INA.columnNames.includes('ID')) {
+                INA.columnNames.unshift("ID");
+                INA.rowValues = INA.rowValues.map((row, index) => [(index + 1)].concat(row));
             }
 
-            statements = [];
-            rowValues.forEach(row => {
+            INA.statements = [];
+            INA.rowValues.forEach(row => {
                 // Map row attributes to their respective values
-                let entries = columnNames.map((attribute, idx) => {
+                let entries = INA.columnNames.map((attribute, idx) => {
                     return [attribute, row[idx]];
                 });
-                statements.push(Object.fromEntries(entries));
+                INA.statements.push(Object.fromEntries(entries));
             });
 
 
-            checkColumnNames(columnNames);
+            checkColumnNames(INA.columnNames);
         } else {
             // Display an error message if not a CSV file
             displayErrorMessage('Invalid file content. Please select a valid CSV file.');
@@ -234,10 +235,10 @@ function loadDemo() {
 // Function to confirm upload and fill rows in an existing table
 function confirmUpload(uploadedColumnNames, uploadedRowValues) {
     if (!uploadedColumnNames) {
-        uploadedColumnNames = columnNames;
+        uploadedColumnNames = INA.columnNames;
     }
     if (!uploadedRowValues) {
-        uploadedRowValues = rowValues;
+        uploadedRowValues = INA.rowValues;
     }
 
     populateTable(uploadedColumnNames, uploadedRowValues);
@@ -253,7 +254,7 @@ function storeDatainSession(columnsArray) {
         method: 'POST',
         data: {
             TableColumns: columnsArray,
-            TableRows: rowValues
+            TableRows: INA.rowValues
         },
         success: function (response) {
             console.log('Session data stored successfully');

@@ -105,6 +105,11 @@ const rowAttributes = [
     "orElse"
 ];
 
+// Add connection drawing state variables to global INA namespace
+INA.isDrawingConnection = false;
+INA.isDeletingConnection = false;
+INA.startShapeId = null;
+
 function addNodesAndLinks(rowValues) {
     let svgContainer = document.getElementById("svgContainer");
     let svg = svgContainer.querySelector("svg");
@@ -476,11 +481,6 @@ function getTransform(node) {
     return { translateX: 0, translateY: 0 };
 }
 
-
-let isDrawingConnection = false;
-let isDeletingConnection = false;
-let startShapeId = null;
-
 // ShowContextMenu function to initiate the drawing process
 function showContextMenu(event, node) {
     // Create or get the context menu
@@ -509,8 +509,8 @@ function showContextMenu(event, node) {
         contextMenu.style.display = 'none';
         contextMenu.classList.remove('show');
         // Start the drawing process
-        isDrawingConnection = true;
-        startShapeId = node.id;
+        INA.isDrawingConnection = true;
+        INA.startShapeId = node.id;
         console.log('Draw Connection clicked for node', node.id);
     };
 
@@ -518,8 +518,8 @@ function showContextMenu(event, node) {
         contextMenu.style.display = 'none';
         contextMenu.classList.remove('show');
         // Implement the logic to delete a connection
-        isDeletingConnection = true;
-        startShapeId = node.id;
+        INA.isDeletingConnection = true;
+        INA.startShapeId = node.id;
         console.log('Delete Connection clicked for node', node.id);
     };
 
@@ -544,9 +544,9 @@ function getParentTransform(node) {
 
 // Add event listener for double-click to select the destination node and draw the line
 document.addEventListener('click', function(event) {
-    if (isDrawingConnection) {
+    if (INA.isDrawingConnection) {
         drawConnection(event);
-    } else if (isDeletingConnection) {
+    } else if (INA.isDeletingConnection) {
         deleteConnection(event);
     }
 });
@@ -560,7 +560,7 @@ function drawConnection(event) {
     }
 
     console.log('Selected destination node:', destinationShapeId);
-    let startNode = document.getElementById(startShapeId);
+    let startNode = document.getElementById(INA.startShapeId);
     let [startX, startY] = determineCenter(startNode);
     let startTransform = getParentTransform(startNode);
     let [endX, endY] = determineCenter(destinationNode);
@@ -576,7 +576,7 @@ function drawConnection(event) {
     line.setAttribute("y2", endY + destinationTransform.translateY);
 
     // Convert startShapeId and destinationShapeId to numbers
-    let startRowIdNum = parseInt(startShapeId, 10);
+    let startRowIdNum = parseInt(INA.startShapeId, 10);
     let destinationRowIdNum = parseInt(destinationShapeId, 10);
 
     // Check if the conversion was successful
@@ -588,15 +588,15 @@ function drawConnection(event) {
     line.setAttribute("data-start-row-id", startRowIdNum);
     line.setAttribute("data-end-row-id", destinationRowIdNum);
     line.setAttribute("id", "connector_" + startRowIdNum + "-" + destinationRowIdNum);
-    line.setAttribute("start-shape-id_", startShapeId);
+    line.setAttribute("start-shape-id_", INA.startShapeId);
     line.setAttribute("end-shape-id_", destinationShapeId);
 
     // Append the line to the edges group or svg container
     connectionGroup.appendChild(line);
 
     // Reset the drawing state
-    isDrawingConnection = false;
-    startShapeId = null;
+    INA.isDrawingConnection = false;
+    INA.startShapeId = null;
 }
 
 function deleteConnection(event) {
@@ -607,7 +607,7 @@ function deleteConnection(event) {
         return;
     }
 
-    let startRowIdNum = parseInt(startShapeId, 10);
+    let startRowIdNum = parseInt(INA.startShapeId, 10);
     let destinationRowIdNum = parseInt(destinationShapeId, 10);
 
     line = document.getElementById(`connector_${startRowIdNum}-${destinationRowIdNum}`);
@@ -620,7 +620,7 @@ function deleteConnection(event) {
         line.remove();
 
         // Reset the drawing state
-        isDeletingConnection = false;
-        startShapeId = null;
+        INA.isDeletingConnection = false;
+        INA.startShapeId = null;
     }
 }
