@@ -7,11 +7,10 @@
 session_start();
 
 // Check if table data is received via POST
-if(isset($_POST['TableColumns'])) {
+if(isset($_POST['Columns'])) {
     // Store the received table data in session variable
-    $_SESSION['Columns'] = $_POST['TableColumns'];
-    $_SESSION['Rows'] = $_POST['TableRows'];
-    
+    $_SESSION['Columns'] = $_POST['Columns'];
+    $_SESSION['Statements'] = $_POST['Statements'];
 } else {
     echo "No data received";
 }

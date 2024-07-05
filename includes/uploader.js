@@ -251,8 +251,8 @@ function storeDatainSession() {
         url: 'includes/store_session_data.php',
         method: 'POST',
         data: {
-            TableColumns: INA.columnNames,
-            TableRows: INA.statements
+            Columns: INA.columnNames,
+            Statements: INA.statements
         },
         success: function (response) {
             console.log('Session data stored successfully');

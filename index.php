@@ -127,12 +127,12 @@ include_once 'includes/header.php';
 
                                             echo "<tbody>";
 
-                                            // Loop through each row to populate the table body
-                                            foreach ($_SESSION['Rows'] as $row) {
+                                            // Loop through each statement to populate the rows of the table body
+                                            foreach ($_SESSION['Statements'] as $statement) {
                                                 echo "<tr>";
-                                                // Loop through each column value in the row
+                                                // Loop through each column value in the statement
                                                 foreach ($_SESSION['Columns'] as $column) {
-                                                    echo "<td>$row[$column]</td>";
+                                                    echo "<td>$statement[$column]</td>";
                                                 }
                                                 echo "</tr>";
                                             }
@@ -142,8 +142,8 @@ include_once 'includes/header.php';
                                             // Render also chart
 
                                             echo "<script>document.getElementById('quoteBlock').hidden = true;</script>";
-                                            $rows_json = json_encode($_SESSION['Rows']);
-                                            echo "<script>addNodesAndLinks($rows_json)</script>";
+                                            $statements = json_encode($_SESSION['Statements']);
+                                            echo "<script>addNodesAndLinks($statements)</script>";
 
 
                                         }
