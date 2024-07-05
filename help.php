@@ -3,38 +3,7 @@
 include_once 'includes/header.php';
 ?>
 
-            <style>
-            .code-box {
-                position: relative;
-                background-color: #f0f0f0;
-                padding: 10px;
-                border-radius: 6px;
-                margin-bottom: 20px;
-            }
-            pre {
-                white-space: pre-wrap;
-                word-wrap: break-word;
-                font-family: Consolas, monospace;
-                margin: 0;
-            }
-            .copy-button {
-                position: absolute;
-                top: 5px;
-                right: 20px; /* Adjust as needed */
-                padding: 5px 10px;
-                background-color: #007bff;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-            .copy-button:hover {
-                background-color: #0056b3;
-            }
-            .copy-icon {
-                margin-left: 5px;
-            }
-            </style>
+
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
@@ -51,7 +20,7 @@ include_once 'includes/header.php';
 
                                 <h3>Upload your File & Template</h3>
                                 <ul>
-                                You can upload only <i>.csv</i> or <i>.txt</i> files. Please, use this <a href="Institutional_statement_template - INA.txt" download>template</a>. Alternatively, the file must respect the columns ordering and naming described below:
+                                You can upload only <i>.csv</i> or <i>.txt</i> files. Please, use this <a href="Institutional_statement_template.xlsx" download>template</a>. Alternatively, the file must respect the columns ordering and naming described below:
 
                                <div class="code-box">
                                     <pre>"ID", "Statement Type", "Attribute", "Deontic", "Aim", "Direct Object", "Type of Direct Object", "Indirect Object", "Type of Indirect Object", "Activation Condition", "Execution Constraint", "Or Else"</pre>
@@ -73,12 +42,16 @@ include_once 'includes/header.php';
 
                                 <h3>Install a Local Version of the Software</h3>
                                 <ul>
-                                Please, visit the <a href='https://github.com/ESI-FAR/INA-tool' target='blank'>github</a> repository and follow the installation instructions.
+                                To install a local version of this application, please follow the instructions listed in the README
+                                of the <a href='https://github.com/ESI-FAR/INA-tool' target='blank'>GitHub</a> repository.
                                 </ul>
 
                                 <h3>Support and Discussion</h3>
                                 <ul>
-                                    If you encounter issues not covered here, or you want to share some ideas, please use the <a href='https://github.com/ESI-FAR/INA-tool/discussions/landing'>github</a> repository.
+                                    If you encounter issues not covered here, or you want to share some ideas,
+                                    please open an <a href='https://github.com/ESI-FAR/INA-tool/issues/new'>issue</a>
+                                    or start a <a href='https://github.com/ESI-FAR/INA-tool/discussions/landing'>discussion</a>
+                                    on the GitHub repository.
                                 </ul>
 
                             </div>

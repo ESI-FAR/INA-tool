@@ -32,7 +32,7 @@ include_once 'includes/header.php';
                             <ul>We may update our Privacy Policy from time to time. Any changes will be reflected on this page.</ul>
 
                             <h2>Contact Us</h2>
-                            <ul>If you have any questions about this Privacy Policy, please contact the software contributors via the <a href="https://github.com/ESI-FAR/INA-tool" target='blank'>github</a> page.</ul>
+                            <ul>If you have any questions about this Privacy Policy, please contact the software contributors via the <a href="https://github.com/ESI-FAR/INA-tool" target='blank'>GitHub</a> page.</ul>
                             </div>
                         </div>
                     </div>
