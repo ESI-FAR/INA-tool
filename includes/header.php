@@ -64,8 +64,6 @@ if (isset($_POST['destroy_session'])) {
                         <img src="assets/escience/escience_favicon.png" alt="User Image" class="user-image">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="settings.php">Settings</a></li>
-                        <li><hr class="dropdown-divider" /></li>
                         <li>
                             <a class='dropdown-item' href='#!'>
                                 <form method='post'>
@@ -132,18 +130,6 @@ if (isset($_POST['destroy_session'])) {
                                     </button>
                                 </div>
                             </a>
-
-                            <a class="nav-link">
-                                <div class="sb-nav-link-icon">
-                                    <button type="button" class="btn btn-outline-primary" onclick="loadDemo()">
-                                        <!-- Add upload svg icon -->
-                                        <i class="fa-solid fa-file-arrow-up"></i>
-                                        load demo
-                                    </button>
-                                </div>
-                            </a>
-
-
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">
