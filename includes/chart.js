@@ -210,10 +210,12 @@ function addNodesAndLinks(statementObjects) {
             textElement.setAttribute("x", textX);
             textElement.setAttribute("y", textY);
             textElement.setAttribute("fill", "black");
-            textElement.setAttribute("font-size", "10px");
+            textElement.setAttribute("font-size", "14px");  // Increased font size from 10px to 14px
             textElement.setAttribute("text-anchor", "middle");
             textElement.setAttribute("alignment-baseline", "middle");
-            textElement.setAttribute("style", "user-select: none;");
+            textElement.setAttribute("style", "user-select: none;");  // Removed line-height from style
+
+
 
             // Wrap text if too long
             setTextWithLineWrap(textContent, textX, textY, textElement);
@@ -308,6 +310,7 @@ function updateConnection(connectionStartPosition, dx, dy) {
     line.setAttribute(`y${connectionStartPosition.num}`, connectionStartPosition.y + dy);
 }
 
+
 function setTextWithLineWrap(textContent, textX, textY, textElement) {
     if (textContent.length <= 20) {
         // If text is short, just add it as a single tspan
@@ -317,8 +320,9 @@ function setTextWithLineWrap(textContent, textX, textY, textElement) {
 
     let words = textContent.split(' ');
     let line = '';
-    const lineHeight = 10;
-    const maxLineLength = 25; // Maximum characters per line
+    const lineHeight = 1.2;  // Adjust this for line spacing
+    const fontSize = 12;  // Should match the font size set above
+    const maxLineLength = 23; // Maximum characters per line
     let lines = [];
 
     words.forEach(word => {
@@ -333,15 +337,15 @@ function setTextWithLineWrap(textContent, textX, textY, textElement) {
     lines.push(line);  // Ensure last line is added too
 
     // Each line moves up by half the number of lines, adjusted for adding lineHeight
-    const lineOffset = lines.length/2 - 1;
+    const lineOffset = (lines.length - 1) / 2;
     lines.forEach(function (line, lineNumber) {
         // Create tspan for each line
         let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
         tspan.setAttribute("x", textX);
-        tspan.setAttribute("y", textY + lineHeight * (lineNumber - lineOffset));
+        tspan.setAttribute("y", textY + (fontSize * lineHeight) * (lineNumber - lineOffset));
         tspan.textContent = line;
         textElement.appendChild(tspan);
-    })
+    });
 
 }
 
