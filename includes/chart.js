@@ -89,6 +89,7 @@ const row_template = {
 };
 
 const colors = { formal: '#009DDD', informal: '#FFB213' }
+const fontSize = 14;
 
 // Add connection drawing state variables to global INA namespace
 INA.isDrawingConnection = false;
@@ -210,12 +211,10 @@ function addNodesAndLinks(statementObjects) {
             textElement.setAttribute("x", textX);
             textElement.setAttribute("y", textY);
             textElement.setAttribute("fill", "black");
-            textElement.setAttribute("font-size", "14px");  // Increased font size from 10px to 14px
+            textElement.setAttribute("font-size", `${fontSize}px`);
             textElement.setAttribute("text-anchor", "middle");
             textElement.setAttribute("alignment-baseline", "middle");
-            textElement.setAttribute("style", "user-select: none;");  // Removed line-height from style
-
-
+            textElement.setAttribute("style", "user-select: none;");
 
             // Wrap text if too long
             setTextWithLineWrap(textContent, textX, textY, textElement);
@@ -310,7 +309,6 @@ function updateConnection(connectionStartPosition, dx, dy) {
     line.setAttribute(`y${connectionStartPosition.num}`, connectionStartPosition.y + dy);
 }
 
-
 function setTextWithLineWrap(textContent, textX, textY, textElement) {
     if (textContent.length <= 20) {
         // If text is short, just add it as a single tspan
@@ -321,7 +319,6 @@ function setTextWithLineWrap(textContent, textX, textY, textElement) {
     let words = textContent.split(' ');
     let line = '';
     const lineHeight = 1.2;  // Adjust this for line spacing
-    const fontSize = 12;  // Should match the font size set above
     const maxLineLength = 23; // Maximum characters per line
     let lines = [];
 
@@ -343,6 +340,7 @@ function setTextWithLineWrap(textContent, textX, textY, textElement) {
         let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
         tspan.setAttribute("x", textX);
         tspan.setAttribute("y", textY + (fontSize * lineHeight) * (lineNumber - lineOffset));
+        tspan.setAttribute("alignment-baseline", "middle")
         tspan.textContent = line;
         textElement.appendChild(tspan);
     });
@@ -394,7 +392,7 @@ function updateEdges(rowObj, edgesGroup) {
                 textElement.setAttribute("x", midX);  // Set the x-coordinate to the midpoint
                 textElement.setAttribute("y", midY);  // Set the y-coordinate to the midpoint
                 textElement.setAttribute("fill", "gray");  // Set the text color to gray
-                textElement.setAttribute("font-size", "12px");  // Set the font size
+                textElement.setAttribute("font-size", `${fontSize}px`);  // Set the font size
                 textElement.setAttribute("font-weight", "bold");  // Set the font weight to bold
                 textElement.setAttribute("text-anchor", "middle");  // Center the text horizontally
                 textElement.setAttribute("alignment-baseline", "middle");  // Center the text vertically
