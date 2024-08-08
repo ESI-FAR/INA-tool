@@ -40,6 +40,8 @@ const expectedColumnNames = [
 // Initialise a global namespace variable 'INA' to store global variables during the session
 window.INA = {};
 INA.statements;
+INA.columnNames;
+INA.connections = [];
 
 // Check table and initialize session variable to handle file upload properly
 function checkPreviousSessions() {
@@ -235,7 +237,8 @@ function storeDatainSession() {
         method: 'POST',
         data: {
             Columns: INA.columnNames,
-            Statements: INA.statements
+            Statements: INA.statements,
+            Connections: INA.connections,
         },
         success: function (response) {
             console.log('Session data stored successfully');

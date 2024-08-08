@@ -593,6 +593,10 @@ function drawConnection(event) {
 
     createConnection(startShapeId, destinationShapeId, connectionColor);
 
+    // Add new connection to list of drawn connections and store in session
+    INA.connections.push([startShapeId, destinationShapeId, connectionColor])
+    storeDatainSession();
+
     // Reset the drawing state
     INA.isDrawingConnection = false;
     INA.startShapeId = null;
@@ -652,13 +656,43 @@ function deleteConnection(event) {
     // If no such line, try finding a line the other way around
     if (!line) {
         line = document.getElementById(`connector_${destinationRowIdNum}-${startRowIdNum}`);
+        if (!line) {
+            return;  // Not valid in reverse either? Just exit.
+        }
+
+        // reverse line was found, so swap INA.startShapeId and destinationShapeId
+        let tmp = INA.startShapeId;
+        INA.startShapeId = destinationShapeId;
+        destinationShapeId = tmp;
     }
 
-    if (line) {
-        line.remove();
+    // Remove line from session tracking
+    let connectionColor = line.getAttribute("stroke");
+    let connectionIdx = INA.connections.findIndex(
+        (connection) => doArraysMatch(
+            connection,
+            [INA.startShapeId, destinationShapeId, connectionColor]
+        )
+    );
+    INA.connections.splice(connectionIdx, 1)  // splice(idx, n): remove n elements starting at idx
+    storeDatainSession();
 
-        // Reset the drawing state
-        INA.isDeletingConnection = false;
-        INA.startShapeId = null;
+    // Remove line element from SVG
+    line.remove();
+
+    // Reset the drawing state
+    INA.isDeletingConnection = false;
+    INA.startShapeId = null;
+}
+
+function doArraysMatch(array1, array2) {
+    if (array1.length != array2.length) {
+        return false;
     }
+    for (let i=0; i<array1.length; i++) {
+        if (array1[i] != array2[i]) {
+            return false;
+        }
+    }
+    return true;
 }

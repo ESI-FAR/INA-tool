@@ -11,6 +11,7 @@ if(isset($_POST['Columns'])) {
     // Store the received table data in session variable
     $_SESSION['Columns'] = $_POST['Columns'];
     $_SESSION['Statements'] = $_POST['Statements'];
+    $_SESSION['Connections'] = $_POST['Connections'];
 } else {
     echo "No data received";
 }
