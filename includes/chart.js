@@ -570,7 +570,7 @@ function getParentTransform(node) {
 }
 
 
-// Add event listener for double-click to select the destination node and draw the line
+// Add event listener for click to select the destination node and draw the line
 document.addEventListener('click', function(event) {
     if (INA.isDrawingConnection) {
         drawConnection(event);
@@ -588,7 +588,20 @@ function drawConnection(event) {
     }
 
     console.log('Selected destination node:', destinationShapeId);
-    let startNode = document.getElementById(INA.startShapeId);
+    let startShapeId = INA.startShapeId;
+    let connectionColor = INA.connectionColor;
+
+    createConnection(startShapeId, destinationShapeId, connectionColor);
+
+    // Reset the drawing state
+    INA.isDrawingConnection = false;
+    INA.startShapeId = null;
+    INA.connectionColor = null;
+}
+
+function createConnection(startShapeId, destinationShapeId, connectionColor) {
+    let startNode = document.getElementById(startShapeId);
+    let destinationNode = document.getElementById(destinationShapeId);
     let [startX, startY] = determineCenter(startNode);
     let startTransform = getParentTransform(startNode);
     let [endX, endY] = determineCenter(destinationNode);
@@ -596,7 +609,7 @@ function drawConnection(event) {
 
     // Create a line element and append it to the SVG
     let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("stroke", INA.connectionColor);
+    line.setAttribute("stroke", connectionColor);
     line.setAttribute("stroke-width", "5");
     line.setAttribute("x1", startX + startTransform.translateX);
     line.setAttribute("y1", startY + startTransform.translateY);
@@ -604,7 +617,7 @@ function drawConnection(event) {
     line.setAttribute("y2", endY + destinationTransform.translateY);
 
     // Convert startShapeId and destinationShapeId to numbers
-    let startRowIdNum = parseInt(INA.startShapeId, 10);
+    let startRowIdNum = parseInt(startShapeId, 10);
     let destinationRowIdNum = parseInt(destinationShapeId, 10);
 
     // Check if the conversion was successful
@@ -616,16 +629,12 @@ function drawConnection(event) {
     line.setAttribute("data-start-row-id", startRowIdNum);
     line.setAttribute("data-end-row-id", destinationRowIdNum);
     line.setAttribute("id", "connector_" + startRowIdNum + "-" + destinationRowIdNum);
-    line.setAttribute("start-shape-id_", INA.startShapeId);
+    line.setAttribute("start-shape-id_", startShapeId);
     line.setAttribute("end-shape-id_", destinationShapeId);
 
     // Append the line to the edges group or svg container
+    connectionGroup = document.getElementById("connectionGroup");
     connectionGroup.appendChild(line);
-
-    // Reset the drawing state
-    INA.isDrawingConnection = false;
-    INA.startShapeId = null;
-    INA.connectionColor = null;
 }
 
 function deleteConnection(event) {
