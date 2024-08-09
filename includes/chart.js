@@ -641,6 +641,13 @@ function createConnection(startShapeId, destinationShapeId, connectionColor) {
     connectionGroup.appendChild(line);
 }
 
+function renderOnLoad(statements, connections) {
+    addNodesAndLinks(statements);
+    for (let i=0; i<connections.length; i++) {
+        createConnection(...connections[i]);
+    }
+}
+
 function deleteConnection(event) {
     let destinationNode = event.target;
     let destinationShapeId = destinationNode.id;
@@ -661,9 +668,7 @@ function deleteConnection(event) {
         }
 
         // reverse line was found, so swap INA.startShapeId and destinationShapeId
-        let tmp = INA.startShapeId;
-        INA.startShapeId = destinationShapeId;
-        destinationShapeId = tmp;
+        [INA.startShapeId, destinationShapeId] = [destinationShapeId, INA.startShapeId]
     }
 
     // Remove line from session tracking

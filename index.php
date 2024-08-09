@@ -115,11 +115,11 @@ include_once 'includes/header.php';
                                             echo "</tbody>";
                                             echo "</table>";
 
-                                            // Render also chart
-
+                                            // Render chart: statements and connections
                                             echo "<script>document.getElementById('quoteBlock').hidden = true;</script>";
                                             $statements = json_encode($_SESSION['Statements']);
-                                            echo "<script>addNodesAndLinks($statements)</script>";
+                                            $connections = json_encode($_SESSION['Connections']);
+                                            echo "<script>renderOnLoad($statements, $connections)</script>";
 
 
                                         }
