@@ -222,6 +222,9 @@ function addNodesAndLinks(statementObjects) {
             nodesGroup.appendChild(textElement);
         });
 
+        let statementID = createStatementIDText(yOffset, rowObj);
+        nodesGroup.appendChild(statementID);
+
         // Add edges to the edges group after nodes
         updateEdges(rowObj, edgesGroup);
 
@@ -269,6 +272,20 @@ function addNodesAndLinks(statementObjects) {
             }
         });
     });
+}
+
+function createStatementIDText(yOffset, rowObj) {
+    let textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    textElement.setAttribute("x", 30);
+    textElement.setAttribute("y", yOffset - 10);
+    textElement.setAttribute("fill", "black");
+    textElement.setAttribute("font-size", `${fontSize}px`);
+    textElement.setAttribute("text-anchor", "middle");
+    textElement.setAttribute("font-weight", "bold");
+    textElement.setAttribute("alignment-baseline", "middle");
+    textElement.setAttribute("style", "user-select: none;");
+    textElement.textContent = rowObj["Statement Type"] == "formal" ? `F${rowObj.Id}` : `I${rowObj.Id}`;
+    return textElement;
 }
 
 function determineConnectionStartPosition(line, rowNumber) {
