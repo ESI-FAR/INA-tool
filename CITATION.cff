@@ -24,6 +24,5 @@ repository-code: 'https://github.com/ESI-FAR/INA-tool'
 url: 'https://inaeditor.tbm.tudelft.nl'
 keywords:
   - Institutional Network Analysis
-  - INA
-  - Institutional Grammer
+  - Institutional Grammar
 license: MIT
