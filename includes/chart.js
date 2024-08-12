@@ -279,12 +279,15 @@ function addNodesAndLinks(statementObjects) {
 
             let dx = (event.clientX - startX) / INA.scale;
             let dy = (event.clientY - startY) / INA.scale;
+            let translateX = startTransform.translateX + dx;
+            let translateY = startTransform.translateY + dy;
 
             // Move the dragged group
-            rowGroup.setAttribute('transform', `translate(${startTransform.translateX + dx}, ${startTransform.translateY + dy})`);
+            rowGroup.setAttribute('transform', `translate(${translateX}, ${translateY})`);
             connectionStartPositions.forEach(connectionStartPosition => {
                 updateConnection(connectionStartPosition, dx, dy);
             });
+            rowObj.translate = {'x': translateX, 'y': translateY};
         });
 
         window.addEventListener('mouseup', function (event) {
