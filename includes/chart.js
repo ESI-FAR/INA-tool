@@ -277,8 +277,8 @@ function addNodesAndLinks(statementObjects) {
         window.addEventListener('mousemove', function (event) {
             if (!isDragging) return;
 
-            let dx = event.clientX - startX;
-            let dy = event.clientY - startY;
+            let dx = (event.clientX - startX) / INA.scale;
+            let dy = (event.clientY - startY) / INA.scale;
 
             // Move the dragged group
             rowGroup.setAttribute('transform', `translate(${startTransform.translateX + dx}, ${startTransform.translateY + dy})`);
