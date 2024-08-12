@@ -56,7 +56,7 @@ include_once 'includes/header.php';
 
                                     /* Added styles for the inner svg */
                                     #svgContainer svg {
-                                        min-width: 1800px; /* Set a minimum width to enable horizontal scrolling */
+                                        min-width: 4000px; /* Set a minimum width to enable horizontal scrolling */
                                         min-height: 8000px; /* Set a minimum height to enable vertical scrolling */
                                         transform-origin: 0 0; /* Set transform origin to top left corner */
                                         transform: scale(1); /* Initial scale */
