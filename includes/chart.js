@@ -139,8 +139,14 @@ function addNodesAndLinks(statementObjects) {
 
         // Add id to enable dragging of connected lines further
         rowGroup.setAttribute("id", rowObj.Id);
-        // Initialize empty transform for detection by getParentTransform
-        rowGroup.setAttribute("transform", "translate(0, 0)")
+        // Apply translation if stored, otherwise start at (0,0) for later detection
+        let translation;
+        if (Object.hasOwn(rowObj, 'translate')) {
+            translation = `${rowObj.translate.x}, ${rowObj.translate.y}`;
+        } else {
+            translation = "0, 0";
+        }
+        rowGroup.setAttribute("transform", `translate(${translation})`);
 
         svg.appendChild(rowGroup);
 
@@ -293,6 +299,7 @@ function addNodesAndLinks(statementObjects) {
         window.addEventListener('mouseup', function (event) {
             if (isDragging) {
                 isDragging = false;
+                storeDatainSession();
             }
         });
     });
