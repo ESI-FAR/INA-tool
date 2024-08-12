@@ -96,6 +96,27 @@ INA.isDrawingConnection = false;
 INA.isDeletingConnection = false;
 INA.startShapeId = null;
 INA.connectionColor = null;
+INA.scale = 1; // Initial scale factor
+
+function zoomIn() {
+    INA.scale += 0.1;
+    updateScale();
+}
+
+function zoomOut() {
+    INA.scale -= 0.1;
+    updateScale();
+}
+
+function resetZoom() {
+    INA.scale = 1; // Reset scale to 1 (initial zoom level)
+    updateScale();
+}
+
+function updateScale() {
+    const svg = document.querySelector('#svgContainer svg');
+    svg.style.transform = `scale(${INA.scale})`;
+}
 
 function addNodesAndLinks(statementObjects) {
     let svgContainer = document.getElementById("svgContainer");

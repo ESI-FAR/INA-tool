@@ -64,30 +64,6 @@ include_once 'includes/header.php';
                                     }
                                 </style>
                                 <!-- End of chart -->
-                                <script>
-                                    // JavaScript to handle zooming of the SVG
-                                    let scale = 1; // Initial scale factor
-
-                                    function zoomIn() {
-                                        scale += 0.1;
-                                        updateScale();
-                                    }
-
-                                    function zoomOut() {
-                                        scale -= 0.1;
-                                        updateScale();
-                                    }
-
-                                    function resetZoom() {
-                                        scale = 1; // Reset scale to 1 (initial zoom level)
-                                        updateScale();
-                                    }
-
-                                    function updateScale() {
-                                        const svg = document.querySelector('#svgContainer svg');
-                                        svg.style.transform = `scale(${scale})`;
-                                    }
-                                </script>
                             </div>
                         </div>
                         <hr>
