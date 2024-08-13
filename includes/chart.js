@@ -643,6 +643,9 @@ function createConnection(startShapeId, destinationShapeId, connectionColor) {
 
 function renderOnLoad(statements, connections) {
     addNodesAndLinks(statements);
+    // For some reason, using connections.forEach(...) here instead results in
+    // document.getElementById(startShapeId) returning null for some reason,
+    // which is why this is an explicit, regular for-loop instead.
     for (let i=0; i<connections.length; i++) {
         createConnection(...connections[i]);
     }
