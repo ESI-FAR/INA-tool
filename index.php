@@ -20,8 +20,8 @@ include_once 'includes/header.php';
                                         <button class="btn btn-secondary btn-sm" onclick="resetZoom()">Reset Zoom</button>
                                     </div>
 
-                                    <button class="btn btn-sm btn-outline-dark" onclick="downloadProject()">
-                                    <i class="fa-solid fa-file-arrow-down"></i>
+                                    <button class="btn btn-sm btn-outline-dark" onclick="downloadPNG()">
+                                        <i class="fa-solid fa-file-image"></i>
                                         Download PNG
                                     </button>
                                 </div>

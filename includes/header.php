@@ -38,7 +38,7 @@ if (isset($_POST['destroy_session'])) {
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="INA is a digital tool developed by the eScience Center. It is designed to support the regulatory framework design process by facilitating study, analysis, and decision-making through data visualization and interaction." />
-        <meta name="author" content="Netherland eScience Center - Authors and Contributors: Lo Cascio Ermanno, Ali Suvayou, van Rijn Sander - Anno Domini 2024 - Milky Way, Solar System, Earth, Europe, Natherlands, Amsterdam   " />
+        <meta name="author" content="Netherland eScience Center - Authors and Contributors: Ermanno Lo Cascio, Suvayu Ali, Sander van Rijn - Anno Domini 2024 - Milky Way, Solar System, Earth, Europe, Netherlands, Amsterdam" />
         <title>INA Tool - eScience</title>
         <link href="css/styles.css" rel="stylesheet" />
         <link rel="icon" href="assets/escience/escience_favicon_orange.jpg" type="image/x-icon">
@@ -107,7 +107,6 @@ if (isset($_POST['destroy_session'])) {
                             <a class="nav-link">
                                 <div class="sb-nav-link-icon">
                                     <button type="button" class="btn btn-outline-primary" onclick="openFileUpload()">
-                                        <!-- Add upload svg icon -->
                                         <i class="fa-solid fa-file-arrow-up"></i>
                                         Upload file
                                     </button>
@@ -120,13 +119,12 @@ if (isset($_POST['destroy_session'])) {
                             <!-- Include JavaScript code to perform project download operations -->
                             <script src="includes/downloader.js"></script>
 
-                            <!-- Project download button -->
+                            <!-- PNG download button -->
                             <a class="nav-link">
                                 <div class="sb-nav-link-icon">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="downloadProject()">
-                                        <!-- Add download svg icon -->
-                                        <i class="fa-solid fa-file-arrow-down"></i>
-                                        Download
+                                    <button type="button" class="btn btn-outline-secondary" onclick="downloadPNG()">
+                                        <i class="fa-solid fa-file-image"></i>
+                                        Download PNG
                                     </button>
                                 </div>
                             </a>

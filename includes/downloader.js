@@ -17,7 +17,7 @@ The downloader.js enables the generation and download of the .PNG version of the
 It generate a .PNG of the current webview.
 */
 
-function downloadProject() {
+function downloadPNG() {
     if (!INA.statements.length >= 1) {
         alert("No image to download");
         return;
