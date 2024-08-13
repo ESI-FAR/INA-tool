@@ -39,9 +39,10 @@ const expectedColumnNames = [
 
 // Initialise a global namespace variable 'INA' to store global variables during the session
 window.INA = {};
-INA.statements;
-INA.columnNames;
+INA.statements = [];
+INA.columnNames = [];
 INA.connections = [];
+INA.projectName = "Unnamed-Project";
 
 // Check table and initialize session variable to handle file upload properly
 function checkPreviousSessions() {
@@ -127,6 +128,8 @@ function handleFileUpload(files) {
         displayErrorMessage('Invalid file type. Please select a CSV or TXT file.');
         return;
     }
+
+    INA.projectName = fileName.slice(0,-4);  // Take file name without .txt / .csv suffix
 
     // Display the modal
     $('#fileModal').modal('show');
@@ -239,6 +242,7 @@ function storeDatainSession() {
             Columns: INA.columnNames,
             Statements: INA.statements,
             Connections: INA.connections,
+            ProjectName: INA.projectName,
         },
         success: function (response) {
             console.log('Session data stored successfully');

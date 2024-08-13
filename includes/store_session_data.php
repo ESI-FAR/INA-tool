@@ -12,6 +12,7 @@ if(isset($_POST['Columns'])) {
     $_SESSION['Columns'] = $_POST['Columns'];
     $_SESSION['Statements'] = $_POST['Statements'];
     $_SESSION['Connections'] = $_POST['Connections'];
+    $_SESSION['ProjectName'] = $_POST['ProjectName'];
 } else {
     echo "No data received";
 }
