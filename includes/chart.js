@@ -141,8 +141,8 @@ function addNodesAndLinks(statementObjects) {
         rowGroup.setAttribute("id", rowObj.Id);
         // Apply translation if stored, otherwise start at (0,0) for later detection
         let translation;
-        if (Object.hasOwn(rowObj, 'translate')) {
-            translation = `${rowObj.translate.x}, ${rowObj.translate.y}`;
+        if (Object.hasOwn(rowObj, '_translate')) {
+            translation = `${rowObj._translate.x}, ${rowObj._translate.y}`;
         } else {
             translation = "0, 0";
         }
@@ -293,7 +293,7 @@ function addNodesAndLinks(statementObjects) {
             connectionStartPositions.forEach(connectionStartPosition => {
                 updateConnection(connectionStartPosition, dx, dy);
             });
-            rowObj.translate = {'x': translateX, 'y': translateY};
+            rowObj._translate = {'x': translateX, 'y': translateY};
         });
 
         window.addEventListener('mouseup', function (event) {
