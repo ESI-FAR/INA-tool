@@ -82,6 +82,24 @@ function downloadPNG() {
     img.src = url;
 }
 
+function downloadProject() {
+    let object = {
+        'projectName': INA.projectName,
+        'statements': INA.statements,
+        'connections': INA.connections,
+        'downloadDate': new Date(),
+    };
+
+    const json = JSON.stringify(object);
+    const blob = new Blob([json],{ type:'application/json' });
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = `${INA.projectName}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
 function getTimestampString() {
     const now = new Date();

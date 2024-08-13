@@ -128,6 +128,17 @@ if (isset($_POST['destroy_session'])) {
                                     </button>
                                 </div>
                             </a>
+
+                            <!-- Project download button -->
+                            <a class="nav-link">
+                                <div class="sb-nav-link-icon">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="downloadProject()">
+                                        <!-- Add download svg icon -->
+                                        <i class="fa-solid fa-file-arrow-down"></i>
+                                        Download Project
+                                    </button>
+                                </div>
+                            </a>
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">
