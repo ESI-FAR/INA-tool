@@ -163,7 +163,7 @@ if (isset($_POST['destroy_session'])) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick = 'confirmUpload("", "")'>Confirm upload</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick = 'confirmUpload()'>Confirm upload</button>
                 </div>
                 </div>
             </div>

@@ -115,44 +115,65 @@ function handleFileUpload(files) {
 
     // Check the file type
     let fileName = files[0].name;
-    let fileType = getFileType(fileName);
+    let [fileStem, fileType] = splitFileName(fileName);
+    INA.projectName = fileStem;
+    let fileModalBody = document.getElementById("fileModalBody");
 
-    if (fileType !== 'csv' && fileType !== 'txt') {
-        // Provide negatice feedback to user
-        let fileModalBody = document.getElementById("fileModalBody");
-        // Change class to alert-danger
-        fileModalBody.classList.remove("alert-primary");
-        fileModalBody.classList.add("alert-danger");
+    switch (fileType) {
+        case 'csv':
+        case 'txt':
+            checkFileContent();
+            break;
+        case 'json':
+            console.log('here follows json parsing');
+            loadFromJsonUpload();
+            break;
+        default:
+            // Provide negative feedback to user
+            // Change class to alert-danger
+            fileModalBody.classList.remove("alert-primary");
+            fileModalBody.classList.add("alert-danger");
 
-        // Display an error message in the modal
-        displayErrorMessage('Invalid file type. Please select a CSV or TXT file.');
-        return;
+            // Display an error message in the modal
+            displayErrorMessage('Invalid file type. Please select a CSV or TXT file.');
+            return;
     }
-
-    INA.projectName = fileName.slice(0,-4);  // Take file name without .txt / .csv suffix
 
     // Display the modal
     $('#fileModal').modal('show');
-    let fileModalBody = document.getElementById("fileModalBody");
-
-    // Change class to alert-primary
     fileModalBody.classList.remove("alert-danger");
     fileModalBody.classList.add("alert-primary");
 
     // Get the file name and display it in the modal
-    fileModalBody.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> File Name: ' + fileName;
-    checkFileContent();
+    fileModalBody.innerHTML = '<i class="fa-solid fa-circle-check"></i> File Name: ' + fileName;
+
 }
 
-function getFileType(fileName) {
+function loadFromJsonUpload() {
+    let fileInput = document.getElementById('fileInput');
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+        let content = JSON.parse(e.target.result);
+        INA.projectName = content.projectName;
+        INA.statements = content.statements;
+        INA.connections = content.connections;
+    }
+
+    reader.readAsText(fileInput.files[0]);
+}
+
+function splitFileName(fileName) {
     // Extract the file extension
-    let fileExtension = fileName.split('.').pop().toLowerCase();
-    return fileExtension;
+    let parts = fileName.split('.');
+    let fileStem = parts.shift();
+    let fileExtension = parts.pop().toLowerCase();
+    return [fileStem, fileExtension];
 }
 
 function displayErrorMessage(message) {
     // Display error message in the modal
-    document.getElementById('fileModalBody').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/><path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/></svg> Error: ' + message;
+    document.getElementById('fileModalBody').innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error: ' + message;
     $('#fileModal').modal('show');
 }
 
@@ -218,17 +239,17 @@ function checkColumnNames(columnNames) {
 
 }
 
+// FIXME: this function currently serves as entry point from the upload dialog,
+//        but is only doing superfluous/double work. Combine with `renderOnLoad`
+//
 // Function to confirm upload and fill rows in an existing table
-function confirmUpload(uploadedColumnNames, uploadedRowValues) {
-    if (!uploadedColumnNames) {
-        uploadedColumnNames = INA.columnNames;
-    }
-    if (!uploadedRowValues) {
-        uploadedRowValues = INA.statements;
-    }
+function confirmUpload() {
 
-    populateTable(uploadedColumnNames, uploadedRowValues);
-    addNodesAndLinks(uploadedRowValues);
+    let columnNames = Object.keys(INA.statements[0]);
+    removeFromArray('_translate', columnNames);
+
+    populateTable(columnNames, INA.statements);
+    renderOnLoad(INA.statements, INA.connections, INA.projectName);
 }
 
 
