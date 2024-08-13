@@ -651,7 +651,18 @@ function createConnection(startShapeId, destinationShapeId, connectionColor) {
     connectionGroup.appendChild(line);
 }
 
-function renderOnLoad(statements, connections) {
+function renderOnLoad(statements, connections, projectName) {
+
+    // Repopulate the global INA namespace with loaded information
+    INA.statements = statements;
+    INA.connections = connections;
+    INA.projectName = projectName;
+
+    // Reconstruct 'columnNames' from a statement object
+    let columnNames = Object.keys(statements[0]);
+    removeFromArray('_translate', columnNames);
+    INA.columnNames = columnNames;
+
     addNodesAndLinks(statements);
     // For some reason, using connections.forEach(...) here instead results in
     // document.getElementById(startShapeId) returning null for some reason,
@@ -713,4 +724,11 @@ function doArraysMatch(array1, array2) {
         }
     }
     return true;
+}
+
+function removeFromArray(entry, array) {
+    const idx = array.indexOf(entry);
+    if (idx !== -1) {
+        array.splice(idx, 1);
+    }
 }

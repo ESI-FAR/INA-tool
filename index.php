@@ -119,7 +119,8 @@ include_once 'includes/header.php';
                                             echo "<script>document.getElementById('quoteBlock').hidden = true;</script>";
                                             $statements = json_encode($_SESSION['Statements']);
                                             $connections = json_encode($_SESSION['Connections']);
-                                            echo "<script>renderOnLoad($statements, $connections)</script>";
+                                            $projectName = json_encode($_SESSION['ProjectName']);
+                                            echo "<script>renderOnLoad($statements, $connections, $projectName)</script>";
 
 
                                         }
