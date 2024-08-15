@@ -247,8 +247,6 @@ function confirmUpload() {
 
     let columnNames = Object.keys(INA.statements[0]);
     removeFromArray('_translate', columnNames);
-
-    populateTable(columnNames, INA.statements);
     renderOnLoad(INA.statements, INA.connections, INA.projectName);
 }
 

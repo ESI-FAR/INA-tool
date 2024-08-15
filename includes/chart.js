@@ -663,6 +663,8 @@ function renderOnLoad(statements, connections, projectName) {
     removeFromArray('_translate', columnNames);
     INA.columnNames = columnNames;
 
+    populateTable(columnNames, INA.statements);
+
     addNodesAndLinks(statements);
     // For some reason, using connections.forEach(...) here instead results in
     // document.getElementById(startShapeId) returning null for some reason,
