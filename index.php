@@ -77,7 +77,7 @@ include_once 'includes/header.php';
                                 <table id='tableData' class='display' style='width:100%'></table>
                                     <?php
                                     // Check if the session variable is set and not empty
-                                    if (isset($_SESSION['Columns']) && !empty($_SESSION['Columns'])) {
+                                    if (isset($_SESSION['Statements']) && !empty($_SESSION['Statements'])) {
 
                                         // Must re-initilize the table to retrieve jQuery features from https://datatables.net/
                                         echo "<script> $(document).ready(function() {

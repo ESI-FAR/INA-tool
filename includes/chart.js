@@ -658,12 +658,7 @@ function renderOnLoad(statements, connections, projectName) {
     INA.connections = connections;
     INA.projectName = projectName;
 
-    // Reconstruct 'columnNames' from a statement object
-    let columnNames = Object.keys(statements[0]);
-    removeFromArray('_translate', columnNames);
-    INA.columnNames = columnNames;
-
-    populateTable(columnNames, INA.statements);
+    populateTable(INA.statements);
 
     addNodesAndLinks(statements);
     // For some reason, using connections.forEach(...) here instead results in

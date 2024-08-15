@@ -7,9 +7,8 @@
 session_start();
 
 // Check if table data is received via POST
-if(isset($_POST['Columns'])) {
+if(isset($_POST['Statements'])) {
     // Store the received table data in session variable
-    $_SESSION['Columns'] = $_POST['Columns'];
     $_SESSION['Statements'] = $_POST['Statements'];
     $_SESSION['Connections'] = $_POST['Connections'];
     $_SESSION['ProjectName'] = $_POST['ProjectName'];

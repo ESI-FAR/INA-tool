@@ -40,7 +40,6 @@ const expectedColumnNames = [
 // Initialise a global namespace variable 'INA' to store global variables during the session
 window.INA = {};
 INA.statements = [];
-INA.columnNames = [];
 INA.connections = [];
 INA.projectName = "Unnamed-Project";
 
@@ -189,26 +188,26 @@ function checkFileContent() {
         // Check if the file content has comma as a separator
         if (content.includes(',')) {
             let lines = content.split('\n');
-            INA.columnNames = lines[0].replace('\r', '').split(',');
-            INA.columnNames = INA.columnNames.map(name => toTitleCase(name));
+            let columnNames = lines[0].replace('\r', '').split(',');
+            columnNames = columnNames.map(name => toTitleCase(name));
             let rowValues = lines.slice(1).map(row => row.split(','));
 
             // Add an ID column in front if not already present
-            if (!INA.columnNames.includes('Id')) {
-                INA.columnNames.unshift("Id");
+            if (!columnNames.includes('Id')) {
+                columnNames.unshift("Id");
                 rowValues = rowValues.map((row, index) => [(index + 1)].concat(row));
             }
 
             INA.statements = [];
             rowValues.forEach(row => {
                 // Map row attributes to their respective values
-                let entries = INA.columnNames.map((attribute, idx) => {
+                let entries = columnNames.map((attribute, idx) => {
                     return [attribute, row[idx]];
                 });
                 INA.statements.push(Object.fromEntries(entries));
             });
 
-            checkColumnNames(INA.columnNames);
+            checkColumnNames(columnNames);
         } else {
             // Display an error message if not a CSV file
             displayErrorMessage('Invalid file content. Please select a valid CSV file.');
@@ -227,16 +226,15 @@ function toTitleCase(str) {
   }
 
 function checkColumnNames(columnNames) {
-
     // Define the names accepted for the columns
     let expectedNames = new Set(expectedColumnNames);
     let missingColumns = expectedNames.difference(new Set(columnNames));
 
     // Alert with the missing column names
-    if (missingColumns.size > 0) {        const errorMessage = "Missing column names: <i>" + Array.from(missingColumns).join(", ") + "</i>";
+    if (missingColumns.size > 0) {
+        const errorMessage = `Missing column names: <i>${Array.from(missingColumns).join(", ")}</i>`;
         displayErrorMessage(errorMessage);
     }
-
 }
 
 // FIXME: this function currently serves as entry point from the upload dialog,
@@ -244,9 +242,6 @@ function checkColumnNames(columnNames) {
 //
 // Function to confirm upload and fill rows in an existing table
 function confirmUpload() {
-
-    let columnNames = Object.keys(INA.statements[0]);
-    removeFromArray('_translate', columnNames);
     renderOnLoad(INA.statements, INA.connections, INA.projectName);
 }
 
@@ -258,7 +253,6 @@ function storeDatainSession() {
         url: 'includes/store_session_data.php',
         method: 'POST',
         data: {
-            Columns: INA.columnNames,
             Statements: INA.statements,
             Connections: INA.connections,
             ProjectName: INA.projectName,
@@ -292,12 +286,16 @@ function loaderStarter() {
     });
 }
 
-function populateTable(uploadedColumnNames, uploadedStatementObjects) {
+function populateTable(statements) {
 
     // Clear the existing table content
     $('#tableData').empty();
 
-    let columnsArray = uploadedColumnNames.map(columnName => {
+    // Extract columnNames from statements objects
+    let columnNames = Object.keys(statements[0]);
+    removeFromArray('_translate', columnNames);
+
+    let columnsArray = columnNames.map(columnName => {
         return {title: columnName}
     })
 
@@ -307,8 +305,8 @@ function populateTable(uploadedColumnNames, uploadedStatementObjects) {
     });
 
     let uploadedRowValues = [];
-    uploadedStatementObjects.forEach(statementObj => {
-        let row = uploadedColumnNames.map(column => statementObj[column]);
+    statements.forEach(statementObj => {
+        let row = columnNames.map(column => statementObj[column]);
         uploadedRowValues.push(row);
     });
 
