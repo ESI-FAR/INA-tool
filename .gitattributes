@@ -1,0 +1,18 @@
+*.cff   text
+*.css   text
+*.csv   text
+*.html  text
+*.js    text
+*.json  text
+*.md    text
+*.php   text
+*.pug   text
+*.scss  text
+*.svg   text
+*.txt   text
+*.yaml  text
+*.yml   text
+
+*.jpg   binary
+*.png   binary
+*.svg   binary
