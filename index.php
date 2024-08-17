@@ -90,7 +90,10 @@ include_once 'includes/header.php';
                                         $statements = json_encode($_SESSION['Statements']);
                                         $connections = json_encode($_SESSION['Connections']);
                                         $projectName = json_encode($_SESSION['ProjectName']);
-                                        echo "<script>renderOnLoad($statements, $connections, $projectName)</script>";
+                                        echo "<script>
+                                            loadProjectIntoGlobalScope($statements, $connections, $projectName);
+                                            renderOnLoad();
+                                        </script>";
 
                                     }
                                     ?>

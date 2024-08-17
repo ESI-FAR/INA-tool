@@ -124,7 +124,6 @@ function handleFileUpload(files) {
             checkFileContent();
             break;
         case 'json':
-            console.log('here follows json parsing');
             loadFromJsonUpload();
             break;
         default:
@@ -237,15 +236,6 @@ function checkColumnNames(columnNames) {
     }
 }
 
-// FIXME: this function currently serves as entry point from the upload dialog,
-//        but is only doing superfluous/double work. Combine with `renderOnLoad`
-//
-// Function to confirm upload and fill rows in an existing table
-function confirmUpload() {
-    renderOnLoad(INA.statements, INA.connections, INA.projectName);
-}
-
-
 function storeDatainSession() {
 
     // Send the generated table data to PHP script via AJAX
@@ -315,4 +305,10 @@ function populateTable(statements) {
 
     // Store table data in session
     storeDatainSession();
+}
+
+function loadProjectIntoGlobalScope(projectName, statements, connections) {
+    INA.projectName = projectName;
+    INA.statements = statements;
+    INA.connections = connections;
 }

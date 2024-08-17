@@ -651,21 +651,15 @@ function createConnection(startShapeId, destinationShapeId, connectionColor) {
     connectionGroup.appendChild(line);
 }
 
-function renderOnLoad(statements, connections, projectName) {
-
-    // Repopulate the global INA namespace with loaded information
-    INA.statements = statements;
-    INA.connections = connections;
-    INA.projectName = projectName;
-
+function renderOnLoad() {
     populateTable(INA.statements);
+    addNodesAndLinks(INA.statements);
 
-    addNodesAndLinks(statements);
     // For some reason, using connections.forEach(...) here instead results in
     // document.getElementById(startShapeId) returning null for some reason,
     // which is why this is an explicit, regular for-loop instead.
-    for (let i=0; i<connections.length; i++) {
-        createConnection(...connections[i]);
+    for (let i=0; i<INA.connections.length; i++) {
+        createConnection(...INA.connections[i]);
     }
 }
 
