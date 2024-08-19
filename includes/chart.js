@@ -97,26 +97,26 @@ RENDER.isDrawingConnection = false;
 RENDER.isDeletingConnection = false;
 RENDER.startShapeId = null;
 RENDER.connectionColor = null;
-INA.scale = 1; // Initial scale factor
+PROJECT.scale = 1; // Initial scale factor
 
 function zoomIn() {
-    INA.scale += 0.1;
+    PROJECT.scale += 0.1;
     updateScale();
 }
 
 function zoomOut() {
-    INA.scale -= 0.1;
+    PROJECT.scale -= 0.1;
     updateScale();
 }
 
 function resetZoom() {
-    INA.scale = 1; // Reset scale to 1 (initial zoom level)
+    PROJECT.scale = 1; // Reset scale to 1 (initial zoom level)
     updateScale();
 }
 
 function updateScale() {
     const svg = document.querySelector('#svgContainer svg');
-    svg.style.transform = `scale(${INA.scale})`;
+    svg.style.transform = `scale(${PROJECT.scale})`;
 }
 
 function addNodesAndLinks(statementObjects) {
@@ -284,8 +284,8 @@ function addNodesAndLinks(statementObjects) {
         window.addEventListener('mousemove', function (event) {
             if (!isDragging) return;
 
-            let dx = (event.clientX - startX) / INA.scale;
-            let dy = (event.clientY - startY) / INA.scale;
+            let dx = (event.clientX - startX) / PROJECT.scale;
+            let dy = (event.clientY - startY) / PROJECT.scale;
             let translateX = startTransform.translateX + dx;
             let translateY = startTransform.translateY + dy;
 
@@ -605,7 +605,7 @@ function drawConnection(event) {
     createConnection(startShapeId, destinationShapeId, connectionColor);
 
     // Add new connection to list of drawn connections and store in session
-    INA.connections.push([startShapeId, destinationShapeId, connectionColor])
+    PROJECT.connections.push([startShapeId, destinationShapeId, connectionColor])
     storeDatainSession();
 
     // Reset the drawing state
@@ -653,13 +653,13 @@ function createConnection(startShapeId, destinationShapeId, connectionColor) {
 }
 
 function renderOnLoad() {
-    populateTable(INA.statements);
-    addNodesAndLinks(INA.statements);
+    populateTable(PROJECT.statements);
+    addNodesAndLinks(PROJECT.statements);
     // For some reason, using connections.forEach(...) here instead results in
     // document.getElementById(startShapeId) returning null for some reason,
     // which is why this is an explicit, regular for-loop instead.
-    for (let i=0; i<INA.connections.length; i++) {
-        createConnection(...INA.connections[i]);
+    for (let i=0; i<PROJECT.connections.length; i++) {
+        createConnection(...PROJECT.connections[i]);
     }
 
     storeDatainSession();
@@ -690,13 +690,13 @@ function deleteConnection(event) {
 
     // Remove line from session tracking
     let connectionColor = line.getAttribute("stroke");
-    let connectionIdx = INA.connections.findIndex(
+    let connectionIdx = PROJECT.connections.findIndex(
         (connection) => doArraysMatch(
             connection,
             [RENDER.startShapeId, destinationShapeId, connectionColor]
         )
     );
-    INA.connections.splice(connectionIdx, 1)  // splice(idx, n): remove n elements starting at idx
+    PROJECT.connections.splice(connectionIdx, 1)  // splice(idx, n): remove n elements starting at idx
     storeDatainSession();
 
     // Remove line element from SVG
