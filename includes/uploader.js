@@ -307,7 +307,7 @@ function populateTable(statements) {
     storeDatainSession();
 }
 
-function loadProjectIntoGlobalScope(projectName, statements, connections) {
+function loadProjectIntoGlobalScope(statements, connections, projectName) {
     INA.projectName = projectName;
     INA.statements = statements;
     INA.connections = connections;
