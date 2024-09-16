@@ -654,13 +654,14 @@ function createConnection(startShapeId, destinationShapeId, connectionColor) {
 function renderOnLoad() {
     populateTable(INA.statements);
     addNodesAndLinks(INA.statements);
-
     // For some reason, using connections.forEach(...) here instead results in
     // document.getElementById(startShapeId) returning null for some reason,
     // which is why this is an explicit, regular for-loop instead.
     for (let i=0; i<INA.connections.length; i++) {
         createConnection(...INA.connections[i]);
     }
+
+    storeDatainSession();
 }
 
 function deleteConnection(event) {

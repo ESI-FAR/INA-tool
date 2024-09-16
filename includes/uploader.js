@@ -302,9 +302,6 @@ function populateTable(statements) {
 
     // Set the table rows
     dataTable.rows.add(uploadedRowValues).draw();
-
-    // Store table data in session
-    storeDatainSession();
 }
 
 function loadProjectIntoGlobalScope(statements, connections, projectName) {
