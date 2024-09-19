@@ -37,11 +37,11 @@ const expectedColumnNames = [
 ];
 
 
-// Initialise a global namespace variable 'INA' to store global variables during the session
-window.INA = {};
-INA.statements = [];
-INA.connections = [];
-INA.projectName = "Unnamed-Project";
+// Initialise a global namespace variable 'PROJECT' to store global variables during the session
+window.PROJECT = {};
+PROJECT.statements = [];
+PROJECT.connections = [];
+PROJECT.projectName = "Unnamed-Project";
 
 // Check table and initialize session variable to handle file upload properly
 function checkPreviousSessions() {
@@ -115,7 +115,7 @@ function handleFileUpload(files) {
     // Check the file type
     let fileName = files[0].name;
     let [fileStem, fileType] = splitFileName(fileName);
-    INA.projectName = fileStem;
+    PROJECT.projectName = fileStem;
     let fileModalBody = document.getElementById("fileModalBody");
 
     switch (fileType) {
@@ -153,9 +153,9 @@ function loadFromJsonUpload() {
 
     reader.onload = function(e) {
         let content = JSON.parse(e.target.result);
-        INA.projectName = content.projectName;
-        INA.statements = content.statements;
-        INA.connections = content.connections;
+        PROJECT.projectName = content.projectName;
+        PROJECT.statements = content.statements;
+        PROJECT.connections = content.connections;
     }
 
     reader.readAsText(fileInput.files[0]);
@@ -197,13 +197,13 @@ function checkFileContent() {
                 rowValues = rowValues.map((row, index) => [(index + 1)].concat(row));
             }
 
-            INA.statements = [];
+            PROJECT.statements = [];
             rowValues.forEach(row => {
                 // Map row attributes to their respective values
                 let entries = columnNames.map((attribute, idx) => {
                     return [attribute, row[idx]];
                 });
-                INA.statements.push(Object.fromEntries(entries));
+                PROJECT.statements.push(Object.fromEntries(entries));
             });
 
             checkColumnNames(columnNames);
@@ -243,9 +243,9 @@ function storeDatainSession() {
         url: 'includes/store_session_data.php',
         method: 'POST',
         data: {
-            Statements: INA.statements,
-            Connections: INA.connections,
-            ProjectName: INA.projectName,
+            Statements: PROJECT.statements,
+            Connections: PROJECT.connections,
+            ProjectName: PROJECT.projectName,
         },
         success: function (response) {
             console.log('Session data stored successfully');
@@ -305,7 +305,7 @@ function populateTable(statements) {
 }
 
 function loadProjectIntoGlobalScope(statements, connections, projectName) {
-    INA.projectName = projectName;
-    INA.statements = statements;
-    INA.connections = connections;
+    PROJECT.projectName = projectName;
+    PROJECT.statements = statements;
+    PROJECT.connections = connections;
 }
