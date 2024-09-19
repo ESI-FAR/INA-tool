@@ -186,9 +186,9 @@ function checkFileContent() {
 
         // Check if the file content has comma as a separator
         if (content.includes(',')) {
-            let lines = content.split('\n');
-            let columnNames = lines[0].replace('\r', '').split(',');
-            columnNames = columnNames.map(name => toTitleCase(name));
+            const lines = content.split('\n');
+            const columnNamesRaw = lines[0].replace('\r', '').split(',');
+            let columnNames = columnNamesRaw.map(name => toTitleCase(name));
             let rowValues = lines.slice(1).map(row => row.split(','));
 
             // Add an ID column in front if not already present
@@ -282,10 +282,10 @@ function populateTable(statements) {
     $('#tableData').empty();
 
     // Extract columnNames from statements objects
-    let columnNames = Object.keys(statements[0]);
+    const columnNames = Object.keys(statements[0]);
     removeFromArray('_translate', columnNames);
 
-    let columnsArray = columnNames.map(columnName => {
+    const columnsArray = columnNames.map(columnName => {
         return {title: columnName}
     })
 
