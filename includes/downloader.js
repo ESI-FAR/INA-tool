@@ -16,7 +16,6 @@
 The downloader.js enables the generation and download of the .PNG version of the flowchart.
 It generate a .PNG of the current webview.
 */
-
 function downloadPNG() {
     if (!INA.statements.length >= 1) {
         alert("No image to download");
@@ -113,3 +112,58 @@ function getTimestampString() {
 }
 
 
+function downloadCSV() {
+    const columnNames = INA.columnNames;  
+    const statements = INA.statements;    
+
+    // Validation: Check if columnNames or statements are empty
+    if (!columnNames || columnNames.length === 0 || !statements || statements.length === 0) {
+        alert("No data found.");
+        return;  // Exit the function if no data
+    }
+
+    // Start CSV content with column names (header row)
+    let csvContent = columnNames.join(",") + "\n";
+
+    // Loop through each statement object
+    statements.forEach(statement => {
+        // For each statement, create a row by joining values in the same order as the column names
+        let row = columnNames.map(col => {
+            // Handle undefined or null values, and escape commas if needed
+            const value = statement[col] ? statement[col] : '';
+            return `"${value.toString().replace(/"/g, '""')}"`;  // Escape quotes
+        }).join(",");
+        csvContent += row + "\n";
+    });
+
+    // Create a Blob with the CSV content
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Create a link to trigger the download
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+
+    // Add time stamp to the file name for the link
+    const formattedDateTime = getTimestampString();
+    link.setAttribute("download", formattedDateTime + "_statements.csv");
+
+    // Append the link to the body (not displayed) and trigger a click
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up by removing the link
+    document.body.removeChild(link);
+}
+
+// Helper function to generate a timestamp string for file naming
+function getTimestampString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+}
