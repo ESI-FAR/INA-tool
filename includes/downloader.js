@@ -111,7 +111,6 @@ function getTimestampString() {
     return `${year}${month}${day}-${hours}${minutes}${seconds}`;
 }
 
-
 function downloadCSV() {
     const columnNames = INA.columnNames;  
     const statements = INA.statements;    
@@ -129,9 +128,9 @@ function downloadCSV() {
     statements.forEach(statement => {
         // For each statement, create a row by joining values in the same order as the column names
         let row = columnNames.map(col => {
-            // Handle undefined or null values, and escape commas if needed
+            // Handle undefined or null values
             const value = statement[col] ? statement[col] : '';
-            return `"${value.toString().replace(/"/g, '""')}"`;  // Escape quotes
+            return value.toString();  // No double quotes
         }).join(",");
         csvContent += row + "\n";
     });
@@ -154,16 +153,4 @@ function downloadCSV() {
 
     // Clean up by removing the link
     document.body.removeChild(link);
-}
-
-// Helper function to generate a timestamp string for file naming
-function getTimestampString() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    return `${year}${month}${day}_${hours}${minutes}${seconds}`;
 }
