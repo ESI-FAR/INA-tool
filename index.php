@@ -68,10 +68,21 @@ include_once 'includes/header.php';
                         </div>
                         <hr>
                         <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                DataTable
-                            </div>
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-table me-1"></i>
+                            DataTable
+                        </div>
+                        <div>
+                            <!-- Download CSV Button -->
+                             
+                            <button class="btn btn-sm btn-outline-dark" onclick = "downloadCSV()">
+                            <i class="fa-solid fa-file-csv"></i>    
+                            Download as CSV</button>
+                        </div>
+                        
+                    </div>
+
                             <div class="card-body">
                                 <div style="overflow-x: auto;">
                                 <table id='tableData' class='display' style='width:100%'></table>
