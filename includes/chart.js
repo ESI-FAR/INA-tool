@@ -91,31 +91,32 @@ const row_template = {
 const colors = { formal: '#009DDD', informal: '#FFB213' }
 const fontSize = 14;
 
-// Add connection drawing state variables to global INA namespace
-INA.isDrawingConnection = false;
-INA.isDeletingConnection = false;
-INA.startShapeId = null;
-INA.connectionColor = null;
-INA.scale = 1; // Initial scale factor
+// Add connection drawing state variables to global RENDER namespace
+window.RENDER = {};
+RENDER.isDrawingConnection = false;
+RENDER.isDeletingConnection = false;
+RENDER.startShapeId = null;
+RENDER.connectionColor = null;
+PROJECT.scale = 1; // Initial scale factor
 
 function zoomIn() {
-    INA.scale += 0.1;
+    PROJECT.scale += 0.1;
     updateScale();
 }
 
 function zoomOut() {
-    INA.scale -= 0.1;
+    PROJECT.scale -= 0.1;
     updateScale();
 }
 
 function resetZoom() {
-    INA.scale = 1; // Reset scale to 1 (initial zoom level)
+    PROJECT.scale = 1; // Reset scale to 1 (initial zoom level)
     updateScale();
 }
 
 function updateScale() {
     const svg = document.querySelector('#svgContainer svg');
-    svg.style.transform = `scale(${INA.scale})`;
+    svg.style.transform = `scale(${PROJECT.scale})`;
 }
 
 function addNodesAndLinks(statementObjects) {
@@ -283,8 +284,8 @@ function addNodesAndLinks(statementObjects) {
         window.addEventListener('mousemove', function (event) {
             if (!isDragging) return;
 
-            let dx = (event.clientX - startX) / INA.scale;
-            let dy = (event.clientY - startY) / INA.scale;
+            let dx = (event.clientX - startX) / PROJECT.scale;
+            let dy = (event.clientY - startY) / PROJECT.scale;
             let translateX = startTransform.translateX + dx;
             let translateY = startTransform.translateY + dy;
 
@@ -546,9 +547,9 @@ function showContextMenu(event, node) {
         contextMenu.style.display = 'none';
         contextMenu.classList.remove('show');
         // Start the drawing process
-        INA.isDrawingConnection = true;
-        INA.startShapeId = node.id;
-        INA.connectionColor = color;
+        RENDER.isDrawingConnection = true;
+        RENDER.startShapeId = node.id;
+        RENDER.connectionColor = color;
         console.log('Draw Connection clicked for node', node.id);
     };
 
@@ -556,8 +557,8 @@ function showContextMenu(event, node) {
         contextMenu.style.display = 'none';
         contextMenu.classList.remove('show');
         // Implement the logic to delete a connection
-        INA.isDeletingConnection = true;
-        INA.startShapeId = node.id;
+        RENDER.isDeletingConnection = true;
+        RENDER.startShapeId = node.id;
         console.log('Delete Connection clicked for node', node.id);
     };
 
@@ -582,9 +583,9 @@ function getParentTransform(node) {
 
 // Add event listener for click to select the destination node and draw the line
 document.addEventListener('click', function(event) {
-    if (INA.isDrawingConnection) {
+    if (RENDER.isDrawingConnection) {
         drawConnection(event);
-    } else if (INA.isDeletingConnection) {
+    } else if (RENDER.isDeletingConnection) {
         deleteConnection(event);
     }
 });
@@ -598,19 +599,19 @@ function drawConnection(event) {
     }
 
     console.log('Selected destination node:', destinationShapeId);
-    let startShapeId = INA.startShapeId;
-    let connectionColor = INA.connectionColor;
+    let startShapeId = RENDER.startShapeId;
+    let connectionColor = RENDER.connectionColor;
 
     createConnection(startShapeId, destinationShapeId, connectionColor);
 
     // Add new connection to list of drawn connections and store in session
-    INA.connections.push([startShapeId, destinationShapeId, connectionColor])
+    PROJECT.connections.push([startShapeId, destinationShapeId, connectionColor])
     storeDatainSession();
 
     // Reset the drawing state
-    INA.isDrawingConnection = false;
-    INA.startShapeId = null;
-    INA.connectionColor = null;
+    RENDER.isDrawingConnection = false;
+    RENDER.startShapeId = null;
+    RENDER.connectionColor = null;
 }
 
 function createConnection(startShapeId, destinationShapeId, connectionColor) {
@@ -652,13 +653,13 @@ function createConnection(startShapeId, destinationShapeId, connectionColor) {
 }
 
 function renderOnLoad() {
-    populateTable(INA.statements);
-    addNodesAndLinks(INA.statements);
+    populateTable(PROJECT.statements);
+    addNodesAndLinks(PROJECT.statements);
     // For some reason, using connections.forEach(...) here instead results in
     // document.getElementById(startShapeId) returning null for some reason,
     // which is why this is an explicit, regular for-loop instead.
-    for (let i=0; i<INA.connections.length; i++) {
-        createConnection(...INA.connections[i]);
+    for (let i=0; i<PROJECT.connections.length; i++) {
+        createConnection(...PROJECT.connections[i]);
     }
 
     storeDatainSession();
@@ -672,7 +673,7 @@ function deleteConnection(event) {
         return;
     }
 
-    let startRowIdNum = parseInt(INA.startShapeId, 10);
+    let startRowIdNum = parseInt(RENDER.startShapeId, 10);
     let destinationRowIdNum = parseInt(destinationShapeId, 10);
 
     line = document.getElementById(`connector_${startRowIdNum}-${destinationRowIdNum}`);
@@ -683,27 +684,27 @@ function deleteConnection(event) {
             return;  // Not valid in reverse either? Just exit.
         }
 
-        // reverse line was found, so swap INA.startShapeId and destinationShapeId
-        [INA.startShapeId, destinationShapeId] = [destinationShapeId, INA.startShapeId]
+        // reverse line was found, so swap RENDER.startShapeId and destinationShapeId
+        [RENDER.startShapeId, destinationShapeId] = [destinationShapeId, RENDER.startShapeId]
     }
 
     // Remove line from session tracking
     let connectionColor = line.getAttribute("stroke");
-    let connectionIdx = INA.connections.findIndex(
+    let connectionIdx = PROJECT.connections.findIndex(
         (connection) => doArraysMatch(
             connection,
-            [INA.startShapeId, destinationShapeId, connectionColor]
+            [RENDER.startShapeId, destinationShapeId, connectionColor]
         )
     );
-    INA.connections.splice(connectionIdx, 1)  // splice(idx, n): remove n elements starting at idx
+    PROJECT.connections.splice(connectionIdx, 1)  // splice(idx, n): remove n elements starting at idx
     storeDatainSession();
 
     // Remove line element from SVG
     line.remove();
 
     // Reset the drawing state
-    INA.isDeletingConnection = false;
-    INA.startShapeId = null;
+    RENDER.isDeletingConnection = false;
+    RENDER.startShapeId = null;
 }
 
 function doArraysMatch(array1, array2) {

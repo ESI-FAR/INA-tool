@@ -17,7 +17,7 @@ The downloader.js enables the generation and download of the .PNG version of the
 It generate a .PNG of the current webview.
 */
 function downloadPNG() {
-    if (!INA.statements.length >= 1) {
+    if (!PROJECT.statements.length >= 1) {
         alert("No image to download");
         return;
     }
@@ -71,7 +71,7 @@ function downloadPNG() {
 
         // Add time stamp to the file name for the link
         const formattedDateTime = getTimestampString();
-        downloadLink.download =  formattedDateTime + '_' + INA.projectName + '.png';
+        downloadLink.download =  `${formattedDateTime}_${PROJECT.projectName}.png`;
 
         document.body.appendChild(downloadLink);
         downloadLink.click();
@@ -83,9 +83,7 @@ function downloadPNG() {
 
 function downloadProject() {
     let object = {
-        'projectName': INA.projectName,
-        'statements': INA.statements,
-        'connections': INA.connections,
+        ...PROJECT,  // Download whole PROJECT object
         'downloadDate': new Date(),
     };
 
@@ -94,7 +92,7 @@ function downloadProject() {
     const href = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = href;
-    link.download = `${INA.projectName}.json`;
+    link.download = `${PROJECT.projectName}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
