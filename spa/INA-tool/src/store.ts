@@ -1,25 +1,21 @@
-import { create } from 'zustand'
+import { createStore } from "zustand";
+import { Statement } from "./lib/schema";
 
-interface Statement {
-    id: number,
-    statementType: string,
-    attribute: string,
-    deontic: string,
-    aim: string,
-    directObject: string,
-    typeOfDirectObject: string,
-    indirectObject: string,
-    typeOfIndirectObject: string,
-    activationCondition: string,
-    executionConstraint: string,
-    orElse: string,
-}
+type State = {
+  projectName: string;
+  statements: Statement[];
+};
 
-type Store = {
-    statements: Statement[]
-}
+type Action = {
+  setStatements: (statements: State["statements"]) => void;
+  setProjectName: (projectName: State["projectName"]) => void;
+};
 
-export const useStore = create<Store>((set) => ({
-    statements: [],
-    setStatements: (statements: Statement[]) => set({ statements }),
-}))
+type Store = State & Action;
+
+export const store = createStore<Store>()((set) => ({
+  projectName: "",
+  statements: [],
+  setStatements: (statements: Statement[]) => set({ statements }),
+  setProjectName: (projectName: string) => set({ projectName }),
+}));
