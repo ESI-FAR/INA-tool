@@ -9,11 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@tanstack/react-router";
-import {
-  CircleHelpIcon,
-  DownloadCloudIcon,
-  HomeIcon,
-} from "lucide-react";
+import { CircleHelpIcon, DownloadCloudIcon, HomeIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { UploadButton } from "./UploadButton";
 
