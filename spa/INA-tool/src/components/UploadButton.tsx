@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { store } from "@/store";
 import { useToast } from "@/hooks/use-toast";
 import { csvParse } from "d3-dsv";
-import { statementsSchema } from "@/lib/schema";
+import { Statements, statementsSchema } from "@/lib/schema";
 
 async function processJSONFile(file: File) {
   const content = await file.text();
@@ -14,51 +14,15 @@ async function processJSONFile(file: File) {
 }
 
 /**
- * CSV looks like
- * ```
- * Statement Type,Attribute,Deontic,Aim,Direct Object,Type of Direct Object,Indirect Object,Type of Indirect Object,Activation Condition,Execution Constraint,Or Else
- * ```
- * After reading the CSV file we want camelCase keys.
- *
- * @param data
- * @returns
- */
-function toCamelCaseKeys(data: unknown): unknown {
-  if (Array.isArray(data)) {
-    return data.map(toCamelCaseKeys);
-  }
-  if (typeof data !== "object" || data === null) {
-    return data;
-  }
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(data)) {
-    const camelCaseKey = key
-      .toLowerCase()
-      .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, (match, index) =>
-        index === 0 ? match.toLowerCase() : match.toUpperCase(),
-      )
-      .replace(/\s+/g, "");
-    result[camelCaseKey] = toCamelCaseKeys(value);
-  }
-  return result;
-}
-
-/**
  * If object in array is missing an id, generate one based on its index.
  *
  * @param data
  * @returns
  */
-function generateIds(data: unknown) {
-  if (!Array.isArray(data)) {
-    return data;
-  }
+function fillIds(data: Statements) {
   return data.map((row, index) => {
-    if (typeof row !== "object" || row === null) {
-      return row;
-    }
     return {
-      id: (index + 1).toString(),
+      Id: (index + 1).toString(),
       ...row,
     };
   });
@@ -66,15 +30,15 @@ function generateIds(data: unknown) {
 
 async function processCSVFile(file: File) {
   const content = await file.text();
-  const rawStatements = generateIds(toCamelCaseKeys(csvParse(content)));
+  const rawStatements = csvParse(content);
   console.log(rawStatements);
   const statements = statementsSchema.parse(rawStatements);
-  store.getState().setStatements(statements);
+  const statementsWithIds = fillIds(statements);
+  store.getState().setStatements(statementsWithIds);
 }
 
 async function processFile(file: File) {
   store.getState().setProjectName(file.name);
-
   if (file.type === "application/json") {
     return processJSONFile(file);
   } else if (file.type === "text/csv") {

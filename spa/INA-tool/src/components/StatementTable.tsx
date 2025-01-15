@@ -26,75 +26,75 @@ import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
 
-export const columns: ColumnDef<Statement>[] = [
+const columns: ColumnDef<Statement>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "Id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Id" />
     ),
   },
   {
-    accessorKey: "statementType",
+    accessorKey: "Statement Type",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Statement Type" />
     ),
   },
   {
-    accessorKey: "attribute",
+    accessorKey: "Attribute",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Attribute" />
     ),
   },
   {
-    accessorKey: "deontic",
+    accessorKey: "Deontic",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Deontic" />
     ),
   },
   {
-    accessorKey: "aim",
+    accessorKey: "Aim",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Aim" />
     ),
   },
   {
-    accessorKey: "directObject",
+    accessorKey: "Direct Object",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Direct Object" />
     ),
   },
   {
-    accessorKey: "typeOfDirectObject",
+    accessorKey: "Type Of Direct Object",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Type Of Direct Object" />
     ),
   },
   {
-    accessorKey: "indirectObject",
+    accessorKey: "Indirect Object",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Indirect Object" />
     ),
   },
   {
-    accessorKey: "typeOfIndirectObject",
+    accessorKey: "Type Of Indirect Object",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Type Of Indirect Object" />
     ),
   },
   {
-    accessorKey: "activationCondition",
+    accessorKey: "Activation Condition",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Activation Condition" />
     ),
   },
   {
-    accessorKey: "executionConstraint",
+    accessorKey: "Execution Constraint",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Execution Constraint" />
     ),
   },
   {
-    accessorKey: "orElse",
+    accessorKey: "Or Else",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Or Else" />
     ),
