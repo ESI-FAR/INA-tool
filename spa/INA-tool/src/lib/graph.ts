@@ -58,8 +58,6 @@ export async function createEditor(container: HTMLElement) {
   area.use(scopes);
   area.use(render);
 
-  AreaExtensions.simpleNodesOrder(area);
-
   const arrange = new AutoArrangePlugin<Schemes>();
 
   arrange.addPreset(ArrangePresets.classic.setup());
@@ -89,43 +87,87 @@ export async function createEditor(container: HTMLElement) {
     load: async (statements: Statement[]) => {
       await editor.clear();
       for (const statement of statements) {
-        const parentNode = new Node(statement.id);
-        const activationConditionNode = new Node(statement.activationCondition);
-        const attributeNode = new Node(statement.attribute);
-        const aimNode = new Node(statement.aim);
-        const directObjectNode = new Node(statement.directObject);
+        const parentNode = new Node(statement.Id ?? "unknown");
+        await editor.addNode(parentNode);
 
-        activationConditionNode.parent = parentNode.id;
+        const attributeNode = new Node(statement.Attribute);
+
+        if (statement["Activation Condition"]) {
+          const activationConditionNode = new Node(
+            statement["Activation Condition"],
+          );
+          activationConditionNode.parent = parentNode.id;
+          await editor.addNode(activationConditionNode);
+          await editor.addConnection(
+            new ClassicPreset.Connection(
+              activationConditionNode,
+              "port",
+              attributeNode,
+              "port",
+            ),
+          );
+        }
+
+        const aimNode = new Node(statement.Aim);
+        if (statement["Direct Object"]) {
+          const directObjectNode = new Node(statement["Direct Object"]);
+          directObjectNode.parent = parentNode.id;
+          await editor.addNode(directObjectNode);
+          await editor.addConnection(
+            new ClassicPreset.Connection(
+              aimNode,
+              "port",
+              directObjectNode,
+              "port",
+            ),
+          );
+
+          if (statement["Indirect Object"]) {
+            const indirectObjectNode = new Node(statement["Indirect Object"]);
+            indirectObjectNode.parent = parentNode.id;
+            await editor.addNode(indirectObjectNode);
+            await editor.addConnection(
+              new ClassicPreset.Connection(
+                directObjectNode,
+                "port",
+                indirectObjectNode,
+                "port",
+              ),
+            );
+          }
+        }
+
         attributeNode.parent = parentNode.id;
         aimNode.parent = parentNode.id;
-        directObjectNode.parent = parentNode.id;
 
-        await editor.addNode(parentNode);
         await editor.addNode(attributeNode);
-        await editor.addNode(activationConditionNode);
         await editor.addNode(aimNode);
-        await editor.addNode(directObjectNode);
 
-        await editor.addConnection(
-          new ClassicPreset.Connection(
-            activationConditionNode,
-            "port",
-            attributeNode,
-            "port",
-          ),
-        );
         await editor.addConnection(
           new ClassicPreset.Connection(attributeNode, "port", aimNode, "port"),
         );
-        await editor.addConnection(
-          new ClassicPreset.Connection(
-            aimNode,
-            "port",
-            directObjectNode,
-            "port",
-          ),
-        );
-        // TODO unable ta add label to connection, that feature costs money
+        // TODO for deontic unable ta add label to connection, that feature costs money
+
+        if (statement["Execution Constraint"]) {
+          const executionConstraintNode = new Node(
+            statement["Execution Constraint"],
+          );
+          executionConstraintNode.parent = parentNode.id;
+          await editor.addNode(executionConstraintNode);
+          await editor.addConnection(
+            new ClassicPreset.Connection(
+              aimNode,
+              "port",
+              executionConstraintNode,
+              "port",
+            ),
+          );
+        }
+
+        // TODO add padding between scopes aka parent nodes
+
+        // TODO render colored connections
+        await arrange.layout();
       }
     },
     layout: async () => {
