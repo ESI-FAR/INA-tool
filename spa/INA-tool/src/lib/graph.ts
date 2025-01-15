@@ -12,12 +12,51 @@ import {
 } from "rete-connection-plugin";
 import { ReactPlugin, Presets, ReactArea2D } from "rete-react-plugin";
 import { Statement } from "./schema";
+import {
+  GreenConnectionComponent,
+  GreenSocketComponent,
+  PurpleConnectionComponent,
+  PurpleSocketComponent,
+  RedConnectionComponent,
+  RedSocketComponent,
+  StatementNodeComp,
+} from "@/components/Nodes";
 
 const socket = new ClassicPreset.Socket("socket");
 
+class GreenSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("Green");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof GreenSocket;
+  }
+}
+
+class PurpleSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("Purple");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof PurpleSocket;
+  }
+}
+
+class RedSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("Red");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof RedSocket;
+  }
+}
+
 class Node extends ClassicPreset.Node {
   width = 180;
-  height = 120;
+  height = 220;
   parent?: string;
 
   constructor(name: string) {
@@ -25,6 +64,18 @@ class Node extends ClassicPreset.Node {
 
     this.addInput("port", new ClassicPreset.Input(socket));
     this.addOutput("port", new ClassicPreset.Output(socket));
+
+    // TODO render input and output sockets next to each other
+    // Now output sockets are listed up right and input sockets are below them on left.
+
+    this.addInput("green", new ClassicPreset.Input(new GreenSocket()));
+    this.addOutput("green", new ClassicPreset.Output(new GreenSocket()));
+
+    this.addInput("purple", new ClassicPreset.Input(new PurpleSocket()));
+    this.addOutput("purple", new ClassicPreset.Output(new PurpleSocket()));
+
+    this.addInput("red", new ClassicPreset.Input(new RedSocket()));
+    this.addOutput("red", new ClassicPreset.Output(new RedSocket()));
   }
 }
 
@@ -47,7 +98,47 @@ export async function createEditor(container: HTMLElement) {
     accumulating: AreaExtensions.accumulateOnCtrl(),
   });
 
-  render.addPreset(Presets.classic.setup());
+  render.addPreset(
+    Presets.classic.setup({
+      customize: {
+        node(context) {
+          if (!context.payload.parent) {
+            return StatementNodeComp;
+          }
+          return Presets.classic.Node;
+        },
+        socket(data) {
+          if (data.payload instanceof GreenSocket) {
+            return GreenSocketComponent;
+          }
+          if (data.payload instanceof PurpleSocket) {
+            return PurpleSocketComponent;
+          }
+          if (data.payload instanceof RedSocket) {
+            return RedSocketComponent;
+          }
+          return Presets.classic.Socket;
+        },
+        connection(data) {
+          const source = editor.getNode(data.payload.source);
+          const target = editor.getNode(data.payload.target);
+          if (source instanceof GreenSocket && target instanceof GreenSocket) {
+            return GreenConnectionComponent;
+          }
+          if (
+            source instanceof PurpleSocket &&
+            target instanceof PurpleSocket
+          ) {
+            return PurpleConnectionComponent;
+          }
+          if (source instanceof RedSocket && target instanceof RedSocket) {
+            return RedConnectionComponent;
+          }
+          return Presets.classic.Connection;
+        },
+      },
+    }),
+  );
 
   connection.addPreset(ConnectionPresets.classic.setup());
 
