@@ -31,7 +31,6 @@ function fillIds(data: Statements) {
 async function processCSVFile(file: File) {
   const content = await file.text();
   const rawStatements = csvParse(content);
-  console.log(rawStatements);
   const statements = statementsSchema.parse(rawStatements);
   const statementsWithIds = fillIds(statements);
   store.getState().setStatements(statementsWithIds);
