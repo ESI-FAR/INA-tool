@@ -393,6 +393,7 @@ const nodeTypes = {
 };
 
 const strokeColor = {
+  color: "stroke-black",
   green: "stroke-green-500",
   purple: "stroke-purple-500",
   red: "stroke-red-500",
@@ -406,7 +407,7 @@ function ConnectionLine({
 }: ConnectionLineComponentProps) {
   const { fromHandle } = useConnection();
   const color = fromHandle?.id;
-  const stroke = color ? strokeColor[color as keyof typeof strokeColor] : "";
+  const stroke = color ? strokeColor[color as keyof typeof strokeColor] : "stroke-black";
 
   return (
     <g>
