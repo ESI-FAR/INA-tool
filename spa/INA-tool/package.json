@@ -9,8 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
-    "format:check": "prettier --check ."
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "format:check": "prettier --check .",
+    "test": "vitest"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.4",
@@ -55,6 +56,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vitest": "^3.0.3"
   }
 }
