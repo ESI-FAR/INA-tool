@@ -9,7 +9,12 @@ import {
   StatementNode,
 } from "@/components/nodes";
 import { Connection, Statement } from "./schema";
-import { DrivenConnection, INAEdge, InnerStatementEdge, store } from "./store";
+import { store } from "./store";
+import {
+  InnerStatementEdge,
+  INAEdge,
+  DrivenConnection,
+} from "@/components/edges";
 
 export const DEFAULT_STATEMENT_HEIGHT = 140;
 
@@ -61,6 +66,7 @@ export function procesStatement(
       target: attributeId,
       sourceHandle: "statement",
       targetHandle: "statement",
+      type: "inner-statement",
     };
     edges.push(activationConditionEdge);
   }
@@ -82,6 +88,7 @@ export function procesStatement(
     label: statement.Deontic,
     sourceHandle: "statement",
     targetHandle: "statement",
+    type: "inner-statement",
   };
   edges.push(aimEdge);
 
@@ -105,6 +112,7 @@ export function procesStatement(
       target: directObjectId,
       sourceHandle: "direct-object",
       targetHandle: "statement",
+      type: "inner-statement",
     });
 
     if (statement["Indirect Object"]) {
@@ -127,6 +135,7 @@ export function procesStatement(
         target: indirectObjectId,
         sourceHandle: "statement",
         targetHandle: "statement",
+        type: "inner-statement",
       });
     }
 
@@ -148,9 +157,12 @@ export function procesStatement(
         target: executionConstraintId,
         sourceHandle: "execution-constraint",
         targetHandle: "statement",
+        type: "inner-statement",
       });
     }
   }
+
+  // TODO how to render 'Or Else'?
 
   return [nodes, edges];
 }

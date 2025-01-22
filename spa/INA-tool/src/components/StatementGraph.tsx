@@ -1,4 +1,4 @@
-import { INAEdge, store } from "@/lib/store";
+import { store } from "@/lib/store";
 import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import {
@@ -18,6 +18,7 @@ import ELK from "elkjs/lib/elk.bundled";
 import { Button } from "./ui/button";
 import { nodeTypes } from "./nodes";
 import { LayoutTemplateIcon } from "lucide-react";
+import { edgeTypes, INAEdge } from "./edges";
 
 const elk = new ELK();
 
@@ -64,12 +65,6 @@ const useLayoutedElements = () => {
   return getLayoutedElements;
 };
 
-const strokeStyleColor = {
-  "outcome-driven": "#22c55e",
-  "actor-driven": "#a855f7",
-  "sanction-driven": "#ef4444",
-};
-
 const strokeColor = {
   color: "stroke-black",
   "outcome-driven": "stroke-green-500",
@@ -80,19 +75,15 @@ const strokeColor = {
 function createEdgeFromConnection(
   connection: Connection | INAEdge,
 ): Connection {
-  const drive = connection.targetHandle!;
-  const stroke = strokeStyleColor[drive as keyof typeof strokeStyleColor];
-  if (stroke) {
+  const type = connection.targetHandle as keyof typeof edgeTypes;
+  if (type) {
     const nedge: INAEdge = {
       id: `${connection.source}-${connection.target}`,
       target: connection.target,
       source: connection.source,
-      style: {
-        stroke,
-        strokeWidth: 2,
-      },
       sourceHandle: connection.sourceHandle,
       targetHandle: connection.targetHandle,
+      type,
     };
     return nedge as Connection;
   }
@@ -153,6 +144,7 @@ function LayoutFlow() {
             onConnect(createEdgeFromConnection(c))
           }
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           connectionLineComponent={ConnectionLine}
         >
           <Panel position="top-right">

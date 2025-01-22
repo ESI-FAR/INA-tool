@@ -32,6 +32,17 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
+                  <Link
+                    to="/connections"
+                    activeProps={{ className: "font-bold" }}
+                  >
+                    <HomeIcon />
+                    <span>Connections</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
                   <Link to="/help" activeProps={{ className: "font-bold" }}>
                     <CircleHelpIcon />
                     <span>Help</span>

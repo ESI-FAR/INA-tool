@@ -4,33 +4,12 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
-  Edge,
   applyNodeChanges,
   applyEdgeChanges,
   addEdge,
 } from "@xyflow/react";
 import { INANode } from "@/components/nodes";
-
-export type InnerStatementEdge = Edge<{ label?: string }, "inner-statement">;
-export type ActorDrivenConnection = Edge<
-  Record<string, unknown>,
-  "actor-driven"
->; // Purple
-export type OutcomeDrivenConnection = Edge<
-  Record<string, unknown>,
-  "outcome-driven"
->; // Green
-export type SanctionDrivenConnection = Edge<
-  Record<string, unknown>,
-  "sanction-driven"
->; // Red
-
-export type DrivenConnection =
-  | ActorDrivenConnection
-  | OutcomeDrivenConnection
-  | SanctionDrivenConnection;
-
-export type INAEdge = InnerStatementEdge | DrivenConnection;
+import { INAEdge } from "@/components/edges";
 
 export type State = {
   projectName: string;
