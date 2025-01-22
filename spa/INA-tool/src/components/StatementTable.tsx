@@ -1,5 +1,5 @@
 import { Statement } from "@/lib/schema";
-import { store } from "@/store";
+import { store } from "@/lib/store";
 import { useStore } from "zustand/react";
 import {
   ColumnDef,
@@ -20,11 +20,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
+import { deriveStatements } from "@/lib/io";
 
 const columns: ColumnDef<Statement>[] = [
   {
@@ -64,7 +65,7 @@ const columns: ColumnDef<Statement>[] = [
     ),
   },
   {
-    accessorKey: "Type Of Direct Object",
+    accessorKey: "Type of Direct Object",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Type Of Direct Object" />
     ),
@@ -76,7 +77,7 @@ const columns: ColumnDef<Statement>[] = [
     ),
   },
   {
-    accessorKey: "Type Of Indirect Object",
+    accessorKey: "Type of Indirect Object",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Type Of Indirect Object" />
     ),
@@ -102,7 +103,8 @@ const columns: ColumnDef<Statement>[] = [
 ];
 
 export function StatementTable() {
-  const statements = useStore(store, (state) => state.statements);
+  const nodes = useStore(store, (state) => state.nodes);
+  const statements = useMemo(() => deriveStatements(nodes), [nodes]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const table = useReactTable({

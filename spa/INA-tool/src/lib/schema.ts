@@ -41,4 +41,6 @@ const connectionSchema = z.object({
   ]),
 });
 export type Connection = z.infer<typeof connectionSchema>;
-export const connectionColumns = Object.keys(connectionSchema.shape) as ReadonlyArray<keyof Connection>;;
+export const connectionColumns = Object.keys(
+  connectionSchema.shape,
+) as ReadonlyArray<keyof Connection>;

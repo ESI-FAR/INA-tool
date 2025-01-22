@@ -12,6 +12,7 @@ import { Link } from "@tanstack/react-router";
 import { CircleHelpIcon, DownloadCloudIcon, HomeIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { UploadButton } from "./UploadButton";
+import { DownloadProjectButton } from "./DownloadProjectButton";
 
 export function AppSidebar() {
   return (
@@ -51,7 +52,7 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Button variant="outline">
+                  <Button variant="outline" disabled>
                     <DownloadCloudIcon />
                     <span>Download PNG</span>
                   </Button>
@@ -59,10 +60,7 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Button variant="outline">
-                    <DownloadCloudIcon />
-                    <span>Download project</span>
-                  </Button>
+                  <DownloadProjectButton />
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

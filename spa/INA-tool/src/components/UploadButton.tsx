@@ -1,16 +1,21 @@
 import { UploadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useRef } from "react";
-import { store } from "@/store";
+import { store } from "@/lib/store";
 import { useToast } from "@/hooks/use-toast";
 import { csvParse } from "d3-dsv";
 import { Statements, statementsSchema } from "@/lib/schema";
+import { load } from "@/lib/io";
 
 async function processJSONFile(file: File) {
   const content = await file.text();
   const state = JSON.parse(content);
   // TODO validate state using zod
-  store.setState(state);
+  store.setState({
+    projectName: projectNameFromFile(file),
+    nodes: state.nodes,
+    edges: state.edges,
+  });
 }
 
 /**
@@ -31,13 +36,19 @@ function fillIds(data: Statements) {
 async function processCSVFile(file: File) {
   const content = await file.text();
   const rawStatements = csvParse(content);
+
   const statements = statementsSchema.parse(rawStatements);
+
   const statementsWithIds = fillIds(statements);
-  store.getState().setStatements(statementsWithIds);
+  load(statementsWithIds, []);
+}
+
+function projectNameFromFile(file: File) {
+  return file.name.replace(/\.[^/.]+$/, "");
 }
 
 async function processFile(file: File) {
-  store.getState().setProjectName(file.name);
+  store.getState().setProjectName(projectNameFromFile(file));
   if (file.type === "application/json") {
     return processJSONFile(file);
   } else if (file.type === "text/csv") {
