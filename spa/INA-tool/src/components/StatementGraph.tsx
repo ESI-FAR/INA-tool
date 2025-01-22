@@ -17,7 +17,7 @@ import "@xyflow/react/dist/style.css";
 import ELK from "elkjs/lib/elk.bundled";
 import { Button } from "./ui/button";
 import { nodeTypes } from "./nodes";
-import { LayoutTemplateIcon } from "lucide-react";
+import { CameraIcon, LayoutTemplateIcon } from "lucide-react";
 import { edgeTypes, INAEdge } from "./edges";
 
 const elk = new ELK();
@@ -151,6 +151,9 @@ function LayoutFlow() {
             <Button variant="ghost" onClick={getLayoutedElements}>
               <LayoutTemplateIcon />
               Layout
+            </Button>
+            <Button variant="ghost" disabled>
+              <CameraIcon /> Screenshot
             </Button>
           </Panel>
           <Controls />

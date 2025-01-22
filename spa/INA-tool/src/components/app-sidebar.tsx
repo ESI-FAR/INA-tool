@@ -63,14 +63,6 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Button variant="outline" disabled>
-                    <DownloadCloudIcon />
-                    <span>Download PNG</span>
-                  </Button>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
                   <DownloadProjectButton />
                 </SidebarMenuButton>
               </SidebarMenuItem>
