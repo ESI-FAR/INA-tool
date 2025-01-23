@@ -1,6 +1,8 @@
 import { Statement } from "@/lib/schema";
-import { store } from "@/lib/store";
+import { Store, store } from "@/lib/store";
 import { useStore } from "zustand/react";
+import { shallow, useShallow } from "zustand/shallow";
+
 import {
   ColumnDef,
   SortingState,
@@ -26,6 +28,7 @@ import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
 import { deriveStatements } from "@/lib/io";
+import { INANode } from "./nodes";
 
 const columns: ColumnDef<Statement>[] = [
   {
@@ -103,8 +106,10 @@ const columns: ColumnDef<Statement>[] = [
 ];
 
 export function StatementTable() {
-  const nodes = useStore(store, (state) => state.nodes);
-  const statements = useMemo(() => deriveStatements(nodes), [nodes]);
+  const stripper = useShallow<Store, Statement[]>((state) =>
+    deriveStatements(state.nodes),
+  );
+  const statements = useStore(store, stripper);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const table = useReactTable({
