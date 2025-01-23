@@ -22,7 +22,7 @@ concurrency:
 defaults:
   run:
     # TODO remove once PR is merged
-    working-directory: spa/INI-tool
+    working-directory: spa/INA-tool
 
 jobs:
   # Single deploy job since we're just deploying
@@ -46,7 +46,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          BASE_URL=/INA-tool/
+          BASE_URL: /INA-tool/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
