@@ -9,7 +9,7 @@ on:
 defaults:
   run:
     # TODO remove once PR is merged
-    working-directory: spa/INI-tool
+    working-directory: spa/INA-tool
 
 jobs:
   # Single deploy job since we're just deploying
