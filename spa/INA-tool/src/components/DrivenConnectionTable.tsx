@@ -69,7 +69,7 @@ export function DrivenConnectionTable() {
     },
   });
   return (
-    <div className="container">
+    <div className="w-full">
       <h1 className="text-xl">Connections</h1>
       <div className="flex justify-between gap-4 py-2">
         <Input
@@ -80,7 +80,7 @@ export function DrivenConnectionTable() {
         />
         <DownloadStatementButton />
       </div>
-      <div className="rounded-md border">
+      <div className="w-full rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

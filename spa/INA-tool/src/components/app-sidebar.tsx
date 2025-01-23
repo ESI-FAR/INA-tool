@@ -9,10 +9,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@tanstack/react-router";
-import { CircleHelpIcon, DownloadCloudIcon, HomeIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { CircleHelpIcon, HomeIcon, Table2Icon, TableIcon } from "lucide-react";
 import { UploadButton } from "./UploadButton";
 import { DownloadProjectButton } from "./DownloadProjectButton";
+import { LoadExampleButton } from "./LoadExampleButton";
 
 export function AppSidebar() {
   return (
@@ -26,7 +26,18 @@ export function AppSidebar() {
                 <SidebarMenuButton asChild>
                   <Link to="/" activeProps={{ className: "font-bold" }}>
                     <HomeIcon />
-                    <span>Dashboard</span>
+                    <span>Canvas</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/statements"
+                    activeProps={{ className: "font-bold" }}
+                  >
+                    <Table2Icon />
+                    <span>Statements</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -36,7 +47,7 @@ export function AppSidebar() {
                     to="/connections"
                     activeProps={{ className: "font-bold" }}
                   >
-                    <HomeIcon />
+                    <TableIcon />
                     <span>Connections</span>
                   </Link>
                 </SidebarMenuButton>
@@ -59,6 +70,11 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <UploadButton />
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <LoadExampleButton />
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>

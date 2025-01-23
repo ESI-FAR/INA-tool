@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const statementSchema = z.object({
+export const statementSchema = z.object({
   Id: z.string().optional(),
   "Statement Type": z.string(),
   Attribute: z.string(),
@@ -22,7 +22,7 @@ export const statementColumns = Object.keys(
 export const statementsSchema = z.array(statementSchema);
 export type Statements = z.infer<typeof statementsSchema>;
 
-const connectionSchema = z.object({
+export const connectionSchema = z.object({
   source_statement: z.string(),
   source_node: z.union([
     z.literal("direct-object"),

@@ -1,10 +1,11 @@
-import { Statement } from "@/lib/schema";
+import { Statement, statementSchema } from "@/lib/schema";
 import { Store, store } from "@/lib/store";
 import { useStore } from "zustand/react";
-import { shallow, useShallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 
 import {
   ColumnDef,
+  Row,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -27,8 +28,12 @@ import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
-import { deriveStatements } from "@/lib/io";
-import { INANode } from "./nodes";
+import { deriveStatements, procesStatement } from "@/lib/io";
+import { Button } from "./ui/button";
+import { PencilIcon, SaveIcon, Undo2Icon } from "lucide-react";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 
 const columns: ColumnDef<Statement>[] = [
   {
@@ -36,6 +41,9 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Id" />
     ),
+    meta: {
+      editable: false,
+    },
   },
   {
     accessorKey: "Statement Type",
@@ -105,13 +113,55 @@ const columns: ColumnDef<Statement>[] = [
   },
 ];
 
-export function StatementTable() {
-  const stripper = useShallow<Store, Statement[]>((state) =>
-    deriveStatements(state.nodes),
+function updateStatement(statement: Statement) {
+  const id = statement.Id!;
+  // Remove nodes and edges belonging to the statement
+  const origNodes = store.getState().nodes;
+  const oldNodesOfStatement = origNodes.filter(
+    (node) => node.id === id || node.parentId === id,
   );
+  const oldIdOfNodesOfStatement = new Set(
+    oldNodesOfStatement.map((node) => node.id),
+  );
+  const prunedNodes = origNodes.filter(
+    (node) => !oldNodesOfStatement.includes(node),
+  );
+  const oldStatementNode = oldNodesOfStatement.find((node) => node.id === id);
+  const oldEdgesOfStatement = store
+    .getState()
+    .edges.filter(
+      (edge) =>
+        oldIdOfNodesOfStatement.has(edge.source) ||
+        oldIdOfNodesOfStatement.has(edge.target),
+    );
+  const prunedEdges = store
+    .getState()
+    .edges.filter((edge) => !oldEdgesOfStatement.includes(edge));
+  // TODO inter statement edges should be kept
+  // now we remove all edges belonging to the statement
+
+  // Add new nodes and edges
+  const [newNodes, newEdges] = procesStatement(statement, statement.Id!);
+  // Retain position and style of the old statement node
+  if (oldStatementNode && oldStatementNode.position && oldStatementNode.style) {
+    newNodes[0].position = oldStatementNode.position;
+    newNodes[0].style = oldStatementNode.style;
+  }
+  store.getState().setNodes([...newNodes, ...prunedNodes]);
+  store.getState().setEdges([...newEdges, ...prunedEdges]);
+}
+
+export function StatementTable() {
+  const stripper = useShallow<Store, Statement[]>((state) => {
+    const statements = deriveStatements(state.nodes);
+    statements.sort((a, b) => a.Id!.localeCompare(b.Id!));
+    return statements;
+  });
   const statements = useStore(store, stripper);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [editing, setEditing] = useState<Statement | null>(null);
+
   const table = useReactTable({
     data: statements,
     columns,
@@ -122,14 +172,15 @@ export function StatementTable() {
     getFilteredRowModel: getFilteredRowModel(),
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,
+    enableRowSelection: true,
     state: {
       sorting,
       globalFilter,
     },
   });
   return (
-    <div className="container">
-      <h1 className="text-xl">DataTable</h1>
+    <div className="w-full">
+      <h1 className="text-xl">Statements</h1>
       <div className="flex justify-between gap-4 py-2">
         <Input
           value={globalFilter}
@@ -156,26 +207,30 @@ export function StatementTable() {
                     </TableHead>
                   );
                 })}
+                <TableHead>Actions</TableHead>
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                if (editing && row.original.Id === editing.Id) {
+                  return (
+                    <EditRow
+                      key={row.id}
+                      row={row}
+                      onSave={(statement) => {
+                        setEditing(null);
+                        updateStatement(statement);
+                      }}
+                      onCancel={() => setEditing(null)}
+                    />
+                  );
+                }
+                return (
+                  <ShowRow key={row.id} row={row} setEditing={setEditing} />
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell
@@ -189,7 +244,114 @@ export function StatementTable() {
           </TableBody>
         </Table>
       </div>
+      {/* TODO allow a new statement to be added */}
       <DataTablePagination table={table} />
     </div>
+  );
+}
+
+function ShowRow({
+  row,
+  setEditing,
+}: {
+  row: Row<Statement>;
+  setEditing: (statement: Statement) => void;
+}) {
+  return (
+    <TableRow data-state={row.getIsSelected() && "selected"}>
+      {row.getVisibleCells().map((cell) => (
+        <TableCell key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
+      ))}
+      <TableCell className="flex gap-1">
+        <Button
+          title="Edit"
+          variant="secondary"
+          size="icon"
+          onClick={() => setEditing(row.original)}
+        >
+          <PencilIcon />
+        </Button>
+        {/* TODO allow statements to be deleted */}
+        {/* <Button
+          title="Delete"
+          variant="destructive"
+          size="icon"
+          disabled
+          onClick={() => {
+            // TODO implement
+            console.log("remove", row.original);
+          }}
+        >
+          <TrashIcon />
+        </Button> */}
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function EditRow({
+  row,
+  onSave,
+  onCancel,
+}: {
+  row: Row<Statement>;
+  onSave: (statement: Statement) => void;
+  onCancel: () => void;
+}) {
+  const defaultValues = useMemo(
+    () => structuredClone(row.original),
+    [row.original],
+  );
+  const myform = useForm<Statement>({
+    resolver: zodResolver(statementSchema),
+    defaultValues: defaultValues,
+  });
+
+  return (
+    <TableRow data-state={row.getIsSelected() && "selected"}>
+      <FormProvider {...myform}>
+        {row.getVisibleCells().map((cell) => {
+          const meta = cell.column.columnDef.meta as { editable?: boolean };
+          if (meta && meta.editable !== undefined && meta.editable === false) {
+            return flexRender(cell.column.columnDef.cell, cell.getContext());
+          }
+          return (
+            <TableCell key={cell.id}>
+              <FormField
+                control={myform.control}
+                name={cell.column.id as keyof Statement}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+          );
+        })}
+        <TableCell className="flex gap-1">
+          <form onSubmit={myform.handleSubmit(onSave)}>
+            <Button title="Save" variant="secondary" size="icon" type="submit">
+              <SaveIcon />
+            </Button>
+          </form>
+          <Button
+            title="Cancel"
+            variant="secondary"
+            size="icon"
+            onClick={onCancel}
+            type="button"
+            value="cancel"
+          >
+            <Undo2Icon />
+          </Button>
+        </TableCell>
+      </FormProvider>
+    </TableRow>
   );
 }

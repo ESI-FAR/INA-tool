@@ -1,5 +1,4 @@
-import { StatementTable } from "@/components/StatementTable";
-import { StatementGraph } from "@/components/StatementGraph";
+import { Canvas } from "@/components/Canvas";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/")({
@@ -7,10 +6,5 @@ export const Route = createLazyFileRoute("/")({
 });
 
 function Index() {
-  return (
-    <>
-      <StatementGraph />
-      <StatementTable />
-    </>
-  );
+  return <Canvas />;
 }

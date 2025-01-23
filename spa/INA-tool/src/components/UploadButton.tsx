@@ -40,6 +40,7 @@ async function processCSVFile(file: File) {
   const statements = statementsSchema.parse(rawStatements);
 
   const statementsWithIds = fillIds(statements);
+
   load(statementsWithIds, []);
 }
 

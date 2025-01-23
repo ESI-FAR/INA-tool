@@ -20,10 +20,11 @@ export const DEFAULT_STATEMENT_HEIGHT = 140;
 
 export function procesStatement(
   statement: Statement,
-  id: string,
+  fallBackId: string,
 ): [INANode[], InnerStatementEdge[]] {
   const nodes: INANode[] = [];
   const edges: InnerStatementEdge[] = [];
+  const id = statement.Id || fallBackId;
   const statementNode: StatementNode = {
     id,
     type: "statement",

@@ -131,10 +131,20 @@ function LayoutFlow() {
     useStore(store);
   const getLayoutedElements = useLayoutedElements();
 
+  if (nodes.length === 0) {
+    return (
+      <div className="flex h-[800px] w-full items-center justify-center">
+        <h1 className="text-3xl text-gray-500">
+          No statements or connections, please upload a file.
+        </h1>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h1>GraphCanvas</h1>
-      <div className="h-[800px] w-full">
+    <div className="h-full">
+      <h1>Canvas</h1>
+      <div className="h-full w-full">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -164,7 +174,7 @@ function LayoutFlow() {
   );
 }
 
-export function StatementGraph() {
+export function Canvas() {
   return (
     <ReactFlowProvider>
       <LayoutFlow />

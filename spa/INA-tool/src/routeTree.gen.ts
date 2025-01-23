@@ -17,11 +17,18 @@ import { Route as PrivacyPolicyImport } from "./routes/privacy-policy";
 
 // Create Virtual Routes
 
+const StatementsLazyImport = createFileRoute("/statements")();
 const HelpLazyImport = createFileRoute("/help")();
 const ConnectionsLazyImport = createFileRoute("/connections")();
 const IndexLazyImport = createFileRoute("/")();
 
 // Create/Update Routes
+
+const StatementsLazyRoute = StatementsLazyImport.update({
+  id: "/statements",
+  path: "/statements",
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import("./routes/statements.lazy").then((d) => d.Route));
 
 const HelpLazyRoute = HelpLazyImport.update({
   id: "/help",
@@ -79,6 +86,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof HelpLazyImport;
       parentRoute: typeof rootRoute;
     };
+    "/statements": {
+      id: "/statements";
+      path: "/statements";
+      fullPath: "/statements";
+      preLoaderRoute: typeof StatementsLazyImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
@@ -89,6 +103,7 @@ export interface FileRoutesByFullPath {
   "/privacy-policy": typeof PrivacyPolicyRoute;
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
+  "/statements": typeof StatementsLazyRoute;
 }
 
 export interface FileRoutesByTo {
@@ -96,6 +111,7 @@ export interface FileRoutesByTo {
   "/privacy-policy": typeof PrivacyPolicyRoute;
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
+  "/statements": typeof StatementsLazyRoute;
 }
 
 export interface FileRoutesById {
@@ -104,14 +120,21 @@ export interface FileRoutesById {
   "/privacy-policy": typeof PrivacyPolicyRoute;
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
+  "/statements": typeof StatementsLazyRoute;
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/privacy-policy" | "/connections" | "/help";
+  fullPaths: "/" | "/privacy-policy" | "/connections" | "/help" | "/statements";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/privacy-policy" | "/connections" | "/help";
-  id: "__root__" | "/" | "/privacy-policy" | "/connections" | "/help";
+  to: "/" | "/privacy-policy" | "/connections" | "/help" | "/statements";
+  id:
+    | "__root__"
+    | "/"
+    | "/privacy-policy"
+    | "/connections"
+    | "/help"
+    | "/statements";
   fileRoutesById: FileRoutesById;
 }
 
@@ -120,6 +143,7 @@ export interface RootRouteChildren {
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute;
   ConnectionsLazyRoute: typeof ConnectionsLazyRoute;
   HelpLazyRoute: typeof HelpLazyRoute;
+  StatementsLazyRoute: typeof StatementsLazyRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -127,6 +151,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ConnectionsLazyRoute: ConnectionsLazyRoute,
   HelpLazyRoute: HelpLazyRoute,
+  StatementsLazyRoute: StatementsLazyRoute,
 };
 
 export const routeTree = rootRoute
@@ -142,7 +167,8 @@ export const routeTree = rootRoute
         "/",
         "/privacy-policy",
         "/connections",
-        "/help"
+        "/help",
+        "/statements"
       ]
     },
     "/": {
@@ -156,6 +182,9 @@ export const routeTree = rootRoute
     },
     "/help": {
       "filePath": "help.lazy.tsx"
+    },
+    "/statements": {
+      "filePath": "statements.lazy.tsx"
     }
   }
 }
