@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "@/components/Footer";
+import { ProjectName } from "@/components/ProjectName";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -20,7 +21,7 @@ export const Route = createRootRoute({
           <SidebarInset>
             <header className="flex h-16 justify-between gap-2 border-b p-2">
               <SidebarTrigger />
-              {/* TODO add page title */}
+              <ProjectName />
               <ThemeToggle />
             </header>
             <main className="flex flex-1 flex-col gap-4 p-4">
