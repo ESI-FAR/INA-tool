@@ -19,6 +19,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
+          {/* TODO show tool name when sidebar is collapsed */}
           <SidebarGroupLabel>INA-tool</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -74,12 +75,12 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <LoadExampleButton />
+                  <DownloadProjectButton />
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <DownloadProjectButton />
+                  <LoadExampleButton />
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
