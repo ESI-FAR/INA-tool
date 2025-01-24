@@ -1,4 +1,4 @@
-import { DownloadCloudIcon } from "lucide-react";
+import { DownloadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { download } from "@/lib/io";
 import { store } from "@/lib/store";
@@ -24,7 +24,7 @@ export function DownloadProjectButton() {
   // TODO download in semantic web format so it can be viewed in Protege or OntoGraf.
   return (
     <Button variant="outline" onClick={downloadProject}>
-      <DownloadCloudIcon />
+      <DownloadIcon />
       <span>Download project</span>
     </Button>
   );
