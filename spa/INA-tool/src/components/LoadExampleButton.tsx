@@ -2,6 +2,7 @@ import { Statement } from "@/lib/schema";
 import { Button } from "./ui/button";
 import { load } from "@/lib/io";
 import { Wand2Icon } from "lucide-react";
+import { store } from "@/lib/store";
 
 const statements: Statement[] = [
   {
@@ -91,6 +92,7 @@ const statements: Statement[] = [
 ] as const;
 
 function loadExample() {
+  store.getState().setProjectName("Example");
   load(statements, []);
 }
 
