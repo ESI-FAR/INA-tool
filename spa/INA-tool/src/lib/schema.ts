@@ -2,10 +2,10 @@ import { z } from "zod";
 
 export const statementSchema = z.object({
   Id: z.string().optional(),
-  "Statement Type": z.string(),
-  Attribute: z.string(),
+  "Statement Type": z.string().min(1),
+  Attribute: z.string().min(1),
   Deontic: z.string().optional(),
-  Aim: z.string(),
+  Aim: z.string().min(1),
   "Direct Object": z.string().optional(),
   "Type of Direct Object": z.string().optional(),
   "Indirect Object": z.string().optional(),
