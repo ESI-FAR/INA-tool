@@ -16,7 +16,7 @@ import {
   DrivenConnection,
 } from "@/components/edges";
 
-export const DEFAULT_STATEMENT_HEIGHT = 140;
+export const DEFAULT_STATEMENT_HEIGHT = 180;
 
 export function procesStatement(
   statement: Statement,
@@ -44,7 +44,7 @@ export function procesStatement(
     type: "attribute",
     data: { label: statement.Attribute },
     // TODO move right if left node has lots of text
-    position: { x: 300, y: 30 },
+    position: { x: 270, y: 30 },
     parentId: id,
     extent: "parent",
   };
@@ -125,7 +125,7 @@ export function procesStatement(
           animation: statement["Type of Indirect Object"],
         },
         type: "indirect-object",
-        position: { x: 715, y: 80 },
+        position: { x: 715, y: 100 },
         parentId: id,
         extent: "parent",
       };
@@ -146,7 +146,7 @@ export function procesStatement(
         id: executionConstraintId,
         type: "execution-constraint",
         data: { label: statement["Execution Constraint"] },
-        position: { x: 430, y: 80 },
+        position: { x: 430, y: 100 },
         parentId: id,
         extent: "parent",
       };

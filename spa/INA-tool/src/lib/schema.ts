@@ -1,15 +1,20 @@
 import { z } from "zod";
 
+export const StatementType = z.enum(["", "formal", "informal"]);
+
+export const TypeOfObject = z.enum(["", "animate", "inanimate"]);
+
 export const statementSchema = z.object({
   Id: z.string().optional(),
-  "Statement Type": z.string().min(1),
+  "Statement Type": StatementType,
   Attribute: z.string().min(1),
+  // TODO make Deontic union of 'must' and '' and ...?
   Deontic: z.string().optional(),
   Aim: z.string().min(1),
   "Direct Object": z.string().optional(),
-  "Type of Direct Object": z.string().optional(),
+  "Type of Direct Object": TypeOfObject.optional(),
   "Indirect Object": z.string().optional(),
-  "Type of Indirect Object": z.string().optional(),
+  "Type of Indirect Object": TypeOfObject.optional(),
   "Activation Condition": z.string().optional(),
   "Execution Constraint": z.string().optional(),
   "Or Else": z.string().optional(),

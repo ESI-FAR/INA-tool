@@ -1,4 +1,9 @@
-import { Statement, statementSchema } from "@/lib/schema";
+import {
+  Statement,
+  statementSchema,
+  StatementType,
+  TypeOfObject,
+} from "@/lib/schema";
 import { Store, store } from "@/lib/store";
 import { useStore } from "zustand/react";
 import { useShallow } from "zustand/shallow";
@@ -33,7 +38,14 @@ import { Button } from "./ui/button";
 import { PencilIcon, SaveIcon, Undo2Icon } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 const columns: ColumnDef<Statement>[] = [
   {
@@ -50,6 +62,9 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Statement Type" />
     ),
+    meta: {
+      choices: StatementType.options,
+    },
   },
   {
     accessorKey: "Attribute",
@@ -80,6 +95,9 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Type Of Direct Object" />
     ),
+    meta: {
+      choices: TypeOfObject.options,
+    },
   },
   {
     accessorKey: "Indirect Object",
@@ -92,6 +110,9 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Type Of Indirect Object" />
     ),
+    meta: {
+      choices: TypeOfObject.options,
+    },
   },
   {
     accessorKey: "Activation Condition",
@@ -228,7 +249,12 @@ export function StatementTable() {
                   );
                 }
                 return (
-                  <ShowRow key={row.id} row={row} setEditing={setEditing} />
+                  <ShowRow
+                    key={row.id}
+                    row={row}
+                    setEditing={setEditing}
+                    editingId={editing ? editing.Id : undefined}
+                  />
                 );
               })
             ) : (
@@ -253,8 +279,10 @@ export function StatementTable() {
 function ShowRow({
   row,
   setEditing,
+  editingId,
 }: {
   row: Row<Statement>;
+  editingId: string | undefined;
   setEditing: (statement: Statement) => void;
 }) {
   return (
@@ -266,6 +294,7 @@ function ShowRow({
       ))}
       <TableCell className="flex gap-1">
         <Button
+          disabled={editingId !== undefined && row.original["Id"] !== editingId}
           title="Edit"
           variant="secondary"
           size="icon"
@@ -313,9 +342,17 @@ function EditRow({
     <TableRow data-state={row.getIsSelected() && "selected"}>
       <FormProvider {...myform}>
         {row.getVisibleCells().map((cell) => {
-          const meta = cell.column.columnDef.meta as { editable?: boolean };
+          const meta = cell.column.columnDef.meta as {
+            editable?: boolean;
+            type?: "select";
+            choices?: string[];
+          };
           if (meta && meta.editable !== undefined && meta.editable === false) {
-            return flexRender(cell.column.columnDef.cell, cell.getContext());
+            return (
+              <TableCell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            );
           }
           return (
             <TableCell key={cell.id}>
@@ -325,7 +362,29 @@ function EditRow({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} />
+                      {meta && meta.choices ? (
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-1"
+                        >
+                          {meta.choices.map((choice) => (
+                            <FormItem
+                              key={choice}
+                              className="flex items-center space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <RadioGroupItem value={choice} />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {choice === "" ? "none" : choice}
+                              </FormLabel>
+                            </FormItem>
+                          ))}
+                        </RadioGroup>
+                      ) : (
+                        <Input {...field} />
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -334,7 +393,7 @@ function EditRow({
             </TableCell>
           );
         })}
-        <TableCell className="flex gap-1">
+        <TableCell className="flex flex-col gap-1">
           <form onSubmit={myform.handleSubmit(onSave)}>
             <Button title="Save" variant="secondary" size="icon" type="submit">
               <SaveIcon />

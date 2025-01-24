@@ -13,12 +13,12 @@ import {
   Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-// TODO layout button
 import ELK from "elkjs/lib/elk.bundled";
 import { Button } from "./ui/button";
 import { nodeTypes } from "./nodes";
 import { CameraIcon, LayoutTemplateIcon } from "lucide-react";
 import { edgeTypes, INAEdge } from "./edges";
+import { useTheme } from "./theme-provider";
 
 const elk = new ELK();
 
@@ -66,7 +66,7 @@ const useLayoutedElements = () => {
 };
 
 const strokeColor = {
-  color: "stroke-black",
+  color: "stroke-foreground",
   "outcome-driven": "stroke-green-500",
   "actor-driven": "stroke-purple-500",
   "sanction-driven": "stroke-red-500",
@@ -103,7 +103,7 @@ function ConnectionLine({
     // TODO sometime wrong color, when while dragging hovering over other driven handle
     const stroke = color
       ? strokeColor[color as keyof typeof strokeColor]
-      : "stroke-black";
+      : "stroke-foreground";
     return stroke;
   }, [fromHandle?.id, toHandle?.id]);
 
@@ -130,6 +130,7 @@ function LayoutFlow() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
     useStore(store);
   const getLayoutedElements = useLayoutedElements();
+  const { theme } = useTheme();
 
   if (nodes.length === 0) {
     return (
@@ -156,13 +157,18 @@ function LayoutFlow() {
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           connectionLineComponent={ConnectionLine}
+          isValidConnection={(connection) =>
+            connection.sourceHandle === connection.targetHandle
+          }
+          fitView
+          colorMode={theme}
         >
           <Panel position="top-right">
             <Button variant="ghost" onClick={getLayoutedElements}>
               <LayoutTemplateIcon />
               Layout
             </Button>
-            <Button variant="ghost" disabled>
+            <Button variant="ghost" onClick={() => {}}>
               <CameraIcon /> Screenshot
             </Button>
           </Panel>

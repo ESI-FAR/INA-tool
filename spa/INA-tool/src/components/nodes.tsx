@@ -69,7 +69,7 @@ export function AttributeNode({
   isConnectable,
 }: NodeProps<AttributeNode>) {
   return (
-    <div className="border-1 rounded-full border border-black p-2">
+    <div className="border-1 max-w-48 rounded-full border border-foreground p-2">
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -97,7 +97,7 @@ export function AttributeNode({
 
 export function AimNode({ data, isConnectable }: NodeProps<AimNode>) {
   return (
-    <div className="border-1 border border-black p-2">
+    <div className="border-1 max-w-48 border border-foreground p-2">
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -135,7 +135,7 @@ export function DirectObjectNode({
   isConnectable,
 }: NodeProps<DirectObjectNode>) {
   return (
-    <div className="border-1 rounded-sm border border-black p-2">
+    <div className="border-1 max-w-48 rounded-sm border border-foreground p-2">
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -179,7 +179,7 @@ export function InDirectObjectNode({
   isConnectable,
 }: NodeProps<InDirectObjectNode>) {
   return (
-    <div className="border-1 rounded-sm border border-black p-2">
+    <div className="border-1 max-w-48 rounded-sm border border-foreground p-2">
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -218,7 +218,7 @@ export function ActivationConditionNode({
   isConnectable,
 }: NodeProps<ActivationConditionNode>) {
   return (
-    <div className="border-1 rounded-xl border border-black p-2">
+    <div className="border-1 max-w-48 rounded-xl border border-foreground p-2">
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="source"
@@ -251,7 +251,7 @@ export function ExecutionConstraintNode({
   isConnectable,
 }: NodeProps<ExecutionConstraintNode>) {
   return (
-    <div className="border-1 rounded-xl border border-black p-2">
+    <div className="border-1 max-w-48 rounded-xl border border-foreground p-2">
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
