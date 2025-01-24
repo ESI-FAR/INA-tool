@@ -17,7 +17,6 @@ const layoutOptions = {
 const useLayoutedElements = () => {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getLayoutedElements = useCallback(() => {
     const graph = {
       id: "root",

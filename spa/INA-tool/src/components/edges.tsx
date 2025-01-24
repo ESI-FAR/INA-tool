@@ -64,6 +64,7 @@ export function ActorDrivenConnection({
     targetY,
   });
 
+  // TODO draw arrow at target handle?
   return <BaseEdge id={id} path={edgePath} style={actorDrivenStyle} />;
 }
 
