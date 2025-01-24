@@ -113,7 +113,10 @@ function RouteComponent() {
           </i>{" "}
           button at the top right side on the canvas.
         </li>
-        <li><strong>Resize statement:</strong> The bottom right corner has a <Maximize2Icon/> which can be dragged to resize the statement box.</li>
+        <li>
+          <strong>Resize statement:</strong> The bottom right corner has a{" "}
+          <Maximize2Icon /> which can be dragged to resize the statement box.
+        </li>
       </ul>
 
       <h3 className="py-4 text-xl">Statements page</h3>
