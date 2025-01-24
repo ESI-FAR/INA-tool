@@ -6,16 +6,18 @@ import { useToast } from "@/hooks/use-toast";
 import { csvParse } from "d3-dsv";
 import { Statements, statementsSchema } from "@/lib/schema";
 import { load } from "@/lib/io";
+import { setProject } from "@/hooks/useProjectName";
 
 async function processJSONFile(file: File) {
   const content = await file.text();
   const state = JSON.parse(content);
+  setProject(projectNameFromFile(file))
   // TODO validate state using zod
   store.setState({
-    projectName: projectNameFromFile(file),
     nodes: state.nodes,
     edges: state.edges,
   });
+
 }
 
 /**
@@ -49,7 +51,7 @@ function projectNameFromFile(file: File) {
 }
 
 async function processFile(file: File) {
-  store.getState().setProjectName(projectNameFromFile(file));
+  setProject(projectNameFromFile(file));
   if (file.type === "application/json") {
     return processJSONFile(file);
   } else if (file.type === "text/csv") {

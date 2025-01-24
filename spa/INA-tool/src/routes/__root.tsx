@@ -1,29 +1,34 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "@/components/Footer";
-import { ProjectName } from "@/components/ProjectName";
+import { Header } from "@/components/Header";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/theme-toggle";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet, retainSearchParams, stripSearchParams } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { zodValidator } from '@tanstack/zod-adapter'
+import { z } from "zod";
+
+const defaultProject = '';
+const searchSchema = z.object({
+  project: z.string().default(defaultProject),
+})
 
 export const Route = createRootRoute({
+  validateSearch: zodValidator(searchSchema),
+  search: {
+    middlewares:[
+      retainSearchParams(['project']),
+      stripSearchParams({project: defaultProject}),
+    ]
+  },
   component: () => (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <header className="flex h-16 justify-between gap-2 border-b p-2">
-              <SidebarTrigger />
-              <ProjectName />
-              <ThemeToggle />
-            </header>
+            <Header />
             <main className="flex flex-1 flex-col gap-4 p-4">
               <Outlet />
             </main>

@@ -211,6 +211,7 @@ export function StatementTable() {
         />
         <DownloadStatementButton />
       </div>
+      {/* // TODO make table have vertical scrollbar instead of whole page */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>

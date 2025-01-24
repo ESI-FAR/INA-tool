@@ -286,3 +286,12 @@ export function download(file: File) {
   URL.revokeObjectURL(url);
   a.remove();
 }
+
+export function buildProjectJson() {
+  const body = {
+    nodes: store.getState().nodes,
+    edges: store.getState().edges,
+  };
+  return JSON.stringify(body, null, 2);
+}
+

@@ -12,7 +12,6 @@ import { INANode } from "@/components/nodes";
 import { INAEdge } from "@/components/edges";
 
 export type State = {
-  projectName: string;
   nodes: INANode[];
   edges: INAEdge[];
 };
@@ -23,13 +22,11 @@ export type Action = {
   onConnect: OnConnect;
   setNodes: (nodes: INANode[]) => void;
   setEdges: (edges: INAEdge[]) => void;
-  setProjectName: (projectName: string) => void;
 };
 
 export type Store = State & Action;
 
 export const store = createStore<Store>((set, get) => ({
-  projectName: "",
   nodes: [],
   edges: [],
   onNodesChange: (changes) => {
@@ -52,8 +49,5 @@ export const store = createStore<Store>((set, get) => ({
   },
   setEdges: (edges) => {
     set({ edges });
-  },
-  setProjectName: (projectName) => {
-    set({ projectName });
   },
 }));

@@ -7,10 +7,10 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import { toPng } from "html-to-image";
-import { store } from "@/lib/store";
+import { getProject } from "@/hooks/useProjectName";
 
 function downloadImage(dataUrl: string) {
-  const projectName = store.getState().projectName;
+  const projectName = getProject();
   const a = document.createElement("a");
 
   a.setAttribute("download", `${projectName}.png`);

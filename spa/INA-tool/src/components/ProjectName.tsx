@@ -1,12 +1,10 @@
-import { store } from "@/lib/store";
+import { useProjectName } from "@/hooks/useProjectName";
 import { useRef, useState } from "react";
-import { useStore } from "zustand";
 
 export function ProjectName() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
-  const name = useStore(store, (s) => s.projectName);
-  const setName = useStore(store, (s) => s.setProjectName);
+  const [project, setProject] = useProjectName();
 
   if (editing) {
     return (
@@ -15,13 +13,13 @@ export function ProjectName() {
           event.preventDefault();
           const newName = inputRef.current?.value;
           if (newName) {
-            setName(newName);
+            setProject(newName);
           }
           setEditing(false);
         }}
       >
         <input
-          defaultValue={name}
+          defaultValue={project}
           className="mx-1 rounded border-2 bg-background p-1"
           maxLength={200}
           minLength={1}
@@ -51,7 +49,7 @@ export function ProjectName() {
         }, 0);
       }}
     >
-      {name}
+      {project}
       <span className="invisible ps-1 group-hover/name:visible">🖉</span>
     </button>
   );
