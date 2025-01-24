@@ -13,6 +13,7 @@ import { CircleHelpIcon, HomeIcon, Table2Icon, TableIcon } from "lucide-react";
 import { UploadButton } from "./UploadButton";
 import { DownloadProjectButton } from "./DownloadProjectButton";
 import { LoadExampleButton } from "./LoadExampleButton";
+import { ClearButton } from "./ClearButton";
 
 export function AppSidebar() {
   return (
@@ -81,6 +82,11 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <LoadExampleButton />
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <ClearButton />
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

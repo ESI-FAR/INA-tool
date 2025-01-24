@@ -168,7 +168,7 @@ export function procesStatement(
   return [nodes, edges];
 }
 
-function isStatementNode(node: INANode): node is StatementNode {
+export function isStatementNode(node: INANode): node is StatementNode {
   return node.type === "statement";
 }
 

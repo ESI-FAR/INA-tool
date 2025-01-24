@@ -29,7 +29,11 @@ export type Action = {
 export type Store = State & Action;
 
 export const store = createStore<Store>((set, get) => ({
-  projectName: "",
+  projectName:
+    // Initialize project name from URL query parameter
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("project") || ""
+      : "",
   nodes: [],
   edges: [],
   onNodesChange: (changes) => {
@@ -54,6 +58,61 @@ export const store = createStore<Store>((set, get) => ({
     set({ edges });
   },
   setProjectName: (projectName) => {
+    const prevProjectName = get().projectName;
+    if (prevProjectName === projectName) {
+      return;
+    }
+    if (prevProjectName !== "" && prevProjectName !== projectName) {
+      localStorage.removeItem(`ina-project-${prevProjectName}`);
+    }
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      searchParams.set("project", projectName);
+      window.history.replaceState({}, "", `?${searchParams.toString()}`);
+    }
     set({ projectName });
   },
 }));
+
+function setupStorePersistence() {
+  // Skip if not in browser
+  if (typeof window === "undefined") return;
+
+  const projectName = store.getState().projectName;
+  if (!projectName) return;
+
+  // Load initial state from localStorage
+  const savedData = localStorage.getItem(`ina-project-${projectName}`);
+
+  if (savedData) {
+    const { nodes, edges } = JSON.parse(savedData);
+    store.setState({ nodes, edges });
+  }
+
+  const saveState = () => {
+    const state = store.getState();
+    if (!state.nodes) {
+      return;
+    }
+    const dataToSave = {
+      nodes: state.nodes,
+      edges: state.edges,
+    };
+    localStorage.setItem(
+      `ina-project-${state.projectName}`,
+      JSON.stringify(dataToSave),
+    );
+  };
+
+  // Save on tab close/visibility change
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      saveState();
+    }
+  });
+
+  // Save on window close
+  window.addEventListener("beforeunload", saveState);
+}
+
+setupStorePersistence();
