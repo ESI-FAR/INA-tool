@@ -62,9 +62,14 @@ function Flow() {
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           connectionLineComponent={ConnectionLine}
-          isValidConnection={(connection) =>
-            connection.sourceHandle === connection.targetHandle
-          }
+          isValidConnection={(connection) => {
+            const source = nodes.find((node) => node.id === connection.source)!;
+            const target = nodes.find((node) => node.id === connection.target)!;
+            return (
+              connection.sourceHandle === connection.targetHandle &&
+              source.parentId !== target.parentId
+            );
+          }}
           fitView
           colorMode={theme}
           proOptions={{ hideAttribution: true }}
