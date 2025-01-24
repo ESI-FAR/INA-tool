@@ -16,9 +16,10 @@ import "@xyflow/react/dist/style.css";
 import ELK from "elkjs/lib/elk.bundled";
 import { Button } from "./ui/button";
 import { nodeTypes } from "./nodes";
-import { CameraIcon, LayoutTemplateIcon } from "lucide-react";
+import { LayoutTemplateIcon } from "lucide-react";
 import { edgeTypes, INAEdge } from "./edges";
 import { useTheme } from "./theme-provider";
+import { ScreenshotButton } from "./ScreenshotButton";
 
 const elk = new ELK();
 
@@ -168,9 +169,7 @@ function LayoutFlow() {
               <LayoutTemplateIcon />
               Layout
             </Button>
-            <Button variant="ghost" onClick={() => {}}>
-              <CameraIcon /> Screenshot
-            </Button>
+            <ScreenshotButton />
           </Panel>
           <Controls />
           <MiniMap />
