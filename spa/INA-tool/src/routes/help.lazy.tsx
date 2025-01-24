@@ -18,6 +18,7 @@ function useTemplate() {
   const content = csvFormat([], idlessColumns);
   const percentencoded = encodeURIComponent(content);
   const href = `data:text/csv;charset=utf-8,${percentencoded}`;
+  // TODO add xlsx template
   return {
     columns: idlessColumns,
     content,
@@ -38,7 +39,7 @@ function RouteComponent() {
 
       <h3 className="py-4 text-xl">Upload your file with statements</h3>
       <p>
-        You can upload only <i>.csv</i> file. Please, use this{" "}
+        You can upload only <i>.csv</i> or <i>.xlsx</i> files. Please, use this{" "}
         <a className="underline" href={href} download="INA-tool-template.csv">
           template
         </a>

@@ -4,8 +4,10 @@ import { useRef } from "react";
 import { store } from "@/lib/store";
 import { useToast } from "@/hooks/use-toast";
 import { csvParse } from "d3-dsv";
+import { read as readXLSX, utils as utilsXLSX } from "xlsx";
 import { Statements, statementsSchema } from "@/lib/schema";
 import { load } from "@/lib/io";
+import { ZodError } from "zod";
 
 async function processJSONFile(file: File) {
   const content = await file.text();
@@ -36,7 +38,29 @@ function fillIds(data: Statements) {
 async function processCSVFile(file: File) {
   const content = await file.text();
   const rawStatements = csvParse(content);
+  console.log(rawStatements);
 
+  const statements = statementsSchema.parse(rawStatements);
+
+  const statementsWithIds = fillIds(statements);
+
+  load(statementsWithIds, []);
+}
+
+/**
+ * Reads a xlsx file and processes it.
+ *
+ * Expects
+ * - first sheet to have the statents.
+ * - first row to have the column names.
+ *
+ * @param file A xlsx file.
+ */
+async function processXLXSFile(file: File) {
+  const content = await file.arrayBuffer();
+  const workbook = readXLSX(content);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rawStatements = utilsXLSX.sheet_to_json(sheet, { defval: "" });
   const statements = statementsSchema.parse(rawStatements);
 
   const statementsWithIds = fillIds(statements);
@@ -50,13 +74,47 @@ function projectNameFromFile(file: File) {
 
 async function processFile(file: File) {
   store.getState().setProjectName(projectNameFromFile(file));
-  if (file.type === "application/json") {
+  if (file.type === "application/json" || file.name.endsWith(".json")) {
     return processJSONFile(file);
-  } else if (file.type === "text/csv") {
+  } else if (file.type === "text/csv" || file.name.endsWith(".csv")) {
     return processCSVFile(file);
+  } else if (
+    file.type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    file.name.endsWith(".xlsx")
+  ) {
+    return processXLXSFile(file);
   } else {
     throw new Error("Unsupported file type");
   }
+}
+
+function userFriendlyError(error: unknown) {
+  if (error instanceof ZodError) {
+    // If column is missing then do not report error for each row, but only once.
+    const uniqueErrors = new Set(
+      error.issues.map((e) => {
+        if (Array.isArray(e.path)) {
+          if (e.path.length === 2) {
+            return `${e.path[1]} column ${e.message}`;
+          }
+          return `${e.path.join(",")} column ${e.message}`;
+        }
+        return e.message;
+      }),
+    );
+    return (
+      <ul className="list-inside list-disc">
+        {Array.from(uniqueErrors).map((e) => (
+          <li key={e}>{e}</li>
+        ))}
+      </ul>
+    );
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "An error occurred";
 }
 
 export function UploadButton() {
@@ -69,7 +127,12 @@ export function UploadButton() {
       await processFile(file);
       toast({ title: "File uploaded successfully" });
     } catch (error) {
-      toast({ title: "Error uploading file", variant: "destructive" });
+      const description = userFriendlyError(error);
+      toast({
+        title: "Error uploading file",
+        variant: "destructive",
+        description,
+      });
       console.error(error);
     }
   }
@@ -86,7 +149,7 @@ export function UploadButton() {
         ref={uploadRef}
         type="file"
         tabIndex={-1}
-        accept="application/json, .json, text/csv, .csv"
+        accept="application/json, .json, text/csv, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xslx"
         onChange={uploadFile}
         style={{
           display: "none",
