@@ -4,6 +4,7 @@ import { csvFormat } from "d3-dsv";
 import {
   CameraIcon,
   DownloadIcon,
+  Maximize2Icon,
   PencilIcon,
   SaveIcon,
   Undo2Icon,
@@ -112,6 +113,7 @@ function RouteComponent() {
           </i>{" "}
           button at the top right side on the canvas.
         </li>
+        <li><strong>Resize statement:</strong> The bottom right corner has a <Maximize2Icon/> which can be dragged to resize the statement box.</li>
       </ul>
 
       <h3 className="py-4 text-xl">Statements page</h3>
