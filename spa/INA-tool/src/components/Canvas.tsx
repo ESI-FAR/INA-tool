@@ -164,8 +164,8 @@ function LayoutFlow() {
           fitView
           colorMode={theme}
         >
-          <Panel position="top-right">
-            <Button variant="ghost" onClick={getLayoutedElements}>
+          <Panel position="top-right" className="flex gap-1">
+            <Button variant="outline" onClick={getLayoutedElements} title="Auto layout nodes">
               <LayoutTemplateIcon />
               Layout
             </Button>
