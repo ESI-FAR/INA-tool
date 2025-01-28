@@ -2,6 +2,13 @@ import { store } from "@/lib/store";
 import { DeleteIcon } from "lucide-react";
 import { Button } from "./ui/button";
 
+function removeAllData() {
+  const projectName = store.getState().projectName;
+  localStorage.removeItem(`ina-project-${projectName}`);
+  window.history.replaceState({}, "", "?project=");
+  store.setState({ projectName: "", nodes: [], edges: [] });
+}
+
 export function ClearButton() {
   // TODO only show|enable clear button if there are nodes or edges
   return (
@@ -9,10 +16,9 @@ export function ClearButton() {
       title="Remove all data"
       variant="outline"
       onClick={() => {
-        const projectName = store.getState().projectName;
-        localStorage.removeItem(`ina-project-${projectName}`);
-        window.history.replaceState({}, "", "?project=");
-        store.setState({ projectName: "", nodes: [], edges: [] });
+        if (confirm("Are you sure you want to remove all data?")) {
+          removeAllData();
+        }
       }}
     >
       <DeleteIcon /> Clear
