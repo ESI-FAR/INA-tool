@@ -115,6 +115,7 @@ export function DrivenConnectionTable() {
       <div className="flex justify-between gap-4 py-2">
         <Input
           value={globalFilter}
+          type="search"
           className="w-64"
           onChange={(e) => table.setGlobalFilter(String(e.target.value))}
           placeholder="Search..."
