@@ -131,7 +131,14 @@ export function UploadButton() {
       toast({
         title: "Error uploading file",
         variant: "destructive",
-        description,
+        description: (
+          <>
+            {description}
+            <p className="mt-2">
+              Make sure you use the right column seperator and column names.
+            </p>
+          </>
+        ),
       });
       console.error(error);
     }
