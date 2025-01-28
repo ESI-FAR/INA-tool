@@ -6,7 +6,7 @@ import StatementLegend from "./legend/statement.svg?react";
 /*
  * The legend/statement.svg was exported from https://excalidraw.com/ with embedded scene and
  * then converted to a React component using the Vite plugin vite-plugin-svgr with color replacement.
- * 
+ *
  * To edit open the SVG file on https://excalidraw.com/ and export it again.
  */
 

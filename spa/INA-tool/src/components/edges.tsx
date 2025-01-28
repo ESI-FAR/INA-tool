@@ -64,7 +64,7 @@ export function ActorDrivenConnection({
   sourceY,
   targetX,
   targetY,
-  markerEnd
+  markerEnd,
 }: EdgeProps<ActorDrivenConnection>) {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -73,7 +73,14 @@ export function ActorDrivenConnection({
     targetY,
   });
 
-  return <BaseEdge id={id} path={edgePath} style={actorDrivenStyle} markerEnd={markerEnd} />;
+  return (
+    <BaseEdge
+      id={id}
+      path={edgePath}
+      style={actorDrivenStyle}
+      markerEnd={markerEnd}
+    />
+  );
 }
 
 const outcomeDrivenStyle = {
@@ -87,7 +94,7 @@ export function OutcomeDrivenConnection({
   sourceY,
   targetX,
   targetY,
-  markerEnd
+  markerEnd,
 }: EdgeProps<OutcomeDrivenConnection>) {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -96,11 +103,18 @@ export function OutcomeDrivenConnection({
     targetY,
   });
 
-  return <BaseEdge id={id} path={edgePath} style={outcomeDrivenStyle} markerEnd={markerEnd}/>;
+  return (
+    <BaseEdge
+      id={id}
+      path={edgePath}
+      style={outcomeDrivenStyle}
+      markerEnd={markerEnd}
+    />
+  );
 }
 
 const sactionDrivenStyle = {
-  stroke:   drivenColors["sanction-driven"],
+  stroke: drivenColors["sanction-driven"],
   strokeWidth: 2,
 };
 
@@ -110,7 +124,7 @@ export function SanctionDrivenConnection({
   sourceY,
   targetX,
   targetY,
-  markerEnd
+  markerEnd,
 }: EdgeProps<SanctionDrivenConnection>) {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -119,7 +133,14 @@ export function SanctionDrivenConnection({
     targetY,
   });
 
-  return <BaseEdge id={id} path={edgePath} style={sactionDrivenStyle} markerEnd={markerEnd}/>;
+  return (
+    <BaseEdge
+      id={id}
+      path={edgePath}
+      style={sactionDrivenStyle}
+      markerEnd={markerEnd}
+    />
+  );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

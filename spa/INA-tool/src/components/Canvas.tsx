@@ -33,7 +33,7 @@ function createEdgeFromConnection(connection: Connection): Connection {
         width: 10,
         height: 10,
         color: drivenColors[type as keyof typeof drivenColors],
-      }
+      },
     };
     return nedge as Connection;
   }
