@@ -8,6 +8,7 @@ import {
   InDirectObjectNode,
   StatementNode,
 } from "@/components/nodes";
+
 import { Connection, connectionSchema, Statement } from "./schema";
 import { store } from "./store";
 import {
@@ -229,57 +230,110 @@ export function deriveConnections(
     );
 }
 
+export class InvalidConnectionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidConnectionError";
+  }
+}
+
 function processConnection(
   connection: Connection,
-  nodes: INANode[],
+  lookup: Map<string, INANode>,
 ): DrivenConnection {
-  const sourceStatement = nodes.find(
-    (node) => node.type === "statement" && node.id === connection.source_node,
-  );
-  const targetStatement = nodes.find(
-    (node) => node.type === "statement" && node.id === connection.target_node,
-  );
-  if (!sourceStatement || !targetStatement) {
-    throw new Error("Source or target statement not found");
+  if (connection.source_statement === connection.target_statement) {
+    throw new InvalidConnectionError(
+      "Source and target statement can not be the same",
+    );
   }
-  const sourceNode = nodes.find(
-    (node) =>
-      node.parentId === sourceStatement.id &&
-      node.type === connection.source_node,
-  );
-  const targetNode = nodes.find(
-    (node) =>
-      node.parentId === targetStatement.id &&
-      node.type === connection.target_node,
-  );
-  if (!sourceNode || !targetNode) {
-    throw new Error("Source or target node not found");
+  const sourceStatement = lookup.get(connection.source_statement);
+  if (!sourceStatement) {
+    throw new InvalidConnectionError(
+      `Source statement "${connection.source_statement}" not found`,
+    );
   }
-  switch (connection.driver) {
-    case "actor":
-      return {
-        id: `${sourceNode.id}-2-${targetNode.id}`,
-        source: sourceNode.id,
-        target: targetNode.id,
-        type: "actor-driven",
-      };
-    case "outcome":
-      return {
-        id: `${sourceNode.id}-2-${targetNode.id}`,
-        source: sourceNode.id,
-        target: targetNode.id,
-        type: "outcome-driven",
-      };
-    case "sanction":
-      return {
-        id: `${sourceNode.id}-2-${targetNode.id}`,
-        source: sourceNode.id,
-        target: targetNode.id,
-        type: "sanction-driven",
-      };
-    default:
-      throw new Error("Unknown driver");
+  const targetStatement = lookup.get(connection.target_statement);
+  if (!targetStatement) {
+    throw new InvalidConnectionError(
+      `Target statement "${connection.target_statement}" not found`,
+    );
   }
+  const sourceNodeId = `${connection.source_statement}-${connection.source_node}`;
+  const targetNodeId = `${connection.target_statement}-${connection.target_node}`;
+  const sourceNode = lookup.get(sourceNodeId);
+  const targetNode = lookup.get(targetNodeId);
+  if (!sourceNode) {
+    throw new InvalidConnectionError(`Source node "${sourceNodeId}" not found`);
+  }
+  if (!targetNode) {
+    throw new InvalidConnectionError(`Target node "${targetNodeId}" not found`);
+  }
+
+  // TODO gather all errors instead of throwing on first one
+  // TODO replace with zod somehow
+  if (connection.driver === "actor") {
+    if (targetNode.type !== "attribute") {
+      throw new InvalidConnectionError(
+        `Actor driven connection target can only be attribute, got "${targetNode.type}"`,
+      );
+    }
+    const sourceIsAnimateObject =
+      (sourceNode.type === "direct-object" ||
+        sourceNode.type === "indirect-object") &&
+      sourceNode.data.animation === "animate";
+    const sourceIsExecutionConstraint =
+      sourceNode.type === "execution-constraint";
+    if (!sourceIsAnimateObject && !sourceIsExecutionConstraint) {
+      throw new InvalidConnectionError(
+        `Actor driven connection source can only be animate direct/indirect object or execution constraint, got "${sourceNode.type}"`,
+      );
+    }
+    return {
+      id: `${sourceNode.id}-2-${targetNode.id}`,
+      source: sourceNode.id,
+      target: targetNode.id,
+      type: "actor-driven",
+    };
+  } else if (connection.driver === "outcome") {
+    if (targetNode.type !== "activation-condition") {
+      throw new InvalidConnectionError(
+        `Outcome driven connection target can only be activation condition, got "${targetNode.type}"`,
+      );
+    }
+    const sourceIsInanimateObject =
+      (sourceNode.type === "direct-object" ||
+        sourceNode.type === "indirect-object") &&
+      sourceNode.data.animation === "inanimate";
+    if (!sourceIsInanimateObject) {
+      throw new InvalidConnectionError(
+        `Outcome driven connection source can only be inanimate direct/indirect object, got "${sourceNode.type}"`,
+      );
+    }
+    return {
+      id: `${sourceNode.id}-2-${targetNode.id}`,
+      source: sourceNode.id,
+      target: targetNode.id,
+      type: "outcome-driven",
+    };
+  } else if (connection.driver === "sanction") {
+    if (targetNode.type !== "activation-condition") {
+      throw new InvalidConnectionError(
+        `Sanction driven connection target can only be activation condition, got "${targetNode.type}"`,
+      );
+    }
+    if (sourceNode.type !== "aim") {
+      throw new InvalidConnectionError(
+        `Sanction driven connection source can only be aim, got "${sourceNode.type}"`,
+      );
+    }
+    return {
+      id: `${sourceNode.id}-2-${targetNode.id}`,
+      source: sourceNode.id,
+      target: targetNode.id,
+      type: "sanction-driven",
+    };
+  }
+  throw new InvalidConnectionError(`Unknown driver "${connection.driver}"`);
 }
 
 function offsetStatements(nodes: INANode[]) {
@@ -301,8 +355,9 @@ export function load(statements: Statement[], connections: Connection[]) {
   }
   offsetStatements(nodes);
 
+  const lookup = new Map<string, INANode>(nodes.map((node) => [node.id, node]));
   for (const connection of connections) {
-    const newEdge = processConnection(connection, nodes);
+    const newEdge = processConnection(connection, lookup);
     edges.push(newEdge);
   }
   store.getState().setNodes(nodes);
@@ -332,10 +387,10 @@ export function download(file: File) {
 export function loadConnections(connections: Connection[]) {
   const nodes = store.getState().nodes;
   const edges = store.getState().edges;
+  const lookup = new Map<string, INANode>(nodes.map((node) => [node.id, node]));
+  // TODO gather up all errors instead of throwing first one
   const newEdges = connections.map((connection) =>
-    processConnection(connection, nodes),
+    processConnection(connection, lookup),
   );
-  // TODO validate that all nodes and statements are present
-  // gather up all validation errors and throw zod like error
   store.getState().setEdges([...edges, ...newEdges]);
 }
