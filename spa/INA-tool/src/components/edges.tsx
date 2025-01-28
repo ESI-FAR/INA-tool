@@ -33,16 +33,24 @@ export function InnerStatementEdge({
   sourceY,
   targetX,
   targetY,
-  data,
+  label,
 }: EdgeProps<InnerStatementEdge>) {
-  const [edgePath] = getStraightPath({
+  const [edgePath, labelX, labelY] = getStraightPath({
     sourceX,
     sourceY,
     targetX,
     targetY,
   });
 
-  return <BaseEdge id={id} path={edgePath} label={data?.label} />;
+  return (
+    <BaseEdge
+      id={id}
+      path={edgePath}
+      labelX={labelX}
+      labelY={labelY}
+      label={label}
+    />
+  );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

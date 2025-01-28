@@ -83,6 +83,9 @@ function Flow() {
           proOptions={{ hideAttribution: true }}
         >
           <Panel position="top-right" className="flex gap-1">
+            {/* TODO add search, clicking hit should set viewport to node/edge */}
+            {/* TODO add toggle to render statement node in compact mode, with statement as sentence
+             and snippet in sentence with connections somehow visualized */}
             <LayoutButton />
             <ScreenshotButton />
             <CanvasLegendButton />
