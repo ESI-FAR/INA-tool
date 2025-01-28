@@ -33,6 +33,7 @@ export const connectionSchema = z.object({
     z.literal("direct-object"),
     z.literal("indirect-object"),
     z.literal("aim"),
+    z.literal("execution-constraint"),
   ]),
   source_value: z.string().optional(),
   target_statement: z.string(),
