@@ -184,8 +184,67 @@ function isDrivenConnection(edge: INAEdge): edge is DrivenConnection {
   );
 }
 
-export function deriveConnections(edges: INAEdge[]): DrivenConnection[] {
-  return edges.filter(isDrivenConnection);
+export interface EnrichedDrivenConnection {
+  driver: DrivenConnection["type"];
+  source_statement: string;
+  source_node: string;
+  source_value: string;
+  target_statement: string;
+  target_node: string;
+  target_value: string;
+}
+export const drivenConnectionColumns = [
+  "driver",
+  "source_statement",
+  "source_node",
+  "source_value",
+  "target_statement",
+  "target_node",
+  "target_value",
+] as const;
+
+function enrichEdge(
+  edge: DrivenConnection,
+  lookup: Map<string, INANode>,
+): EnrichedDrivenConnection {
+  const sourceNode = lookup.get(edge.source);
+  const targetNode = lookup.get(edge.target);
+  if (
+    !sourceNode ||
+    !targetNode ||
+    !sourceNode.parentId ||
+    !targetNode.parentId ||
+    !sourceNode.type ||
+    !targetNode.type
+  ) {
+    throw new Error("Source or target node not found");
+  }
+  return {
+    source_statement: sourceNode.parentId,
+    source_node: sourceNode.type,
+    source_value: sourceNode.data.label,
+    target_statement: targetNode.parentId,
+    target_node: targetNode.type,
+    target_value: targetNode.data.label,
+    driver: edge.type,
+  };
+}
+
+export function deriveConnections(
+  edges: INAEdge[],
+  nodes: INANode[],
+): EnrichedDrivenConnection[] {
+  const lookup = new Map<string, INANode>(nodes.map((node) => [node.id, node]));
+  return edges
+    .filter(isDrivenConnection)
+    .map((e) => enrichEdge(e, lookup))
+    .sort(
+      (a, b) =>
+        a.source_statement.localeCompare(b.source_statement) ||
+        a.source_node.localeCompare(b.source_node) ||
+        a.target_statement.localeCompare(b.target_statement) ||
+        a.target_node.localeCompare(b.target_node),
+    );
 }
 
 function processConnection(
@@ -270,10 +329,11 @@ export function load(statements: Statement[], connections: Connection[]) {
 
 export function save(): {
   statements: Statement[];
-  connections: DrivenConnection[];
+  connections: EnrichedDrivenConnection[];
 } {
-  const statements = deriveStatements(store.getState().nodes);
-  const connections = deriveConnections(store.getState().edges);
+  const nodes = store.getState().nodes;
+  const statements = deriveStatements(nodes);
+  const connections = deriveConnections(store.getState().edges, nodes);
   return { statements, connections };
 }
 

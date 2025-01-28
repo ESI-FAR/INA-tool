@@ -6,6 +6,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getGroupedRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -23,34 +24,71 @@ import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
-import { DownloadStatementButton } from "./DownloadStatementButton";
-import { deriveConnections } from "@/lib/io";
-import { INAEdge } from "./edges";
+import { deriveConnections, EnrichedDrivenConnection } from "@/lib/io";
+import { DownloadConnectionButton } from "./DownloadConnectionButton";
 
-const columns: ColumnDef<INAEdge>[] = [
+const columns: ColumnDef<EnrichedDrivenConnection>[] = [
   {
-    accessorKey: "source",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Source" />
-    ),
-  },
-  {
-    accessorKey: "target",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Target" />
-    ),
-  },
-  {
-    accessorKey: "sourceHandle",
+    accessorKey: "driver",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Driver" />
     ),
+  },
+  {
+    header: "Source",
+    columns: [
+      {
+        accessorKey: "source_statement",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Statement" />
+        ),
+      },
+      {
+        accessorKey: "source_node",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Node" />
+        ),
+      },
+      {
+        accessorKey: "source.value",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Value" />
+        ),
+      },
+    ],
+  },
+  {
+    header: "Target",
+    columns: [
+      {
+        accessorKey: "target_statement",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Statement" />
+        ),
+      },
+      {
+        accessorKey: "target_node",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Node" />
+        ),
+      },
+      {
+        accessorKey: "target_value",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Value" />
+        ),
+      },
+    ],
   },
 ];
 
 export function DrivenConnectionTable() {
   const edges = useStore(store, (state) => state.edges);
-  const connections = useMemo(() => deriveConnections(edges), [edges]);
+  const nodes = useStore(store, (state) => state.nodes);
+  const connections = useMemo(
+    () => deriveConnections(edges, nodes),
+    [edges, nodes],
+  );
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const table = useReactTable({
@@ -61,6 +99,7 @@ export function DrivenConnectionTable() {
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,
     state: {
@@ -78,7 +117,7 @@ export function DrivenConnectionTable() {
           onChange={(e) => table.setGlobalFilter(String(e.target.value))}
           placeholder="Search..."
         />
-        <DownloadStatementButton />
+        <DownloadConnectionButton />
       </div>
       <div className="w-full rounded-md border">
         <Table>
@@ -87,7 +126,7 @@ export function DrivenConnectionTable() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} colSpan={header.colSpan}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
