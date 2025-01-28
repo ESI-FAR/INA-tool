@@ -52,7 +52,7 @@ const columns: ColumnDef<Connection>[] = [
         ),
       },
       {
-        accessorKey: "source.value",
+        accessorKey: "source_value",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Value" />
         ),
