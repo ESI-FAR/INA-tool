@@ -13,7 +13,6 @@ async function processCSVFile(file: File) {
   const rawStatements = csvParse(content);
 
   const connections = connectionsSchema.parse(rawStatements);
-  // TODO validate that all nodes and statements are present
   loadConnections(connections);
 }
 

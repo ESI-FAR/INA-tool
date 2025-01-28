@@ -211,6 +211,7 @@ export function StatementTable() {
         />
         <DownloadStatementButton />
       </div>
+      {/* TODO render action as first column and show vertical scrollbar if window is too small */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
