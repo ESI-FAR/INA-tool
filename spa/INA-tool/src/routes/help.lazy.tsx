@@ -115,7 +115,8 @@ function RouteComponent() {
         </li>
         <li>
           <strong>Resize statement:</strong> The bottom right corner has a{" "}
-          <Maximize2Icon /> which can be dragged to resize the statement box.
+          <Maximize2Icon className="inline" /> which can be dragged to resize
+          the statement box.
         </li>
       </ul>
 
