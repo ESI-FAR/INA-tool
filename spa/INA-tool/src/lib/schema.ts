@@ -34,11 +34,13 @@ export const connectionSchema = z.object({
     z.literal("indirect-object"),
     z.literal("aim"),
   ]),
+  source_value: z.string().optional(),
   target_statement: z.string(),
   target_node: z.union([
     z.literal("attribute"),
     z.literal("activation-condition"),
   ]),
+  target_value: z.string().optional(),
   driver: z.union([
     z.literal("actor"),
     z.literal("outcome"),
@@ -49,3 +51,5 @@ export type Connection = z.infer<typeof connectionSchema>;
 export const connectionColumns = Object.keys(
   connectionSchema.shape,
 ) as ReadonlyArray<keyof Connection>;
+
+export const connectionsSchema = z.array(connectionSchema);

@@ -2,7 +2,8 @@ import { DownloadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { store } from "@/lib/store";
 import { csvFormat } from "d3-dsv";
-import { download, drivenConnectionColumns, save } from "@/lib/io";
+import { download, save } from "@/lib/io";
+import { connectionColumns } from "@/lib/schema";
 
 function downloadCSV() {
   const file = createCsvFile();
@@ -15,7 +16,7 @@ function createCsvFile() {
     ? `${projectName}.connections.csv`
     : "INA-tool.connections.csv";
   const { connections } = save();
-  const content = csvFormat(connections, drivenConnectionColumns);
+  const content = csvFormat(connections, connectionColumns);
   return new File([content], fn, { type: "text/csv" });
 }
 

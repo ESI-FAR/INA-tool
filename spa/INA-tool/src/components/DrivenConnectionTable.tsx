@@ -24,10 +24,12 @@ import { useMemo, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
-import { deriveConnections, EnrichedDrivenConnection } from "@/lib/io";
+import { deriveConnections } from "@/lib/io";
 import { DownloadConnectionButton } from "./DownloadConnectionButton";
+import { UploadConnectionButton } from "./UploadConnectionButton";
+import { Connection } from "@/lib/schema";
 
-const columns: ColumnDef<EnrichedDrivenConnection>[] = [
+const columns: ColumnDef<Connection>[] = [
   {
     accessorKey: "driver",
     header: ({ column }) => (
@@ -117,7 +119,10 @@ export function DrivenConnectionTable() {
           onChange={(e) => table.setGlobalFilter(String(e.target.value))}
           placeholder="Search..."
         />
-        <DownloadConnectionButton />
+        <div className="flex gap-2">
+          <DownloadConnectionButton />
+          <UploadConnectionButton />
+        </div>
       </div>
       <div className="w-full rounded-md border">
         <Table>

@@ -8,7 +8,7 @@ import {
   InDirectObjectNode,
   StatementNode,
 } from "@/components/nodes";
-import { Connection, Statement } from "./schema";
+import { Connection, connectionSchema, Statement } from "./schema";
 import { store } from "./store";
 import {
   InnerStatementEdge,
@@ -184,32 +184,14 @@ function isDrivenConnection(edge: INAEdge): edge is DrivenConnection {
   );
 }
 
-export interface EnrichedDrivenConnection {
-  driver: DrivenConnection["type"];
-  source_statement: string;
-  source_node: string;
-  source_value: string;
-  target_statement: string;
-  target_node: string;
-  target_value: string;
-}
-export const drivenConnectionColumns = [
-  "driver",
-  "source_statement",
-  "source_node",
-  "source_value",
-  "target_statement",
-  "target_node",
-  "target_value",
-] as const;
-
 function enrichEdge(
   edge: DrivenConnection,
   lookup: Map<string, INANode>,
-): EnrichedDrivenConnection {
+): Connection {
   const sourceNode = lookup.get(edge.source);
   const targetNode = lookup.get(edge.target);
   if (
+    !edge.type ||
     !sourceNode ||
     !targetNode ||
     !sourceNode.parentId ||
@@ -219,21 +201,21 @@ function enrichEdge(
   ) {
     throw new Error("Source or target node not found");
   }
-  return {
+  return connectionSchema.parse({
     source_statement: sourceNode.parentId,
     source_node: sourceNode.type,
     source_value: sourceNode.data.label,
     target_statement: targetNode.parentId,
     target_node: targetNode.type,
     target_value: targetNode.data.label,
-    driver: edge.type,
-  };
+    driver: edge.type.replace("-driven", ""),
+  });
 }
 
 export function deriveConnections(
   edges: INAEdge[],
   nodes: INANode[],
-): EnrichedDrivenConnection[] {
+): Connection[] {
   const lookup = new Map<string, INANode>(nodes.map((node) => [node.id, node]));
   return edges
     .filter(isDrivenConnection)
@@ -329,7 +311,7 @@ export function load(statements: Statement[], connections: Connection[]) {
 
 export function save(): {
   statements: Statement[];
-  connections: EnrichedDrivenConnection[];
+  connections: Connection[];
 } {
   const nodes = store.getState().nodes;
   const statements = deriveStatements(nodes);
@@ -345,4 +327,15 @@ export function download(file: File) {
   a.click();
   URL.revokeObjectURL(url);
   a.remove();
+}
+
+export function loadConnections(connections: Connection[]) {
+  const nodes = store.getState().nodes;
+  const edges = store.getState().edges;
+  const newEdges = connections.map((connection) =>
+    processConnection(connection, nodes),
+  );
+  // TODO validate that all nodes and statements are present
+  // gather up all validation errors and throw zod like error
+  store.getState().setEdges([...edges, ...newEdges]);
 }
