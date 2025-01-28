@@ -1,6 +1,14 @@
 import { AlignVerticalDistributeCenterIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import StatementLegend from "./legend/statement.svg?react";
+
+/*
+ * The legend/statement.svg was exported from https://excalidraw.com/ with embedded scene and
+ * then converted to a React component using the Vite plugin vite-plugin-svgr with color replacement.
+ * 
+ * To edit open the SVG file on https://excalidraw.com/ and export it again.
+ */
 
 function EdgeLegend({ className, text }: { className: string; text: string }) {
   return (
@@ -19,8 +27,10 @@ export function CanvasLegendButton() {
             <AlignVerticalDistributeCenterIcon /> Legend
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80">
-          {/* TODO add legend for nodes */}
+        <PopoverContent className="w-96">
+          <p>Statement</p>
+
+          <StatementLegend width="22rem" height="8rem" />
           <p>Edges</p>
           <ul className="list-inside pl-4">
             <EdgeLegend className="text-foreground" text="Inner statement" />
