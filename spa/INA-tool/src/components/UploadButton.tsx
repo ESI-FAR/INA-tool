@@ -148,7 +148,7 @@ export function UploadButton() {
     <Button
       variant="outline"
       onClick={() => uploadRef.current?.click()}
-      title="Upload a JSON or CSV file"
+      title="Upload a JSON or CSV or XSLX file"
     >
       <UploadIcon />
       <span>Upload file</span>
