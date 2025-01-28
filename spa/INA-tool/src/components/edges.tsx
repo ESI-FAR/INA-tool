@@ -45,8 +45,16 @@ export function InnerStatementEdge({
   return <BaseEdge id={id} path={edgePath} label={data?.label} />;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const drivenColors = {
+  "inner-statement": "#000000",
+  "actor-driven": "#a855f7",
+  "outcome-driven": "#22c55e",
+  "sanction-driven": "#ef4444",
+} as const;
+
 const actorDrivenStyle = {
-  stroke: "#a855f7",
+  stroke: drivenColors["actor-driven"],
   strokeWidth: 2,
 };
 
@@ -56,6 +64,7 @@ export function ActorDrivenConnection({
   sourceY,
   targetX,
   targetY,
+  markerEnd
 }: EdgeProps<ActorDrivenConnection>) {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -64,12 +73,11 @@ export function ActorDrivenConnection({
     targetY,
   });
 
-  // TODO draw arrow at target handle?
-  return <BaseEdge id={id} path={edgePath} style={actorDrivenStyle} />;
+  return <BaseEdge id={id} path={edgePath} style={actorDrivenStyle} markerEnd={markerEnd} />;
 }
 
 const outcomeDrivenStyle = {
-  stroke: "#22c55e",
+  stroke: drivenColors["outcome-driven"],
   strokeWidth: 2,
 };
 
@@ -79,6 +87,7 @@ export function OutcomeDrivenConnection({
   sourceY,
   targetX,
   targetY,
+  markerEnd
 }: EdgeProps<OutcomeDrivenConnection>) {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -87,11 +96,11 @@ export function OutcomeDrivenConnection({
     targetY,
   });
 
-  return <BaseEdge id={id} path={edgePath} style={outcomeDrivenStyle} />;
+  return <BaseEdge id={id} path={edgePath} style={outcomeDrivenStyle} markerEnd={markerEnd}/>;
 }
 
 const sactionDrivenStyle = {
-  stroke: "#ef4444",
+  stroke:   drivenColors["sanction-driven"],
   strokeWidth: 2,
 };
 
@@ -101,6 +110,7 @@ export function SanctionDrivenConnection({
   sourceY,
   targetX,
   targetY,
+  markerEnd
 }: EdgeProps<SanctionDrivenConnection>) {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -109,7 +119,7 @@ export function SanctionDrivenConnection({
     targetY,
   });
 
-  return <BaseEdge id={id} path={edgePath} style={sactionDrivenStyle} />;
+  return <BaseEdge id={id} path={edgePath} style={sactionDrivenStyle} markerEnd={markerEnd}/>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
