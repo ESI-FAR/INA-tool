@@ -1,50 +1,37 @@
-# React + TypeScript + Vite
+# INA Tool
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/StartBootstrap/startbootstrap-sb-admin/master/LICENSE)
 
-Currently, two official plugins are available:
+INA Tool is an open-source digital tool developed by the eScience Center aimed at supporting the regulatory framework design process by facilitating the study, analysis, and decision-making through data visualization and interaction.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The web application is running at [[INA Tool](ttps://esi-far.github.io/INA-tool/)](https://esi-far.github.io/INA-tool/).
 
-## Expanding the ESLint configuration
+![INA](src/help/canvas.png)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Development
 
-- Configure the top-level `parserOptions` property like this:
+You need [Node.js](https://nodejs.org) >=22 or equivalent to develop the application.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+```shell
+# To install dependencies
+npm install
+# To run development server
+npm run dev
+# To build the application,
+# after build host generated dist/ directory on a web server
+npm run build
+# To format
+npm run format
+# To lint
+npm run lint
+# To type check
+npm run typecheck
+# To run tests, tests are written with vitest and are named `*.test.ts[x]`.
+npm run test
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## AI Disclaimer
 
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
+The documentation/software code in this repository has been partly generated and/or refined using
+GitHub CoPilot. All AI-output has been verified for correctness,
+accuracy and completeness, adapted where needed, and approved by the author.
