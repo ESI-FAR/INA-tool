@@ -1,4 +1,4 @@
-import { store } from "@/lib/store";
+import { StatementLayout, store } from "@/lib/store";
 import { useStore } from "zustand";
 import {
   ReactFlow,
@@ -10,13 +10,16 @@ import {
   MarkerType,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { nodeTypes } from "./nodes";
+import { INANode, nodeTypes } from "./nodes";
 import { drivenColors, edgeTypes, INAEdge } from "./edges";
 import { useTheme } from "./theme-provider";
 import { ScreenshotButton } from "./ScreenshotButton";
 import { LayoutButton } from "./LayoutButton";
 import { ConnectionLine } from "./ConnectionLine";
 import { CanvasLegendButton } from "./CanvasLegendButton";
+import { useEffect, useState } from "react";
+import { isStatementNode } from "@/lib/io";
+import { CompactSwitch } from "./CompactSwitch";
 
 function createEdgeFromConnection(connection: Connection): Connection {
   const type = connection.targetHandle as keyof typeof edgeTypes;
@@ -40,10 +43,24 @@ function createEdgeFromConnection(connection: Connection): Connection {
   return connection;
 }
 
+function compileFlow(
+  statements: StatementLayout[],
+  connections: Connection[],
+  layout: StatementLayout[],
+): {
+  nodes: INANode[];
+  edges: INAEdge[];
+} {
+  const nodes: INANode[] = [];
+  const edges: INAEdge[] = [];
+  return { nodes, edges };
+}
+
 function Flow() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
     useStore(store);
 
+  const [isCompact, toggleCompact] = useState(false);
   const { theme } = useTheme();
 
   if (nodes.length === 0) {
@@ -86,6 +103,7 @@ function Flow() {
             {/* TODO add search, clicking hit should set viewport to node/edge */}
             {/* TODO add toggle to render statement node in compact mode, with statement as sentence
              and snippet in sentence with connections somehow visualized */}
+            <CompactSwitch value={isCompact} onChange={toggleCompact} />
             <LayoutButton />
             <ScreenshotButton />
             <CanvasLegendButton />

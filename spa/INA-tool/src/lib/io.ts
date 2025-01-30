@@ -6,6 +6,7 @@ import {
   ExecutionConstraintNode,
   INANode,
   InDirectObjectNode,
+  InnerStatementNode,
   StatementNode,
 } from "@/components/nodes";
 
@@ -171,6 +172,20 @@ export function procesStatement(
 
 export function isStatementNode(node: INANode): node is StatementNode {
   return node.type === "statement";
+}
+
+export function isInnerStatementNode(
+  node: INANode,
+): node is InnerStatementNode {
+  return (
+    node.parentId !== undefined &&
+    (node.type === "attribute" ||
+      node.type === "aim" ||
+      node.type === "direct-object" ||
+      node.type === "indirect-object" ||
+      node.type === "activation-condition" ||
+      node.type === "execution-constraint")
+  );
 }
 
 export function deriveStatements(nodes: INANode[]): Statement[] {
