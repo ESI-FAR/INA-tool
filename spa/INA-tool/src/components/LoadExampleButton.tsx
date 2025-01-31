@@ -1,4 +1,4 @@
-import { Statement } from "@/lib/schema";
+import { Connection, Statement } from "@/lib/schema";
 import { Button } from "./ui/button";
 import { load } from "@/lib/io";
 import { Wand2Icon } from "lucide-react";
@@ -91,9 +91,33 @@ const statements: Statement[] = [
   },
 ] as const;
 
+const connections: Connection[] = [
+  {
+    source_statement: "1",
+    source_node: "aim",
+    target_statement: "2",
+    target_node: "activation-condition",
+    driver: "sanction",
+  },
+  {
+    source_statement: "2",
+    source_node: "indirect-object",
+    target_statement: "3",
+    target_node: "attribute",
+    driver: "actor",
+  },
+  {
+    source_statement: "3",
+    source_node: "direct-object",
+    target_statement: "4",
+    target_node: "activation-condition",
+    driver: "outcome",
+  },
+];
+
 function loadExample() {
   store.getState().setProjectName("Example");
-  load(statements, []);
+  load(statements, connections);
 }
 
 export function LoadExampleButton() {
