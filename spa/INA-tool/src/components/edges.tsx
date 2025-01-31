@@ -7,6 +7,19 @@ import {
   MarkerType,
 } from "@xyflow/react";
 
+/*
+Connections:
+Purple (Actor-driven connection):
+- (Animate) Direct/Indirect Object -> Attribute
+- Execution Constraint -> Attribute
+
+Green (Outcome-driven connection):
+- (Inanimate) Direct/Indirect Object -> Activation Condition
+
+Red (Sanction-driven connection):
+- Aim -> Activation Condition
+*/
+
 export type InnerStatementEdge = Edge<{ label?: string }, "inner-statement">;
 export type ActorDrivenConnection = Edge<
   Record<string, unknown>,
