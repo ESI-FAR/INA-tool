@@ -6,7 +6,8 @@ import { LayoutTemplateIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { isStatementNode } from "@/lib/io";
 import type { INANode } from "./nodes";
-import type { INAEdge } from "./edges";
+import { isDrivenConnectionEdge, type INAEdge } from "./edges";
+import { store } from "@/lib/store";
 
 const elk = new ELK();
 
@@ -25,14 +26,21 @@ const useLayoutedElements = () => {
 
   const getLayoutedElements = useCallback(() => {
     const statementNodes = getNodes().filter(isStatementNode);
+    const isCompact = store.getState().isCompact;
+    const edges = isCompact
+      ? getEdges().filter(isDrivenConnectionEdge)
+      : getEdges();
     const graph = {
       id: "root",
-      layoutOptions,
+      layoutOptions: {
+        ...layoutOptions,
+        "elk.direction": isCompact ? "DOWN" : "RIGHT",
+      },
       children: statementNodes.map((node) => {
         return {
           ...node,
           children: getNodes()
-            .filter((n) => n.parentId === node.id)
+            .filter((n) => n.parentId === node.id && !n.hidden)
             .map((innerstatement) => {
               return {
                 ...innerstatement,
@@ -44,14 +52,16 @@ const useLayoutedElements = () => {
           height: node.measured!.height,
         };
       }),
-      edges: getEdges(),
+      edges,
     };
 
     // @ts-expect-error copied from react-flow examples
     elk.layout(graph).then(({ children }) => {
       // By mutating the children in-place we saves ourselves from creating a
       // needless copy of the nodes array.
-      const innernodes: INANode[] = [];
+      const innernodes: INANode[] = isCompact
+        ? getNodes().filter((n) => n.type !== "statement")
+        : [];
       children!.forEach((node) => {
         // @ts-expect-error copied from react-flow examples
         node.position = { x: node.x, y: node.y };

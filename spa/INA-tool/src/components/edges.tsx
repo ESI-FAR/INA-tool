@@ -34,12 +34,27 @@ export type SanctionDrivenConnection = Edge<
   "sanction-driven"
 >; // Red
 
-export type DrivenConnection =
+export type DrivenConnection = (
   | ActorDrivenConnection
   | OutcomeDrivenConnection
-  | SanctionDrivenConnection;
+  | SanctionDrivenConnection
+) & { uncompactSource?: string; uncompactTarget?: string };
 
 export type INAEdge = InnerStatementEdge | DrivenConnection;
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function isInnerStatementEdge(
+  edge: INAEdge,
+): edge is InnerStatementEdge {
+  return edge.type === "inner-statement";
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function isDrivenConnectionEdge(
+  edge: INAEdge,
+): edge is DrivenConnection {
+  return !isInnerStatementEdge(edge);
+}
 
 export function InnerStatementEdge({
   id,
