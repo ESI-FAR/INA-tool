@@ -167,6 +167,9 @@ function TargetHandles({
 function StatementCard({ statement }: { statement: Statement }) {
   return (
     <div className="bg-card p-2 text-card-foreground shadow">
+      <div className="absolute right-0 top-0 z-10 cursor-pointer p-1 text-muted-foreground hover:text-foreground">
+        ✕
+      </div>
       <dl className="grid grid-cols-[auto_1fr] gap-x-2 text-sm">
         <dt className="font-semibold">Statement Type:</dt>
         <dd>{statement["Statement Type"]}</dd>
