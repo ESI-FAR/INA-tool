@@ -7,11 +7,10 @@ import {
   Panel,
   ReactFlowProvider,
   Connection,
-  MarkerType,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { nodeTypes } from "./nodes";
-import { drivenColors, edgeTypes, INAEdge } from "./edges";
+import { buildEdge, edgeTypes } from "./edges";
 import { useTheme } from "./theme-provider";
 import { ScreenshotButton } from "./ScreenshotButton";
 import { LayoutButton } from "./LayoutButton";
@@ -21,20 +20,7 @@ import { CanvasLegendButton } from "./CanvasLegendButton";
 function createEdgeFromConnection(connection: Connection): Connection {
   const type = connection.targetHandle as keyof typeof edgeTypes;
   if (type) {
-    const nedge: INAEdge = {
-      type,
-      id: `${connection.source}-${connection.target}`,
-      target: connection.target,
-      source: connection.source,
-      sourceHandle: connection.sourceHandle,
-      targetHandle: connection.targetHandle,
-      markerEnd: {
-        type: MarkerType.Arrow,
-        width: 10,
-        height: 10,
-        color: drivenColors[type as keyof typeof drivenColors],
-      },
-    };
+    const nedge = buildEdge(connection.source, connection.target, type);
     return nedge as Connection;
   }
   return connection;

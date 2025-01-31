@@ -15,6 +15,7 @@ import {
   InnerStatementEdge,
   INAEdge,
   DrivenConnection,
+  buildEdge,
 } from "@/components/edges";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
@@ -240,7 +241,7 @@ export class InvalidConnectionError extends Error {
 function processConnection(
   connection: Connection,
   lookup: Map<string, INANode>,
-): DrivenConnection {
+): INAEdge {
   if (connection.source_statement === connection.target_statement) {
     throw new InvalidConnectionError(
       "Source and target statement can not be the same",
@@ -288,12 +289,7 @@ function processConnection(
         `Actor driven connection source can only be animate direct/indirect object or execution constraint, got "${sourceNode.type}"`,
       );
     }
-    return {
-      id: `${sourceNode.id}-2-${targetNode.id}`,
-      source: sourceNode.id,
-      target: targetNode.id,
-      type: "actor-driven",
-    };
+    return buildEdge(sourceNode.id, targetNode.id, "actor-driven");
   } else if (connection.driver === "outcome") {
     if (targetNode.type !== "activation-condition") {
       throw new InvalidConnectionError(
@@ -309,12 +305,7 @@ function processConnection(
         `Outcome driven connection source can only be inanimate direct/indirect object, got "${sourceNode.type}"`,
       );
     }
-    return {
-      id: `${sourceNode.id}-2-${targetNode.id}`,
-      source: sourceNode.id,
-      target: targetNode.id,
-      type: "outcome-driven",
-    };
+    return buildEdge(sourceNode.id, targetNode.id, "outcome-driven");
   } else if (connection.driver === "sanction") {
     if (targetNode.type !== "activation-condition") {
       throw new InvalidConnectionError(
@@ -326,12 +317,7 @@ function processConnection(
         `Sanction driven connection source can only be aim, got "${sourceNode.type}"`,
       );
     }
-    return {
-      id: `${sourceNode.id}-2-${targetNode.id}`,
-      source: sourceNode.id,
-      target: targetNode.id,
-      type: "sanction-driven",
-    };
+    return buildEdge(sourceNode.id, targetNode.id, "sanction-driven");
   }
   throw new InvalidConnectionError(`Unknown driver "${connection.driver}"`);
 }

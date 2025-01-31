@@ -4,6 +4,7 @@ import {
   EdgeProps,
   getBezierPath,
   getStraightPath,
+  MarkerType,
 } from "@xyflow/react";
 
 export type InnerStatementEdge = Edge<{ label?: string }, "inner-statement">;
@@ -158,3 +159,29 @@ export const edgeTypes = {
   "outcome-driven": OutcomeDrivenConnection,
   "sanction-driven": SanctionDrivenConnection,
 } as const;
+
+function connectionMarkerEnd(type: keyof typeof edgeTypes) {
+  return {
+    type: MarkerType.Arrow,
+    width: 10,
+    height: 10,
+    color: drivenColors[type],
+  };
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function buildEdge(
+  sourceId: string,
+  targetId: string,
+  type: Exclude<INAEdge["type"], undefined>,
+): INAEdge {
+  return {
+    id: `${sourceId}-2-${targetId}`,
+    source: sourceId,
+    target: targetId,
+    type,
+    markerEnd: connectionMarkerEnd(type),
+    sourceHandle: type,
+    targetHandle: type,
+  };
+}
