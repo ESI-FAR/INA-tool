@@ -30,18 +30,19 @@ export function compacter(
         style: node.uncompactStyle,
       };
     }
-    if (isCompact) {
-      return {
-        ...node,
-        hidden: true,
-      };
-    }
     return {
       ...node,
-      hidden: false,
+      hidden: isCompact,
     };
   });
-  const innerStatemementEdges = edges.filter(isInnerStatementEdge);
+  const innerStatemementEdges = edges
+    .filter(isInnerStatementEdge)
+    .map((edge) => {
+      return {
+        ...edge,
+        hidden: isCompact,
+      };
+    });
 
   const innerNodeId2StatementId = new Map<string, string>();
   for (const node of nodes) {
