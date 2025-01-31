@@ -141,28 +141,27 @@ export function procesStatement(
         type: "inner-statement",
       });
     }
-
-    if (statement["Execution Constraint"]) {
-      const executionConstraintId = `${id}-execution-constraint`;
-      const executionConstraintNode: ExecutionConstraintNode = {
-        id: executionConstraintId,
-        type: "execution-constraint",
-        data: { label: statement["Execution Constraint"] },
-        position: { x: 430, y: 100 },
-        parentId: id,
-        extent: "parent",
-      };
-      nodes.push(executionConstraintNode);
-      // aim 2 execution constraint edge
-      edges.push({
-        id: `${id}-aim-2-execution-constraint`,
-        source: aimId,
-        target: executionConstraintId,
-        sourceHandle: "execution-constraint",
-        targetHandle: "statement",
-        type: "inner-statement",
-      });
-    }
+  }
+  if (statement["Execution Constraint"]) {
+    const executionConstraintId = `${id}-execution-constraint`;
+    const executionConstraintNode: ExecutionConstraintNode = {
+      id: executionConstraintId,
+      type: "execution-constraint",
+      data: { label: statement["Execution Constraint"] },
+      position: { x: 430, y: 100 },
+      parentId: id,
+      extent: "parent",
+    };
+    nodes.push(executionConstraintNode);
+    // aim 2 execution constraint edge
+    edges.push({
+      id: `${id}-aim-2-execution-constraint`,
+      source: aimId,
+      target: executionConstraintId,
+      sourceHandle: "execution-constraint",
+      targetHandle: "statement",
+      type: "inner-statement",
+    });
   }
 
   // TODO how to render 'Or Else'?
