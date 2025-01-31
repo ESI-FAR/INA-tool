@@ -16,6 +16,7 @@ import { ScreenshotButton } from "./ScreenshotButton";
 import { LayoutButton } from "./LayoutButton";
 import { ConnectionLine } from "./ConnectionLine";
 import { CanvasLegendButton } from "./CanvasLegendButton";
+import { CompactSwitch } from "./CompactSwitch";
 
 function createEdgeFromConnection(connection: Connection): Connection {
   const type = connection.targetHandle as keyof typeof edgeTypes;
@@ -70,8 +71,7 @@ function Flow() {
         >
           <Panel position="top-right" className="flex gap-1">
             {/* TODO add search, clicking hit should set viewport to node/edge */}
-            {/* TODO add toggle to render statement node in compact mode, with statement as sentence
-             and snippet in sentence with connections somehow visualized */}
+            <CompactSwitch />
             <LayoutButton />
             <ScreenshotButton />
             <CanvasLegendButton />

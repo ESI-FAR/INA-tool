@@ -10,11 +10,13 @@ import {
 } from "@xyflow/react";
 import { INANode } from "@/components/nodes";
 import { INAEdge } from "@/components/edges";
+import { compacter } from "./compacter";
 
 export type State = {
   projectName: string;
   nodes: INANode[];
   edges: INAEdge[];
+  isCompact: boolean;
 };
 
 export type Action = {
@@ -24,6 +26,7 @@ export type Action = {
   setNodes: (nodes: INANode[]) => void;
   setEdges: (edges: INAEdge[]) => void;
   setProjectName: (projectName: string) => void;
+  setCompact: (isCompact: boolean) => void;
 };
 
 export type Store = State & Action;
@@ -36,6 +39,7 @@ export const store = createStore<Store>((set, get) => ({
       : "",
   nodes: [],
   edges: [],
+  isCompact: false,
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -71,6 +75,14 @@ export const store = createStore<Store>((set, get) => ({
       window.history.replaceState({}, "", `?${searchParams.toString()}`);
     }
     set({ projectName });
+  },
+  setCompact: (isCompact) => {
+    const { nodes, edges } = compacter(isCompact, get().nodes, get().edges);
+    set({
+      isCompact,
+      nodes,
+      edges,
+    });
   },
 }));
 
