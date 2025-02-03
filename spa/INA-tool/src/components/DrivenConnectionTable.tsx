@@ -28,6 +28,8 @@ import { deriveConnections } from "@/lib/io";
 import { DownloadConnectionButton } from "./DownloadConnectionButton";
 import { UploadConnectionButton } from "./UploadConnectionButton";
 import { Connection } from "@/lib/schema";
+import { TrashIcon } from "lucide-react";
+import { Button } from "./ui/button";
 
 const columns: ColumnDef<Connection>[] = [
   {
@@ -109,6 +111,20 @@ export function DrivenConnectionTable() {
       globalFilter,
     },
   });
+
+  function removeConnection(connection: Connection) {
+    const id =
+      connection.source_statement +
+      "-" +
+      connection.source_node +
+      "-2-" +
+      connection.target_statement +
+      "-" +
+      connection.target_node;
+    const newEdges = edges.filter((edge) => edge.id !== id);
+    store.getState().setEdges(newEdges);
+  }
+
   return (
     <div className="w-full">
       <h1 className="text-xl">Connections</h1>
@@ -130,6 +146,7 @@ export function DrivenConnectionTable() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
+                <TableHead></TableHead>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
@@ -152,6 +169,15 @@ export function DrivenConnectionTable() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
+                  <TableCell>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => removeConnection(row.original)}
+                    >
+                      <TrashIcon />
+                    </Button>
+                  </TableCell>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
