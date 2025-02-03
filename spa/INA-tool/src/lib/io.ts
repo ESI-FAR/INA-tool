@@ -351,10 +351,14 @@ function processConnection(
   throw new InvalidConnectionError(`Unknown driver "${connection.driver}"`);
 }
 
-function offsetStatements(nodes: INANode[]) {
+export function offsetStatement(statement: StatementNode, index: number) {
   const gap = 10;
+  statement.position.y = index * DEFAULT_STATEMENT_HEIGHT + index * gap;
+}
+
+function offsetStatements(nodes: INANode[]) {
   nodes.filter(isStatementNode).forEach((statement, index) => {
-    statement.position.y = index * DEFAULT_STATEMENT_HEIGHT + index * gap;
+    offsetStatement(statement, index);
   });
 }
 

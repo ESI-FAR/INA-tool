@@ -33,9 +33,20 @@ import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
-import { deriveStatements, procesStatement } from "@/lib/io";
+import {
+  deriveStatements,
+  isStatementNode,
+  offsetStatement,
+  procesStatement,
+} from "@/lib/io";
 import { Button } from "./ui/button";
-import { PencilIcon, SaveIcon, TrashIcon, Undo2Icon } from "lucide-react";
+import {
+  PencilIcon,
+  PlusIcon,
+  SaveIcon,
+  TrashIcon,
+  Undo2Icon,
+} from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -220,6 +231,36 @@ export function StatementTable() {
     },
   });
 
+  function addStatement() {
+    let newId = statements.length;
+    // If id already exists, increment until it doesn't
+    while (statements.some((s) => s.Id === newId.toString())) {
+      newId++;
+    }
+    const newStatement: Statement = {
+      Id: newId.toString(),
+      "Statement Type": "",
+      Attribute: "",
+      Deontic: "",
+      Aim: "",
+      "Direct Object": "",
+      "Type of Direct Object": "",
+      "Indirect Object": "",
+      "Type of Indirect Object": "",
+      "Activation Condition": "",
+      "Execution Constraint": "",
+      "Or Else": "",
+    };
+    const [newNodes, newEdges] = procesStatement(newStatement, "new");
+    const statementNode = newNodes[0];
+    if (isStatementNode(statementNode)) {
+      offsetStatement(statementNode, statements.length);
+    }
+    store.getState().setNodes([...store.getState().nodes, ...newNodes]);
+    store.getState().setEdges([...store.getState().edges, ...newEdges]);
+    setEditing(newStatement);
+  }
+
   return (
     <div className="w-full">
       <h1 className="text-xl">Statements</h1>
@@ -294,8 +335,13 @@ export function StatementTable() {
           </TableBody>
         </Table>
       </div>
-      {/* TODO allow a new statement to be added */}
-      <DataTablePagination table={table} />
+      <div className="flex justify-between gap-4 py-2">
+        <Button variant="secondary" onClick={addStatement}>
+          <PlusIcon />
+          Add statement
+        </Button>
+        <DataTablePagination table={table} />
+      </div>
     </div>
   );
 }
