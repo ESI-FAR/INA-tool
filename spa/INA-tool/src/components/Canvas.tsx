@@ -24,6 +24,7 @@ import {
   setUncompactTarget,
   SourcePicker,
 } from "./SourcePicker";
+import { CanvasSearch } from "./CanvasSearch";
 
 function createEdgeFromConnection(connection: Connection): INAEdge {
   const type = connection.targetHandle as keyof typeof edgeTypes;
@@ -80,7 +81,10 @@ function Flow() {
 
   return (
     <div className="h-full">
-      <h1>Canvas</h1>
+      <div className="flex justify-between">
+        <h1 className="text-xl">Statements</h1>
+        <CanvasSearch />
+      </div>
       <div className="h-full w-full">
         <ReactFlow
           nodes={nodes}
@@ -106,7 +110,6 @@ function Flow() {
           proOptions={{ hideAttribution: true }}
         >
           <Panel position="top-right" className="flex gap-1">
-            {/* TODO add search, clicking hit should set viewport to node/edge */}
             <CompactSwitch />
             <LayoutButton />
             <ScreenshotButton />
