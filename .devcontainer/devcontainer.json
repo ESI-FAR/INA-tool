@@ -1,0 +1,11 @@
+{
+	"name": "PHP & Node",
+	"image": "mcr.microsoft.com/devcontainers/php:1-8.2-bullseye",
+	"forwardPorts": [
+		8080
+	],
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {}
+	},
+	"postCreateCommand": "sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html && apache2ctl start && npm install && npm run build"
+}
