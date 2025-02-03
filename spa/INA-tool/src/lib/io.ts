@@ -185,6 +185,15 @@ function isDrivenConnection(edge: INAEdge): edge is DrivenConnection {
   );
 }
 
+const internal2col = new Map([
+  ["aim", "Aim"],
+  ["attribute", "Attribute"],
+  ["activation-condition", "Activation Condition"],
+  ["direct-object", "Direct Object"],
+  ["indirect-object", "Indirect Object"],
+  ["execution-constraint", "Execution Constraint"],
+]);
+
 function enrichEdge(
   edge: DrivenConnection,
   lookup: Map<string, INANode>,
@@ -195,12 +204,33 @@ function enrichEdge(
     !edge.type ||
     !sourceNode ||
     !targetNode ||
-    !sourceNode.parentId ||
-    !targetNode.parentId ||
     !sourceNode.type ||
     !targetNode.type
   ) {
+    console.error({ edge, sourceNode, targetNode });
     throw new Error("Source or target node not found");
+  }
+  if (
+    isStatementNode(sourceNode) &&
+    isStatementNode(targetNode) &&
+    edge.uncompactSource &&
+    edge.uncompactTarget
+  ) {
+    const source_node = edge.uncompactSource.replace(edge.source + "-", "");
+    const target_node = edge.uncompactTarget.replace(edge.target + "-", "");
+    const source_col = internal2col.get(source_node) as keyof Statement;
+    const source_value = sourceNode.data.raw[source_col];
+    const target_col = internal2col.get(target_node) as keyof Statement;
+    const target_value = targetNode.data.raw[target_col];
+    return connectionSchema.parse({
+      source_statement: sourceNode.id,
+      source_node,
+      source_value,
+      target_statement: targetNode.id,
+      target_node,
+      target_value,
+      driver: edge.type.replace("-driven", ""),
+    });
   }
   return connectionSchema.parse({
     source_statement: sourceNode.parentId,
