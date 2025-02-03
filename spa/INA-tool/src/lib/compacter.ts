@@ -23,6 +23,8 @@ export function compacter(
           ...node,
           uncompactStyle: node.style,
           style: undefined,
+          width: undefined,
+          height: undefined,
         };
       }
       return {

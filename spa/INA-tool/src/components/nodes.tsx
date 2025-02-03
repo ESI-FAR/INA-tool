@@ -12,8 +12,8 @@ import {
 } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
 import { CSSProperties, useCallback, useMemo } from "react";
-import { Fragment } from "react/jsx-runtime";
 import { useStore } from "zustand";
+import { StatementCard } from "./StatementCard";
 
 export type StatementNode = Node<
   { raw: Statement; label: string; formalism?: string },
@@ -164,72 +164,6 @@ function TargetHandles({
   );
 }
 
-function StatementCard({ statement }: { statement: Statement }) {
-  return (
-    <div className="bg-card p-2 text-card-foreground shadow">
-      <div className="absolute right-0 top-0 z-10 cursor-pointer p-1 text-muted-foreground hover:text-foreground">
-        ✕
-      </div>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-2 text-sm">
-        <dt className="font-semibold">Statement Type:</dt>
-        <dd>{statement["Statement Type"]}</dd>
-        <dt className="font-semibold">Attribute:</dt>
-        <dd>{statement.Attribute}</dd>
-        {statement.Deontic && (
-          <Fragment key="Deontic">
-            <dt className="font-semibold">Deontic:</dt>
-            <dd>{statement.Deontic}</dd>
-          </Fragment>
-        )}
-        <dt className="font-semibold">Aim:</dt>
-        <dd>{statement.Aim}</dd>
-        {statement["Direct Object"] && (
-          <Fragment key="Direct Object">
-            <dt className="font-semibold">Direct Object:</dt>
-            <dd>{statement["Direct Object"]}</dd>
-          </Fragment>
-        )}
-        {statement["Type of Direct Object"] && (
-          <Fragment key="Type of Direct Object">
-            <dt className="font-semibold">Type of Direct Object:</dt>
-            <dd>{statement["Type of Direct Object"]}</dd>
-          </Fragment>
-        )}
-        {statement["Indirect Object"] && (
-          <Fragment key="Indirect Object">
-            <dt className="font-semibold">Indirect Object:</dt>
-            <dd>{statement["Indirect Object"]}</dd>
-          </Fragment>
-        )}
-        {statement["Type of Indirect Object"] && (
-          <Fragment key="Type of Indirect Object">
-            <dt className="font-semibold">Type of Indirect Object:</dt>
-            <dd>{statement["Type of Indirect Object"]}</dd>
-          </Fragment>
-        )}
-        {statement["Activation Condition"] && (
-          <Fragment key="Activation Condition">
-            <dt className="font-semibold">Activation Condition:</dt>
-            <dd>{statement["Activation Condition"]}</dd>
-          </Fragment>
-        )}
-        {statement["Execution Constraint"] && (
-          <Fragment key="Execution Constraint">
-            <dt className="font-semibold">Execution Constraint:</dt>
-            <dd>{statement["Execution Constraint"]}</dd>
-          </Fragment>
-        )}
-        {statement["Or Else"] && (
-          <Fragment key="Or Else">
-            <dt className="font-semibold">Or Else:</dt>
-            <dd>{statement["Or Else"]}</dd>
-          </Fragment>
-        )}
-      </dl>
-    </div>
-  );
-}
-
 function CompactStatementNode({
   statement,
   isConnectable,
@@ -248,6 +182,7 @@ function CompactStatementNode({
   return (
     <>
       {" "}
+      {/* TODO show statement card in drawer. nice if on hover drawer could be filled? */}
       <NodeToolbar
         nodeId={statement.Id}
         position={Position.Right}
