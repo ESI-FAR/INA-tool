@@ -345,6 +345,7 @@ export function load(statements: Statement[], connections: Connection[]) {
     const newEdge = processConnection(connection, lookup);
     edges.push(newEdge);
   }
+  store.getState().setCompact(false);
   store.getState().setNodes(nodes);
   store.getState().setEdges(edges);
 }
