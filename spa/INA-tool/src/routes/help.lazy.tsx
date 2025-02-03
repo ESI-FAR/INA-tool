@@ -7,7 +7,9 @@ import {
   Maximize2Icon,
   PencilIcon,
   SaveIcon,
+  TrashIcon,
   Undo2Icon,
+  UploadIcon,
 } from "lucide-react";
 
 export const Route = createLazyFileRoute("/help")({
@@ -52,6 +54,10 @@ function RouteComponent() {
           <li key={col}>{col}</li>
         ))}
       </ol>
+      <p>
+        Any existing statements will be deleted and replaced by the uploaded
+        statements.
+      </p>
 
       <h3 className="py-4 text-xl">Download/upload project</h3>
       <ul className="list-inside list-disc">
@@ -66,6 +72,10 @@ function RouteComponent() {
         <li>
           <strong>Load example:</strong> To load an example project with
           statements.
+        </li>
+        <li>
+          <strong>Clear:</strong>To delete all statements and connections after
+          confirmation.
         </li>
       </ul>
 
@@ -102,6 +112,11 @@ function RouteComponent() {
           </ol>
         </li>
         <li>
+          <strong>Compact:</strong> To compact the graph use the compact switch.
+          This will render a statement as a single node. Useful for large
+          graphs.
+        </li>
+        <li>
           <strong>Layout:</strong> To layout the grap use a layout algorithm use
           the layout button at the top right side on the canvas.
         </li>
@@ -130,8 +145,8 @@ function RouteComponent() {
       </p>
       <ul className="list-inside list-disc">
         <li>
-          <strong>Search:</strong> Write text in the search box to focus on
-          specific data subsets.
+          <strong>Search:</strong> Write text in the search box to search for
+          statements containing the query.
         </li>
         <li>
           <strong>Sorting:</strong> Click on the column header to sort the data.
@@ -149,6 +164,11 @@ function RouteComponent() {
           <Undo2Icon className="inline" /> button to cancel the changes.
         </li>
         <li>
+          <strong>Deleting:</strong> A statement can be deleted by pressing the{" "}
+          <TrashIcon className="inline" /> button. Any connections to or from
+          this statement will also be deleted.
+        </li>
+        <li>
           <strong>Download:</strong> Click on the{" "}
           <DownloadIcon className="inline" /> download button to download the
           statements as a CSV file.
@@ -162,6 +182,35 @@ function RouteComponent() {
           connections page
         </Link>{" "}
         allows you to view and download the connections between statements.
+        <ul className="list-inside list-disc">
+          <li>
+            <strong>Search:</strong> Write text in the search box to search for
+            statements containing the query.
+          </li>
+          <li>
+            <strong>Sorting:</strong> Click on the column header to sort the
+            data. Initially sorted on the Id column.
+          </li>
+          <li>
+            <strong>Paging:</strong> If not all data is displayed, use the
+            paging buttons to navigate through the data.
+          </li>
+          <li>
+            <strong>Deleting:</strong> A connection can be deleted by pressing
+            the <TrashIcon className="inline" /> button.
+          </li>
+          <li>
+            <strong>Download:</strong> Click on the{" "}
+            <DownloadIcon className="inline" /> download button to download the
+            connections as a CSV file.
+          </li>
+          <li>
+            <strong>Upload:</strong> Click on the{" "}
+            <UploadIcon className="inline" /> upload button to upload a CSV or
+            XLSX file with connections. Existing connections will be deleted and
+            replaced by the uploaded connections.
+          </li>
+        </ul>
       </p>
 
       <h3 className="py-4 text-xl">Support and Discussion</h3>

@@ -1,5 +1,5 @@
 import { store } from "@/lib/store";
-import { DeleteIcon } from "lucide-react";
+import { TrashIcon } from "lucide-react";
 import { Button } from "./ui/button";
 
 function removeAllData() {
@@ -15,13 +15,14 @@ export function ClearButton() {
     <Button
       title="Remove all data"
       variant="outline"
+      className="bg-destructive text-destructive-foreground"
       onClick={() => {
         if (confirm("Are you sure you want to remove all data?")) {
           removeAllData();
         }
       }}
     >
-      <DeleteIcon /> Clear
+      <TrashIcon /> Clear
     </Button>
   );
 }
