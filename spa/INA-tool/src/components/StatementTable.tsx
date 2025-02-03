@@ -35,7 +35,7 @@ import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
 import { deriveStatements, procesStatement } from "@/lib/io";
 import { Button } from "./ui/button";
-import { PencilIcon, SaveIcon, Undo2Icon } from "lucide-react";
+import { PencilIcon, SaveIcon, TrashIcon, Undo2Icon } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -172,6 +172,26 @@ function updateStatement(statement: Statement) {
   store.getState().setEdges([...newEdges, ...prunedEdges]);
 }
 
+function deleteStatement(id: string) {
+  // Ask for confirmation if statement has driven connection edges?
+  // Remove nodes
+  const ids2remove = new Set(
+    store
+      .getState()
+      .nodes.filter((n) => n.id === id || n.parentId === id)
+      .map((n) => n.id),
+  );
+  store
+    .getState()
+    .setNodes(store.getState().nodes.filter((n) => !ids2remove.has(n.id)));
+  // Remove edges without nodes
+  store.getState().setEdges(
+    store.getState().edges.filter((e) => {
+      return !ids2remove.has(e.source) && !ids2remove.has(e.target);
+    }),
+  );
+}
+
 export function StatementTable() {
   const stripper = useShallow<Store, Statement[]>((state) => {
     const statements = deriveStatements(state.nodes);
@@ -199,6 +219,7 @@ export function StatementTable() {
       globalFilter,
     },
   });
+
   return (
     <div className="w-full">
       <h1 className="text-xl">Statements</h1>
@@ -218,6 +239,7 @@ export function StatementTable() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
+                <TableHead>Actions</TableHead>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
@@ -230,7 +252,6 @@ export function StatementTable() {
                     </TableHead>
                   );
                 })}
-                <TableHead>Actions</TableHead>
               </TableRow>
             ))}
           </TableHeader>
@@ -256,6 +277,7 @@ export function StatementTable() {
                     row={row}
                     setEditing={setEditing}
                     editingId={editing ? editing.Id : undefined}
+                    onDelete={() => deleteStatement(row.original.Id!)}
                   />
                 );
               })
@@ -282,18 +304,15 @@ function ShowRow({
   row,
   setEditing,
   editingId,
+  onDelete,
 }: {
   row: Row<Statement>;
   editingId: string | undefined;
   setEditing: (statement: Statement) => void;
+  onDelete: () => void;
 }) {
   return (
     <TableRow data-state={row.getIsSelected() && "selected"}>
-      {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
       <TableCell className="flex gap-1">
         <Button
           disabled={editingId !== undefined && row.original["Id"] !== editingId}
@@ -304,20 +323,20 @@ function ShowRow({
         >
           <PencilIcon />
         </Button>
-        {/* TODO allow statements to be deleted */}
-        {/* <Button
+        <Button
           title="Delete"
           variant="destructive"
           size="icon"
-          disabled
-          onClick={() => {
-            // TODO implement
-            console.log("remove", row.original);
-          }}
+          onClick={onDelete}
         >
           <TrashIcon />
-        </Button> */}
+        </Button>
       </TableCell>
+      {row.getVisibleCells().map((cell) => (
+        <TableCell key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
+      ))}
     </TableRow>
   );
 }
@@ -342,6 +361,23 @@ function EditRow({
 
   return (
     <TableRow data-state={row.getIsSelected() && "selected"}>
+      <TableCell className="flex flex-col gap-1">
+        <form onSubmit={myform.handleSubmit(onSave)}>
+          <Button title="Save" variant="secondary" size="icon" type="submit">
+            <SaveIcon />
+          </Button>
+        </form>
+        <Button
+          title="Cancel"
+          variant="secondary"
+          size="icon"
+          onClick={onCancel}
+          type="button"
+          value="cancel"
+        >
+          <Undo2Icon />
+        </Button>
+      </TableCell>
       <FormProvider {...myform}>
         {row.getVisibleCells().map((cell) => {
           const meta = cell.column.columnDef.meta as {
@@ -395,23 +431,6 @@ function EditRow({
             </TableCell>
           );
         })}
-        <TableCell className="flex flex-col gap-1">
-          <form onSubmit={myform.handleSubmit(onSave)}>
-            <Button title="Save" variant="secondary" size="icon" type="submit">
-              <SaveIcon />
-            </Button>
-          </form>
-          <Button
-            title="Cancel"
-            variant="secondary"
-            size="icon"
-            onClick={onCancel}
-            type="button"
-            value="cancel"
-          >
-            <Undo2Icon />
-          </Button>
-        </TableCell>
       </FormProvider>
     </TableRow>
   );
