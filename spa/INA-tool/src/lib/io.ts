@@ -46,7 +46,7 @@ export function procesStatement(
     type: "attribute",
     data: { label: statement.Attribute },
     // TODO move right if left node has lots of text
-    position: { x: 270, y: 30 },
+    position: { x: 240, y: 30 },
     parentId: id,
     extent: "parent",
   };
