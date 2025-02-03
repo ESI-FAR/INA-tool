@@ -203,13 +203,18 @@ function deleteStatement(id: string) {
   );
 }
 
-export function StatementTable() {
+// eslint-disable-next-line react-refresh/only-export-components
+export function useStatements() {
   const stripper = useShallow<Store, Statement[]>((state) => {
     const statements = deriveStatements(state.nodes);
     statements.sort((a, b) => a.Id!.localeCompare(b.Id!));
     return statements;
   });
-  const statements = useStore(store, stripper);
+  return useStore(store, stripper);
+}
+
+export function StatementTable() {
+  const statements = useStatements();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [editing, setEditing] = useState<Statement | null>(null);

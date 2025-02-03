@@ -6,6 +6,7 @@ import {
   DownloadIcon,
   Maximize2Icon,
   PencilIcon,
+  PlusIcon,
   SaveIcon,
   TrashIcon,
   Undo2Icon,
@@ -169,6 +170,12 @@ function RouteComponent() {
           this statement will also be deleted.
         </li>
         <li>
+          <strong>Adding:</strong> After pressing the{" "}
+          <PlusIcon className="inline" /> button, a new statement will be added
+          to the list. Fill in the fields and press the{" "}
+          <SaveIcon className="inline" /> button to save the new statement.
+        </li>
+        <li>
           <strong>Download:</strong> Click on the{" "}
           <DownloadIcon className="inline" /> download button to download the
           statements as a CSV file.
@@ -198,6 +205,16 @@ function RouteComponent() {
           <li>
             <strong>Deleting:</strong> A connection can be deleted by pressing
             the <TrashIcon className="inline" /> button.
+          </li>
+          <li>
+            <strong>Adding:</strong> After pressing the{" "}
+            <PlusIcon className="inline" /> button, a dialog will open where you
+            can select the driver, source and target statements. Press the{" "}
+            <SaveIcon className="inline" /> button to save the new connection.
+          </li>
+          <li>
+            <strong>Editing:</strong> There is no edit functionality for
+            connections. Delete and add a new connection instead.
           </li>
           <li>
             <strong>Download:</strong> Click on the{" "}

@@ -267,7 +267,7 @@ export class InvalidConnectionError extends Error {
   }
 }
 
-function processConnection(
+export function processConnection(
   connection: Connection,
   lookup: Map<string, INANode>,
 ): INAEdge {

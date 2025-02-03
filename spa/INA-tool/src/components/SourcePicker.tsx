@@ -10,6 +10,7 @@ import { isStatementNode } from "@/lib/io";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { Statement } from "@/lib/schema";
 
 interface SourceChoice {
   type: string;
@@ -25,12 +26,16 @@ function findSourceChoices(
   if (!sourceNode || !isStatementNode(sourceNode)) {
     return [];
   }
-  const choices: SourceChoice[] = [];
   const type = connection.targetHandle as keyof typeof edgeTypes;
   const statement = sourceNode.data.raw;
-  const id = sourceNode.id;
-  // for each type return choice if it is present
+  return deriveSourceChoices(statement, type);
+}
 
+// eslint-disable-next-line react-refresh/only-export-components
+export function deriveSourceChoices(statement: Statement, type: string) {
+  const choices: SourceChoice[] = [];
+  const id = statement.Id!;
+  // for each type return choice if it is present
   if (type === "actor-driven") {
     if (
       statement["Direct Object"] &&

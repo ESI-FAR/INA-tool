@@ -30,6 +30,7 @@ import { UploadConnectionButton } from "./UploadConnectionButton";
 import { Connection } from "@/lib/schema";
 import { TrashIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { AddConnectionButton } from "./AddConnectionButton";
 
 const columns: ColumnDef<Connection>[] = [
   {
@@ -201,7 +202,10 @@ export function DrivenConnectionTable() {
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <div className="flex justify-between gap-4 py-2">
+        <AddConnectionButton />
+        <DataTablePagination table={table} />
+      </div>
     </div>
   );
 }
