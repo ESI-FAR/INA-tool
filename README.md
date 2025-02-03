@@ -47,7 +47,7 @@ Before starting the installation process, make sure you have the following insta
 
 ### Dev container
 
-If you are using Visual Studio Code, you can use the dev container to run the application. The dev container is a pre-configured environment that includes all the necessary tools and dependencies to run the application.
+If you are using Visual Studio Code, you can use the [dev container extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to run the application. The dev container is a pre-configured environment that includes all the necessary tools and dependencies to run the application.
 
 When repository is opened in a devcontainer the website is running on http://localhost:8080 .
 Any changes to non-php code requires running `npm run build` to update the website.
