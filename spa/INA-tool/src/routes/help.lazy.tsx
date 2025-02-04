@@ -18,6 +18,7 @@ import {
   Undo2Icon,
   UploadIcon,
 } from "lucide-react";
+import screenshot from "../help/canvas.png";
 
 export const Route = createLazyFileRoute("/help")({
   component: RouteComponent,
@@ -117,7 +118,11 @@ function RouteComponent() {
         </li>
         <li>
           <strong>Load example:</strong> To load an example project with
-          statements.
+          statements.{" "}
+          <a href={screenshot} target="_blank" className="underline">
+            Screenshot
+          </a>{" "}
+          of web application with example loaded.
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after
