@@ -165,7 +165,8 @@ function RouteComponent() {
         <li>
           <strong>Compact:</strong> To compact the graph use the compact switch.
           This will render a statement as a single node. Useful for large
-          graphs.
+          graphs. When turning off compact mode the layout can be a mess, you
+          can clean it up by using the layout button.
         </li>
         <li>
           <strong>Layout:</strong> To layout the grap use a layout algorithm use
