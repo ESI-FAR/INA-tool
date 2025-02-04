@@ -97,8 +97,8 @@ function setupStorePersistence() {
   const savedData = localStorage.getItem(`ina-project-${projectName}`);
 
   if (savedData) {
-    const { nodes, edges } = JSON.parse(savedData);
-    store.setState({ nodes, edges });
+    const { nodes, edges, isCompact } = JSON.parse(savedData);
+    store.setState({ nodes, edges, isCompact });
   }
 
   const saveState = () => {
@@ -109,6 +109,7 @@ function setupStorePersistence() {
     const dataToSave = {
       nodes: state.nodes,
       edges: state.edges,
+      isCompact: state.isCompact,
     };
     localStorage.setItem(
       `ina-project-${state.projectName}`,

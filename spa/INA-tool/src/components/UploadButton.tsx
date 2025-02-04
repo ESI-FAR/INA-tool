@@ -17,6 +17,7 @@ async function processJSONFile(file: File) {
     projectName: projectNameFromFile(file),
     nodes: state.nodes,
     edges: state.edges,
+    isCompact: state.isCompact,
   });
 }
 

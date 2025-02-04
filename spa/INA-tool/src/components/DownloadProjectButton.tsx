@@ -9,6 +9,7 @@ function createProjectFile() {
   const body = {
     nodes: store.getState().nodes,
     edges: store.getState().edges,
+    isCompact: store.getState().isCompact,
   };
   const content = JSON.stringify(body, null, 2);
   return new File([content], fn, { type: "application/json" });
