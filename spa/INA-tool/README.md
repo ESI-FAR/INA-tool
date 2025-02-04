@@ -47,6 +47,7 @@ The application is built with
 - [Zustand](https://zustand-demo.pmnd.rs/) for state management
 - [Prettier](https://prettier.io/) for code formatting
 - [ESLint](https://eslint.org/) for linting
+- [Vitest](https://vitest.dev/) for unit testing
 
 ## Bugs and Issues
 
