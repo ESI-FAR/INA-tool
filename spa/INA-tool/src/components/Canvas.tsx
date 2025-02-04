@@ -4,7 +4,6 @@ import {
   ReactFlow,
   Controls,
   MiniMap,
-  Panel,
   ReactFlowProvider,
   Connection,
 } from "@xyflow/react";
@@ -14,11 +13,7 @@ import { edgeTypes } from "./edges";
 import { buildEdge } from "@/lib/edge";
 import { INAEdge } from "@/lib/edge";
 import { useTheme } from "./theme-provider";
-import { ScreenshotButton } from "./ScreenshotButton";
-import { LayoutButton } from "./LayoutButton";
 import { ConnectionLine } from "./ConnectionLine";
-import { CanvasLegendButton } from "./CanvasLegendButton";
-import { CompactSwitch } from "./CompactSwitch";
 import { useState } from "react";
 import {
   hasAmbiguousSource,
@@ -27,6 +22,7 @@ import {
   SourcePicker,
 } from "./SourcePicker";
 import { CanvasSearch } from "./CanvasSearch";
+import { CanvasMenu } from "./CanvasMenu";
 
 function createEdgeFromConnection(connection: Connection): INAEdge {
   const type = connection.targetHandle as keyof typeof edgeTypes;
@@ -85,7 +81,10 @@ function Flow() {
     <div className="h-full">
       <div className="flex justify-between">
         <h1 className="text-xl">Statements</h1>
-        <CanvasSearch />
+        <div className="flex gap-2">
+          <CanvasSearch />
+          <CanvasMenu />
+        </div>
       </div>
       <div className="h-full w-full">
         <ReactFlow
@@ -111,12 +110,6 @@ function Flow() {
           colorMode={theme}
           proOptions={{ hideAttribution: true }}
         >
-          <Panel position="top-right" className="flex gap-1">
-            <CompactSwitch />
-            <LayoutButton />
-            <ScreenshotButton />
-            <CanvasLegendButton />
-          </Panel>
           <Controls />
           <MiniMap />
         </ReactFlow>

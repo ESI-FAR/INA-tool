@@ -33,7 +33,10 @@ export type DrivenConnection = (
   | SanctionDrivenConnection
 ) & { uncompactSource?: string; uncompactTarget?: string };
 
-export type INAEdge = InnerStatementEdge | DrivenConnection;
+export type INAEdge = (InnerStatementEdge | DrivenConnection) & {
+  dedupSource?: string;
+  dedupTarget?: string;
+};
 
 export function isInnerStatementEdge(
   edge: INAEdge,

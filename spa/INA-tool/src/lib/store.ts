@@ -11,12 +11,14 @@ import {
 import { INANode } from "./node";
 import { INAEdge } from "./edge";
 import { compacter } from "./compacter";
+import { deduplicator, duplicator } from "./de-duplicator";
 
 export type State = {
   projectName: string;
   nodes: INANode[];
   edges: INAEdge[];
   isCompact: boolean;
+  isDeduplicated: boolean;
 };
 
 export type Action = {
@@ -27,6 +29,7 @@ export type Action = {
   setEdges: (edges: INAEdge[]) => void;
   setProjectName: (projectName: string) => void;
   setCompact: (isCompact: boolean) => void;
+  setDeduplicated: (isDeduplicated: boolean) => void;
 };
 
 export type Store = State & Action;
@@ -40,6 +43,7 @@ export const store = createStore<Store>((set, get) => ({
   nodes: [],
   edges: [],
   isCompact: false,
+  isDeduplicated: false,
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -80,6 +84,16 @@ export const store = createStore<Store>((set, get) => ({
     const { nodes, edges } = compacter(isCompact, get().nodes, get().edges);
     set({
       isCompact,
+      nodes,
+      edges,
+    });
+  },
+  setDeduplicated: (isDeduplicated) => {
+    const { nodes, edges } = isDeduplicated
+      ? deduplicator(get().nodes, get().edges)
+      : duplicator(get().nodes, get().edges);
+    set({
+      isDeduplicated,
       nodes,
       edges,
     });
