@@ -4,7 +4,6 @@ import {
   ReactFlow,
   Controls,
   MiniMap,
-  Panel,
   ReactFlowProvider,
   Connection,
 } from "@xyflow/react";
@@ -14,11 +13,7 @@ import { edgeTypes } from "./edges";
 import { buildEdge } from "@/lib/edge";
 import { INAEdge } from "@/lib/edge";
 import { useTheme } from "./theme-provider";
-import { ScreenshotButton } from "./ScreenshotButton";
-import { LayoutButton } from "./LayoutButton";
 import { ConnectionLine } from "./ConnectionLine";
-import { CanvasLegendButton } from "./CanvasLegendButton";
-import { CompactSwitch } from "./CompactSwitch";
 import { useState } from "react";
 import {
   hasAmbiguousSource,
