@@ -1,7 +1,6 @@
 import { store } from "@/lib/store";
 import { useStore } from "zustand";
 import { Connection } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
 import { INANode } from "./nodes";
 import { edgeTypes, INAEdge, isDrivenConnectionEdge } from "./edges";
 import { useMemo } from "react";
