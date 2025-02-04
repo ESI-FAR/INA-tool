@@ -3,10 +3,10 @@ import { Input } from "./ui/input";
 import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
 import { useStore } from "zustand";
 import { store } from "@/lib/store";
-import { INANode } from "./nodes";
+import { INANode } from "@/lib/node";
 import { ReactFlowInstance, useReactFlow } from "@xyflow/react";
-import { INAEdge } from "./edges";
-import { isStatementNode } from "@/lib/io";
+import { INAEdge } from "@/lib/edge";
+import { isStatementNode } from "@/lib/node";
 
 function searchNodes(query: string, nodes: INANode[]) {
   if (query === "") {

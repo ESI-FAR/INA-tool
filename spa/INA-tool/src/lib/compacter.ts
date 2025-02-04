@@ -3,8 +3,8 @@ import {
   INAEdge,
   isDrivenConnectionEdge,
   isInnerStatementEdge,
-} from "@/components/edges";
-import { INANode } from "@/components/nodes";
+} from "./edge";
+import { INANode } from "./node";
 
 /**
  * Converts react flow graph from uncompacted to compacted and vice versa.

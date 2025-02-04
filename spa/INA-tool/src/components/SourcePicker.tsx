@@ -1,11 +1,12 @@
 import { store } from "@/lib/store";
 import { useStore } from "zustand";
 import { Connection } from "@xyflow/react";
-import { INANode } from "./nodes";
-import { edgeTypes, INAEdge, isDrivenConnectionEdge } from "./edges";
+import { INANode } from "@/lib/node";
+import { edgeTypes } from "./edges";
+import { INAEdge, isDrivenConnectionEdge } from "@/lib/edge";
 import { useMemo } from "react";
 import { Dialog, DialogContent } from "./ui/dialog";
-import { isStatementNode } from "@/lib/io";
+import { isStatementNode } from "@/lib/node";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { DialogTitle } from "@radix-ui/react-dialog";

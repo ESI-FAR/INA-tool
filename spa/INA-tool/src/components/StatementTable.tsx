@@ -4,9 +4,7 @@ import {
   StatementType,
   TypeOfObject,
 } from "@/lib/schema";
-import { Store, store } from "@/lib/store";
-import { useStore } from "zustand/react";
-import { useShallow } from "zustand/shallow";
+import { store } from "@/lib/store";
 
 import {
   ColumnDef,
@@ -33,12 +31,8 @@ import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
-import {
-  deriveStatements,
-  isStatementNode,
-  offsetStatement,
-  procesStatement,
-} from "@/lib/io";
+import { offsetStatement, procesStatement } from "@/lib/io";
+import { isStatementNode } from "@/lib/node";
 import { Button } from "./ui/button";
 import {
   PencilIcon,
@@ -57,6 +51,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { useStatements } from "../hooks/use-statements";
 
 const columns: ColumnDef<Statement>[] = [
   {
@@ -184,7 +179,7 @@ function updateStatement(statement: Statement) {
 }
 
 function deleteStatement(id: string) {
-  // Ask for confirmation if statement has driven connection edges?
+  // TODO Ask for confirmation if statement has driven connection edges?
   // Remove nodes
   const ids2remove = new Set(
     store
@@ -201,16 +196,6 @@ function deleteStatement(id: string) {
       return !ids2remove.has(e.source) && !ids2remove.has(e.target);
     }),
   );
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function useStatements() {
-  const stripper = useShallow<Store, Statement[]>((state) => {
-    const statements = deriveStatements(state.nodes);
-    statements.sort((a, b) => a.Id!.localeCompare(b.Id!));
-    return statements;
-  });
-  return useStore(store, stripper);
 }
 
 export function StatementTable() {
@@ -285,7 +270,7 @@ export function StatementTable() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                <TableHead>Actions</TableHead>
+                <TableHead></TableHead>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>

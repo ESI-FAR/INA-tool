@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { useStatements } from "./StatementTable";
+import { useStatements } from "../hooks/use-statements";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
   Command,
@@ -36,7 +36,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { deriveSourceChoices } from "./SourcePicker";
 import { store } from "@/lib/store";
-import { INANode } from "./nodes";
+import { INANode } from "@/lib/node";
 import { processConnection } from "@/lib/io";
 
 function DriverField() {
@@ -125,6 +125,7 @@ function SourceStatementField({ statements }: { statements: Statement[] }) {
     const filter = canStatementBeSourceForDriver(driver);
     const choices = statements.filter(filter);
     if (targetStatement) {
+      // TODO filter out current connections
       return choices.filter((statement) => statement.Id !== targetStatement);
     }
     return choices;
@@ -220,6 +221,7 @@ function TargetStatementField({ statements }: { statements: Statement[] }) {
     const filter = canStatementBeTargetForDriver(driver);
     const choices = statements.filter(filter);
     if (sourceStatement) {
+      // TODO filter out current connections
       return choices.filter((statement) => statement.Id !== sourceStatement);
     }
     return choices;
@@ -440,6 +442,7 @@ export function AddConnectionButton() {
   });
 
   function onSubmit(connection: Connection) {
+    // TODO check if connection already exists, if so show error
     const nodes = store.getState().nodes;
     const edges = store.getState().edges;
     const lookup = new Map<string, INANode>(

@@ -6,17 +6,14 @@ import {
   ExecutionConstraintNode,
   INANode,
   InDirectObjectNode,
+  isStatementNode,
   StatementNode,
-} from "@/components/nodes";
+} from "./node";
 
 import { Connection, connectionSchema, Statement } from "./schema";
 import { store } from "./store";
-import {
-  InnerStatementEdge,
-  INAEdge,
-  DrivenConnection,
-  buildEdge,
-} from "@/components/edges";
+import { buildEdge, isDrivenConnection } from "./edge";
+import { InnerStatementEdge, INAEdge, DrivenConnection } from "./edge";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
 
@@ -169,20 +166,8 @@ export function procesStatement(
   return [nodes, edges];
 }
 
-export function isStatementNode(node: INANode): node is StatementNode {
-  return node.type === "statement";
-}
-
 export function deriveStatements(nodes: INANode[]): Statement[] {
   return nodes.filter(isStatementNode).map((node) => node.data.raw);
-}
-
-function isDrivenConnection(edge: INAEdge): edge is DrivenConnection {
-  return (
-    edge.type === "actor-driven" ||
-    edge.type === "outcome-driven" ||
-    edge.type === "sanction-driven"
-  );
 }
 
 const internal2col = new Map([

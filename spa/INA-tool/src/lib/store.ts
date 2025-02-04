@@ -8,8 +8,8 @@ import {
   applyEdgeChanges,
   addEdge,
 } from "@xyflow/react";
-import { INANode } from "@/components/nodes";
-import { INAEdge } from "@/components/edges";
+import { INANode } from "./node";
+import { INAEdge } from "./edge";
 import { compacter } from "./compacter";
 
 export type State = {

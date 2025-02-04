@@ -4,9 +4,9 @@ import "@xyflow/react/dist/style.css";
 import ELK from "elkjs/lib/elk.bundled";
 import { LayoutTemplateIcon } from "lucide-react";
 import { Button } from "./ui/button";
-import { isStatementNode } from "@/lib/io";
-import type { INANode } from "./nodes";
-import { isDrivenConnectionEdge, type INAEdge } from "./edges";
+import { isStatementNode } from "@/lib/node";
+import type { INANode } from "@/lib/node";
+import { isDrivenConnectionEdge, type INAEdge } from "@/lib/edge";
 import { store } from "@/lib/store";
 
 const elk = new ELK();
@@ -89,13 +89,9 @@ const useLayoutedElements = () => {
 };
 
 export function LayoutButton() {
-  const getLayoutedElements = useLayoutedElements();
+  const autoLayout = useLayoutedElements();
   return (
-    <Button
-      variant="outline"
-      onClick={getLayoutedElements}
-      title="Auto layout nodes"
-    >
+    <Button variant="outline" onClick={autoLayout} title="Auto layout nodes">
       <LayoutTemplateIcon />
       Layout
     </Button>

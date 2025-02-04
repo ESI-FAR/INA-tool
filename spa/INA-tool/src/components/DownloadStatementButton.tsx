@@ -22,7 +22,7 @@ export function DownloadStatementButton() {
   return (
     <Button variant="outline" onClick={downloadCSV}>
       <DownloadIcon />
-      Download as CSV
+      Download
     </Button>
   );
 }

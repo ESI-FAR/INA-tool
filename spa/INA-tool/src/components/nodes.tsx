@@ -3,7 +3,6 @@ import { store } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import {
   Handle,
-  Node,
   NodeProps,
   NodeResizeControl,
   NodeToolbar,
@@ -11,42 +10,18 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
-import { CSSProperties, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { StatementCard } from "./StatementCard";
-
-export type StatementNode = Node<
-  { raw: Statement; label: string; formalism?: string },
-  "statement"
-> & { uncompactStyle?: CSSProperties };
-export type AttributeNode = Node<{ label: string }, "attribute">;
-export type AimNode = Node<{ label: string }, "aim">;
-export type DirectObjectNode = Node<
-  { animation?: string; label: string },
-  "direct-object"
->;
-export type InDirectObjectNode = Node<
-  { animation?: string; label: string },
-  "indirect-object"
->;
-export type ActivationConditionNode = Node<
-  { label: string },
-  "activation-condition"
->;
-export type ExecutionConstraintNode = Node<
-  { label: string },
-  "execution-constraint"
->;
-
-export type InnerStatementNode =
-  | AttributeNode
-  | AimNode
-  | DirectObjectNode
-  | InDirectObjectNode
-  | ActivationConditionNode
-  | ExecutionConstraintNode;
-
-export type INANode = StatementNode | InnerStatementNode;
+import type {
+  StatementNode,
+  AttributeNode,
+  AimNode,
+  DirectObjectNode,
+  InDirectObjectNode,
+  ActivationConditionNode,
+  ExecutionConstraintNode,
+} from "@/lib/node";
 
 /*
 The statement graph should look like:

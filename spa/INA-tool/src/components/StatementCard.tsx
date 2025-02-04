@@ -3,7 +3,7 @@ import { store } from "@/lib/store";
 import { useMemo } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useStore } from "zustand";
-import { isDrivenConnectionEdge } from "./edges";
+import { isDrivenConnectionEdge } from "@/lib/edge";
 
 function Outgoing({ type }: { type: string }) {
   if (type === "actor-driven") {

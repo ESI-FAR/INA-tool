@@ -10,7 +10,9 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { nodeTypes } from "./nodes";
-import { buildEdge, edgeTypes, INAEdge } from "./edges";
+import { edgeTypes } from "./edges";
+import { buildEdge } from "@/lib/edge";
+import { INAEdge } from "@/lib/edge";
 import { useTheme } from "./theme-provider";
 import { ScreenshotButton } from "./ScreenshotButton";
 import { LayoutButton } from "./LayoutButton";
