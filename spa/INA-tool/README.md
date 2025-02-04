@@ -45,6 +45,8 @@ The application is built with
 - [XSLX](https://sheetjs.com/) and [d3](https://d3js.org/) for parsing and writing files.
 - [Zod](https://zod.dev/) for validation
 - [Zustand](https://zustand-demo.pmnd.rs/) for state management
+- [Prettier](https://prettier.io/) for code formatting
+- [ESLint](https://eslint.org/) for linting
 
 ## Bugs and Issues
 
