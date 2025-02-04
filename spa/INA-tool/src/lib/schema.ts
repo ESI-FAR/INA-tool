@@ -27,26 +27,25 @@ export const statementColumns = Object.keys(
 export const statementsSchema = z.array(statementSchema);
 export type Statements = z.infer<typeof statementsSchema>;
 
+export const SourceNodeType = z.enum([
+  "direct-object",
+  "indirect-object",
+  "aim",
+  "execution-constraint",
+]);
+
+export const TargetNodeType = z.enum(["attribute", "activation-condition"]);
+
+export const DriverType = z.enum(["actor", "outcome", "sanction"]);
+
 export const connectionSchema = z.object({
   source_statement: z.string(),
-  source_node: z.union([
-    z.literal("direct-object"),
-    z.literal("indirect-object"),
-    z.literal("aim"),
-    z.literal("execution-constraint"),
-  ]),
+  source_node: SourceNodeType,
   source_value: z.string().optional(),
   target_statement: z.string(),
-  target_node: z.union([
-    z.literal("attribute"),
-    z.literal("activation-condition"),
-  ]),
+  target_node: TargetNodeType,
   target_value: z.string().optional(),
-  driver: z.union([
-    z.literal("actor"),
-    z.literal("outcome"),
-    z.literal("sanction"),
-  ]),
+  driver: DriverType,
 });
 export type Connection = z.infer<typeof connectionSchema>;
 export const connectionColumns = Object.keys(

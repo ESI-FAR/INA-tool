@@ -1,10 +1,16 @@
-import { statementColumns } from "@/lib/schema";
+import {
+  DriverType,
+  SourceNodeType,
+  statementColumns,
+  TargetNodeType,
+} from "@/lib/schema";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { csvFormat } from "d3-dsv";
 import {
   CameraIcon,
   DownloadIcon,
   Maximize2Icon,
+  PanelLeft,
   PencilIcon,
   PlusIcon,
   SaveIcon,
@@ -35,6 +41,19 @@ function RouteComponent() {
   return (
     <main className="w-full">
       <h1 className="text-2xl">Welcome to INA TOOL</h1>
+
+      <h3 className="py-4 text-xl">Header</h3>
+      <ul className="list-inside list-disc">
+        <li>
+          Use <PanelLeft className="inline" /> to hide the sidebar.
+        </li>
+        <li>
+          The middle text is the project name. You can rename the project by
+          clicking it.
+        </li>
+        <li>Use right button to toggle between light and dark mode.</li>
+      </ul>
+
       <h3 className="py-4 text-xl">Sidebar</h3>
       <p>
         Use the sidebar to navigate through the different pages and perform
@@ -58,6 +77,32 @@ function RouteComponent() {
       <p>
         Any existing statements will be deleted and replaced by the uploaded
         statements.
+      </p>
+      <h3 className="py-4 text-xl">Upload your file with connections</h3>
+      <p>
+        On the{" "}
+        <Link className="underline" to="/connections">
+          connections page
+        </Link>{" "}
+        you can upload a CSV or XLSX file with connections. The file must
+        respect the columns ordering and naming described below:
+        <ol className="list-inside list-decimal">
+          <li>Source statement, id of source statement</li>
+          <li>
+            Source node type, must be one of{" "}
+            {SourceNodeType.options.map((o) => `"${o}"`).join(", ")}
+          </li>
+          <li>Source value, the value of the node. Can be empty.</li>
+          <li>Target statement, id of target statement</li>
+          <li>
+            Target node type, must be one of{" "}
+            {TargetNodeType.options.map((o) => `"${o}"`).join(", ")}
+          </li>
+          <li>
+            Driver, must be one of{" "}
+            {DriverType.options.map((o) => `"${o}"`).join(", ")}
+          </li>
+        </ol>
       </p>
 
       <h3 className="py-4 text-xl">Download/upload project</h3>
@@ -229,6 +274,23 @@ function RouteComponent() {
           </li>
         </ul>
       </p>
+
+      <h3 className="py-4 text-xl">Persistence</h3>
+      <ul className="list-inside list-disc">
+        <li>
+          The project can be save to a file and loaded from a file. Share the
+          file so the reciever can have the same data as you.
+        </li>
+        <li>
+          When you close the web application, the web browser stores the session
+          internally. Opening the web application again will restore the
+          session.
+        </li>
+        <li>
+          Each project will stored by its name. You can have different projects
+          in different web browser tabs open.
+        </li>
+      </ul>
 
       <h3 className="py-4 text-xl">Support and Discussion</h3>
       <p>
