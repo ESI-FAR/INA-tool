@@ -27,6 +27,7 @@ import {
   SourcePicker,
 } from "./SourcePicker";
 import { CanvasSearch } from "./CanvasSearch";
+import { CanvasMenu } from "./CanvasMenu";
 
 function createEdgeFromConnection(connection: Connection): INAEdge {
   const type = connection.targetHandle as keyof typeof edgeTypes;
@@ -85,7 +86,10 @@ function Flow() {
     <div className="h-full">
       <div className="flex justify-between">
         <h1 className="text-xl">Statements</h1>
-        <CanvasSearch />
+        <div className="flex gap-2">
+          <CanvasSearch />
+          <CanvasMenu />
+        </div>
       </div>
       <div className="h-full w-full">
         <ReactFlow
@@ -111,12 +115,6 @@ function Flow() {
           colorMode={theme}
           proOptions={{ hideAttribution: true }}
         >
-          <Panel position="top-right" className="flex gap-1">
-            <CompactSwitch />
-            <LayoutButton />
-            <ScreenshotButton />
-            <CanvasLegendButton />
-          </Panel>
           <Controls />
           <MiniMap />
         </ReactFlow>

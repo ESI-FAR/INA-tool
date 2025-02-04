@@ -43,7 +43,9 @@ const statements: Statement[] = [
     "Type of Direct Object": "inanimate",
     "Indirect Object": "",
     "Type of Indirect Object": "",
-    "Activation Condition": "",
+    // "Activation Condition": "",
+    // To test de-duplication, uncomment line below, and comment line above
+    "Activation Condition": "if requested by Prime minister",
     "Execution Constraint": "",
     "Or Else": "",
   },
