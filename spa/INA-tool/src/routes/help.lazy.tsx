@@ -5,7 +5,6 @@ import {
   TargetNodeType,
 } from "@/lib/schema";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
-import { csvFormat } from "d3-dsv";
 import {
   CameraIcon,
   DownloadIcon,
@@ -19,26 +18,13 @@ import {
   UploadIcon,
 } from "lucide-react";
 import screenshot from "../help/canvas.png";
+import templatexlsx from "../help/Institutional_statement_template.xlsx?url";
 
 export const Route = createLazyFileRoute("/help")({
   component: RouteComponent,
 });
 
-function useTemplate() {
-  const idlessColumns = statementColumns.slice(1);
-  const content = csvFormat([], idlessColumns);
-  const percentencoded = encodeURIComponent(content);
-  const href = `data:text/csv;charset=utf-8,${percentencoded}`;
-  // TODO add xlsx template
-  return {
-    columns: idlessColumns,
-    content,
-    href,
-  };
-}
-
 function RouteComponent() {
-  const { href, columns } = useTemplate();
   return (
     <main className="w-full">
       <h1 className="text-2xl">Welcome to INA TOOL</h1>
@@ -64,14 +50,18 @@ function RouteComponent() {
       <h3 className="py-4 text-xl">Upload your file with statements</h3>
       <p>
         You can upload only <i>.csv</i> or <i>.xlsx</i> files. Please, use this{" "}
-        <a className="underline" href={href} download="INA-tool-template.csv">
+        <a
+          className="underline"
+          href={templatexlsx}
+          download="Institutional_statement_template.xlsx"
+        >
           template
         </a>
         . Alternatively, the file must respect the columns ordering and naming
         described below:
       </p>
       <ol className="list-inside list-decimal">
-        {columns.map((col) => (
+        {statementColumns.map((col) => (
           <li key={col}>{col}</li>
         ))}
       </ol>
