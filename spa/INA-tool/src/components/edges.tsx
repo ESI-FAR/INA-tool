@@ -8,8 +8,8 @@ import {
 import {
   BaseEdge,
   EdgeProps,
-  getBezierPath,
   getStraightPath,
+  getSmoothStepPath,
 } from "@xyflow/react";
 
 export function InnerStatementEdge({
@@ -51,7 +51,7 @@ export function ActorDrivenConnection({
   targetY,
   markerEnd,
 }: EdgeProps<ActorDrivenConnection>) {
-  const [edgePath] = getBezierPath({
+  const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
     targetX,
@@ -81,7 +81,7 @@ export function OutcomeDrivenConnection({
   targetY,
   markerEnd,
 }: EdgeProps<OutcomeDrivenConnection>) {
-  const [edgePath] = getBezierPath({
+  const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
     targetX,
@@ -111,7 +111,7 @@ export function SanctionDrivenConnection({
   targetY,
   markerEnd,
 }: EdgeProps<SanctionDrivenConnection>) {
-  const [edgePath] = getBezierPath({
+  const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
     targetX,
