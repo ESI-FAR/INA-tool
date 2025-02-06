@@ -118,7 +118,7 @@ function Flow() {
             <CanvasLegendButton />
           </Panel>
           <Controls />
-          <MiniMap />
+          <MiniMap pannable={true} />
         </ReactFlow>
         {pendingConnection && (
           <SourcePicker
