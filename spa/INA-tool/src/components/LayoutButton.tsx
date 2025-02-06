@@ -18,7 +18,7 @@ const layoutOptions = {
   "elk.direction": "RIGHT",
 } as const;
 
-export const useAutoLayout = () => {
+const useLayoutedElements = () => {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
     INANode,
     INAEdge
@@ -89,7 +89,7 @@ export const useAutoLayout = () => {
 };
 
 export function LayoutButton() {
-  const autoLayout = useAutoLayout();
+  const autoLayout = useLayoutedElements();
   return (
     <Button variant="outline" onClick={autoLayout} title="Auto layout nodes">
       <LayoutTemplateIcon />

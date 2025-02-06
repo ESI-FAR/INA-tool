@@ -22,7 +22,7 @@ function downloadImage(dataUrl: string) {
 const imageWidth = 1920;
 const imageHeight = 1080;
 
-export function useTakeScreenshot() {
+export function ScreenshotButton() {
   const { getNodes } = useReactFlow();
   const onClick = useCallback(() => {
     const nodesBounds = getNodesBounds(getNodes());
@@ -50,11 +50,6 @@ export function useTakeScreenshot() {
       },
     }).then(downloadImage);
   }, [getNodes]);
-  return onClick;
-}
-
-export function ScreenshotButton() {
-  const onClick = useTakeScreenshot();
 
   return (
     <Button variant="outline" onClick={onClick} title="Take a screenshot">
