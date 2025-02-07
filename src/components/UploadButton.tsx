@@ -2,6 +2,8 @@ import { UploadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useRef } from "react";
 import { store } from "@/lib/store";
+import { store as componentGraphStore } from "@/lib/graph-store/component";
+import { store as statementGraphStore } from "@/lib/graph-store/statement";
 import { useToast } from "@/hooks/use-toast";
 import { csvParse } from "d3-dsv";
 import { read as readXLSX, utils as utilsXLSX } from "xlsx";
@@ -13,11 +15,19 @@ async function processJSONFile(file: File) {
   const content = await file.text();
   const state = JSON.parse(content);
   // TODO validate state using zod
+  componentGraphStore.setState({
+    nodes: state.graph.component.nodes,
+    edges: state.graph.component.edges,
+  });
+  statementGraphStore.setState({
+    nodes: state.graph.statement.nodes,
+    edges: state.graph.statement.edges,
+  });
   store.setState({
     projectName: projectNameFromFile(file),
-    nodes: state.nodes,
-    edges: state.edges,
-    isCompact: state.isCompact,
+    statements: state.statements,
+    connections: state.connections,
+    conflicts: state.conflicts,
   });
 }
 
@@ -39,7 +49,6 @@ function fillIds(data: Statements) {
 async function processCSVFile(file: File) {
   const content = await file.text();
   const rawStatements = csvParse(content);
-  console.log(rawStatements);
 
   const statements = statementsSchema.parse(rawStatements);
 

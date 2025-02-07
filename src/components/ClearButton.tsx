@@ -6,7 +6,12 @@ function removeAllData() {
   const projectName = store.getState().projectName;
   localStorage.removeItem(`ina-project-${projectName}`);
   window.history.replaceState({}, "", "?project=");
-  store.setState({ projectName: "", nodes: [], edges: [] });
+  store.setState({
+    projectName: "",
+    statements: [],
+    connections: [],
+    conflicts: [],
+  });
 }
 
 export function ClearButton() {

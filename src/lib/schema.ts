@@ -41,15 +41,25 @@ export const DriverType = z.enum(["actor", "outcome", "sanction"]);
 export const connectionSchema = z.object({
   source_statement: z.string(),
   source_node: SourceNodeType,
-  source_value: z.string().optional(),
   target_statement: z.string(),
   target_node: TargetNodeType,
-  target_value: z.string().optional(),
   driver: DriverType,
 });
 export type Connection = z.infer<typeof connectionSchema>;
+export type ConnectionWithValues = Connection & {
+  source_value: string;
+  target_value: string;
+};
 export const connectionColumns = Object.keys(
   connectionSchema.shape,
 ) as ReadonlyArray<keyof Connection>;
 
 export const connectionsSchema = z.array(connectionSchema);
+
+export const Conflict = z.object({
+  formal: statementSchema,
+  informal: statementSchema,
+});
+export type Conflict = z.infer<typeof Conflict>;
+export const Conflicts = z.array(Conflict);
+export type Conflicts = z.infer<typeof Conflicts>;

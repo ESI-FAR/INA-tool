@@ -4,6 +4,7 @@ import {
   type OutcomeDrivenConnection,
   type SanctionDrivenConnection,
   drivenColors,
+  type ConflictingEdge,
 } from "@/lib/edge";
 import {
   BaseEdge,
@@ -126,6 +127,23 @@ export function SanctionDrivenConnection({
       markerEnd={markerEnd}
     />
   );
+}
+
+export function ConflictingEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+}: EdgeProps<ConflictingEdge>) {
+  const [edgePath] = getStraightPath({
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+  });
+
+  return <BaseEdge id={id} path={edgePath} />;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

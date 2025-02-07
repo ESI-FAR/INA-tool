@@ -21,6 +21,8 @@ const StatementsLazyImport = createFileRoute("/statements")();
 const HelpLazyImport = createFileRoute("/help")();
 const ConnectionsLazyImport = createFileRoute("/connections")();
 const IndexLazyImport = createFileRoute("/")();
+const CanvasStatementLazyImport = createFileRoute("/canvas/statement")();
+const CanvasCompLazyImport = createFileRoute("/canvas/comp")();
 
 // Create/Update Routes
 
@@ -53,6 +55,20 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: "/",
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import("./routes/index.lazy").then((d) => d.Route));
+
+const CanvasStatementLazyRoute = CanvasStatementLazyImport.update({
+  id: "/canvas/statement",
+  path: "/canvas/statement",
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import("./routes/canvas/statement.lazy").then((d) => d.Route),
+);
+
+const CanvasCompLazyRoute = CanvasCompLazyImport.update({
+  id: "/canvas/comp",
+  path: "/canvas/comp",
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import("./routes/canvas/comp.lazy").then((d) => d.Route));
 
 // Populate the FileRoutesByPath interface
 
@@ -93,6 +109,20 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof StatementsLazyImport;
       parentRoute: typeof rootRoute;
     };
+    "/canvas/comp": {
+      id: "/canvas/comp";
+      path: "/canvas/comp";
+      fullPath: "/canvas/comp";
+      preLoaderRoute: typeof CanvasCompLazyImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/canvas/statement": {
+      id: "/canvas/statement";
+      path: "/canvas/statement";
+      fullPath: "/canvas/statement";
+      preLoaderRoute: typeof CanvasStatementLazyImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
@@ -104,6 +134,8 @@ export interface FileRoutesByFullPath {
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/canvas/comp": typeof CanvasCompLazyRoute;
+  "/canvas/statement": typeof CanvasStatementLazyRoute;
 }
 
 export interface FileRoutesByTo {
@@ -112,6 +144,8 @@ export interface FileRoutesByTo {
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/canvas/comp": typeof CanvasCompLazyRoute;
+  "/canvas/statement": typeof CanvasStatementLazyRoute;
 }
 
 export interface FileRoutesById {
@@ -121,20 +155,38 @@ export interface FileRoutesById {
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/canvas/comp": typeof CanvasCompLazyRoute;
+  "/canvas/statement": typeof CanvasStatementLazyRoute;
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/privacy-policy" | "/connections" | "/help" | "/statements";
+  fullPaths:
+    | "/"
+    | "/privacy-policy"
+    | "/connections"
+    | "/help"
+    | "/statements"
+    | "/canvas/comp"
+    | "/canvas/statement";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/privacy-policy" | "/connections" | "/help" | "/statements";
+  to:
+    | "/"
+    | "/privacy-policy"
+    | "/connections"
+    | "/help"
+    | "/statements"
+    | "/canvas/comp"
+    | "/canvas/statement";
   id:
     | "__root__"
     | "/"
     | "/privacy-policy"
     | "/connections"
     | "/help"
-    | "/statements";
+    | "/statements"
+    | "/canvas/comp"
+    | "/canvas/statement";
   fileRoutesById: FileRoutesById;
 }
 
@@ -144,6 +196,8 @@ export interface RootRouteChildren {
   ConnectionsLazyRoute: typeof ConnectionsLazyRoute;
   HelpLazyRoute: typeof HelpLazyRoute;
   StatementsLazyRoute: typeof StatementsLazyRoute;
+  CanvasCompLazyRoute: typeof CanvasCompLazyRoute;
+  CanvasStatementLazyRoute: typeof CanvasStatementLazyRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -152,6 +206,8 @@ const rootRouteChildren: RootRouteChildren = {
   ConnectionsLazyRoute: ConnectionsLazyRoute,
   HelpLazyRoute: HelpLazyRoute,
   StatementsLazyRoute: StatementsLazyRoute,
+  CanvasCompLazyRoute: CanvasCompLazyRoute,
+  CanvasStatementLazyRoute: CanvasStatementLazyRoute,
 };
 
 export const routeTree = rootRoute
@@ -168,7 +224,9 @@ export const routeTree = rootRoute
         "/privacy-policy",
         "/connections",
         "/help",
-        "/statements"
+        "/statements",
+        "/canvas/comp",
+        "/canvas/statement"
       ]
     },
     "/": {
@@ -185,6 +243,12 @@ export const routeTree = rootRoute
     },
     "/statements": {
       "filePath": "statements.lazy.tsx"
+    },
+    "/canvas/comp": {
+      "filePath": "canvas/comp.lazy.tsx"
+    },
+    "/canvas/statement": {
+      "filePath": "canvas/statement.lazy.tsx"
     }
   }
 }

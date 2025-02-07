@@ -35,9 +35,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { deriveSourceChoices } from "./SourcePicker";
-import { store } from "@/lib/store";
-import { INANode } from "@/lib/node";
-import { processConnection } from "@/lib/io";
+import { useConnections } from "@/hooks/use-connections";
 
 function DriverField() {
   const form = useFormContext();
@@ -433,7 +431,8 @@ function TargetNodeField({ statements }: { statements: Statement[] }) {
 }
 
 export function AddConnectionButton() {
-  const statements = useStatements();
+  const { statements } = useStatements();
+  const { addConnection } = useConnections();
   const myform = useForm<Connection>({
     resolver: zodResolver(connectionSchema),
     defaultValues: {
@@ -442,14 +441,7 @@ export function AddConnectionButton() {
   });
 
   function onSubmit(connection: Connection) {
-    // TODO check if connection already exists, if so show error
-    const nodes = store.getState().nodes;
-    const edges = store.getState().edges;
-    const lookup = new Map<string, INANode>(
-      nodes.map((node) => [node.id, node]),
-    );
-    const newEdge = processConnection(connection, lookup);
-    store.setState({ edges: [...edges, newEdge] });
+    addConnection(connection);
     myform.reset();
   }
   return (

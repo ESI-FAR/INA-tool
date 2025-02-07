@@ -1,6 +1,5 @@
 import { Connection, Statement } from "@/lib/schema";
 import { Button } from "./ui/button";
-import { load } from "@/lib/io";
 import { Wand2Icon } from "lucide-react";
 import { store } from "@/lib/store";
 
@@ -119,7 +118,8 @@ const connections: Connection[] = [
 
 function loadExample() {
   store.getState().setProjectName("Example");
-  load(statements, connections);
+  store.getState().setStatements(statements);
+  store.getState().setConnections(connections);
 }
 
 export function LoadExampleButton() {

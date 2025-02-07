@@ -8,20 +8,21 @@ import {
   InDirectObjectNode,
   isStatementNode,
   StatementNode,
+  StatementRelatedNode,
 } from "./node";
 
-import { Connection, connectionSchema, Statement } from "./schema";
+import { Connection, Statement } from "./schema";
 import { store } from "./store";
-import { buildEdge, isDrivenConnection } from "./edge";
-import { InnerStatementEdge, INAEdge, DrivenConnection } from "./edge";
+import { buildEdge } from "./edge";
+import { InnerStatementEdge, INAEdge } from "./edge";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
 
 export function procesStatement(
   statement: Statement,
   fallBackId: string,
-): [INANode[], InnerStatementEdge[]] {
-  const nodes: INANode[] = [];
+): [StatementRelatedNode[], InnerStatementEdge[]] {
+  const nodes: StatementRelatedNode[] = [];
   const edges: InnerStatementEdge[] = [];
   const id = statement.Id || fallBackId;
   const statementNode: StatementNode = {
@@ -62,6 +63,9 @@ export function procesStatement(
     nodes.push(activationConditionNode);
     const activationConditionEdge: InnerStatementEdge = {
       id: `${id}-activation-condition-2-attribute`,
+      data: {
+        statementId: id,
+      },
       source: activationConditionId,
       target: attributeId,
       sourceHandle: "statement",
@@ -83,6 +87,9 @@ export function procesStatement(
   nodes.push(aimNode);
   const aimEdge: InnerStatementEdge = {
     id: `${id}-attribute-2-aim`,
+    data: {
+      statementId: id,
+    },
     source: attributeId,
     target: aimId,
     label: statement.Deontic,
@@ -108,6 +115,9 @@ export function procesStatement(
     nodes.push(directObjectNode);
     edges.push({
       id: `${id}-aim-2-direct-object`,
+      data: {
+        statementId: id,
+      },
       source: aimId,
       target: directObjectId,
       sourceHandle: "direct-object",
@@ -131,6 +141,9 @@ export function procesStatement(
       nodes.push(indirectObjectNode);
       edges.push({
         id: `${id}-direct-object-2-indirect-object`,
+        data: {
+          statementId: id,
+        },
         source: directObjectId,
         target: indirectObjectId,
         sourceHandle: "statement",
@@ -153,6 +166,9 @@ export function procesStatement(
     // aim 2 execution constraint edge
     edges.push({
       id: `${id}-aim-2-execution-constraint`,
+      data: {
+        statementId: id,
+      },
       source: aimId,
       target: executionConstraintId,
       sourceHandle: "execution-constraint",
@@ -170,7 +186,7 @@ export function deriveStatements(nodes: INANode[]): Statement[] {
   return nodes.filter(isStatementNode).map((node) => node.data.raw);
 }
 
-const internal2col = new Map([
+export const internal2col = new Map([
   ["aim", "Aim"],
   ["attribute", "Attribute"],
   ["activation-condition", "Activation Condition"],
@@ -178,72 +194,6 @@ const internal2col = new Map([
   ["indirect-object", "Indirect Object"],
   ["execution-constraint", "Execution Constraint"],
 ]);
-
-function enrichEdge(
-  edge: DrivenConnection,
-  lookup: Map<string, INANode>,
-): Connection {
-  const sourceNode = lookup.get(edge.source);
-  const targetNode = lookup.get(edge.target);
-  if (
-    !edge.type ||
-    !sourceNode ||
-    !targetNode ||
-    !sourceNode.type ||
-    !targetNode.type
-  ) {
-    console.error({ edge, sourceNode, targetNode });
-    throw new Error("Source or target node not found");
-  }
-  if (
-    isStatementNode(sourceNode) &&
-    isStatementNode(targetNode) &&
-    edge.uncompactSource &&
-    edge.uncompactTarget
-  ) {
-    const source_node = edge.uncompactSource.replace(edge.source + "-", "");
-    const target_node = edge.uncompactTarget.replace(edge.target + "-", "");
-    const source_col = internal2col.get(source_node) as keyof Statement;
-    const source_value = sourceNode.data.raw[source_col];
-    const target_col = internal2col.get(target_node) as keyof Statement;
-    const target_value = targetNode.data.raw[target_col];
-    return connectionSchema.parse({
-      source_statement: sourceNode.id,
-      source_node,
-      source_value,
-      target_statement: targetNode.id,
-      target_node,
-      target_value,
-      driver: edge.type.replace("-driven", ""),
-    });
-  }
-  return connectionSchema.parse({
-    source_statement: sourceNode.parentId,
-    source_node: sourceNode.type,
-    source_value: sourceNode.data.label,
-    target_statement: targetNode.parentId,
-    target_node: targetNode.type,
-    target_value: targetNode.data.label,
-    driver: edge.type.replace("-driven", ""),
-  });
-}
-
-export function deriveConnections(
-  edges: INAEdge[],
-  nodes: INANode[],
-): Connection[] {
-  const lookup = new Map<string, INANode>(nodes.map((node) => [node.id, node]));
-  return edges
-    .filter(isDrivenConnection)
-    .map((e) => enrichEdge(e, lookup))
-    .sort(
-      (a, b) =>
-        a.source_statement.localeCompare(b.source_statement) ||
-        a.source_node.localeCompare(b.source_node) ||
-        a.target_statement.localeCompare(b.target_statement) ||
-        a.target_node.localeCompare(b.target_node),
-    );
-}
 
 export class InvalidConnectionError extends Error {
   constructor(message: string) {
@@ -341,41 +291,18 @@ export function offsetStatement(statement: StatementNode, index: number) {
   statement.position.y = index * DEFAULT_STATEMENT_HEIGHT + index * gap;
 }
 
-function offsetStatements(nodes: INANode[]) {
-  nodes.filter(isStatementNode).forEach((statement, index) => {
-    offsetStatement(statement, index);
-  });
-}
-
 export function load(statements: Statement[], connections: Connection[]) {
-  const nodes: INANode[] = [];
-  const edges: INAEdge[] = [];
-  let id = 1;
-  for (const statement of statements) {
-    const [newNodes, newEdges] = procesStatement(statement, id.toString());
-    nodes.push(...newNodes);
-    edges.push(...newEdges);
-    id++;
-  }
-  offsetStatements(nodes);
-
-  const lookup = new Map<string, INANode>(nodes.map((node) => [node.id, node]));
-  for (const connection of connections) {
-    const newEdge = processConnection(connection, lookup);
-    edges.push(newEdge);
-  }
-  store.getState().setCompact(false);
-  store.getState().setNodes(nodes);
-  store.getState().setEdges(edges);
+  store.getState().setStatements(statements);
+  store.getState().setConnections(connections);
 }
 
 export function save(): {
   statements: Statement[];
   connections: Connection[];
 } {
-  const nodes = store.getState().nodes;
-  const statements = deriveStatements(nodes);
-  const connections = deriveConnections(store.getState().edges, nodes);
+  const statements = store.getState().statements;
+  const connections = store.getState().connections;
+  // TODO add data of graphs
   return { statements, connections };
 }
 
@@ -390,12 +317,5 @@ export function download(file: File) {
 }
 
 export function loadConnections(connections: Connection[]) {
-  const nodes = store.getState().nodes;
-  const edges = store.getState().edges;
-  const lookup = new Map<string, INANode>(nodes.map((node) => [node.id, node]));
-  // TODO gather up all errors instead of throwing first one
-  const newEdges = connections.map((connection) =>
-    processConnection(connection, lookup),
-  );
-  store.getState().setEdges([...edges, ...newEdges]);
+  store.getState().setConnections(connections);
 }

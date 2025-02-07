@@ -1,9 +1,7 @@
 import { Statement } from "@/lib/schema";
-import { store } from "@/lib/store";
 import { useMemo } from "react";
 import { Fragment } from "react/jsx-runtime";
-import { useStore } from "zustand";
-import { isDrivenConnectionEdge } from "@/lib/edge";
+import { useConnections } from "@/hooks/use-connections";
 
 function Outgoing({ type }: { type: string }) {
   if (type === "actor-driven") {
@@ -65,36 +63,24 @@ function Incoming({ type }: { type: string }) {
   );
 }
 
-function useConnections(statementId: string) {
-  const edges = useStore(store, (s) => s.edges);
-  const connections = useMemo(() => {
-    // TODO statement could have multiple connections from/to same field
-    // now only last one found is used
-    const outgoing = new Map(
-      edges
-        .filter((edge) => edge.source === statementId)
-        .filter(isDrivenConnectionEdge)
-        .map((e) => {
-          const col = e.uncompactSource!.replace(e.source + "-", "");
-          return [col, e.type];
-        }),
-    );
-    const incoming = new Map(
-      edges
-        .filter((edge) => edge.target === statementId)
-        .filter(isDrivenConnectionEdge)
-        .map((e) => {
-          const col = e.uncompactTarget!.replace(e.target + "-", "");
-          return [col, e.type];
-        }),
-    );
-    return { outgoing, incoming };
-  }, [edges, statementId]);
-  return connections;
+function useConnectionsOfStatement(statementId: string) {
+  const { connections } = useConnections();
+  return useMemo(() => {
+    const incoming = new Map<string, string>();
+    const outgoing = new Map<string, string>();
+    for (const connection of connections) {
+      if (connection.source_statement === statementId) {
+        outgoing.set(connection.driver, connection.target_statement);
+      } else if (connection.target_statement === statementId) {
+        incoming.set(connection.driver, connection.source_statement);
+      }
+    }
+    return { incoming, outgoing };
+  }, [connections, statementId]);
 }
 
 export function StatementCard({ statement }: { statement: Statement }) {
-  const connections = useConnections(statement.Id!);
+  const connections = useConnectionsOfStatement(statement.Id!);
 
   return (
     <div className="bg-card p-2 text-card-foreground shadow">

@@ -1,9 +1,8 @@
-import { store } from "@/lib/store";
 import { useStore } from "zustand";
 import { Connection } from "@xyflow/react";
 import { INANode } from "@/lib/node";
 import { edgeTypes } from "./edges";
-import { INAEdge, isDrivenConnectionEdge } from "@/lib/edge";
+import { INAEdge } from "@/lib/edge";
 import { useMemo } from "react";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { isStatementNode } from "@/lib/node";
@@ -11,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Statement } from "@/lib/schema";
+import { store } from "@/lib/graph-store/statement";
 
 interface SourceChoice {
   type: string;
@@ -147,64 +147,6 @@ export function hasAmbiguousSource(connection: Connection, nodes: INANode[]) {
     return false;
   }
   throw new Error("Unreachable code");
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function setUncompactSource(edge: INAEdge, nodes: INANode[]) {
-  const statementId = edge.source;
-  const node = nodes.find((node) => node.id === statementId);
-  if (!node || !isStatementNode(node) || !isDrivenConnectionEdge(edge)) {
-    return;
-  }
-  const type = edge.targetHandle as keyof typeof edgeTypes;
-  const statement = node.data.raw;
-  if (type === "actor-driven") {
-    if (
-      statement["Direct Object"] &&
-      statement["Type of Direct Object"] === "animate"
-    ) {
-      edge.uncompactSource = statementId + "-direct-object";
-      return;
-    }
-    if (
-      statement["Indirect Object"] &&
-      statement["Type of Indirect Object"] === "animate"
-    ) {
-      edge.uncompactSource = statementId + "-indirect-object";
-      return;
-    }
-    if (statement["Execution Constraint"]) {
-      edge.uncompactSource = statementId + "-execution-constraint";
-      return;
-    }
-  } else if (type === "outcome-driven") {
-    if (
-      statement["Direct Object"] &&
-      statement["Type of Direct Object"] === "inanimate"
-    ) {
-      edge.uncompactSource = statementId + "-direct-object";
-      return;
-    }
-    if (
-      statement["Indirect Object"] &&
-      statement["Type of Indirect Object"] === "inanimate"
-    ) {
-      edge.uncompactSource = statementId + "-indirect-object";
-      return;
-    }
-  } else if (type === "sanction-driven") {
-    edge.uncompactSource = statementId + "-aim";
-    return;
-  }
-  throw new Error("Unreachable code");
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function setUncompactTarget(edge: INAEdge) {
-  if (!isDrivenConnectionEdge(edge)) {
-    return;
-  }
-  edge.uncompactTarget = findUncompactTarget(edge);
 }
 
 /**

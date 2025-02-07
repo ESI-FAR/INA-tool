@@ -1,5 +1,5 @@
 import {
-  DrivenConnection,
+  DrivenConnectionEdge,
   INAEdge,
   isDrivenConnectionEdge,
   isInnerStatementEdge,
@@ -53,7 +53,7 @@ export function compacter(
     }
   }
 
-  let drivenConnectionEdges: DrivenConnection[] = [];
+  let drivenConnectionEdges: DrivenConnectionEdge[] = [];
   if (isCompact) {
     // Find all driven connection edgeds that are now going from inner statement to inner node of other statement
     // and change them to go from statement to other statement

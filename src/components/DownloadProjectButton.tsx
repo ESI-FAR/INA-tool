@@ -2,14 +2,26 @@ import { DownloadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { download } from "@/lib/io";
 import { store } from "@/lib/store";
+import { store as componentGraphStore } from "@/lib/graph-store/component";
+import { store as statementGraphStore } from "@/lib/graph-store/statement";
 
 function createProjectFile() {
   const projectName = store.getState().projectName;
   const fn = projectName ? `${projectName}.json` : "INA-tool.json";
   const body = {
-    nodes: store.getState().nodes,
-    edges: store.getState().edges,
-    isCompact: store.getState().isCompact,
+    statements: store.getState().statements,
+    connections: store.getState().connections,
+    conflicts: store.getState().conflicts,
+    graph: {
+      component: {
+        nodes: componentGraphStore.getState().nodes,
+        edges: componentGraphStore.getState().edges,
+      },
+      statement: {
+        nodes: statementGraphStore.getState().nodes,
+        edges: statementGraphStore.getState().edges,
+      },
+    },
   };
   const content = JSON.stringify(body, null, 2);
   return new File([content], fn, { type: "application/json" });

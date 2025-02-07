@@ -1,5 +1,3 @@
-import { store } from "@/lib/store";
-import { useStore } from "zustand/react";
 import {
   ColumnDef,
   SortingState,
@@ -20,17 +18,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
-import { deriveConnections } from "@/lib/io";
 import { DownloadConnectionButton } from "./DownloadConnectionButton";
 import { UploadConnectionButton } from "./UploadConnectionButton";
 import { Connection } from "@/lib/schema";
 import { TrashIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { AddConnectionButton } from "./AddConnectionButton";
+import {
+  useConnections,
+  useConnectionsWithValues,
+} from "@/hooks/use-connections";
 
 const columns: ColumnDef<Connection>[] = [
   {
@@ -88,12 +89,9 @@ const columns: ColumnDef<Connection>[] = [
 ];
 
 export function DrivenConnectionTable() {
-  const edges = useStore(store, (state) => state.edges);
-  const nodes = useStore(store, (state) => state.nodes);
-  const connections = useMemo(
-    () => deriveConnections(edges, nodes),
-    [edges, nodes],
-  );
+  const { removeConnection } = useConnections();
+  const connections = useConnectionsWithValues();
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const table = useReactTable({
@@ -112,19 +110,6 @@ export function DrivenConnectionTable() {
       globalFilter,
     },
   });
-
-  function removeConnection(connection: Connection) {
-    const id =
-      connection.source_statement +
-      "-" +
-      connection.source_node +
-      "-2-" +
-      connection.target_statement +
-      "-" +
-      connection.target_node;
-    const newEdges = edges.filter((edge) => edge.id !== id);
-    store.getState().setEdges(newEdges);
-  }
 
   return (
     <div className="w-full">
@@ -192,10 +177,11 @@ export function DrivenConnectionTable() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+                  colSpan={7}
+                  className="h-24 text-center text-gray-500"
                 >
-                  No results.
+                  No connections. Please add one, by presssing button below or
+                  by uploading or by dragging one in canvas.
                 </TableCell>
               </TableRow>
             )}

@@ -1,5 +1,4 @@
 import { Statement } from "@/lib/schema";
-import { store } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import {
   Handle,
@@ -11,7 +10,6 @@ import {
 } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
 import { useCallback, useMemo } from "react";
-import { useStore } from "zustand";
 import { StatementCard } from "./StatementCard";
 import type {
   StatementNode,
@@ -21,6 +19,7 @@ import type {
   InDirectObjectNode,
   ActivationConditionNode,
   ExecutionConstraintNode,
+  ConflictGroupNode,
 } from "@/lib/node";
 
 /*
@@ -139,16 +138,44 @@ function TargetHandles({
   );
 }
 
-function CompactStatementNode({
-  statement,
+function ConflictHandles({ isConnectable }: { isConnectable: boolean }) {
+  const style = useMemo(
+    () => ({
+      width: isConnectable ? 10 : 4,
+      height: isConnectable ? 10 : 4,
+    }),
+    [isConnectable],
+  );
+  return (
+    <>
+      <Handle
+        type="target"
+        id="conflict"
+        className="!bg-red-500"
+        style={{ ...style }}
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="target"
+        id="conflict"
+        className="!bg-red-500"
+        style={{ ...style }}
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
+    </>
+  );
+}
+
+export function CollapsedStatementNode({
+  data,
   isConnectable,
   selected,
-}: {
-  statement: Statement;
-  isConnectable: boolean;
-  selected: boolean | undefined;
-}) {
+}: NodeProps<StatementNode>) {
   const { updateNode } = useReactFlow();
+  const statement = data.raw;
+  const color = statementBackground[data.raw["Statement Type"]];
   const onToolbarClick = useCallback(() => {
     updateNode(statement.Id!, {
       selected: false,
@@ -167,8 +194,10 @@ function CompactStatementNode({
       </NodeToolbar>
       <SourceHandles isConnectable={isConnectable} statement={statement} />
       <TargetHandles isConnectable={isConnectable} statement={statement} />
+      {/* TODO only show conflict handles if the conflict editing is enabled */}
+      <ConflictHandles isConnectable={isConnectable} />
       <div
-        className={cn("min-w-12 cursor-pointer rounded border-2 p-1", {
+        className={cn("min-w-12 cursor-pointer rounded border-2 p-1", color, {
           "border-slate-400": !selected,
           "border-slate-900": selected,
         })}
@@ -186,26 +215,12 @@ export const statementBackground = {
   informal: "bg-yellow-100/30 dark:bg-yellow-600/30",
 } as const;
 
-export function StatementNode({
-  data,
-  isConnectable,
-  selected,
-}: NodeProps<StatementNode>) {
-  const isCompact = useStore(store, (s) => s.isCompact);
-  if (isCompact) {
-    return (
-      <CompactStatementNode
-        statement={data.raw}
-        isConnectable={isConnectable}
-        selected={selected}
-      />
-    );
-  }
+export function StatementNode({ data }: NodeProps<StatementNode>) {
   const color = statementBackground[data.raw["Statement Type"]];
   return (
     <fieldset
       className={cn(
-        "h-full w-full rounded-md border border-gray-300 p-4 shadow-md",
+        "h-full w-full rounded-md border border-gray-300 p-4 shadow-md dark:border-gray-700",
         color,
       )}
     >
@@ -512,6 +527,12 @@ export function ExecutionConstraintNode({
         isConnectable={isConnectable}
       />
     </div>
+  );
+}
+
+export function ConflictGroupNode() {
+  return (
+    <div className="h-full w-full rounded border-2 bg-red-500 shadow"></div>
   );
 }
 

@@ -26,9 +26,23 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/" activeProps={{ className: "font-bold" }}>
+                  <Link
+                    to="/canvas/comp"
+                    activeProps={{ className: "font-bold" }}
+                  >
                     <HomeIcon />
-                    <span>Canvas</span>
+                    <span>Component canvas</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/canvas/statement"
+                    activeProps={{ className: "font-bold" }}
+                  >
+                    <HomeIcon />
+                    <span>Statement canvas</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

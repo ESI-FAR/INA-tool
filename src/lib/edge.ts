@@ -13,7 +13,10 @@ Red (Sanction-driven connection):
 - Aim -> Activation Condition
 */
 
-export type InnerStatementEdge = Edge<{ label?: string }, "inner-statement">;
+export type InnerStatementEdge = Edge<
+  { label?: string; statementId: string },
+  "inner-statement"
+>;
 export type ActorDrivenConnection = Edge<
   Record<string, unknown>,
   "actor-driven"
@@ -27,13 +30,15 @@ export type SanctionDrivenConnection = Edge<
   "sanction-driven"
 >; // Red
 
-export type DrivenConnection = (
+export type ConflictingEdge = Edge<Record<string, unknown>, "conflict">;
+
+export type DrivenConnectionEdge =
   | ActorDrivenConnection
   | OutcomeDrivenConnection
-  | SanctionDrivenConnection
-) & { uncompactSource?: string; uncompactTarget?: string };
+  | SanctionDrivenConnection;
 
-export type INAEdge = InnerStatementEdge | DrivenConnection;
+export type INACompactEdge = DrivenConnectionEdge | ConflictingEdge;
+export type INAEdge = InnerStatementEdge | DrivenConnectionEdge;
 
 export function isInnerStatementEdge(
   edge: INAEdge,
@@ -42,9 +47,19 @@ export function isInnerStatementEdge(
 }
 
 export function isDrivenConnectionEdge(
-  edge: INAEdge,
-): edge is DrivenConnection {
-  return !isInnerStatementEdge(edge);
+  edge: INAEdge | ConflictingEdge,
+): edge is DrivenConnectionEdge {
+  return (
+    edge.type === "actor-driven" ||
+    edge.type === "outcome-driven" ||
+    edge.type === "sanction-driven"
+  );
+}
+
+export function isConflictingEdge(
+  edge: INACompactEdge,
+): edge is ConflictingEdge {
+  return edge.type === "conflict";
 }
 
 function connectionMarkerEnd(type: keyof typeof drivenColors) {
@@ -79,7 +94,9 @@ export const drivenColors = {
   "sanction-driven": "#ef4444",
 } as const;
 
-export function isDrivenConnection(edge: INAEdge): edge is DrivenConnection {
+export function isDrivenConnection(
+  edge: INAEdge,
+): edge is DrivenConnectionEdge {
   return (
     edge.type === "actor-driven" ||
     edge.type === "outcome-driven" ||

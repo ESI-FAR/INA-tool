@@ -4,7 +4,6 @@ import {
   StatementType,
   TypeOfObject,
 } from "@/lib/schema";
-import { store } from "@/lib/store";
 
 import {
   ColumnDef,
@@ -31,8 +30,6 @@ import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
-import { offsetStatement, procesStatement } from "@/lib/io";
-import { isStatementNode } from "@/lib/node";
 import { Button } from "./ui/button";
 import {
   PencilIcon,
@@ -140,66 +137,9 @@ const columns: ColumnDef<Statement>[] = [
   },
 ];
 
-function updateStatement(statement: Statement) {
-  const id = statement.Id!;
-  // Remove nodes and edges belonging to the statement
-  const origNodes = store.getState().nodes;
-  const oldNodesOfStatement = origNodes.filter(
-    (node) => node.id === id || node.parentId === id,
-  );
-  const oldIdOfNodesOfStatement = new Set(
-    oldNodesOfStatement.map((node) => node.id),
-  );
-  const prunedNodes = origNodes.filter(
-    (node) => !oldNodesOfStatement.includes(node),
-  );
-  const oldStatementNode = oldNodesOfStatement.find((node) => node.id === id);
-  const oldEdgesOfStatement = store
-    .getState()
-    .edges.filter(
-      (edge) =>
-        oldIdOfNodesOfStatement.has(edge.source) ||
-        oldIdOfNodesOfStatement.has(edge.target),
-    );
-  const prunedEdges = store
-    .getState()
-    .edges.filter((edge) => !oldEdgesOfStatement.includes(edge));
-  // TODO inter statement edges should be kept
-  // now we remove all edges belonging to the statement
-
-  // Add new nodes and edges
-  const [newNodes, newEdges] = procesStatement(statement, statement.Id!);
-  // Retain position and style of the old statement node
-  if (oldStatementNode && oldStatementNode.position && oldStatementNode.style) {
-    newNodes[0].position = oldStatementNode.position;
-    newNodes[0].style = oldStatementNode.style;
-  }
-  store.getState().setNodes([...newNodes, ...prunedNodes]);
-  store.getState().setEdges([...newEdges, ...prunedEdges]);
-}
-
-function deleteStatement(id: string) {
-  // TODO Ask for confirmation if statement has driven connection edges?
-  // Remove nodes
-  const ids2remove = new Set(
-    store
-      .getState()
-      .nodes.filter((n) => n.id === id || n.parentId === id)
-      .map((n) => n.id),
-  );
-  store
-    .getState()
-    .setNodes(store.getState().nodes.filter((n) => !ids2remove.has(n.id)));
-  // Remove edges without nodes
-  store.getState().setEdges(
-    store.getState().edges.filter((e) => {
-      return !ids2remove.has(e.source) && !ids2remove.has(e.target);
-    }),
-  );
-}
-
 export function StatementTable() {
-  const statements = useStatements();
+  const { statements, createFreshStatement, deleteStatement, updateStatement } =
+    useStatements();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [editing, setEditing] = useState<Statement | null>(null);
@@ -222,32 +162,7 @@ export function StatementTable() {
   });
 
   function addStatement() {
-    let newId = statements.length;
-    // If id already exists, increment until it doesn't
-    while (statements.some((s) => s.Id === newId.toString())) {
-      newId++;
-    }
-    const newStatement: Statement = {
-      Id: newId.toString(),
-      "Statement Type": "formal",
-      Attribute: "",
-      Deontic: "",
-      Aim: "",
-      "Direct Object": "",
-      "Type of Direct Object": "",
-      "Indirect Object": "",
-      "Type of Indirect Object": "",
-      "Activation Condition": "",
-      "Execution Constraint": "",
-      "Or Else": "",
-    };
-    const [newNodes, newEdges] = procesStatement(newStatement, "new");
-    const statementNode = newNodes[0];
-    if (isStatementNode(statementNode)) {
-      offsetStatement(statementNode, statements.length);
-    }
-    store.getState().setNodes([...store.getState().nodes, ...newNodes]);
-    store.getState().setEdges([...store.getState().edges, ...newEdges]);
+    const newStatement = createFreshStatement();
     setEditing(newStatement);
   }
 
@@ -315,10 +230,11 @@ export function StatementTable() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+                  colSpan={12}
+                  className="h-24 text-center text-gray-500"
                 >
-                  No results.
+                  No statements found. Please add statement by using "Add
+                  statement" button or upload a file.
                 </TableCell>
               </TableRow>
             )}

@@ -25,6 +25,11 @@ export type ExecutionConstraintNode = Node<
   "execution-constraint"
 >;
 
+export type ConflictGroupNode = Node<
+  { formal?: string; informal?: string },
+  "conflict"
+>;
+
 export type InnerStatementNode =
   | AttributeNode
   | AimNode
@@ -33,8 +38,26 @@ export type InnerStatementNode =
   | ActivationConditionNode
   | ExecutionConstraintNode;
 
-export type INANode = StatementNode | InnerStatementNode;
+export type StatementRelatedNode = InnerStatementNode | StatementNode;
+export type INANode = StatementNode | InnerStatementNode | ConflictGroupNode;
 
 export function isStatementNode(node: INANode): node is StatementNode {
   return node.type === "statement";
+}
+
+export function isInnerStatementNode(
+  node: INANode,
+): node is InnerStatementNode {
+  return (
+    node.type === "attribute" ||
+    node.type === "aim" ||
+    node.type === "direct-object" ||
+    node.type === "indirect-object" ||
+    node.type === "activation-condition" ||
+    node.type === "execution-constraint"
+  );
+}
+
+export function isConflictGroupNode(node: INANode): node is ConflictGroupNode {
+  return node.type === "conflict";
 }
