@@ -180,6 +180,12 @@ function CompactStatementNode({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const statementBackground = {
+  formal: "bg-sky-100/30 dark:bg-sky-600/30",
+  informal: "bg-yellow-100/30 dark:bg-yellow-600/30",
+} as const;
+
 export function StatementNode({
   data,
   isConnectable,
@@ -195,8 +201,14 @@ export function StatementNode({
       />
     );
   }
+  const color = statementBackground[data.raw["Statement Type"]];
   return (
-    <fieldset className="h-full w-full rounded-md border border-gray-300 bg-transparent p-4 shadow-md">
+    <fieldset
+      className={cn(
+        "h-full w-full rounded-md border border-gray-300 p-4 shadow-md",
+        color,
+      )}
+    >
       <NodeResizeControl minWidth={100} minHeight={50}>
         <Maximize2Icon className="absolute bottom-2 right-2 h-2 w-2 rotate-90" />
       </NodeResizeControl>

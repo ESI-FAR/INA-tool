@@ -2,6 +2,8 @@ import { AlignVerticalDistributeCenterIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import StatementLegend from "./legend/statement.svg?react";
+import { statementBackground } from "./nodes";
+import { cn } from "@/lib/utils";
 
 /*
  * The legend/statement.svg was exported from https://excalidraw.com/ with embedded scene and
@@ -31,6 +33,16 @@ export function CanvasLegendButton() {
           <p>Statement</p>
 
           <StatementLegend width="22rem" height="8rem" />
+
+          <ul className="flex flex-row gap-1">
+            <li className={cn("rounded p-1", statementBackground["formal"])}>
+              Formal
+            </li>
+            <li className={cn("rounded p-1", statementBackground["informal"])}>
+              Informal
+            </li>
+          </ul>
+
           <p>Edges</p>
           <ul className="list-inside pl-4">
             <EdgeLegend className="text-foreground" text="Inner statement" />
