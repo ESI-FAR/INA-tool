@@ -20,8 +20,12 @@ authors:
     email: ermanno.locascio@esciencecenter.nl
     affiliation: Netherlands eScience Center
     orcid: 'https://orcid.org/0000-0002-7257-8034'
+  - given-names: Stefan
+    family-names: Verhoeven
+    affiliation: "Netherlands eScience Center"
+    orcid: "https://orcid.org/0000-0002-5821-2060"
 repository-code: 'https://github.com/ESI-FAR/INA-tool'
-url: 'https://inaeditor.tbm.tudelft.nl'
+url: 'https://esi-far.github.io/INA-tool/'
 keywords:
   - Institutional Network Analysis
   - Institutional Grammar

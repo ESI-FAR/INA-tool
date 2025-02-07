@@ -1,83 +1,62 @@
 # INA Tool
 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/StartBootstrap/startbootstrap-sb-admin/master/LICENSE)
+[![Deploy app to GH Pages](https://github.com/ESI-FAR/INA-tool/actions/workflows/deploy.yml/badge.svg)](https://github.com/ESI-FAR/INA-tool/actions/workflows/deploy.yml)
+[![Lint](https://github.com/ESI-FAR/INA-tool/actions/workflows/build.yml/badge.svg)](https://github.com/ESI-FAR/INA-tool/actions/workflows/build.yml)
+
 INA Tool is an open-source digital tool developed by the eScience Center aimed at supporting the regulatory framework design process by facilitating the study, analysis, and decision-making through data visualization and interaction.
 
-## Preview
+The web application is running at [https://esi-far.github.io/INA-tool/](https://esi-far.github.io/INA-tool/).
 
-![INA](assets/img/preview.PNG)
+![INA](src/help/canvas.png)
 
-## Status
+## Development
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/StartBootstrap/startbootstrap-sb-admin/master/LICENSE)
+You need [Node.js](https://nodejs.org) >=22 or equivalent to develop the application.
 
-## Download and Installation
+```shell
+# To install dependencies
+npm install
+# To run development server
+# Will print the URL to open in the browser
+npm run dev
+# To build the application,
+# after build host generated dist/ directory on a web server
+npm run build
+# To preview the production build
+# Will print the URL to open in the browser
+npm run preview
+# To format
+npm run format
+# To lint
+npm run lint
+# To type check
+npm run typecheck
+# To run tests, tests are written with vitest and are named `*.test.ts[x]`.
+npm run test
+```
 
-This guide will walk you through the installation process for setting up a web application written in JavaScript and PHP using XAMPP.
+The application is built with
 
-## Prerequisites
-
-Before starting the installation process, make sure you have the following installed:
-
-- [XAMPP](https://www.apachefriends.org/index.html) - A local development environment that includes Apache, MySQL, PHP, and Perl.
-- A modern web browser like Chrome, Firefox, or Safari.
-
-## Installation Steps
-
-1. **Download and Install XAMPP:**
-   - Visit the [XAMPP website](https://www.apachefriends.org/index.html) and download the appropriate version for your operating system (Windows, macOS, or Linux).
-   - Follow the installation instructions provided on the website or in the downloaded package.
-
-2. **Start XAMPP:**
-   - Once installed, start the XAMPP control panel.
-   - Start the Apache service by clicking on the 'Start' buttons next to them (MySQL is not needed in the current version).
-
-3. **Clone the Repository:**
-   - Clone the repository of your web application from GitHub to your local machine using the following command in your terminal or command prompt:
-     ```
-     git clone <https://github.com/ESI-FAR/INA-tool.git>
-     ```
-   
-4. **Move Files to XAMPP's `htdocs` Directory:**
-   - Locate the `htdocs` directory within your XAMPP installation directory.
-   - Move all the files and folders of your web application into the `htdocs` directory.
-
-5. **Access Your Web App:**
-   - Open your web browser and navigate to `http://localhost/` followed by the directory where your web application files are located (e.g. http://localhost/INA/).
-   - You should now be able to access and interact with your web application.
-
-### Dev container
-
-If you are using Visual Studio Code, you can use the [dev container extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to run the application. The dev container is a pre-configured environment that includes all the necessary tools and dependencies to run the application.
-
-When repository is opened in a devcontainer the website is running on http://localhost:8080 .
-Any changes to non-php code requires running `npm run build` to update the website.
-
-## Troubleshooting
-
-- If you encounter any issues during the installation process, refer to the [XAMPP documentation](https://www.apachefriends.org/documentation.html) or search for solutions online.
-- Ensure that Apache service is running in the XAMPP control panel.
-![image](https://github.com/ESI-FAR/INA-tool/assets/150127923/bdeec688-1cae-4152-9b19-ab1b3b2375cd)
-
-## Conclusion
-
-Congratulations! You have successfully installed and set up the INA web application using XAMPP. You can now start developing and testing your application locally.
-
-## Usage
-
-### Basic Usage
-
-work in progress...
-
-
-### Advanced Usage
-
-work in progress...
+- [TypeScript](https://www.typescriptlang.org/) as programming language
+- [React](https://reactjs.org/) for user interface
+- [Vite](https://vitejs.dev/) as build tool
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [React Flow](https://reactflow.dev/) for graph visualization/editing
+- [Shadcn/ui](https://ui.shadcn.com/) as component library
+- [XSLX](https://sheetjs.com/) and [d3](https://d3js.org/) for parsing and writing files.
+- [Zod](https://zod.dev/) for validation
+- [Zustand](https://zustand-demo.pmnd.rs/) for state management
+- [Prettier](https://prettier.io/) for code formatting
+- [ESLint](https://eslint.org/) for linting
+- [Vitest](https://vitest.dev/) for unit testing
 
 ## Bugs and Issues
 
 Have a bug or an issue with this software? [Open a new issue](https://github.com/ESI-FAR/INA-tool/issues) here on GitHub or drop a message to us.
 
+## AI Disclaimer
 
-## Copyright and License
-
-work in progress...
+The documentation/software code in this repository has been partly generated and/or refined using
+GitHub CoPilot. All AI-output has been verified for correctness,
+accuracy and completeness, adapted where needed, and approved by the author.
