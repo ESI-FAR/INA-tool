@@ -17,7 +17,6 @@ export function ConnectionLine({
   const { fromHandle, toHandle } = useConnection();
   const stroke = useMemo(() => {
     const color = fromHandle?.id || toHandle?.id;
-    // TODO sometime wrong color, when while dragging hovering over other driven handle
     const stroke = color
       ? strokeColor[color as keyof typeof strokeColor]
       : "stroke-foreground";
