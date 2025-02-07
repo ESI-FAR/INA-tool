@@ -180,9 +180,10 @@ function CompactStatementNode({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const statementBackground = {
-  formal: "bg-sky-100 dark:bg-sky-600",
-  informal: "bg-yellow-100 dark:bg-yellow-600"
+  formal: "bg-sky-100/30 dark:bg-sky-600/30",
+  informal: "bg-yellow-100/30 dark:bg-yellow-600/30",
 } as const;
 
 export function StatementNode({

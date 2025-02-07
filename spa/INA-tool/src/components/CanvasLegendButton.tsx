@@ -35,20 +35,10 @@ export function CanvasLegendButton() {
           <StatementLegend width="22rem" height="8rem" />
 
           <ul className="flex flex-row gap-1">
-            <li
-              className={cn(
-                "rounded p-1",
-                statementBackground["formal"],
-              )}
-            >
+            <li className={cn("rounded p-1", statementBackground["formal"])}>
               Formal
             </li>
-            <li
-              className={cn(
-                "rounded p-1",
-                statementBackground["informal"],
-              )}
-            >
+            <li className={cn("rounded p-1", statementBackground["informal"])}>
               Informal
             </li>
           </ul>
