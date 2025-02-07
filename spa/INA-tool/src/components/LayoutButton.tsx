@@ -11,6 +11,8 @@ import { store } from "@/lib/store";
 
 const elk = new ELK();
 
+// TODO make layout multi handle aware
+// see https://reactflow.dev/examples/layout/elkjs-multiple-handles
 const layoutOptions = {
   "elk.algorithm": "layered",
   "elk.layered.spacing.nodeNodeBetweenLayers": 100,
