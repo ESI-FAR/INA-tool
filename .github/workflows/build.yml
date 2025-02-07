@@ -2,14 +2,8 @@ name: Lint
 
 on:
   # Runs on pushes targeting the default branch
-  # TODO change to main branch once PR is merged
   push:
-    branches: ["react-flow"]
-
-defaults:
-  run:
-    # TODO remove once PR is merged
-    working-directory: spa/INA-tool
+    branches: ["main"]
 
 jobs:
   # Single deploy job since we're just deploying
