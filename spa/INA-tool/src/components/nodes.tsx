@@ -369,13 +369,101 @@ export function InDirectObjectNode({
 
 const drivenConnectionHandleStye = { width: 10, height: 10 } as const;
 
+function Hexagon({
+  children,
+  className,
+  borderClassName,
+}: {
+  children: React.ReactNode;
+  className: string;
+  borderClassName: string;
+}) {
+  // Extracted from https://html-polygon.com/play
+  // TODO make rectangle inside hexagon wider
+  return (
+    <div
+      className={className}
+      style={{
+        clipPath:
+          "polygon(75% 6.699%, 25% 6.699%, 0% 50%, 25% 93.301%, 75% 93.301%, 100% 50%)",
+      }}
+    >
+      <div className="relative h-full w-full overflow-hidden">
+        <div
+          className={cn("absolute h-full w-full", borderClassName)}
+          style={{
+            clipPath:
+              "polygon(74.423% 7.699%, 25.577% 7.699%, 1.155% 50%, 25.577% 92.301%, 74.423% 92.301%, 98.845% 50%, 74.423% 7.699%, 74.423% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 74.423% 0%)",
+          }}
+        />
+        <div style={{ height: "12.699%" }} />
+        <div
+          className="float-left clear-left mx-0"
+          style={{
+            height: "37.301%",
+            width: "28.464%",
+            shapeOutside: "polygon(0% 0%, 100% 0%, 24.34% 100%, 0% 100%)",
+          }}
+        />
+        <div
+          className="float-right clear-right mx-0"
+          style={{
+            height: "37.301%",
+            width: "28.464%",
+            shapeOutside: "polygon(0% 0%, 100% 0%, 100% 100%, 75.66% 100%)",
+          }}
+        />
+        <div
+          className="float-left clear-left mx-0"
+          style={{
+            height: "37.301%",
+            width: "28.464%",
+            shapeOutside: "polygon(0% 0%, 24.34% 0%, 100% 100%, 0% 100%)",
+          }}
+        />
+        <div
+          className="float-right clear-right mx-0"
+          style={{
+            height: "37.301%",
+            width: "28.464%",
+            shapeOutside: "polygon(75.66% 0%, 100% 0%, 100% 100%, 0% 100%)",
+          }}
+        />
+        <div
+          className="float-left clear-left w-full"
+          style={{
+            height: "12.699%",
+            shapeOutside: "polygon(0px 0px, 100% 0px, 100% 100%, 0px 100%)",
+          }}
+        />
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function ActivationConditionNode({
   data,
   isConnectable,
 }: NodeProps<ActivationConditionNode>) {
+  /**
+   * <div id="html-polygon"
+   * class="html-polygon html-polygon-sides-6" style="height: 425px;width:
+   * 425px;background-color: rgb(204, 204, 204);color: rgb(0, 0, 0);text-align: justify;
+   * clip-path: polygon(50% 0%, 6.699% 25%, 6.699% 75%, 50% 100%, 93.301% 75%, 93.301% 25%);">
+   * <div id="html-polygon-border-container"
+   * class="html-polygon-border-container" style="height: 100%; position: relative; width: 100%; overflow: hidden;">
+   * <div id="html-polygon-border" class="html-polygon-border"
+   * style="background-color: rgb(0, 0, 0); position: absolute; height: 100%; width: 100%;
+   * clip-path: polygon(50% 1.155%, 7.699% 25.577%, 7.699% 74.423%, 50% 98.845%, 92.301% 74.423%, 92.301% 25.577%, 50% 1.155%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);">
+   * </div><div id="html-polygon-buffer-top" class="html-polygon-buffer html-polygon-buffer-top" style="height: 6.928%;"></div><div id="html-polygon-buffer-side-0" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 25.398% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-1" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 74.602% 100%);"></div><div id="html-polygon-buffer-side-2" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 43.072%; width: 12.699%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-3" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 43.072%; width: 12.699%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-4" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 25.398% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-5" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(74.602% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-bottom" class="html-polygon-buffer html-polygon-buffer-bottom" style="height: 6.928%; width: 100%; clear: left; float: left; shape-outside: polygon(0px 0px, 100% 0px, 100% 100%, 0px 100%);"></div>Consequat ad esse mollit nostrud mollit. Exercitation exercitation nostrud ut est aliqua laboris velit. Reprehenderit nostrud tempor elit adipisicing culpa officia. Sunt do aliqua minim consectetur consequat amet. In consequat.</div></div>
+   */
+
   return (
-    <div className="border-1 max-w-48 rounded-xl border border-foreground p-2">
-      <div className="h-fit w-fit">{data.label}</div>
+    <>
+      <Hexagon className="text-foreground" borderClassName="bg-foreground">
+        <div className="max-w-48 px-12 py-1">{data.label}</div>
+      </Hexagon>
       <Handle
         type="source"
         id="statement"
@@ -398,7 +486,7 @@ export function ActivationConditionNode({
         position={Position.Top}
         isConnectable={isConnectable}
       />
-    </div>
+    </>
   );
 }
 
