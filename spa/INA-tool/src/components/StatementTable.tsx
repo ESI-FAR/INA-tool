@@ -229,7 +229,7 @@ export function StatementTable() {
     }
     const newStatement: Statement = {
       Id: newId.toString(),
-      "Statement Type": "",
+      "Statement Type": "formal",
       Attribute: "",
       Deontic: "",
       Aim: "",
