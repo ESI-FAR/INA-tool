@@ -13,19 +13,19 @@ authors:
     family-names: Rijn
     email: s.vanrijn@esciencecenter.nl
     affiliation: Netherlands eScience Center
-    orcid: 'https://orcid.org/0000-0001-6159-041X'
+    orcid: "https://orcid.org/0000-0001-6159-041X"
   - given-names: Ermanno
     name-particle: Lo
     family-names: Cascio
     email: ermanno.locascio@esciencecenter.nl
     affiliation: Netherlands eScience Center
-    orcid: 'https://orcid.org/0000-0002-7257-8034'
+    orcid: "https://orcid.org/0000-0002-7257-8034"
   - given-names: Stefan
     family-names: Verhoeven
     affiliation: "Netherlands eScience Center"
     orcid: "https://orcid.org/0000-0002-5821-2060"
-repository-code: 'https://github.com/ESI-FAR/INA-tool'
-url: 'https://esi-far.github.io/INA-tool/'
+repository-code: "https://github.com/ESI-FAR/INA-tool"
+url: "https://esi-far.github.io/INA-tool/"
 keywords:
   - Institutional Network Analysis
   - Institutional Grammar

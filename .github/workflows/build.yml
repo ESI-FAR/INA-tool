@@ -4,6 +4,8 @@ on:
   # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   # Single deploy job since we're just deploying
@@ -16,7 +18,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'        
+          cache: "npm"
       - name: Install dependencies
         run: npm ci
       # TODO run lint, format, typecheck, test, and build in parallel
