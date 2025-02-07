@@ -31,7 +31,7 @@ export function procesStatement(
     position: { x: 0, y: 0 },
     style: {
       // TODO make smaller based on content
-      width: 1200,
+      width: 940,
       height: DEFAULT_STATEMENT_HEIGHT,
     },
   };
