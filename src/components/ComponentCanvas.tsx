@@ -15,21 +15,34 @@ import { nodeTypes } from "./nodes";
 import { CanvasSearch } from "./CanvasSearch";
 import "@xyflow/react/dist/style.css";
 import { useConnections } from "@/hooks/use-connections";
-import { Connection } from "@/lib/schema";
+import {
+  Connection,
+  DriverType,
+  SourceNodeType,
+  TargetNodeType,
+} from "@/lib/schema";
 
 function mapReactFlowConnectionToINAConnection(
   connection: ReactFlowConnection,
 ): Connection {
   const nodes = store.getState().nodes;
-  const sourceNode = nodes.find((node) => node.id === connection.source)!;
-  const targetNode = nodes.find((node) => node.id === connection.target)!;
-  debugger;
+  const sourceNode = nodes.find((node) => node.id === connection.source);
+  const targetNode = nodes.find((node) => node.id === connection.target);
+  if (!sourceNode || !sourceNode.parentId) {
+    throw new Error(`Source node ${connection.source} not found`);
+  }
+  if (!targetNode || !targetNode.parentId) {
+    throw new Error(`Target node ${connection.target} not found`);
+  }
+  if (!connection.targetHandle) {
+    throw new Error("Connection targetHandle is required");
+  }
   return {
-    source_statement: sourceNode.parentId!,
-    source_node: connection.sourceHandle,
-    target_statement: targetNode.parentId!,
-    target_node: connection.targetHandle,
-    driver: connection.targetHandle,
+    source_statement: sourceNode.parentId,
+    source_node: SourceNodeType.parse(sourceNode.type),
+    target_statement: targetNode.parentId,
+    target_node: TargetNodeType.parse(targetNode.type),
+    driver: DriverType.parse(connection.targetHandle.replace("-driven", "")),
   };
 }
 
@@ -58,7 +71,7 @@ export function ComponentCanvas() {
   return (
     <div className="h-full">
       <div className="flex justify-between">
-        <h1 className="text-xl">Canvas</h1>
+        <h1 className="text-xl">Component level network</h1>
         <CanvasSearch />
       </div>
       <div className="h-full w-full">
