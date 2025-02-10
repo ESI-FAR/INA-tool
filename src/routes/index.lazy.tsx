@@ -1,19 +1,14 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  return (
-    <>
-      <h1 className="text-center text-4xl font-bold">
-        Welcome to the INA tool
-      </h1>
-      <div>
-        <p>First time users can load the example.</p>
-        <p></p>
-      </div>
-    </>
-  );
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate({ to: "/canvas/comp" });
+  }, [navigate]);
+  return null;
 }

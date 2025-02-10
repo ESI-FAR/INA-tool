@@ -30,6 +30,18 @@ The statement graph should look like:
                                                        |                    |                
                                                        v                    v
                                             ExecutionConstraintNode?   InDirectObjectNode?
+
+
+Or in mermaid format:
+
+```mermaid
+graph LR;
+    ac{{Activation Condition}}-->att((Attribute))
+    att-->|Deontic|aim(Aim)
+    aim-->do([Direct Object])
+    do-->io([Indirect Object])
+    aim-->ec{{Execution Constraint}}
+```
 */
 
 // Keep in sync with colors in Hexagon.borderClassName

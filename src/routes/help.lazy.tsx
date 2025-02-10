@@ -6,6 +6,7 @@ import {
 } from "@/lib/schema";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import {
+  AlignVerticalDistributeCenterIcon,
   CameraIcon,
   DownloadIcon,
   Maximize2Icon,
@@ -13,6 +14,7 @@ import {
   PencilIcon,
   PlusIcon,
   SaveIcon,
+  SearchIcon,
   TrashIcon,
   Undo2Icon,
   UploadIcon,
@@ -27,7 +29,9 @@ export const Route = createLazyFileRoute("/help")({
 function RouteComponent() {
   return (
     <main className="w-full">
-      <h1 className="text-2xl">Welcome to INA TOOL</h1>
+      <h1 className="text-2xl">
+        Welcome to Institutional Network Analyis (INA) tool
+      </h1>
 
       <h3 className="py-4 text-xl">Header</h3>
       <ul className="list-inside list-disc">
@@ -83,7 +87,6 @@ function RouteComponent() {
             Source node type, must be one of{" "}
             {SourceNodeType.options.map((o) => `"${o}"`).join(", ")}
           </li>
-          <li>Source value, the value of the node. Can be empty.</li>
           <li>Target statement, id of target statement</li>
           <li>
             Target node type, must be one of{" "}
@@ -120,13 +123,14 @@ function RouteComponent() {
         </li>
       </ul>
 
-      <h3 className="py-4 text-xl">Canvas page</h3>
+      <h3 className="py-4 text-xl">Component level network page</h3>
       <p>
         The{" "}
-        <Link className="underline" to="/">
-          canvas page
+        <Link className="underline" to="/canvas/comp">
+          component network page
         </Link>{" "}
-        visualizes the statements and their connections as a graph network.
+        visualizes the statements, their inner components and their connections
+        as a graph network.
       </p>
       <ul className="list-inside list-disc">
         <li>
@@ -135,11 +139,10 @@ function RouteComponent() {
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
-          out. Or use the mouse wheel to zoom in or out. The minimap on the
-          bottom right side help you orientate.
+          out. Or use the mouse wheel to zoom in or out.
         </li>
         <li>
-          <strong>Draw inter-statements connection:</strong>
+          <strong>Draw connection between statements:</strong>
           <ol className="ml-6 list-inside list-decimal">
             <li>Find a node you want to start from.</li>
             <li>
@@ -151,12 +154,6 @@ function RouteComponent() {
               connection can be made it will snap in place.
             </li>
           </ol>
-        </li>
-        <li>
-          <strong>Compact:</strong> To compact the graph use the compact switch.
-          This will render a statement as a single node. Useful for large
-          graphs. When turning off compact mode the layout can be a mess, you
-          can clean it up by using the layout button.
         </li>
         <li>
           <strong>Layout:</strong> To layout the grap use a layout algorithm use
@@ -174,6 +171,92 @@ function RouteComponent() {
           <strong>Resize statement:</strong> The bottom right corner has a{" "}
           <Maximize2Icon className="inline" /> which can be dragged to resize
           the statement box.
+        </li>
+        <li>
+          <strong>Search:</strong> Click the <SearchIcon className="inline" />{" "}
+          search button and write text in text box. Click on a hit to center on
+          that component.
+        </li>
+        <li>
+          <strong>Legend:</strong> Click the{" "}
+          <AlignVerticalDistributeCenterIcon /> Legend button to see a legend of
+          the network. The type components of a statement are shown as a
+          sub-graph. The colors of the statements and connections are explained.
+        </li>
+
+        <li>
+          <strong>Minimap:</strong>
+          The minimap in the lower right corner gives you an overview of the
+          network. You can drag the rectangle to navigate the network. You can
+          click to center the network there.
+        </li>
+      </ul>
+
+      <h3 className="py-4 text-xl">Statement level network page</h3>
+      <p>
+        The{" "}
+        <Link className="underline" to="/canvas/comp">
+          component network page
+        </Link>{" "}
+        visualizes the statements and their connections as a graph network. The
+        components of a statement are not shown, so the network more compact.
+      </p>
+      <ul className="list-inside list-disc">
+        <li>
+          <strong>Dragging:</strong> Press left mouse key and start dragging the
+          statement or a inner statement node or the canvas.
+        </li>
+        <li>
+          <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
+          out. Or use the mouse wheel to zoom in or out.
+        </li>
+        <li>
+          <strong>Draw connection between statements:</strong>
+          <ol className="ml-6 list-inside list-decimal">
+            <li>Find a node you want to start from.</li>
+            <li>
+              Press left mouse button on colored circle to start making a
+              connection.
+            </li>
+            <li>
+              Drag the mouse to same colored circle and release mouse key. If a
+              connection can be made it will snap in place.
+            </li>
+          </ol>
+        </li>
+        <li>
+          <strong>Layout:</strong> To layout the grap use a layout algorithm use
+          the layout button at the top right side on the canvas.
+        </li>
+        <li>
+          <strong>Take screenshot:</strong> Download your canvas as PNG image by
+          clicking the{" "}
+          <i>
+            <CameraIcon className="inline" /> screenshot
+          </i>{" "}
+          button at the top right side on the canvas.
+        </li>
+        <li>
+          <strong>Resize statement:</strong> The bottom right corner has a{" "}
+          <Maximize2Icon className="inline" /> which can be dragged to resize
+          the statement box.
+        </li>
+        <li>
+          <strong>Search:</strong> Click the <SearchIcon className="inline" />{" "}
+          search button and write text in text box. Click on a hit to center on
+          that statement.
+        </li>
+        <li>
+          <strong>Legend:</strong> Click the{" "}
+          <AlignVerticalDistributeCenterIcon /> Legend button to see a legend of
+          the network. The colors of the statements and connections are
+          explained.
+        </li>
+        <li>
+          <strong>Minimap:</strong>
+          The minimap in the lower right corner gives you an overview of the
+          network. You can drag the rectangle to navigate the network. You can
+          click to center the network there.
         </li>
       </ul>
 
