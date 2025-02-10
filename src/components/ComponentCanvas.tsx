@@ -59,7 +59,8 @@ export function ComponentCanvas() {
     return (
       <div className="flex h-[800px] w-full items-center justify-center">
         <h1 className="text-3xl text-gray-500">
-          No statements or connections, please upload a statements file or load the example.
+          No statements or connections, please upload a statements file or load
+          the example.
         </h1>
       </div>
     );

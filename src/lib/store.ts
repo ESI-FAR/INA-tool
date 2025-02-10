@@ -1,11 +1,6 @@
 import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { Statement, Conflict, Connection } from "./schema";
-import {
-  initialProjectName,
-  saveProjectName,
-  setupStorePersistence,
-} from "./persist";
 
 export type State = {
   projectName: string;
@@ -22,6 +17,31 @@ export type Action = {
 };
 
 export type Store = State & Action;
+
+function initialProjectName() {
+  // Initialize project name from URL query parameter
+  return typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search).get("project") || ""
+    : "";
+}
+
+function saveProjectName(projectName: string, prevProjectName: string) {
+  if (prevProjectName === projectName) {
+    return;
+  }
+  if (prevProjectName !== "" && prevProjectName !== projectName) {
+    localStorage.removeItem(`ina-project-${prevProjectName}`);
+  }
+  if (typeof window !== "undefined") {
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set("project", projectName);
+    window.history.replaceState(
+      {},
+      "",
+      `?${searchParams.toString()}${window.location.hash}`,
+    );
+  }
+}
 
 export const store = createStore<Store>()(
   subscribeWithSelector((set, get) => ({
@@ -44,5 +64,3 @@ export const store = createStore<Store>()(
     },
   })),
 );
-
-setupStorePersistence(store);

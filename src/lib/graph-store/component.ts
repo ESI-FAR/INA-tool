@@ -88,12 +88,10 @@ function compareStatement(a: Statement, b: Statement): boolean {
 }
 
 function onStatementsChange(statements: Statement[]) {
-  const nonStatementNodes = store
+  const nonStatementNodes = store.getState().nodes.filter(isConflictGroupNode);
+  const drivenConnectionEdges = store
     .getState()
-    .nodes.filter((n) => !isConflictGroupNode(n));
-  const nonInnerStatementEdges = store
-    .getState()
-    .edges.filter((e) => !isInnerStatementEdge(e));
+    .edges.filter(isDrivenConnectionEdge);
   const nodeLookup = new Map<string, StatementRelatedNode>(
     store
       .getState()
@@ -167,7 +165,7 @@ function onStatementsChange(statements: Statement[]) {
   }
 
   store.getState().setNodes([...nonStatementNodes, ...newNodes]);
-  store.getState().setEdges([...nonInnerStatementEdges, ...newEdges]);
+  store.getState().setEdges([...drivenConnectionEdges, ...newEdges]);
 }
 
 function connection2id(connection: Connection): string {

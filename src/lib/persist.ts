@@ -1,28 +1,13 @@
-import { StoreApi } from "zustand";
-import type { Store } from "./store";
+import { store } from "./store";
+import { json2project, project2json } from "./project2json";
 
-export function initialProjectName() {
-  // Initialize project name from URL query parameter
-  return typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search).get("project") || ""
-    : "";
-}
+const saveState = () => {
+  const state = store.getState();
+  const value = project2json();
+  localStorage.setItem(`ina-project-${state.projectName}`, value);
+};
 
-export function saveProjectName(projectName: string, prevProjectName: string) {
-  if (prevProjectName === projectName) {
-    return;
-  }
-  if (prevProjectName !== "" && prevProjectName !== projectName) {
-    localStorage.removeItem(`ina-project-${prevProjectName}`);
-  }
-  if (typeof window !== "undefined") {
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set("project", projectName);
-    window.history.replaceState({}, "", `?${searchParams.toString()}`);
-  }
-}
-
-export function setupStorePersistence(store: StoreApi<Store>) {
+export function setupStorePersistence() {
   // Skip if not in browser
   if (typeof window === "undefined") return;
 
@@ -32,28 +17,10 @@ export function setupStorePersistence(store: StoreApi<Store>) {
   // Load initial state from localStorage
   const savedData = localStorage.getItem(`ina-project-${projectName}`);
 
-  // TODO reimplement
-  return;
   if (savedData) {
-    const { nodes, edges, isCompact } = JSON.parse(savedData);
-    store.setState({ nodes, edges, isCompact });
+    // Restore project from localStorage
+    json2project(savedData, projectName);
   }
-
-  const saveState = () => {
-    const state = store.getState();
-    if (!state.nodes) {
-      return;
-    }
-    const dataToSave = {
-      nodes: state.nodes,
-      edges: state.edges,
-      isCompact: state.isCompact,
-    };
-    localStorage.setItem(
-      `ina-project-${state.projectName}`,
-      JSON.stringify(dataToSave),
-    );
-  };
 
   // Save on tab close/visibility change
   document.addEventListener("visibilitychange", () => {

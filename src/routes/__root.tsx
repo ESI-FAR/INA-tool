@@ -15,9 +15,10 @@ import {
   retainSearchParams,
 } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
-// Make sure subscribes to store are done
-import "../lib/graph-store/statement";
-import "../lib/graph-store/component";
+
+import { setupStorePersistence } from "@/lib/persist";
+
+setupStorePersistence();
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"

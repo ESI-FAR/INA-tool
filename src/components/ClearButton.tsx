@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 function removeAllData() {
   const projectName = store.getState().projectName;
   localStorage.removeItem(`ina-project-${projectName}`);
-  window.history.replaceState({}, "", "?project=");
+  window.history.replaceState({}, "", "?project=" + window.location.hash);
   store.setState({
     projectName: "",
     statements: [],
