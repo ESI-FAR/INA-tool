@@ -166,8 +166,8 @@ function onStatementsChange(statements: Statement[]) {
     }
   }
 
-  store.getState().setNodes([...nonStatementNodes]);
-  store.getState().setEdges([...nonInnerStatementEdges]);
+  store.getState().setNodes([...nonStatementNodes, ...newNodes]);
+  store.getState().setEdges([...nonInnerStatementEdges, ...newEdges]);
 }
 
 function connection2id(connection: Connection): string {
@@ -193,7 +193,7 @@ function onConnectionsChange(connections: Connection[]) {
       const newEdge = buildEdge(
         connection.source_statement + "-" + connection.source_node,
         connection.target_statement + "-" + connection.target_node,
-        connection.driver as Exclude<INAEdge["type"], undefined>,
+        (connection.driver + "-driven") as Exclude<INAEdge["type"], undefined>,
       ) as DrivenConnectionEdge;
       drivenConnectionEdges.push(newEdge);
     }

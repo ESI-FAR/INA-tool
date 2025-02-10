@@ -62,7 +62,7 @@ export function isConflictingEdge(
   return edge.type === "conflict";
 }
 
-function connectionMarkerEnd(type: keyof typeof drivenColors) {
+export function connectionMarkerEnd(type: keyof typeof drivenColors) {
   return {
     type: MarkerType.Arrow,
     width: 10,
