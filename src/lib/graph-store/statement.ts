@@ -78,7 +78,6 @@ function onStatementsChange(statements: Statement[]) {
       node.data = {
         raw: statement,
         label: statement.Id!,
-        formalism: statement["Statement Type"],
       };
       newNodes.push(node);
     } else {
@@ -89,7 +88,6 @@ function onStatementsChange(statements: Statement[]) {
         data: {
           raw: statement,
           label: statement.Id!,
-          formalism: statement["Statement Type"],
         },
         position: { x: 0, y },
       };

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const StatementType = z.enum(["formal", "informal"]);
+export type StatementType = z.infer<typeof StatementType>;
 
 export const TypeOfObject = z.enum(["", "animate", "inanimate"]);
 

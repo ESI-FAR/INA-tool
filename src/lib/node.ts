@@ -3,7 +3,7 @@ import { CSSProperties } from "react";
 import { Statement } from "./schema";
 
 export type StatementNode = Node<
-  { raw: Statement; label: string; formalism?: string },
+  { raw: Statement; label: string },
   "statement"
 > & { uncompactStyle?: CSSProperties };
 export type AttributeNode = Node<{ label: string }, "attribute">;
@@ -25,10 +25,7 @@ export type ExecutionConstraintNode = Node<
   "execution-constraint"
 >;
 
-export type ConflictGroupNode = Node<
-  { formal?: string; informal?: string },
-  "conflict"
->;
+export type ConflictGroupNode = Node<Record<string, never>, "conflict">;
 
 export type InnerStatementNode =
   | AttributeNode

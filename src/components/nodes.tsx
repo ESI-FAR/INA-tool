@@ -224,7 +224,8 @@ export const statementBackground = {
 } as const;
 
 export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
-  const color = statementBackground[data.raw["Statement Type"]];
+  const formalism = data.raw["Statement Type"];
+  const color = statementBackground[formalism];
   return (
     <fieldset
       className={cn(
@@ -237,7 +238,7 @@ export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
         <Maximize2Icon className="absolute bottom-2 right-2 h-2 w-2 rotate-90" />
       </NodeResizeControl>
       <legend>
-        {data.formalism === "formal" ? "F" : "I"}
+        {formalism === "formal" ? "F" : "I"}
         {data.label}
       </legend>
     </fieldset>

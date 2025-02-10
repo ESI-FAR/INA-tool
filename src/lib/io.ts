@@ -28,7 +28,7 @@ export function procesStatement(
   const statementNode: StatementNode = {
     id,
     type: "statement",
-    data: { raw: statement, label: id, formalism: statement["Statement Type"] },
+    data: { raw: statement, label: id },
     position: { x: 0, y: 0 },
     style: {
       // TODO make smaller based on content
