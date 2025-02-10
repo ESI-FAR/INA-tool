@@ -31,6 +31,13 @@ The statement graph should look like:
                                             ExecutionConstraintNode?   InDirectObjectNode?
 */
 
+// Keep in sync with colors in Hexagon.borderClassName
+// hexagon uses background instead border
+const selectedClassName = (v: boolean | undefined) =>
+  v
+    ? "border-slate-900 dark:border-slate-100"
+    : "border-slate-400 dark:border-slate-400 hover:border-slate-900 dark:hover:border-slate-100";
+
 function SourceHandles({
   isConnectable,
   statement,
@@ -197,10 +204,11 @@ export function CollapsedStatementNode({
       {/* TODO only show conflict handles if the conflict editing is enabled */}
       <ConflictHandles isConnectable={isConnectable} />
       <div
-        className={cn("min-w-12 cursor-pointer rounded border-2 p-1", color, {
-          "border-slate-400": !selected,
-          "border-slate-900": selected,
-        })}
+        className={cn(
+          "min-w-12 cursor-pointer rounded border-2 p-1",
+          color,
+          selectedClassName(selected),
+        )}
       >
         {statement["Statement Type"] === "formal" ? "F" : "I"}
         {statement.Id}
@@ -215,13 +223,14 @@ export const statementBackground = {
   informal: "bg-yellow-100/30 dark:bg-yellow-600/30",
 } as const;
 
-export function StatementNode({ data }: NodeProps<StatementNode>) {
+export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
   const color = statementBackground[data.raw["Statement Type"]];
   return (
     <fieldset
       className={cn(
         "h-full w-full rounded-md border border-gray-300 p-4 shadow-md dark:border-gray-700",
         color,
+        selectedClassName(selected),
       )}
     >
       <NodeResizeControl minWidth={100} minHeight={50}>
@@ -238,9 +247,15 @@ export function StatementNode({ data }: NodeProps<StatementNode>) {
 export function AttributeNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<AttributeNode>) {
   return (
-    <div className="border-1 max-w-48 rounded-full border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 rounded-full border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -266,9 +281,14 @@ export function AttributeNode({
   );
 }
 
-export function AimNode({ data, isConnectable }: NodeProps<AimNode>) {
+export function AimNode({ data, isConnectable, selected }: NodeProps<AimNode>) {
   return (
-    <div className="border-1 max-w-48 border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -304,9 +324,15 @@ export function AimNode({ data, isConnectable }: NodeProps<AimNode>) {
 export function DirectObjectNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<DirectObjectNode>) {
   return (
-    <div className="border-1 max-w-48 rounded-sm border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 rounded-sm border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -348,9 +374,15 @@ export function DirectObjectNode({
 export function InDirectObjectNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<InDirectObjectNode>) {
   return (
-    <div className="border-1 max-w-48 rounded-sm border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 rounded-sm border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -386,18 +418,26 @@ const drivenConnectionHandleStye = { width: 10, height: 10 } as const;
 
 function Hexagon({
   children,
-  className,
-  borderClassName,
+  selected,
 }: {
   children: React.ReactNode;
-  className: string;
-  borderClassName: string;
+  selected: boolean | undefined;
 }) {
   // Extracted from https://html-polygon.com/play
   // TODO make rectangle inside hexagon wider
+
+  // Keep in sync with colors in selectedClassName
+  const borderClassName = useMemo(
+    () =>
+      selected
+        ? "bg-slate-900 dark:bg-slate-100"
+        : "bg-slate-400 dark:bg-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-slate-100",
+    [selected],
+  );
+
   return (
     <div
-      className={className}
+      className="group"
       style={{
         clipPath:
           "polygon(75% 6.699%, 25% 6.699%, 0% 50%, 25% 93.301%, 75% 93.301%, 100% 50%)",
@@ -460,6 +500,7 @@ function Hexagon({
 export function ActivationConditionNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<ActivationConditionNode>) {
   /**
    * <div id="html-polygon"
@@ -476,7 +517,7 @@ export function ActivationConditionNode({
 
   return (
     <>
-      <Hexagon className="text-foreground" borderClassName="bg-foreground">
+      <Hexagon selected={selected}>
         <div className="max-w-48 px-12 py-1">{data.label}</div>
       </Hexagon>
       <Handle
@@ -508,9 +549,15 @@ export function ActivationConditionNode({
 export function ExecutionConstraintNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<ExecutionConstraintNode>) {
   return (
-    <div className="border-1 max-w-48 rounded-xl border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 rounded-xl border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
