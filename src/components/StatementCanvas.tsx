@@ -1,9 +1,9 @@
 import { store } from "@/lib/graph-store/statement";
-import { Controls, MiniMap, Panel, ReactFlow } from "@xyflow/react";
+import { Controls, ReactFlow } from "@xyflow/react";
 import { Connection as ReactFlowConnection } from "@xyflow/react";
 import { useStore } from "zustand";
 import { useTheme } from "./theme-provider";
-import { CanvasLegendButton } from "./CanvasLegendButton";
+import { StatementCanvasLegendButton } from "./CanvasLegendButton";
 import { SourcePicker } from "./SourcePicker";
 import { useState } from "react";
 import { ConnectionLine } from "./ConnectionLine";
@@ -18,6 +18,10 @@ import { CollapsedStatementNode } from "./nodes";
 import { useConnections } from "@/hooks/use-connections";
 import { ConnectionWithValues } from "@/lib/schema";
 import { reactFlowConnection2PossibleConnections } from "../lib/reactFlowConnection2PossibleConnections";
+import { ScreenshotButton } from "./ScreenshotButton";
+import { StatementLayoutButton } from "./LayoutButton";
+import { StatementCanvasSearchButton } from "./CanvasSearch";
+import { MyMiniMap } from "./MyMiniMap";
 
 const nodeTypes = {
   statement: CollapsedStatementNode,
@@ -64,6 +68,12 @@ export function StatementCanvas() {
     <div className="h-full w-full">
       <div className="flex justify-between">
         <h1 className="text-xl">Statement level network</h1>
+        <div className="flex gap-1">
+          <StatementCanvasSearchButton />
+          <StatementLayoutButton />
+          <ScreenshotButton />
+          <StatementCanvasLegendButton />
+        </div>
       </div>
       <ReactFlow
         nodes={nodes}
@@ -84,13 +94,8 @@ export function StatementCanvas() {
         colorMode={theme}
         proOptions={{ hideAttribution: true }}
       >
-        <Panel position="top-right" className="flex gap-1">
-          {/* <LayoutButton />
-                      <ScreenshotButton /> */}
-          <CanvasLegendButton />
-        </Panel>
         <Controls />
-        <MiniMap pannable={true} />
+        <MyMiniMap />
       </ReactFlow>
       {possibleConnections.length && (
         <SourcePicker

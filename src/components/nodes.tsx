@@ -20,6 +20,7 @@ import type {
   ActivationConditionNode,
   ExecutionConstraintNode,
   ConflictGroupNode,
+  INANode,
 } from "@/lib/node";
 
 /*
@@ -188,6 +189,7 @@ export function CollapsedStatementNode({
       selected: false,
     });
   }, [statement.Id, updateNode]);
+  const isConflictEditing = false;
   return (
     <>
       {" "}
@@ -202,7 +204,7 @@ export function CollapsedStatementNode({
       <SourceHandles isConnectable={isConnectable} statement={statement} />
       <TargetHandles isConnectable={isConnectable} statement={statement} />
       {/* TODO only show conflict handles if the conflict editing is enabled */}
-      <ConflictHandles isConnectable={isConnectable} />
+      {isConflictEditing ?? <ConflictHandles isConnectable={isConnectable} />}
       <div
         className={cn(
           "min-w-12 cursor-pointer rounded border-2 p-1",
@@ -594,3 +596,15 @@ export const nodeTypes = {
   "activation-condition": ActivationConditionNode,
   "execution-constraint": ExecutionConstraintNode,
 } as const;
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function minimapNodeClassName(node: INANode) {
+  if (node.type === "statement") {
+    if (node.data.raw["Statement Type"] === "formal") {
+      return "!fill-sky-50 dark:!fill-sky-700";
+    } else {
+      return "!fill-yellow-50 dark:!fill-yellow-700";
+    }
+  }
+  return "";
+}

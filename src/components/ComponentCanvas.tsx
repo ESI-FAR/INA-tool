@@ -4,15 +4,13 @@ import { store } from "@/lib/graph-store/component";
 import {
   Connection as ReactFlowConnection,
   Controls,
-  MiniMap,
-  Panel,
   ReactFlow,
 } from "@xyflow/react";
 import { CanvasLegendButton } from "./CanvasLegendButton";
 import { ConnectionLine } from "./ConnectionLine";
 import { edgeTypes } from "./edges";
 import { nodeTypes } from "./nodes";
-import { CanvasSearch } from "./CanvasSearch";
+import { ComponentCanvasSearchButton } from "./CanvasSearch";
 import "@xyflow/react/dist/style.css";
 import { useConnections } from "@/hooks/use-connections";
 import {
@@ -21,6 +19,9 @@ import {
   SourceNodeType,
   TargetNodeType,
 } from "@/lib/schema";
+import { ComponentLayoutButton } from "./LayoutButton";
+import { ScreenshotButton } from "./ScreenshotButton";
+import { MyMiniMap } from "./MyMiniMap";
 
 function mapReactFlowConnectionToINAConnection(
   connection: ReactFlowConnection,
@@ -72,7 +73,12 @@ export function ComponentCanvas() {
     <div className="h-full">
       <div className="flex justify-between">
         <h1 className="text-xl">Component level network</h1>
-        <CanvasSearch />
+        <div className="flex gap-1">
+          <ComponentCanvasSearchButton />
+          <ComponentLayoutButton />
+          <ScreenshotButton />
+          <CanvasLegendButton />
+        </div>
       </div>
       <div className="h-full w-full">
         <ReactFlow
@@ -96,14 +102,8 @@ export function ComponentCanvas() {
           colorMode={theme}
           proOptions={{ hideAttribution: true }}
         >
-          <Panel position="top-right" className="flex gap-1">
-            {/* <LayoutButton />
-                      <ScreenshotButton /> */}
-
-            <CanvasLegendButton />
-          </Panel>
           <Controls />
-          <MiniMap pannable={true} />
+          <MyMiniMap />
         </ReactFlow>
       </div>
     </div>
