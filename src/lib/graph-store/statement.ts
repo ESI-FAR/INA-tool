@@ -8,6 +8,7 @@ import {
 } from "@xyflow/react";
 import {
   ConflictingEdge,
+  connectionMarkerEnd,
   DrivenConnectionEdge,
   INACompactEdge,
   isConflictingEdge,
@@ -105,7 +106,7 @@ function connection2id(connection: Connection): string {
 
 function onConnectionsChange(connections: Connection[]) {
   // The statement graph has 2 types of edges:
-  // - conflict edges
+  // - conflict edges -> pass through unchanged
   // - driven connection edges
   const conflictEdges = store.getState().edges.filter(isConflictingEdge);
   const edgeIds = new Map(
@@ -136,6 +137,7 @@ function onConnectionsChange(connections: Connection[]) {
         sourceHandle: type,
         targetHandle: type,
         type,
+        markerEnd: connectionMarkerEnd(type),
       };
       newEdges.push(edge);
     }
