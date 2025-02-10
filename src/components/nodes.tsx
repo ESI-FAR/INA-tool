@@ -194,6 +194,7 @@ export function CollapsedStatementNode({
     <>
       {" "}
       {/* TODO show statement card in drawer. nice if on hover drawer could be filled? */}
+      {/* TODO when multiple nodes are selected, show the toolbars for all of them */}
       <NodeToolbar
         nodeId={statement.Id}
         position={Position.Right}
