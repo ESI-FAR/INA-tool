@@ -9,7 +9,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@tanstack/react-router";
-import { CircleHelpIcon, HomeIcon, Table2Icon, TableIcon } from "lucide-react";
+import {
+  AlignJustifyIcon,
+  CircleHelpIcon,
+  NetworkIcon,
+  Table2Icon,
+  TableIcon,
+} from "lucide-react";
 import { UploadButton } from "./UploadButton";
 import { DownloadProjectButton } from "./DownloadProjectButton";
 import { LoadExampleButton } from "./LoadExampleButton";
@@ -30,8 +36,8 @@ export function AppSidebar() {
                     to="/canvas/comp"
                     activeProps={{ className: "font-bold" }}
                   >
-                    <HomeIcon />
-                    <span>Component canvas</span>
+                    <AlignJustifyIcon />
+                    <span>Component network</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -41,8 +47,8 @@ export function AppSidebar() {
                     to="/canvas/statement"
                     activeProps={{ className: "font-bold" }}
                   >
-                    <HomeIcon />
-                    <span>Statement canvas</span>
+                    <NetworkIcon />
+                    <span>Statement network</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -53,7 +59,7 @@ export function AppSidebar() {
                     activeProps={{ className: "font-bold" }}
                   >
                     <Table2Icon />
-                    <span>Statements</span>
+                    <span>Statements table</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -64,7 +70,7 @@ export function AppSidebar() {
                     activeProps={{ className: "font-bold" }}
                   >
                     <TableIcon />
-                    <span>Connections</span>
+                    <span>Connections table</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
