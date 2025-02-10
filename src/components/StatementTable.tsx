@@ -4,7 +4,6 @@ import {
   StatementType,
   TypeOfObject,
 } from "@/lib/schema";
-
 import {
   ColumnDef,
   Row,
@@ -16,7 +15,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -70,6 +68,12 @@ const columns: ColumnDef<Statement>[] = [
     },
   },
   {
+    accessorKey: "Activation Condition",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Activation Condition" />
+    ),
+  },
+  {
     accessorKey: "Attribute",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Attribute" />
@@ -85,6 +89,12 @@ const columns: ColumnDef<Statement>[] = [
     accessorKey: "Aim",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Aim" />
+    ),
+  },
+  {
+    accessorKey: "Execution Constraint",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Execution Constraint" />
     ),
   },
   {
@@ -116,18 +126,6 @@ const columns: ColumnDef<Statement>[] = [
     meta: {
       choices: TypeOfObject.options,
     },
-  },
-  {
-    accessorKey: "Activation Condition",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Activation Condition" />
-    ),
-  },
-  {
-    accessorKey: "Execution Constraint",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Execution Constraint" />
-    ),
   },
   {
     accessorKey: "Or Else",
