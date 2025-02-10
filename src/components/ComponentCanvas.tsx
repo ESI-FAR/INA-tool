@@ -6,11 +6,9 @@ import {
   Controls,
   ReactFlow,
 } from "@xyflow/react";
-import { CanvasLegendButton } from "./CanvasLegendButton";
 import { ConnectionLine } from "./ConnectionLine";
 import { edgeTypes } from "./edges";
 import { nodeTypes } from "./nodes";
-import { ComponentCanvasSearchButton } from "./CanvasSearch";
 import "@xyflow/react/dist/style.css";
 import { useConnections } from "@/hooks/use-connections";
 import {
@@ -19,8 +17,6 @@ import {
   SourceNodeType,
   TargetNodeType,
 } from "@/lib/schema";
-import { ComponentLayoutButton } from "./LayoutButton";
-import { ScreenshotButton } from "./ScreenshotButton";
 import { MyMiniMap } from "./MyMiniMap";
 
 function mapReactFlowConnectionToINAConnection(
@@ -63,49 +59,36 @@ export function ComponentCanvas() {
     return (
       <div className="flex h-[800px] w-full items-center justify-center">
         <h1 className="text-3xl text-gray-500">
-          No statements, please upload a statements file or load the example.
+          No statements or connections, please upload a statements file or load the example.
         </h1>
       </div>
     );
   }
 
   return (
-    <div className="h-full">
-      <div className="flex justify-between">
-        <h1 className="text-xl">Component level network</h1>
-        <div className="flex gap-1">
-          <ComponentCanvasSearchButton />
-          <ComponentLayoutButton />
-          <ScreenshotButton />
-          <CanvasLegendButton />
-        </div>
-      </div>
-      <div className="h-full w-full">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          connectionLineComponent={ConnectionLine}
-          isValidConnection={(connection) => {
-            const source = nodes.find((node) => node.id === connection.source)!;
-            const target = nodes.find((node) => node.id === connection.target)!;
-            return (
-              connection.sourceHandle === connection.targetHandle &&
-              source.id !== target.id
-            );
-          }}
-          fitView
-          colorMode={theme}
-          proOptions={{ hideAttribution: true }}
-        >
-          <Controls />
-          <MyMiniMap />
-        </ReactFlow>
-      </div>
-    </div>
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={onConnect}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      connectionLineComponent={ConnectionLine}
+      isValidConnection={(connection) => {
+        const source = nodes.find((node) => node.id === connection.source)!;
+        const target = nodes.find((node) => node.id === connection.target)!;
+        return (
+          connection.sourceHandle === connection.targetHandle &&
+          source.id !== target.id
+        );
+      }}
+      fitView
+      colorMode={theme}
+      proOptions={{ hideAttribution: true }}
+    >
+      <Controls />
+      <MyMiniMap />
+    </ReactFlow>
   );
 }

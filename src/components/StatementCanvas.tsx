@@ -3,7 +3,6 @@ import { Controls, ReactFlow } from "@xyflow/react";
 import { Connection as ReactFlowConnection } from "@xyflow/react";
 import { useStore } from "zustand";
 import { useTheme } from "./theme-provider";
-import { StatementCanvasLegendButton } from "./CanvasLegendButton";
 import { SourcePicker } from "./SourcePicker";
 import { useState } from "react";
 import { ConnectionLine } from "./ConnectionLine";
@@ -18,9 +17,6 @@ import { CollapsedStatementNode } from "./nodes";
 import { useConnections } from "@/hooks/use-connections";
 import { ConnectionWithValues } from "@/lib/schema";
 import { reactFlowConnection2PossibleConnections } from "../lib/reactFlowConnection2PossibleConnections";
-import { ScreenshotButton } from "./ScreenshotButton";
-import { StatementLayoutButton } from "./LayoutButton";
-import { StatementCanvasSearchButton } from "./CanvasSearch";
 import { MyMiniMap } from "./MyMiniMap";
 
 const nodeTypes = {
@@ -58,23 +54,15 @@ export function StatementCanvas() {
     return (
       <div className="flex h-[800px] w-full items-center justify-center">
         <h1 className="text-3xl text-gray-500">
-          No statements, please upload a statements file or load the example.
+          No statements or connections, please upload a statements file or load
+          the example.
         </h1>
       </div>
     );
   }
 
   return (
-    <div className="h-full w-full">
-      <div className="flex justify-between">
-        <h1 className="text-xl">Statement level network</h1>
-        <div className="flex gap-1">
-          <StatementCanvasSearchButton />
-          <StatementLayoutButton />
-          <ScreenshotButton />
-          <StatementCanvasLegendButton />
-        </div>
-      </div>
+    <>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -104,6 +92,6 @@ export function StatementCanvas() {
           onCancel={() => setPossibleConnections([])}
         />
       )}
-    </div>
+    </>
   );
 }
