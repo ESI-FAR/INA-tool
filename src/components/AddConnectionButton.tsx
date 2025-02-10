@@ -34,7 +34,6 @@ import {
 } from "./ui/command";
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
-import { deriveSourceChoices } from "./SourcePicker";
 import { useConnections } from "@/hooks/use-connections";
 
 function DriverField() {
@@ -290,6 +289,76 @@ function TargetStatementField({ statements }: { statements: Statement[] }) {
       )}
     />
   );
+}
+
+interface SourceChoice {
+  type: string;
+  label: string;
+  value: string;
+}
+
+function deriveSourceChoices(statement: Statement, type: string) {
+  const choices: SourceChoice[] = [];
+  const id = statement.Id!;
+  // for each type return choice if it is present
+  if (type === "actor-driven") {
+    if (
+      statement["Direct Object"] &&
+      statement["Type of Direct Object"] === "animate"
+    ) {
+      choices.push({
+        type: id + "-direct-object",
+        label: "Direct Object",
+        value: statement["Direct Object"],
+      });
+    }
+    if (
+      statement["Indirect Object"] &&
+      statement["Type of Indirect Object"] === "animate"
+    ) {
+      choices.push({
+        type: id + "-indirect-object",
+        label: "Indirect Object",
+        value: statement["Indirect Object"],
+      });
+    }
+    if (statement["Execution Constraint"]) {
+      choices.push({
+        type: id + "-execution-constraint",
+        label: "Execution Constraint",
+        value: statement["Execution Constraint"],
+      });
+    }
+  } else if (type === "outcome-driven") {
+    if (
+      statement["Direct Object"] &&
+      statement["Type of Direct Object"] === "inanimate"
+    ) {
+      choices.push({
+        type: id + "-direct-object",
+        label: "Direct Object",
+        value: statement["Direct Object"],
+      });
+    }
+    if (
+      statement["Indirect Object"] &&
+      statement["Type of Indirect Object"] === "inanimate"
+    ) {
+      choices.push({
+        type: id + "-indirect-object",
+        label: "Indirect Object",
+        value: statement["Indirect Object"],
+      });
+    }
+  } else if (type === "sanction-driven") {
+    choices.push({
+      type: id + "-aim",
+      label: "Aim",
+      value: statement["Aim"],
+    });
+  }
+
+  return choices;
 }
 
 function SourceNodeField({ statements }: { statements: Statement[] }) {

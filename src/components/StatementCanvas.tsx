@@ -1,11 +1,11 @@
 import { store } from "@/lib/graph-store/statement";
-import { Connection, Controls, MiniMap, Panel, ReactFlow } from "@xyflow/react";
+import { Controls, MiniMap, Panel, ReactFlow } from "@xyflow/react";
+import { Connection as ReactFlowConnection } from "@xyflow/react";
 import { useStore } from "zustand";
 import { useTheme } from "./theme-provider";
 import { CanvasLegendButton } from "./CanvasLegendButton";
-import { hasAmbiguousSource, SourcePicker } from "./SourcePicker";
+import { SourcePicker } from "./SourcePicker";
 import { useState } from "react";
-import { buildEdge, INACompactEdge } from "@/lib/edge";
 import { ConnectionLine } from "./ConnectionLine";
 import {
   ActorDrivenConnection,
@@ -15,6 +15,9 @@ import {
 } from "./edges";
 import "@xyflow/react/dist/style.css";
 import { CollapsedStatementNode } from "./nodes";
+import { useConnections } from "@/hooks/use-connections";
+import { ConnectionWithValues } from "@/lib/schema";
+import { reactFlowConnection2PossibleConnections } from "../lib/reactFlowConnection2PossibleConnections";
 
 const nodeTypes = {
   statement: CollapsedStatementNode,
@@ -27,43 +30,23 @@ const edgeTypes = {
   conflict: ConflictingEdge,
 } as const;
 
-function createEdgeFromConnection(connection: Connection): INACompactEdge {
-  const type = connection.targetHandle as keyof typeof edgeTypes;
-  if (type) {
-    const nedge = buildEdge(connection.source, connection.target, type);
-    return nedge as INACompactEdge;
-  }
-  return connection as INACompactEdge;
-}
-
 export function StatementCanvas() {
   const { theme } = useTheme();
+  const { addConnection } = useConnections();
 
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
-    useStore(store);
-  const [pendingConnection, setPendingConnection] = useState<
-    Connection | undefined
-  >(undefined);
+  const { nodes, edges, onNodesChange, onEdgesChange } = useStore(store);
+  const [possibleConnections, setPossibleConnections] = useState<
+    ConnectionWithValues[]
+  >([]);
 
-  function onConnectStart(connection: Connection) {
-    debugger;
-    if (hasAmbiguousSource(connection, nodes)) {
-      setPendingConnection(connection);
-      return;
-    }
-    const edge = createEdgeFromConnection(connection);
-    onConnect(edge as Connection);
-  }
-
-  function pickSource(uncompactSource: string, uncompactTarget: string) {
-    if (pendingConnection) {
-      const edge = createEdgeFromConnection(pendingConnection);
-      onConnect({
-        ...edge,
-        uncompactSource,
-        uncompactTarget,
-      } as unknown as Connection);
-      setPendingConnection(undefined);
+  function onConnectStart(connection: ReactFlowConnection) {
+    const connections = reactFlowConnection2PossibleConnections(connection);
+    if (connections.length > 1) {
+      setPossibleConnections(connections);
+    } else if (connections.length === 1) {
+      addConnection(connections[0]);
+    } else {
+      throw new Error("No possible connections");
     }
   }
 
@@ -79,6 +62,9 @@ export function StatementCanvas() {
 
   return (
     <div className="h-full w-full">
+      <div className="flex justify-between">
+        <h1 className="text-xl">Statement level network</h1>
+      </div>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -106,11 +92,11 @@ export function StatementCanvas() {
         <Controls />
         <MiniMap pannable={true} />
       </ReactFlow>
-      {pendingConnection && (
+      {possibleConnections.length && (
         <SourcePicker
-          connection={pendingConnection}
-          onPick={pickSource}
-          onCancel={() => setPendingConnection(undefined)}
+          choices={possibleConnections}
+          onPick={addConnection}
+          onCancel={() => setPossibleConnections([])}
         />
       )}
     </div>
