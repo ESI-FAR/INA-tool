@@ -1,11 +1,10 @@
 import { Node } from "@xyflow/react";
-import { CSSProperties } from "react";
 import { Statement } from "./schema";
 
 export type StatementNode = Node<
   { raw: Statement; label: string },
   "statement"
-> & { uncompactStyle?: CSSProperties };
+>;
 export type AttributeNode = Node<{ label: string }, "attribute">;
 export type AimNode = Node<{ label: string }, "aim">;
 export type DirectObjectNode = Node<

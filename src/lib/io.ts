@@ -12,7 +12,7 @@ import {
 } from "./node";
 import { Connection, ConnectionComponent, Statement } from "./schema";
 import { buildEdge } from "./edge";
-import { ComponentEdge, INAEdge } from "./edge";
+import { ComponentEdge, INACEdge } from "./edge";
 import { store } from "@/stores/global";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
@@ -207,7 +207,7 @@ export class InvalidConnectionError extends Error {
 export function processConnection(
   connection: Connection,
   lookup: Map<string, INANode>,
-): INAEdge {
+): INACEdge {
   if (connection.source_statement === connection.target_statement) {
     throw new InvalidConnectionError(
       "Source and target statement can not be the same",

@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { useStore } from "zustand";
 import { INANode, StatementNode } from "@/lib/node";
 import { ReactFlowInstance, useReactFlow, Node } from "@xyflow/react";
-import { INACompactEdge, INAEdge } from "@/lib/edge";
+import { INASEdge, INACEdge } from "@/lib/edge";
 import { isStatementNode } from "@/lib/node";
 import { store } from "@/stores/component-network";
 import {
@@ -29,7 +29,7 @@ function searchComponents(query: string, nodes: INANode[]) {
 
 function zoomToHit(
   node: INANode,
-  setCenter: ReactFlowInstance<INANode, INAEdge>["setCenter"],
+  setCenter: ReactFlowInstance<INANode, INACEdge>["setCenter"],
 ) {
   if (isStatementNode(node)) {
     return setCenter(node.position.x, node.position.y, { duration: 500 });
@@ -51,7 +51,7 @@ function zoomToHit(
 }
 
 export function ComponentNetworkSearch() {
-  const { setCenter, setNodes } = useReactFlow<INANode, INAEdge>();
+  const { setCenter, setNodes } = useReactFlow<INANode, INACEdge>();
   const [query, setQuery] = useState("");
   const nodes = useStore(store, (s) => s.nodes);
   const hits = useMemo(() => searchComponents(query, nodes), [query, nodes]);
@@ -205,7 +205,7 @@ function selectNode<T extends Node>(hit: T) {
 export function StatementNetworkSearch() {
   const { setCenter, getNodes, setNodes } = useReactFlow<
     StatementNode,
-    INACompactEdge
+    INASEdge
   >();
   const [query, setQuery] = useState("");
   const nodes = getNodes();

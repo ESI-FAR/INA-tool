@@ -37,15 +37,17 @@ export type DrivenConnectionEdge =
   | OutcomeDrivenConnection
   | SanctionDrivenConnection;
 
-export type INACompactEdge = DrivenConnectionEdge | ConflictingEdge;
-export type INAEdge = ComponentEdge | DrivenConnectionEdge;
+// Edges used in statement level network
+export type INASEdge = DrivenConnectionEdge | ConflictingEdge;
+// Edges used in component level network
+export type INACEdge = DrivenConnectionEdge | ComponentEdge;
 
-export function isComponentEdge(edge: INAEdge): edge is ComponentEdge {
+export function isComponentEdge(edge: INACEdge): edge is ComponentEdge {
   return edge.type === "component";
 }
 
 export function isDrivenConnectionEdge(
-  edge: INAEdge | ConflictingEdge,
+  edge: INACEdge | ConflictingEdge,
 ): edge is DrivenConnectionEdge {
   return (
     edge.type === "actor-driven" ||
@@ -54,9 +56,7 @@ export function isDrivenConnectionEdge(
   );
 }
 
-export function isConflictingEdge(
-  edge: INACompactEdge,
-): edge is ConflictingEdge {
+export function isConflictingEdge(edge: INASEdge): edge is ConflictingEdge {
   return edge.type === "conflict";
 }
 
@@ -72,8 +72,8 @@ export function connectionMarkerEnd(type: keyof typeof drivenColors) {
 export function buildEdge(
   sourceId: string,
   targetId: string,
-  type: Exclude<INAEdge["type"], undefined>,
-): INAEdge {
+  type: Exclude<INACEdge["type"], undefined>,
+): INACEdge {
   return {
     id: `${sourceId}-2-${targetId}`,
     source: sourceId,
@@ -93,7 +93,7 @@ export const drivenColors = {
 } as const;
 
 export function isDrivenConnection(
-  edge: INAEdge,
+  edge: INACEdge,
 ): edge is DrivenConnectionEdge {
   return (
     edge.type === "actor-driven" ||

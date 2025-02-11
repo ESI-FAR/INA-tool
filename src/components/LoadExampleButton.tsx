@@ -68,7 +68,7 @@ const statements: Statement[] = [
     Aim: "clean",
     "Direct Object": "gutters",
     "Type of Direct Object": "inanimate",
-    // To test compact source picker uncomment line below, and comment line above
+    // To test source picker uncomment line below, and comment line above
     // "Type of Direct Object": "animate",
     "Indirect Object": "",
     "Type of Indirect Object": "",

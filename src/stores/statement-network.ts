@@ -10,7 +10,7 @@ import {
   ConflictingEdge,
   connectionMarkerEnd,
   DrivenConnectionEdge,
-  INACompactEdge,
+  INASEdge,
   isConflictingEdge,
   isDrivenConnectionEdge,
 } from "../lib/edge";
@@ -21,15 +21,15 @@ import { Conflict, Connection, Statement } from "../lib/schema";
 
 export type State = {
   nodes: StatementNode[];
-  edges: INACompactEdge[];
+  edges: INASEdge[];
 };
 
 export type Action = {
   onNodesChange: OnNodesChange<StatementNode>;
-  onEdgesChange: OnEdgesChange<INACompactEdge>;
+  onEdgesChange: OnEdgesChange<INASEdge>;
   onConnect: OnConnect;
   setNodes: (nodes: StatementNode[]) => void;
-  setEdges: (edges: INACompactEdge[]) => void;
+  setEdges: (edges: INASEdge[]) => void;
 };
 
 export type Store = State & Action;
@@ -113,7 +113,7 @@ function onConnectionsChange(connections: Connection[]) {
       .edges.filter(isDrivenConnectionEdge)
       .map((edge) => [edge.id, edge]),
   );
-  const newEdges: INACompactEdge[] = [];
+  const newEdges: INASEdge[] = [];
   for (const connection of connections) {
     const id = connection2id(connection);
     if (edgeIds.has(id)) {

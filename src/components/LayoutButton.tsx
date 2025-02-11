@@ -6,7 +6,7 @@ import { LayoutTemplateIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { isStatementNode } from "@/lib/node";
 import type { INANode, StatementNode } from "@/lib/node";
-import { INACompactEdge, INAEdge } from "@/lib/edge";
+import { INASEdge, INACEdge } from "@/lib/edge";
 
 const elk = new ELK();
 
@@ -22,7 +22,7 @@ const layoutOptions = {
 const useComponentLayout = () => {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
     INANode,
-    INAEdge
+    INACEdge
   >();
 
   const getLayoutedElements = useCallback(() => {
@@ -87,7 +87,7 @@ const useComponentLayout = () => {
 function useStatementLayout() {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
     StatementNode,
-    INACompactEdge
+    INASEdge
   >();
   const getLayoutedElements = useCallback(() => {
     const nodes = getNodes();

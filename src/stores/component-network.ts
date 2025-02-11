@@ -10,7 +10,7 @@ import {
 import {
   buildEdge,
   DrivenConnectionEdge,
-  INAEdge,
+  INACEdge,
   ComponentEdge,
   isDrivenConnectionEdge,
   isComponentEdge,
@@ -31,15 +31,15 @@ import { DEFAULT_STATEMENT_HEIGHT, procesStatement } from "../lib/io";
 
 export type State = {
   nodes: INANode[];
-  edges: INAEdge[];
+  edges: INACEdge[];
 };
 
 export type Action = {
   onNodesChange: OnNodesChange<INANode>;
-  onEdgesChange: OnEdgesChange<INAEdge>;
+  onEdgesChange: OnEdgesChange<INACEdge>;
   onConnect: OnConnect;
   setNodes: (nodes: INANode[]) => void;
-  setEdges: (edges: INAEdge[]) => void;
+  setEdges: (edges: INACEdge[]) => void;
 };
 
 export type Store = State & Action;
@@ -195,7 +195,7 @@ function onConnectionsChange(connections: Connection[]) {
       const newEdge = buildEdge(
         connection.source_statement + "-" + connection.source_component,
         connection.target_statement + "-" + connection.target_component,
-        (connection.driver + "-driven") as Exclude<INAEdge["type"], undefined>,
+        (connection.driver + "-driven") as Exclude<INACEdge["type"], undefined>,
       ) as DrivenConnectionEdge;
       drivenConnectionEdges.push(newEdge);
     }
