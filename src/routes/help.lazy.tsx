@@ -53,7 +53,8 @@ function RouteComponent() {
 
       <h3 className="py-4 text-xl">Upload your file with statements</h3>
       <p>
-        You can upload only <i>.csv</i> or <i>.xlsx</i> files. Please, use this{" "}
+        You can upload comma-separated (.csv) or Excel (.xlsx) file. Please, use
+        this{" "}
         <a
           className="underline"
           href={templatexlsx}
@@ -61,8 +62,8 @@ function RouteComponent() {
         >
           template
         </a>
-        . Alternatively, the file must respect the columns ordering and naming
-        described below:
+        . Alternatively, the file must respect the column naming described
+        below:
       </p>
       <ol className="list-inside list-decimal">
         {statementColumns.map((col) => (
@@ -79,8 +80,9 @@ function RouteComponent() {
         <Link className="underline" to="/connections">
           connections page
         </Link>{" "}
-        you can upload a CSV or XLSX file with connections. The file must
-        respect the columns ordering and naming described below:
+        you can upload a comma-separated (.csv) or Excel (.xlsx) file with
+        connections. The file must respect the columns ordering and naming
+        described below:
         <ol className="list-inside list-decimal">
           <li>Source statement, id of source statement</li>
           <li>
@@ -134,8 +136,9 @@ function RouteComponent() {
       </p>
       <ul className="list-inside list-disc">
         <li>
-          <strong>Dragging:</strong> Press left mouse key and start dragging the
-          statement or a inner statement component or the background.
+          <strong>Dragging:</strong> You can move things around by dragging.
+          Press left mouse key and start dragging the statement or a component
+          of a statement or the background.
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
@@ -203,8 +206,9 @@ function RouteComponent() {
       </p>
       <ul className="list-inside list-disc">
         <li>
-          <strong>Dragging:</strong> Press left mouse key and start dragging the
-          statement or the background.
+          <strong>Dragging:</strong> You can move things around by dragging.
+          Press left mouse key and start dragging the statement or the
+          background.
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or

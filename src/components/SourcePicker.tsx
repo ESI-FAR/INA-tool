@@ -6,8 +6,8 @@ import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { ConnectionWithValues } from "@/lib/schema";
 
 /**
- * In compact mode you can not see to which inner statement component an edge is connected.
- * This component allows the user to pick the source of the connection.
+ * In statement level network you can not see to which component an edge is connected.
+ * This React component allows the user to pick the source of the connection.
  */
 export function SourcePicker({
   choices,

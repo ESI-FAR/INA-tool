@@ -45,7 +45,7 @@ export function ComponentNetworkLegend() {
 
           <p>Edges</p>
           <ul className="list-inside pl-4">
-            <EdgeLegend className="text-foreground" text="Inner statement" />
+            <EdgeLegend className="text-foreground" text="Component" />
             <EdgeLegend className="text-purple-500" text="Actor driven" />
             <EdgeLegend className="text-green-500" text="Outcome driven" />
             <EdgeLegend className="text-red-500" text="Sanction driven" />
@@ -79,7 +79,7 @@ export function StatementNetworkLegend() {
 
           <p>Edges</p>
           <ul className="list-inside pl-4">
-            <EdgeLegend className="text-foreground" text="Inner statement" />
+            <EdgeLegend className="text-foreground" text="Component" />
             <EdgeLegend className="text-purple-500" text="Actor driven" />
             <EdgeLegend className="text-green-500" text="Outcome driven" />
             <EdgeLegend className="text-red-500" text="Sanction driven" />

@@ -1,5 +1,5 @@
 import {
-  type InnerStatementEdge,
+  type ComponentEdge,
   type ActorDrivenConnection,
   type OutcomeDrivenConnection,
   type SanctionDrivenConnection,
@@ -13,14 +13,14 @@ import {
   getSmoothStepPath,
 } from "@xyflow/react";
 
-export function InnerStatementEdge({
+export function ComponentEdge({
   id,
   sourceX,
   sourceY,
   targetX,
   targetY,
   label,
-}: EdgeProps<InnerStatementEdge>) {
+}: EdgeProps<ComponentEdge>) {
   const [edgePath, labelX, labelY] = getStraightPath({
     sourceX,
     sourceY,
@@ -148,7 +148,7 @@ export function ConflictingEdge({
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const edgeTypes = {
-  "inner-statement": InnerStatementEdge,
+  component: ComponentEdge,
   "actor-driven": ActorDrivenConnection,
   "outcome-driven": OutcomeDrivenConnection,
   "sanction-driven": SanctionDrivenConnection,

@@ -39,11 +39,11 @@ const useComponentLayout = () => {
           ...node,
           children: getNodes()
             .filter((n) => n.parentId === node.id && !n.hidden)
-            .map((innerstatement) => {
+            .map((component) => {
               return {
-                ...innerstatement,
-                width: innerstatement.measured!.width,
-                height: innerstatement.measured!.height,
+                ...component,
+                width: component.measured!.width,
+                height: component.measured!.height,
               };
             }),
           width: node.measured!.width,
@@ -57,24 +57,24 @@ const useComponentLayout = () => {
     elk.layout(graph).then(({ children }) => {
       // By mutating the children in-place we saves ourselves from creating a
       // needless copy of the nodes array.
-      const innernodes: INANode[] = [];
+      const componentNodes: INANode[] = [];
       children!.forEach((node) => {
         // @ts-expect-error copied from react-flow examples
         node.position = { x: node.x, y: node.y };
-        node.children!.forEach((innerstatement) => {
+        node.children!.forEach((component) => {
           // @ts-expect-error copied from react-flow examples
-          innerstatement.position = {
-            x: innerstatement.x,
-            y: innerstatement.y,
+          component.position = {
+            x: component.x,
+            y: component.y,
           };
           // @ts-expect-error copied from react-flow examples
-          innernodes.push(innerstatement);
+          componentNodes.push(component);
         });
         node.children = undefined;
       });
 
       // @ts-expect-error copied from react-flow examples
-      setNodes([...children, ...innernodes]);
+      setNodes([...children, ...componentNodes]);
       window.requestAnimationFrame(() => {
         fitView();
       });

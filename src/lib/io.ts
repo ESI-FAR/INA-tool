@@ -12,7 +12,7 @@ import {
 } from "./node";
 import { Connection, Statement } from "./schema";
 import { buildEdge } from "./edge";
-import { InnerStatementEdge, INAEdge } from "./edge";
+import { ComponentEdge, INAEdge } from "./edge";
 import { store } from "@/stores/global";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
@@ -20,9 +20,9 @@ export const DEFAULT_STATEMENT_HEIGHT = 180;
 export function procesStatement(
   statement: Statement,
   fallBackId: string,
-): [StatementRelatedNode[], InnerStatementEdge[]] {
+): [StatementRelatedNode[], ComponentEdge[]] {
   const nodes: StatementRelatedNode[] = [];
-  const edges: InnerStatementEdge[] = [];
+  const edges: ComponentEdge[] = [];
   const id = statement.Id || fallBackId;
   const statementNode: StatementNode = {
     id,
@@ -60,7 +60,7 @@ export function procesStatement(
       extent: "parent",
     };
     nodes.push(activationConditionNode);
-    const activationConditionEdge: InnerStatementEdge = {
+    const activationConditionEdge: ComponentEdge = {
       id: `${id}-activation-condition-2-attribute`,
       data: {
         statementId: id,
@@ -69,7 +69,7 @@ export function procesStatement(
       target: attributeId,
       sourceHandle: "statement",
       targetHandle: "statement",
-      type: "inner-statement",
+      type: "component",
     };
     edges.push(activationConditionEdge);
   }
@@ -84,7 +84,7 @@ export function procesStatement(
     extent: "parent",
   };
   nodes.push(aimNode);
-  const aimEdge: InnerStatementEdge = {
+  const aimEdge: ComponentEdge = {
     id: `${id}-attribute-2-aim`,
     data: {
       statementId: id,
@@ -94,7 +94,7 @@ export function procesStatement(
     label: statement.Deontic,
     sourceHandle: "statement",
     targetHandle: "statement",
-    type: "inner-statement",
+    type: "component",
   };
   edges.push(aimEdge);
 
@@ -121,7 +121,7 @@ export function procesStatement(
       target: directObjectId,
       sourceHandle: "direct-object",
       targetHandle: "statement",
-      type: "inner-statement",
+      type: "component",
     });
 
     if (statement["Indirect Object"]) {
@@ -147,7 +147,7 @@ export function procesStatement(
         target: indirectObjectId,
         sourceHandle: "statement",
         targetHandle: "statement",
-        type: "inner-statement",
+        type: "component",
       });
     }
   }
@@ -172,7 +172,7 @@ export function procesStatement(
       target: executionConstraintId,
       sourceHandle: "execution-constraint",
       targetHandle: "statement",
-      type: "inner-statement",
+      type: "component",
     });
   }
 

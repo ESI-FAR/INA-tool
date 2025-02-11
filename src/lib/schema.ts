@@ -5,12 +5,14 @@ export type StatementType = z.infer<typeof StatementType>;
 
 export const TypeOfObject = z.enum(["", "animate", "inanimate"]);
 
+export const deonticSchema = z.enum(["must", "may", "must not", "may not", ""]);
+export type Deontic = z.infer<typeof deonticSchema>;
+
 export const statementSchema = z.object({
-  Id: z.string().optional(),
+  Id: z.coerce.string().optional(),
   "Statement Type": StatementType,
   Attribute: z.string().min(1),
-  // TODO make Deontic union of 'must' and '' and ...?
-  Deontic: z.string().optional(),
+  Deontic: deonticSchema,
   Aim: z.string().min(1),
   "Direct Object": z.string().optional(),
   "Type of Direct Object": TypeOfObject.optional(),

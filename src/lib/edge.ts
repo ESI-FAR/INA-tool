@@ -13,9 +13,9 @@ Red (Sanction-driven connection):
 - Aim -> Activation Condition
 */
 
-export type InnerStatementEdge = Edge<
+export type ComponentEdge = Edge<
   { label?: string; statementId: string },
-  "inner-statement"
+  "component"
 >;
 export type ActorDrivenConnection = Edge<
   Record<string, unknown>,
@@ -38,12 +38,10 @@ export type DrivenConnectionEdge =
   | SanctionDrivenConnection;
 
 export type INACompactEdge = DrivenConnectionEdge | ConflictingEdge;
-export type INAEdge = InnerStatementEdge | DrivenConnectionEdge;
+export type INAEdge = ComponentEdge | DrivenConnectionEdge;
 
-export function isInnerStatementEdge(
-  edge: INAEdge,
-): edge is InnerStatementEdge {
-  return edge.type === "inner-statement";
+export function isComponentEdge(edge: INAEdge): edge is ComponentEdge {
+  return edge.type === "component";
 }
 
 export function isDrivenConnectionEdge(
@@ -88,7 +86,7 @@ export function buildEdge(
 }
 
 export const drivenColors = {
-  "inner-statement": "#000000",
+  component: "#000000",
   "actor-driven": "#a855f7",
   "outcome-driven": "#22c55e",
   "sanction-driven": "#ef4444",

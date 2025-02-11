@@ -11,15 +11,15 @@ import {
   buildEdge,
   DrivenConnectionEdge,
   INAEdge,
-  InnerStatementEdge,
+  ComponentEdge,
   isDrivenConnectionEdge,
-  isInnerStatementEdge,
+  isComponentEdge,
 } from "../lib/edge";
 import {
   ConflictGroupNode,
   INANode,
   isConflictGroupNode,
-  isInnerStatementNode,
+  isComponentNode,
   isStatementNode,
   StatementNode,
   StatementRelatedNode,
@@ -95,7 +95,7 @@ function onStatementsChange(statements: Statement[]) {
   const nodeLookup = new Map<string, StatementRelatedNode>(
     store
       .getState()
-      .nodes.filter((n) => isStatementNode(n) || isInnerStatementNode(n))
+      .nodes.filter((n) => isStatementNode(n) || isComponentNode(n))
       .map((n) => [n.id, n]),
   );
   const statementNodeLookup = new Map<string, StatementNode>(
@@ -105,28 +105,28 @@ function onStatementsChange(statements: Statement[]) {
       .map((n) => [n.id, n]),
   );
   const newNodes: StatementRelatedNode[] = [];
-  const newEdges: InnerStatementEdge[] = [];
+  const newEdges: ComponentEdge[] = [];
   for (const statement of statements) {
     if (statementNodeLookup.has(statement.Id!)) {
       // Possible updated statement
       const statementNode = statementNodeLookup.get(statement.Id!)!;
       if (compareStatement(statement, statementNode.data.raw)) {
         // Same statement, no need to update
-        // retain statement node, inner statement nodes and edges
+        // retain statement node, component nodes and edges
         newNodes.push(statementNode);
-        const myInnerNodes = store
+        const myComponentNodes = store
           .getState()
-          .nodes.filter(isInnerStatementNode)
+          .nodes.filter(isComponentNode)
           .filter((n) => n.parentId === statement.Id);
-        newNodes.push(...myInnerNodes);
-        const myInnerEdges = store
+        newNodes.push(...myComponentNodes);
+        const myComponentEdges = store
           .getState()
-          .edges.filter(isInnerStatementEdge)
+          .edges.filter(isComponentEdge)
           .filter((e) => e.data?.statementId === statement.Id);
-        newEdges.push(...myInnerEdges);
+        newEdges.push(...myComponentEdges);
       } else {
         // Updated statement
-        // update statement node, inner statement nodes and edges
+        // update statement node, component nodes and edges
         // but retain position, dimensions and other ReactFlow specific data
         const [myNewNodes, myNewEdges] = procesStatement(
           statement,
@@ -144,7 +144,7 @@ function onStatementsChange(statements: Statement[]) {
       }
     } else {
       // New statement
-      // create statement node, inner statement nodes
+      // create statement node, component nodes, component edges
       const [myNewNodes, myNewEdges] = procesStatement(
         statement,
         statement.Id!,
@@ -207,7 +207,7 @@ function conflict2id(conflict: Conflict): string {
 }
 
 function onConflictsChange(conflicts: Conflict[]) {
-  const otherNodes = store.getState().nodes.filter(isInnerStatementNode);
+  const otherNodes = store.getState().nodes.filter(isComponentNode);
   const conflictGroupNodes = store.getState().nodes.filter(isConflictGroupNode);
   const conflictGroupNodeLookup = new Map<string, ConflictGroupNode>(
     conflictGroupNodes.map((n) => [n.id, n]),

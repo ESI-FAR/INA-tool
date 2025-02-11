@@ -27,7 +27,7 @@ export type ExecutionConstraintNode = Node<
 
 export type ConflictGroupNode = Node<Record<string, never>, "conflict">;
 
-export type InnerStatementNode =
+export type ComponentNode =
   | AttributeNode
   | AimNode
   | DirectObjectNode
@@ -35,16 +35,14 @@ export type InnerStatementNode =
   | ActivationConditionNode
   | ExecutionConstraintNode;
 
-export type StatementRelatedNode = InnerStatementNode | StatementNode;
-export type INANode = StatementNode | InnerStatementNode | ConflictGroupNode;
+export type StatementRelatedNode = ComponentNode | StatementNode;
+export type INANode = StatementNode | ComponentNode | ConflictGroupNode;
 
 export function isStatementNode(node: INANode): node is StatementNode {
   return node.type === "statement";
 }
 
-export function isInnerStatementNode(
-  node: INANode,
-): node is InnerStatementNode {
+export function isComponentNode(node: INANode): node is ComponentNode {
   return (
     node.type === "attribute" ||
     node.type === "aim" ||

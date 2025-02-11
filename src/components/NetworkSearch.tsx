@@ -34,13 +34,13 @@ function zoomToHit(
   if (isStatementNode(node)) {
     return setCenter(node.position.x, node.position.y, { duration: 500 });
   }
-  // Inner statement node position needs to be added to its parent statement node position
+  // component node position needs to be added to its parent statement node position
   const statement = store.getState().nodes.find((n) => n.id === node.parentId);
   if (!statement) {
     throw new Error("Statement not found");
   }
   if (node.hidden) {
-    // If inner statement node is hidden, zoom to its parent statement node
+    // If component node is hidden, zoom to its parent statement node
     const x = statement.position.x;
     const y = statement.position.y;
     return setCenter(x, y, { duration: 500 });
@@ -88,7 +88,7 @@ export function ComponentNetworkSearch() {
                       zoomToHit(node, setCenter);
                       setQuery("");
                       updateNode(node.id, { selected: true });
-                      // TODO unselect other nodes
+                      // TODO unselect other nodes?
                     }}
                   >
                     {node.parentId ? `${node.parentId}: ` : ""}
