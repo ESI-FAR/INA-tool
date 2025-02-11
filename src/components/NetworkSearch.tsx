@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { useStore } from "zustand";
 import { INANode, StatementNode } from "@/lib/node";
-import { ReactFlowInstance, useReactFlow } from "@xyflow/react";
+import { ReactFlowInstance, useReactFlow, Node } from "@xyflow/react";
 import { INACompactEdge, INAEdge } from "@/lib/edge";
 import { isStatementNode } from "@/lib/node";
 import { store } from "@/stores/component-network";
@@ -51,7 +51,7 @@ function zoomToHit(
 }
 
 export function ComponentNetworkSearch() {
-  const { setCenter, updateNode } = useReactFlow<INANode, INAEdge>();
+  const { setCenter, setNodes } = useReactFlow<INANode, INAEdge>();
   const [query, setQuery] = useState("");
   const nodes = useStore(store, (s) => s.nodes);
   const hits = useMemo(() => searchComponents(query, nodes), [query, nodes]);
@@ -87,8 +87,7 @@ export function ComponentNetworkSearch() {
                     onSelect={() => {
                       zoomToHit(node, setCenter);
                       setQuery("");
-                      updateNode(node.id, { selected: true });
-                      // TODO unselect other nodes?
+                      setNodes(selectNode(node));
                     }}
                   >
                     {node.parentId ? `${node.parentId}: ` : ""}
@@ -184,8 +183,8 @@ function searchStatements(query: string, nodes: StatementNode[]) {
 /**
  * Select given node and unselect all other nodes
  */
-function selectNode(hit: StatementNode) {
-  return (prev: StatementNode[]) =>
+function selectNode<T extends Node>(hit: T) {
+  return (prev: T[]) =>
     prev.map((n) => {
       if (n.id === hit.id) {
         return {
