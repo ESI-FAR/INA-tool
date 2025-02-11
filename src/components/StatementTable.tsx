@@ -38,7 +38,7 @@ import {
   TrashIcon,
   Undo2Icon,
 } from "lucide-react";
-import { FormProvider, useForm } from "react-hook-form";
+import { ControllerRenderProps, FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FormControl,
@@ -156,6 +156,7 @@ export function StatementTable() {
     useConnections();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  // TODO reset editing when you replace the statements by uploading a file or loading the example
   const [editing, setEditing] = useState<Statement | null>(null);
 
   const table = useReactTable({
@@ -212,7 +213,7 @@ export function StatementTable() {
       // on update, if component became empty then check it is connected or not
       for (const [component, value] of Object.entries(tosave) as [
         keyof Statement,
-        any,
+        unknown,
       ][]) {
         if (value === "" && previous[component]) {
           const componentOfConnection = col2internal.get(component)!;
@@ -220,6 +221,28 @@ export function StatementTable() {
             ...connectionsOfComponent(previous.Id!, componentOfConnection),
           );
         }
+      }
+      // if object type is switched then also check for connections as they will be invalid
+      if (
+        tosave["Type of Direct Object"] !== previous["Type of Direct Object"]
+      ) {
+        const componentOfConnection = col2internal.get(
+          "Type of Direct Object",
+        )!;
+        connections.push(
+          ...connectionsOfComponent(previous.Id!, componentOfConnection),
+        );
+      }
+      if (
+        tosave["Type of Indirect Object"] !==
+        previous["Type of Indirect Object"]
+      ) {
+        const componentOfConnection = col2internal.get(
+          "Type of Indirect Object",
+        )!;
+        connections.push(
+          ...connectionsOfComponent(previous.Id!, componentOfConnection),
+        );
       }
       // If connected then ask for confirmation and remove connection
       if (connections.length > 0) {
@@ -372,7 +395,7 @@ function FormInput({
   field,
 }: {
   meta?: { choices?: string[] };
-  field: any;
+  field: ControllerRenderProps<Statement>;
 }) {
   if (!meta || meta.choices === undefined) {
     return <Input {...field} />;
