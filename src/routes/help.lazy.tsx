@@ -182,9 +182,10 @@ function RouteComponent() {
         </li>
         <li>
           <strong>Legend:</strong> Click the{" "}
-          <AlignVerticalDistributeCenterIcon /> Legend button to see a legend of
-          the network. The type components of a statement are shown as a
-          sub-graph. The colors of the statements and connections are explained.
+          <AlignVerticalDistributeCenterIcon className="inline" /> Legend button
+          to see a legend of the network. The type components of a statement are
+          shown as a sub-graph. The colors of the statements and connections are
+          explained.
         </li>
 
         <li>
@@ -253,9 +254,9 @@ function RouteComponent() {
         </li>
         <li>
           <strong>Legend:</strong> Click the{" "}
-          <AlignVerticalDistributeCenterIcon /> Legend button to see a legend of
-          the network. The colors of the statements and connections are
-          explained.
+          <AlignVerticalDistributeCenterIcon className="inline" /> Legend button
+          to see a legend of the network. The colors of the statements and
+          connections are explained.
         </li>
         <li>
           <strong>Minimap:</strong>
