@@ -361,7 +361,7 @@ function deriveSourceChoices(statement: Statement, type: string) {
   return choices;
 }
 
-function SourceNodeField({ statements }: { statements: Statement[] }) {
+function SourceComponentField({ statements }: { statements: Statement[] }) {
   const form = useFormContext();
   const statementId = useFormContext().watch("source_statement");
   const driver = useFormContext().watch("driver");
@@ -392,7 +392,7 @@ function SourceNodeField({ statements }: { statements: Statement[] }) {
       name="source_component"
       render={({ field }) => (
         <FormItem className="space-y-3">
-          <FormLabel>Node</FormLabel>
+          <FormLabel>Component</FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
@@ -442,7 +442,7 @@ function deriveTargetChoices(statement: Statement, driver: string) {
   return choices;
 }
 
-function TargetNodeField({ statements }: { statements: Statement[] }) {
+function TargetComponentField({ statements }: { statements: Statement[] }) {
   const form = useFormContext();
   const statementId = useFormContext().watch("target_statement");
   const driver = useFormContext().watch("driver");
@@ -470,7 +470,7 @@ function TargetNodeField({ statements }: { statements: Statement[] }) {
       name="target_component"
       render={({ field }) => (
         <FormItem className="space-y-3">
-          <FormLabel>Node</FormLabel>
+          <FormLabel>Component</FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
@@ -541,12 +541,12 @@ export function AddConnectionButton() {
               <fieldset className="border p-1">
                 <legend>Source</legend>
                 <SourceStatementField statements={statements} />
-                <SourceNodeField statements={statements} />
+                <SourceComponentField statements={statements} />
               </fieldset>
               <fieldset className="border p-1">
                 <legend>Target</legend>
                 <TargetStatementField statements={statements} />
-                <TargetNodeField statements={statements} />
+                <TargetComponentField statements={statements} />
               </fieldset>
             </div>
             <DialogFooter>
