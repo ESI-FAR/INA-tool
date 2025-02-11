@@ -33,7 +33,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link
-                    to="/canvas/comp"
+                    to="/network/comp"
                     activeProps={{ className: "font-bold" }}
                   >
                     <AlignJustifyIcon />
@@ -44,7 +44,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link
-                    to="/canvas/statement"
+                    to="/network/statement"
                     activeProps={{ className: "font-bold" }}
                   >
                     <NetworkIcon />

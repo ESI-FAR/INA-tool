@@ -30,7 +30,7 @@ const edgeTypes = {
   conflict: ConflictingEdge,
 } as const;
 
-export function StatementCanvas() {
+export function StatementNetwork() {
   const { theme } = useTheme();
   const { addConnection } = useConnections();
 

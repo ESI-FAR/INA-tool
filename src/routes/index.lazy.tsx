@@ -8,7 +8,7 @@ export const Route = createLazyFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   useEffect(() => {
-    navigate({ to: "/canvas/comp" });
+    navigate({ to: "/network/comp" });
   }, [navigate]);
   return null;
 }

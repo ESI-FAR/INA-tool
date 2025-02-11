@@ -19,7 +19,7 @@ import {
   Undo2Icon,
   UploadIcon,
 } from "lucide-react";
-import screenshot from "../help/canvas.png";
+import screenshot from "../help/network.png";
 import templatexlsx from "../help/Institutional_statement_template.xlsx?url";
 
 export const Route = createLazyFileRoute("/help")({
@@ -126,7 +126,7 @@ function RouteComponent() {
       <h3 className="py-4 text-xl">Component level network page</h3>
       <p>
         The{" "}
-        <Link className="underline" to="/canvas/comp">
+        <Link className="underline" to="/network/comp">
           component network page
         </Link>{" "}
         visualizes the statements, their inner components and their connections
@@ -135,7 +135,7 @@ function RouteComponent() {
       <ul className="list-inside list-disc">
         <li>
           <strong>Dragging:</strong> Press left mouse key and start dragging the
-          statement or a inner statement component or the canvas.
+          statement or a inner statement component or the background.
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
@@ -157,15 +157,15 @@ function RouteComponent() {
         </li>
         <li>
           <strong>Layout:</strong> To layout the grap use a layout algorithm use
-          the layout button at the top right side on the canvas.
+          the layout button at the top right side.
         </li>
         <li>
-          <strong>Take screenshot:</strong> Download your canvas as PNG image by
-          clicking the{" "}
+          <strong>Take screenshot:</strong> Download your network as PNG image
+          by clicking the{" "}
           <i>
             <CameraIcon className="inline" /> screenshot
           </i>{" "}
-          button at the top right side on the canvas.
+          button at the top right side.
         </li>
         <li>
           <strong>Resize statement:</strong> The bottom right corner has a{" "}
@@ -195,7 +195,7 @@ function RouteComponent() {
       <h3 className="py-4 text-xl">Statement level network page</h3>
       <p>
         The{" "}
-        <Link className="underline" to="/canvas/comp">
+        <Link className="underline" to="/network/comp">
           component network page
         </Link>{" "}
         visualizes the statements and their connections as a graph network. The
@@ -204,7 +204,7 @@ function RouteComponent() {
       <ul className="list-inside list-disc">
         <li>
           <strong>Dragging:</strong> Press left mouse key and start dragging the
-          statement or the canvas.
+          statement or the background.
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
@@ -227,15 +227,15 @@ function RouteComponent() {
         </li>
         <li>
           <strong>Layout:</strong> To layout the grap use a layout algorithm use
-          the layout button at the top right side on the canvas.
+          the layout button at the top right side.
         </li>
         <li>
-          <strong>Take screenshot:</strong> Download your canvas as PNG image by
-          clicking the{" "}
+          <strong>Take screenshot:</strong> Download your network as PNG image
+          by clicking the{" "}
           <i>
             <CameraIcon className="inline" /> screenshot
           </i>{" "}
-          button at the top right side on the canvas.
+          button at the top right side.
         </li>
         <li>
           <strong>Resize statement:</strong> The bottom right corner has a{" "}

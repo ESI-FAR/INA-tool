@@ -20,7 +20,7 @@ function EdgeLegend({ className, text }: { className: string; text: string }) {
   );
 }
 
-export function CanvasLegendButton() {
+export function ComponentNetworkLegend() {
   return (
     <>
       <Popover>
@@ -56,7 +56,7 @@ export function CanvasLegendButton() {
   );
 }
 
-export function StatementCanvasLegendButton() {
+export function StatementNetworkLegend() {
   return (
     <>
       <Popover>

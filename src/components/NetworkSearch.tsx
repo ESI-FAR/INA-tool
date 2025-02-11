@@ -50,7 +50,7 @@ function zoomToHit(
   return setCenter(x, y, { duration: 500 });
 }
 
-export function ComponentCanvasSearchButton() {
+export function ComponentNetworkSearch() {
   const { setCenter, updateNode } = useReactFlow<INANode, INAEdge>();
   const [query, setQuery] = useState("");
   const nodes = useStore(store, (s) => s.nodes);
@@ -203,7 +203,7 @@ function selectNode(hit: StatementNode) {
     });
 }
 
-export function StatementCanvasSearchButton() {
+export function StatementNetworkSearch() {
   const { setCenter, getNodes, setNodes } = useReactFlow<
     StatementNode,
     INACompactEdge

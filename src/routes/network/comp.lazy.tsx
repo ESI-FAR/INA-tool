@@ -1,12 +1,12 @@
-import { CanvasLegendButton } from "@/components/CanvasLegendButton";
-import { ComponentCanvasSearchButton } from "@/components/CanvasSearch";
-import { ComponentCanvas } from "@/components/ComponentCanvas";
+import { ComponentNetworkLegend } from "@/components/NetworkLegend";
+import { ComponentNetworkSearch } from "@/components/NetworkSearch";
+import { ComponentNetwork } from "@/components/ComponentNetwork";
 import { ComponentLayoutButton } from "@/components/LayoutButton";
 import { ScreenshotButton } from "@/components/ScreenshotButton";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { ReactFlowProvider } from "@xyflow/react";
 
-export const Route = createLazyFileRoute("/canvas/comp")({
+export const Route = createLazyFileRoute("/network/comp")({
   component: RouteComponent,
 });
 
@@ -17,13 +17,13 @@ function RouteComponent() {
         <div className="flex justify-between">
           <h1 className="text-xl">Component level network</h1>
           <div className="flex gap-1">
-            <ComponentCanvasSearchButton />
+            <ComponentNetworkSearch />
             <ComponentLayoutButton />
             <ScreenshotButton />
-            <CanvasLegendButton />
+            <ComponentNetworkLegend />
           </div>
         </div>
-        <ComponentCanvas />
+        <ComponentNetwork />
       </div>
     </ReactFlowProvider>
   );

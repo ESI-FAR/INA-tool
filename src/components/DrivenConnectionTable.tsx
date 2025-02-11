@@ -181,7 +181,7 @@ export function DrivenConnectionTable() {
                   className="h-24 text-center text-gray-500"
                 >
                   No connections. Please add one, by presssing button below or
-                  by uploading or by dragging one in canvas.
+                  by uploading or by creating on a network page.
                 </TableCell>
               </TableRow>
             )}

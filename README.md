@@ -8,7 +8,7 @@ INA Tool is an open-source digital tool developed by the eScience Center aimed a
 
 The web application is running at [https://esi-far.github.io/INA-tool/](https://esi-far.github.io/INA-tool/).
 
-![INA](src/help/canvas.png)
+![INA](src/help/network.png)
 
 ## Development
 

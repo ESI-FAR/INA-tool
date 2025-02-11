@@ -43,7 +43,7 @@ function mapReactFlowConnectionToINAConnection(
   };
 }
 
-export function ComponentCanvas() {
+export function ComponentNetwork() {
   const { theme } = useTheme();
   const { nodes, edges, onNodesChange, onEdgesChange } = useStore(store);
   const { addConnection } = useConnections();
@@ -51,8 +51,8 @@ export function ComponentCanvas() {
   function onConnect(connection: ReactFlowConnection) {
     addConnection(mapReactFlowConnectionToINAConnection(connection));
     // This will add to global stores connections array
-    // then the componentGraphStore and statementGraphStore will trigger their onConnectionsChange
-    // to create the edge shown in this canvas
+    // then the network stores will trigger their onConnectionsChange
+    // to create the edge shown here
   }
 
   if (nodes.length === 0) {
