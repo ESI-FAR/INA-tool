@@ -133,11 +133,15 @@ function onStatementsChange(statements: Statement[]) {
           statement.Id!,
         );
         const myNewMergedNodes = myNewNodes.map((n) => {
-          const oldNode = nodeLookup.get(n.id)!;
+          const oldNode = nodeLookup.get(n.id);
+          if (!oldNode) {
+            return n;
+          }
           return {
-            ...oldNode,
             ...n,
-          } as StatementRelatedNode;
+            position: oldNode.position,
+            style: oldNode.style,
+          };
         });
         newNodes.push(...myNewMergedNodes);
         newEdges.push(...myNewEdges);
@@ -285,7 +289,7 @@ function onConflictsChange(conflicts: Conflict[]) {
       newNodes.push(statementNode);
     }
   }
-  store.getState().setNodes([...otherNodes, ...newNodes]);
+  store.getState().setNodes([...newNodes, ...otherNodes]);
 }
 
 globalStore.subscribe((state) => state.statements, onStatementsChange);
