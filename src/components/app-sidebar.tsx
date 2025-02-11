@@ -4,6 +4,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -24,10 +25,11 @@ import { ClearButton } from "./ClearButton";
 export function AppSidebar() {
   return (
     <Sidebar>
+      <SidebarHeader className="px-4 text-2xl">
+        Institutional Network Analysis Tool
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          {/* TODO show tool name when sidebar is collapsed */}
-          <SidebarGroupLabel>INA-tool</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
