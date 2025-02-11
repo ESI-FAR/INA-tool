@@ -52,8 +52,8 @@ function DriverField() {
                 field.onChange(e);
                 form.resetField("source_statement");
                 form.resetField("target_statement");
-                form.resetField("source_node");
-                form.resetField("target_node");
+                form.resetField("source_component");
+                form.resetField("target_component");
               }}
               defaultValue={field.value}
               className="flex flex-col space-y-1"
@@ -167,7 +167,7 @@ function SourceStatementField({ statements }: { statements: Statement[] }) {
                         key={statement.Id}
                         onSelect={() => {
                           form.setValue("source_statement", statement.Id);
-                          form.resetField("source_node");
+                          form.resetField("source_component");
                           setOpen(false);
                         }}
                       >
@@ -263,7 +263,7 @@ function TargetStatementField({ statements }: { statements: Statement[] }) {
                         key={statement.Id}
                         onSelect={() => {
                           form.setValue("target_statement", statement.Id);
-                          form.resetField("target_node");
+                          form.resetField("target_component");
                           setOpen(false);
                         }}
                       >
@@ -383,13 +383,13 @@ function SourceNodeField({ statements }: { statements: Statement[] }) {
   useEffect(() => {
     // Auto select if there is only one choice
     if (choices.length === 1) {
-      form.setValue("source_node", choices[0].type);
+      form.setValue("source_component", choices[0].type);
     }
   }, [choices, form]);
   return (
     <FormField
       control={form.control}
-      name="source_node"
+      name="source_component"
       render={({ field }) => (
         <FormItem className="space-y-3">
           <FormLabel>Node</FormLabel>
@@ -460,14 +460,14 @@ function TargetNodeField({ statements }: { statements: Statement[] }) {
   useEffect(() => {
     // Auto select if there is only one choice
     if (choices.length === 1) {
-      form.setValue("target_node", choices[0].type);
+      form.setValue("target_component", choices[0].type);
     }
   }, [choices, form]);
 
   return (
     <FormField
       control={form.control}
-      name="target_node"
+      name="target_component"
       render={({ field }) => (
         <FormItem className="space-y-3">
           <FormLabel>Node</FormLabel>

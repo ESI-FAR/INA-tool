@@ -14,8 +14,8 @@ import { useConnections } from "@/hooks/use-connections";
 import {
   Connection,
   DriverType,
-  SourceNodeType,
-  TargetNodeType,
+  SourceComponentSchema,
+  TargetComponentSchema,
 } from "@/lib/schema";
 import { MyMiniMap } from "./MyMiniMap";
 
@@ -36,9 +36,9 @@ function mapReactFlowConnectionToINAConnection(
   }
   return {
     source_statement: sourceNode.parentId,
-    source_node: SourceNodeType.parse(sourceNode.type),
+    source_component: SourceComponentSchema.parse(sourceNode.type),
     target_statement: targetNode.parentId,
-    target_node: TargetNodeType.parse(targetNode.type),
+    target_component: TargetComponentSchema.parse(targetNode.type),
     driver: DriverType.parse(connection.targetHandle.replace("-driven", "")),
   };
 }

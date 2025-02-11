@@ -169,7 +169,7 @@ function onStatementsChange(statements: Statement[]) {
 }
 
 function connection2id(connection: Connection): string {
-  return `${connection.driver}-${connection.source_statement}-${connection.source_node}-2-${connection.source_statement}-${connection.target_node}`;
+  return `${connection.driver}-${connection.source_statement}-${connection.source_component}-2-${connection.source_statement}-${connection.target_component}`;
 }
 
 function onConnectionsChange(connections: Connection[]) {
@@ -189,8 +189,8 @@ function onConnectionsChange(connections: Connection[]) {
     if (!edgeIds.has(id)) {
       // new edge
       const newEdge = buildEdge(
-        connection.source_statement + "-" + connection.source_node,
-        connection.target_statement + "-" + connection.target_node,
+        connection.source_statement + "-" + connection.source_component,
+        connection.target_statement + "-" + connection.target_component,
         (connection.driver + "-driven") as Exclude<INAEdge["type"], undefined>,
       ) as DrivenConnectionEdge;
       drivenConnectionEdges.push(newEdge);

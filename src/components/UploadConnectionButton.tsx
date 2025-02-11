@@ -95,7 +95,7 @@ export function UploadConnectionButton() {
             {description}
             <p className="mt-2">
               Make sure you use the right column seperator and column names.
-              Also make sure statements and nodes mentioned in upload are
+              Also make sure statements and components mentioned in upload are
               present.
             </p>
           </>

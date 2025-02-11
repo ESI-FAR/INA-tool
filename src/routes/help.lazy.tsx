@@ -1,8 +1,8 @@
 import {
   DriverType,
-  SourceNodeType,
+  SourceComponentSchema,
   statementColumns,
-  TargetNodeType,
+  TargetComponentSchema,
 } from "@/lib/schema";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -84,13 +84,13 @@ function RouteComponent() {
         <ol className="list-inside list-decimal">
           <li>Source statement, id of source statement</li>
           <li>
-            Source node type, must be one of{" "}
-            {SourceNodeType.options.map((o) => `"${o}"`).join(", ")}
+            Source component, must be one of{" "}
+            {SourceComponentSchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
           <li>Target statement, id of target statement</li>
           <li>
-            Target node type, must be one of{" "}
-            {TargetNodeType.options.map((o) => `"${o}"`).join(", ")}
+            Target component, must be one of{" "}
+            {TargetComponentSchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
           <li>
             Driver, must be one of{" "}
@@ -135,7 +135,7 @@ function RouteComponent() {
       <ul className="list-inside list-disc">
         <li>
           <strong>Dragging:</strong> Press left mouse key and start dragging the
-          statement or a inner statement node or the canvas.
+          statement or a inner statement component or the canvas.
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
@@ -144,7 +144,7 @@ function RouteComponent() {
         <li>
           <strong>Draw connection between statements:</strong>
           <ol className="ml-6 list-inside list-decimal">
-            <li>Find a node you want to start from.</li>
+            <li>Find a component you want to start from.</li>
             <li>
               Press left mouse button on colored circle to start making a
               connection.
@@ -204,7 +204,7 @@ function RouteComponent() {
       <ul className="list-inside list-disc">
         <li>
           <strong>Dragging:</strong> Press left mouse key and start dragging the
-          statement or a inner statement node or the canvas.
+          statement or the canvas.
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
@@ -213,9 +213,10 @@ function RouteComponent() {
         <li>
           <strong>Draw connection between statements:</strong>
           <ol className="ml-6 list-inside list-decimal">
-            <li>Find a node you want to start from.</li>
+            <li>Find a statement you want to start from.</li>
             <li>
               Press left mouse button on colored circle to start making a
+              connection. Each color determines what the driver is for the
               connection.
             </li>
             <li>

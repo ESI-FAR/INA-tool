@@ -9,9 +9,9 @@ import { internal2col } from "@/lib/io";
 function compareConnection(a: Connection, b: Connection): boolean {
   return (
     a.source_statement === b.source_statement &&
-    a.source_node === b.source_node &&
+    a.source_component === b.source_component &&
     a.target_statement === b.target_statement &&
-    a.target_node === b.target_node &&
+    a.target_component === b.target_component &&
     a.driver === b.driver
   );
 }
@@ -51,12 +51,12 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
     return connections.map((connection) => {
       const sourceStatement = statementLookup.get(connection.source_statement)!;
       const source_col = internal2col.get(
-        connection.source_node,
+        connection.source_component,
       ) as keyof Statement;
       const source_value = sourceStatement[source_col]!;
       const targetStatement = statementLookup.get(connection.target_statement)!;
       const target_col = internal2col.get(
-        connection.target_node,
+        connection.target_component,
       ) as keyof Statement;
       const target_value = targetStatement[target_col]!;
       return {

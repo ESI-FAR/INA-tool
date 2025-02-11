@@ -50,9 +50,9 @@ const columns: ColumnDef<Connection>[] = [
         ),
       },
       {
-        accessorKey: "source_node",
+        accessorKey: "source_component",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Node" />
+          <DataTableColumnHeader column={column} title="Component" />
         ),
       },
       {
@@ -73,9 +73,9 @@ const columns: ColumnDef<Connection>[] = [
         ),
       },
       {
-        accessorKey: "target_node",
+        accessorKey: "target_component",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Node" />
+          <DataTableColumnHeader column={column} title="Component" />
         ),
       },
       {

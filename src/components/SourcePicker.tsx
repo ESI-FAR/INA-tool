@@ -6,7 +6,7 @@ import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { ConnectionWithValues } from "@/lib/schema";
 
 /**
- * In compact mode you can not see to which inner statement node an edge is connected.
+ * In compact mode you can not see to which inner statement component an edge is connected.
  * This component allows the user to pick the source of the connection.
  */
 export function SourcePicker({
@@ -46,7 +46,7 @@ export function SourcePicker({
             <div key={index} className="flex items-center space-x-2">
               <RadioGroupItem value={index.toString()} id={id + index} />
               <Label htmlFor={id + index}>
-                {choice.source_node}: {choice.source_value}
+                {choice.source_component}: {choice.source_value}
               </Label>
             </div>
           ))}

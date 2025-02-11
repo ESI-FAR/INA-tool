@@ -223,8 +223,8 @@ export function processConnection(
       `Target statement "${connection.target_statement}" not found`,
     );
   }
-  const sourceNodeId = `${connection.source_statement}-${connection.source_node}`;
-  const targetNodeId = `${connection.target_statement}-${connection.target_node}`;
+  const sourceNodeId = `${connection.source_statement}-${connection.source_component}`;
+  const targetNodeId = `${connection.target_statement}-${connection.target_component}`;
   const sourceNode = lookup.get(sourceNodeId);
   const targetNode = lookup.get(targetNodeId);
   if (!sourceNode) {
