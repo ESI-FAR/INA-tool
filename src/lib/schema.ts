@@ -41,6 +41,9 @@ export const TargetComponentSchema = z.enum([
   "attribute",
   "activation-condition",
 ]);
+export type ConnectionComponent =
+  | z.infer<typeof SourceComponentSchema>
+  | z.infer<typeof TargetComponentSchema>;
 
 export const DriverType = z.enum(["actor", "outcome", "sanction"]);
 

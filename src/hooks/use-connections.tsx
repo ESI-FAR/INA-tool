@@ -1,4 +1,9 @@
-import { Connection, ConnectionWithValues, Statement } from "@/lib/schema";
+import {
+  Connection,
+  ConnectionComponent,
+  ConnectionWithValues,
+  Statement,
+} from "@/lib/schema";
 import { Store, store } from "@/stores/global";
 import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
@@ -38,7 +43,36 @@ export function useConnections() {
     },
     [connections, setConnections],
   );
-  return { connections, removeConnection, addConnection };
+
+  const connectionsOfStatement = useCallback(
+    (statementId: string) => {
+      return connections.filter(
+        (connection) =>
+          connection.source_statement === statementId ||
+          connection.target_statement === statementId,
+      );
+    },
+    [connections],
+  );
+  const connectionsOfComponent = useCallback(
+    (statementId: string, component: ConnectionComponent) => {
+      return connections.filter(
+        (connection) =>
+          (connection.source_statement === statementId &&
+            connection.source_component === component) ||
+          (connection.target_statement === statementId &&
+            connection.target_component === component),
+      );
+    },
+    [connections],
+  );
+  return {
+    connections,
+    removeConnection,
+    addConnection,
+    connectionsOfStatement,
+    connectionsOfComponent,
+  };
 }
 
 export function useConnectionsWithValues(): ConnectionWithValues[] {
@@ -48,22 +82,34 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
     const statementLookup = new Map<string, Statement>(
       statements.map((statement) => [statement.Id!, statement]),
     );
-    return connections.map((connection) => {
-      const sourceStatement = statementLookup.get(connection.source_statement)!;
-      const source_col = internal2col.get(
-        connection.source_component,
-      ) as keyof Statement;
-      const source_value = sourceStatement[source_col]!;
-      const targetStatement = statementLookup.get(connection.target_statement)!;
-      const target_col = internal2col.get(
-        connection.target_component,
-      ) as keyof Statement;
-      const target_value = targetStatement[target_col]!;
-      return {
-        ...connection,
-        source_value,
-        target_value,
-      };
-    });
+    return connections
+      .map((connection) => {
+        const sourceStatement = statementLookup.get(
+          connection.source_statement,
+        );
+        if (sourceStatement === undefined) {
+          return undefined;
+        }
+        const source_col = internal2col.get(
+          connection.source_component,
+        ) as keyof Statement;
+        const source_value = sourceStatement[source_col]!;
+        const targetStatement = statementLookup.get(
+          connection.target_statement,
+        );
+        if (targetStatement === undefined) {
+          return undefined;
+        }
+        const target_col = internal2col.get(
+          connection.target_component,
+        ) as keyof Statement;
+        const target_value = targetStatement[target_col]!;
+        return {
+          ...connection,
+          source_value,
+          target_value,
+        };
+      })
+      .filter((c) => c !== undefined);
   }, [connections, statements]);
 }
