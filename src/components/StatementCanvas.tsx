@@ -1,4 +1,4 @@
-import { store } from "@/lib/graph-store/statement";
+import { store } from "@/stores/statement-network";
 import { Controls, ReactFlow } from "@xyflow/react";
 import { Connection as ReactFlowConnection } from "@xyflow/react";
 import { useStore } from "zustand";

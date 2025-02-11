@@ -1,6 +1,6 @@
-import { store as componentGraphStore } from "./graph-store/component";
-import { store as statementGraphStore } from "./graph-store/statement";
-import { store } from "./store";
+import { store } from "@/stores/global";
+import { store as componentGraphStore } from "../stores/component-network";
+import { store as statementGraphStore } from "../stores/statement-network";
 
 export function project2json() {
   const body = {

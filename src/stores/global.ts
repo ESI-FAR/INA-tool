@@ -1,6 +1,6 @@
+import { Conflict, Connection, Statement } from "@/lib/schema";
 import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { Statement, Conflict, Connection } from "./schema";
 
 export type State = {
   projectName: string;

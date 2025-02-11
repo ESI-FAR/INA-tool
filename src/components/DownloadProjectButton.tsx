@@ -2,7 +2,7 @@ import { DownloadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { download } from "@/lib/io";
 import { project2json } from "@/lib/project2json";
-import { store } from "@/lib/store";
+import { store } from "@/stores/global";
 
 function createProjectFile() {
   const projectName = store.getState().projectName;

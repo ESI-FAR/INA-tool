@@ -1,4 +1,4 @@
-import { store } from "./store";
+import { store } from "@/stores/global";
 import { json2project, project2json } from "./project2json";
 
 const saveState = () => {

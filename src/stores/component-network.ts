@@ -14,7 +14,7 @@ import {
   InnerStatementEdge,
   isDrivenConnectionEdge,
   isInnerStatementEdge,
-} from "../edge";
+} from "../lib/edge";
 import {
   ConflictGroupNode,
   INANode,
@@ -23,11 +23,11 @@ import {
   isStatementNode,
   StatementNode,
   StatementRelatedNode,
-} from "../node";
+} from "../lib/node";
 import { createStore } from "zustand";
-import { store as globalStore } from "../store";
-import { Conflict, Connection, Statement } from "../schema";
-import { DEFAULT_STATEMENT_HEIGHT, procesStatement } from "../io";
+import { store as globalStore } from "./global";
+import { Conflict, Connection, Statement } from "../lib/schema";
+import { DEFAULT_STATEMENT_HEIGHT, procesStatement } from "../lib/io";
 
 export type State = {
   nodes: INANode[];

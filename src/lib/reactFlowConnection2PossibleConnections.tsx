@@ -1,15 +1,15 @@
+import { store } from "@/stores/global";
 import { ConnectionWithValues, DriverType } from "./schema";
-import { store as globalStore } from "./store";
 import type { Connection as ReactFlowConnection } from "@xyflow/react";
 
 export function reactFlowConnection2PossibleConnections(
   connection: ReactFlowConnection,
 ): ConnectionWithValues[] {
   // The source statement can have multiple components, we need to return all possible connections
-  const sourceStatement = globalStore
+  const sourceStatement = store
     .getState()
     .statements.find((s) => s.Id === connection.source);
-  const targetStatement = globalStore
+  const targetStatement = store
     .getState()
     .statements.find((s) => s.Id === connection.target);
   if (!sourceStatement || !connection.targetHandle || !targetStatement) {

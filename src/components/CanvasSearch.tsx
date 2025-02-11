@@ -5,7 +5,7 @@ import { INANode, StatementNode } from "@/lib/node";
 import { ReactFlowInstance, useReactFlow } from "@xyflow/react";
 import { INACompactEdge, INAEdge } from "@/lib/edge";
 import { isStatementNode } from "@/lib/node";
-import { store } from "@/lib/graph-store/component";
+import { store } from "@/stores/component-network";
 import {
   Command,
   CommandEmpty,

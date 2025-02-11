@@ -1,7 +1,7 @@
 import { Connection, Statement } from "@/lib/schema";
 import { Button } from "./ui/button";
 import { Wand2Icon } from "lucide-react";
-import { store } from "@/lib/store";
+import { store } from "@/stores/global";
 
 const statements: Statement[] = [
   {

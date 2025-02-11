@@ -1,6 +1,6 @@
-import { store } from "@/lib/store";
 import { TrashIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { store } from "@/stores/global";
 
 function removeAllData() {
   const projectName = store.getState().projectName;

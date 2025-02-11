@@ -10,11 +10,10 @@ import {
   StatementNode,
   StatementRelatedNode,
 } from "./node";
-
 import { Connection, Statement } from "./schema";
-import { store } from "./store";
 import { buildEdge } from "./edge";
 import { InnerStatementEdge, INAEdge } from "./edge";
+import { store } from "@/stores/global";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
 

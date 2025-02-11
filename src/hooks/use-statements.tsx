@@ -1,5 +1,5 @@
 import { Statement } from "@/lib/schema";
-import { Store, store } from "@/lib/store";
+import { Store, store } from "@/stores/global";
 import { useCallback } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";

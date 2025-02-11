@@ -1,6 +1,6 @@
 import { useStore } from "zustand";
 import { useTheme } from "./theme-provider";
-import { store } from "@/lib/graph-store/component";
+import { store } from "@/stores/component-network";
 import {
   Connection as ReactFlowConnection,
   Controls,

@@ -13,11 +13,11 @@ import {
   INACompactEdge,
   isConflictingEdge,
   isDrivenConnectionEdge,
-} from "../edge";
-import { StatementNode } from "../node";
+} from "../lib/edge";
+import { StatementNode } from "../lib/node";
 import { createStore } from "zustand";
-import { store as globalStore } from "../store";
-import { Conflict, Connection, Statement } from "../schema";
+import { store as globalStore } from "./global";
+import { Conflict, Connection, Statement } from "../lib/schema";
 
 export type State = {
   nodes: StatementNode[];

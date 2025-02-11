@@ -1,7 +1,7 @@
 import { UploadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useRef } from "react";
-import { store } from "@/lib/store";
+import { store } from "@/stores/global";
 import { useToast } from "@/hooks/use-toast";
 import { csvParse } from "d3-dsv";
 import { read as readXLSX, utils as utilsXLSX } from "xlsx";
