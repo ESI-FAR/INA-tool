@@ -11,7 +11,12 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Connection, connectionSchema, Statement } from "@/lib/schema";
+import {
+  Connection,
+  connectionSchema,
+  DrivenBy,
+  Statement,
+} from "@/lib/schema";
 import { useForm, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -36,16 +41,16 @@ import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { useConnections } from "@/hooks/use-connections";
 
-function DriverField() {
+function DrivenByField() {
   const form = useFormContext();
 
   return (
     <FormField
       control={form.control}
-      name="driver"
+      name="driven_by"
       render={({ field }) => (
         <FormItem className="space-y-3">
-          <FormLabel>Driver</FormLabel>
+          <FormLabel>Driven by</FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={(e) => {
@@ -85,9 +90,9 @@ function DriverField() {
   );
 }
 
-function canStatementBeSourceForDriver(driver: string) {
+function canStatementBeSourceForDrivenBy(driven_by: DrivenBy) {
   return (statement: Statement) => {
-    if (driver === "actor") {
+    if (driven_by === "actor") {
       const hassDirectAnimate =
         statement["Direct Object"] &&
         statement["Type of Direct Object"] === "animate";
@@ -97,7 +102,7 @@ function canStatementBeSourceForDriver(driver: string) {
       const hasExecutionConstraint = statement["Execution Constraint"];
       return hassDirectAnimate || hasInDirectAnimate || hasExecutionConstraint;
     }
-    if (driver === "outcome") {
+    if (driven_by === "outcome") {
       const hasDirectInanimate =
         statement["Direct Object"] &&
         statement["Type of Direct Object"] === "inanimate";
@@ -106,7 +111,7 @@ function canStatementBeSourceForDriver(driver: string) {
         statement["Type of Indirect Object"] === "inanimate";
       return hasDirectInanimate || hasInDirectInanimate;
     }
-    if (driver === "sanction") {
+    if (driven_by === "sanction") {
       // Aim is required so never ambiguous
       return true;
     }
@@ -116,17 +121,17 @@ function canStatementBeSourceForDriver(driver: string) {
 
 function SourceStatementField({ statements }: { statements: Statement[] }) {
   const form = useFormContext();
-  const driver = useFormContext().watch("driver");
+  const driven_by = useFormContext().watch("driven_by");
   const targetStatement = useFormContext().watch("target_statement");
   const choices = useMemo(() => {
-    const filter = canStatementBeSourceForDriver(driver);
+    const filter = canStatementBeSourceForDrivenBy(driven_by);
     const choices = statements.filter(filter);
     if (targetStatement) {
       // TODO filter out current connections
       return choices.filter((statement) => statement.Id !== targetStatement);
     }
     return choices;
-  }, [driver, statements, targetStatement]);
+  }, [driven_by, statements, targetStatement]);
   const [open, setOpen] = useState(false);
 
   return (
@@ -195,13 +200,13 @@ function SourceStatementField({ statements }: { statements: Statement[] }) {
   );
 }
 
-function canStatementBeTargetForDriver(driver: string) {
+function canStatementBeTargetForDrivenBy(driven_by: DrivenBy) {
   return (statement: Statement) => {
-    if (driver === "actor") {
+    if (driven_by === "actor") {
       // Attribute is required so always valid
       return true;
     } else if (
-      (driver === "outcome" || driver === "sanction") &&
+      (driven_by === "outcome" || driven_by === "sanction") &&
       statement["Activation Condition"]
     ) {
       return true;
@@ -212,17 +217,17 @@ function canStatementBeTargetForDriver(driver: string) {
 
 function TargetStatementField({ statements }: { statements: Statement[] }) {
   const form = useFormContext();
-  const driver = useFormContext().watch("driver");
+  const driven_by = useFormContext().watch("driven_by");
   const sourceStatement = useFormContext().watch("source_statement");
   const choices = useMemo(() => {
-    const filter = canStatementBeTargetForDriver(driver);
+    const filter = canStatementBeTargetForDrivenBy(driven_by);
     const choices = statements.filter(filter);
     if (sourceStatement) {
       // TODO filter out current connections
       return choices.filter((statement) => statement.Id !== sourceStatement);
     }
     return choices;
-  }, [driver, statements, sourceStatement]);
+  }, [driven_by, statements, sourceStatement]);
   const [open, setOpen] = useState(false);
 
   return (
@@ -301,7 +306,7 @@ function deriveSourceChoices(statement: Statement, type: string) {
   const choices: SourceChoice[] = [];
   const id = statement.Id!;
   // for each type return choice if it is present
-  if (type === "actor-driven") {
+  if (type === "actor") {
     if (
       statement["Direct Object"] &&
       statement["Type of Direct Object"] === "animate"
@@ -329,7 +334,7 @@ function deriveSourceChoices(statement: Statement, type: string) {
         value: statement["Execution Constraint"],
       });
     }
-  } else if (type === "outcome-driven") {
+  } else if (type === "outcome") {
     if (
       statement["Direct Object"] &&
       statement["Type of Direct Object"] === "inanimate"
@@ -350,7 +355,7 @@ function deriveSourceChoices(statement: Statement, type: string) {
         value: statement["Indirect Object"],
       });
     }
-  } else if (type === "sanction-driven") {
+  } else if (type === "sanction") {
     choices.push({
       type: id + "-aim",
       label: "Aim",
@@ -364,7 +369,7 @@ function deriveSourceChoices(statement: Statement, type: string) {
 function SourceComponentField({ statements }: { statements: Statement[] }) {
   const form = useFormContext();
   const statementId = useFormContext().watch("source_statement");
-  const driver = useFormContext().watch("driver");
+  const driven_by = useFormContext().watch("driven_by");
   const choices = useMemo(() => {
     const statement = statements.find(
       (statement) => statement.Id === statementId,
@@ -372,13 +377,12 @@ function SourceComponentField({ statements }: { statements: Statement[] }) {
     if (!statement) {
       return [];
     }
-    // TODO get rid of renaming driver as arg and return
-    const choices = deriveSourceChoices(statement, driver + "-driven");
+    const choices = deriveSourceChoices(statement, driven_by);
     return choices.map((c) => ({
       ...c,
       type: c.type.replace(statement.Id! + "-", ""),
     }));
-  }, [driver, statementId, statements]);
+  }, [driven_by, statementId, statements]);
 
   useEffect(() => {
     // Auto select if there is only one choice
@@ -421,16 +425,16 @@ function SourceComponentField({ statements }: { statements: Statement[] }) {
   );
 }
 
-function deriveTargetChoices(statement: Statement, driver: string) {
+function deriveTargetChoices(statement: Statement, driven_by: DrivenBy) {
   const choices = [];
-  if (driver === "actor") {
+  if (driven_by === "actor") {
     choices.push({
       type: "attribute",
       label: "Attribute",
       value: statement.Attribute,
     });
   } else if (
-    (driver === "outcome" || driver === "sanction") &&
+    (driven_by === "outcome" || driven_by === "sanction") &&
     statement["Activation Condition"]
   ) {
     choices.push({
@@ -445,7 +449,7 @@ function deriveTargetChoices(statement: Statement, driver: string) {
 function TargetComponentField({ statements }: { statements: Statement[] }) {
   const form = useFormContext();
   const statementId = useFormContext().watch("target_statement");
-  const driver = useFormContext().watch("driver");
+  const driven_by = useFormContext().watch("driven_by");
   const choices = useMemo(() => {
     const statement = statements.find(
       (statement) => statement.Id === statementId,
@@ -453,9 +457,9 @@ function TargetComponentField({ statements }: { statements: Statement[] }) {
     if (!statement) {
       return [];
     }
-    const choices = deriveTargetChoices(statement, driver);
+    const choices = deriveTargetChoices(statement, driven_by);
     return choices;
-  }, [driver, statementId, statements]);
+  }, [driven_by, statementId, statements]);
 
   useEffect(() => {
     // Auto select if there is only one choice
@@ -505,7 +509,7 @@ export function AddConnectionButton() {
   const myform = useForm<Connection>({
     resolver: zodResolver(connectionSchema),
     defaultValues: {
-      driver: "actor",
+      driven_by: "actor",
     },
   });
 
@@ -536,7 +540,7 @@ export function AddConnectionButton() {
                 Add a connection between two statements.
               </DialogDescription>
             </DialogHeader>
-            <DriverField />
+            <DrivenByField />
             <div className="grid grid-cols-1 gap-1 py-1 md:grid-cols-2">
               <fieldset className="border p-1">
                 <legend>Source</legend>

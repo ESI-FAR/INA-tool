@@ -17,7 +17,7 @@ function compareConnection(a: Connection, b: Connection): boolean {
     a.source_component === b.source_component &&
     a.target_statement === b.target_statement &&
     a.target_component === b.target_component &&
-    a.driver === b.driver
+    a.driven_by === b.driven_by
   );
 }
 

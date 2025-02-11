@@ -13,7 +13,7 @@ import "@xyflow/react/dist/style.css";
 import { useConnections } from "@/hooks/use-connections";
 import {
   Connection,
-  DriverType,
+  drivenbySchema,
   SourceComponentSchema,
   TargetComponentSchema,
 } from "@/lib/schema";
@@ -39,7 +39,7 @@ function mapReactFlowConnectionToINAConnection(
     source_component: SourceComponentSchema.parse(sourceNode.type),
     target_statement: targetNode.parentId,
     target_component: TargetComponentSchema.parse(targetNode.type),
-    driver: DriverType.parse(connection.targetHandle.replace("-driven", "")),
+    driven_by: drivenbySchema.parse(connection.targetHandle),
   };
 }
 

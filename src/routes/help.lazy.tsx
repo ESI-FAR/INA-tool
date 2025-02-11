@@ -1,5 +1,5 @@
 import {
-  DriverType,
+  drivenbySchema,
   SourceComponentSchema,
   statementColumns,
   TargetComponentSchema,
@@ -95,8 +95,8 @@ function RouteComponent() {
             {TargetComponentSchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
           <li>
-            Driver, must be one of{" "}
-            {DriverType.options.map((o) => `"${o}"`).join(", ")}
+            Driven by, must be one of{" "}
+            {drivenbySchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
         </ol>
       </p>
@@ -221,8 +221,8 @@ function RouteComponent() {
             <li>Find a statement you want to start from.</li>
             <li>
               Press left mouse button on colored circle to start making a
-              connection. Each color determines what the driver is for the
-              connection.
+              connection. Each color determines what the connections is driven
+              by.
             </li>
             <li>
               Drag the mouse to same colored circle and release mouse key. If a
@@ -339,7 +339,7 @@ function RouteComponent() {
           <li>
             <strong>Adding:</strong> After pressing the{" "}
             <PlusIcon className="inline" /> button, a dialog will open where you
-            can select the driver, source and target statements. Press the{" "}
+            can select the driven by, source and target statements. Press the{" "}
             <SaveIcon className="inline" /> button to save the new connection.
           </li>
           <li>

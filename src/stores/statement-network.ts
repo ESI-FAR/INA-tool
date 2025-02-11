@@ -124,10 +124,7 @@ function onConnectionsChange(connections: Connection[]) {
       newEdges.push(edge);
     } else {
       // new
-      const type = (connection.driver + "-driven") as unknown as Exclude<
-        DrivenConnectionEdge["type"],
-        undefined
-      >;
+      const type = connection.driven_by;
       const edge: DrivenConnectionEdge = {
         id,
         source: connection.source_statement,

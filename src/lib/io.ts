@@ -11,7 +11,7 @@ import {
   StatementRelatedNode,
 } from "./node";
 import { Connection, ConnectionComponent, Statement } from "./schema";
-import { buildEdge } from "./edge";
+import { builderDrivenConnectionEdge } from "./edge";
 import { ComponentEdge, INACEdge } from "./edge";
 import { store } from "@/stores/global";
 
@@ -238,7 +238,7 @@ export function processConnection(
 
   // TODO gather all errors instead of throwing on first one
   // TODO replace with zod somehow
-  if (connection.driver === "actor") {
+  if (connection.driven_by === "actor") {
     if (targetNode.type !== "attribute") {
       throw new InvalidConnectionError(
         `Actor driven connection target can only be attribute, got "${targetNode.type}"`,
@@ -255,8 +255,8 @@ export function processConnection(
         `Actor driven connection source can only be animate direct/indirect object or execution constraint, got "${sourceNode.type}"`,
       );
     }
-    return buildEdge(sourceNode.id, targetNode.id, "actor-driven");
-  } else if (connection.driver === "outcome") {
+    return builderDrivenConnectionEdge(sourceNode.id, targetNode.id, "actor");
+  } else if (connection.driven_by === "outcome") {
     if (targetNode.type !== "activation-condition") {
       throw new InvalidConnectionError(
         `Outcome driven connection target can only be activation condition, got "${targetNode.type}"`,
@@ -271,8 +271,8 @@ export function processConnection(
         `Outcome driven connection source can only be inanimate direct/indirect object, got "${sourceNode.type}"`,
       );
     }
-    return buildEdge(sourceNode.id, targetNode.id, "outcome-driven");
-  } else if (connection.driver === "sanction") {
+    return builderDrivenConnectionEdge(sourceNode.id, targetNode.id, "outcome");
+  } else if (connection.driven_by === "sanction") {
     if (targetNode.type !== "activation-condition") {
       throw new InvalidConnectionError(
         `Sanction driven connection target can only be activation condition, got "${targetNode.type}"`,
@@ -283,9 +283,15 @@ export function processConnection(
         `Sanction driven connection source can only be aim, got "${sourceNode.type}"`,
       );
     }
-    return buildEdge(sourceNode.id, targetNode.id, "sanction-driven");
+    return builderDrivenConnectionEdge(
+      sourceNode.id,
+      targetNode.id,
+      "sanction",
+    );
   }
-  throw new InvalidConnectionError(`Unknown driver "${connection.driver}"`);
+  throw new InvalidConnectionError(
+    `Unknown driven by "${connection.driven_by}"`,
+  );
 }
 
 export function offsetStatement(statement: StatementNode, index: number) {

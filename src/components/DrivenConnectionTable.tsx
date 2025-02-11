@@ -35,9 +35,9 @@ import {
 
 const columns: ColumnDef<Connection>[] = [
   {
-    accessorKey: "driver",
+    accessorKey: "driven_by",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Driver" />
+      <DataTableColumnHeader column={column} title="Driven by" />
     ),
   },
   {

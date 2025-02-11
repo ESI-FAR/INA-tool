@@ -81,7 +81,7 @@ function SourceHandles({
       {allowActorDriven && (
         <Handle
           type="source"
-          id="actor-driven"
+          id="actor"
           className="!bg-purple-500"
           style={{ ...style, left: "25%" }}
           position={Position.Bottom}
@@ -91,7 +91,7 @@ function SourceHandles({
       {allowOutcomeDriven && (
         <Handle
           type="source"
-          id="outcome-driven"
+          id="outcome"
           className="!bg-green-500"
           style={{ ...style, left: "50%" }}
           position={Position.Bottom}
@@ -100,7 +100,7 @@ function SourceHandles({
       )}
       <Handle
         type="source"
-        id="sanction-driven"
+        id="sanction"
         className="!bg-red-500"
         style={{ ...style, left: "75%" }}
         position={Position.Bottom}
@@ -128,7 +128,7 @@ function TargetHandles({
     <>
       <Handle
         type="target"
-        id="actor-driven"
+        id="actor"
         className="!bg-purple-500"
         style={{ ...style, left: "25%" }}
         position={Position.Top}
@@ -138,7 +138,7 @@ function TargetHandles({
         <>
           <Handle
             type="target"
-            id="outcome-driven"
+            id="outcome"
             className="!bg-green-500"
             style={{ ...style, left: "50%" }}
             position={Position.Top}
@@ -146,7 +146,7 @@ function TargetHandles({
           />
           <Handle
             type="target"
-            id="sanction-driven"
+            id="sanction"
             className="!bg-red-500"
             style={{ ...style, left: "75%" }}
             position={Position.Top}
@@ -286,7 +286,7 @@ export function AttributeNode({
       />
       <Handle
         type="target"
-        id="actor-driven"
+        id="actor"
         className="!bg-purple-500"
         style={drivenConnectionHandleStye}
         position={Position.Top}
@@ -326,7 +326,7 @@ export function AimNode({ data, isConnectable, selected }: NodeProps<AimNode>) {
       />
       <Handle
         type="source"
-        id="sanction-driven"
+        id="sanction"
         className="!bg-red-500"
         style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Bottom}
@@ -365,7 +365,7 @@ export function DirectObjectNode({
       {data.animation === "animate" && (
         <Handle
           type="source"
-          id="actor-driven"
+          id="actor"
           className="!bg-purple-500"
           style={{ ...drivenConnectionHandleStye, left: "66%" }}
           position={Position.Bottom}
@@ -375,7 +375,7 @@ export function DirectObjectNode({
       {data.animation === "inanimate" && (
         <Handle
           type="source"
-          id="outcome-driven"
+          id="outcome"
           className="!bg-green-500"
           style={{ ...drivenConnectionHandleStye, left: "66%" }}
           position={Position.Bottom}
@@ -408,7 +408,7 @@ export function InDirectObjectNode({
       {data.animation === "animate" && (
         <Handle
           type="source"
-          id="actor-driven"
+          id="actor"
           className="!bg-purple-500"
           style={drivenConnectionHandleStye}
           position={Position.Bottom}
@@ -418,7 +418,7 @@ export function InDirectObjectNode({
       {data.animation === "inanimate" && (
         <Handle
           type="source"
-          id="outcome-driven"
+          id="outcome"
           className="!bg-green-500"
           style={drivenConnectionHandleStye}
           position={Position.Bottom}
@@ -543,7 +543,7 @@ export function ActivationConditionNode({
       />
       <Handle
         type="target"
-        id="outcome-driven"
+        id="outcome"
         className="!bg-green-500"
         style={{ ...drivenConnectionHandleStye, left: "33%" }}
         position={Position.Top}
@@ -551,7 +551,7 @@ export function ActivationConditionNode({
       />
       <Handle
         type="target"
-        id="sanction-driven"
+        id="sanction"
         className="!bg-red-500"
         style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Top}
@@ -582,7 +582,7 @@ export function ExecutionConstraintNode({
       />
       <Handle
         type="source"
-        id="actor-driven"
+        id="actor"
         className="!bg-purple-500"
         style={drivenConnectionHandleStye}
         position={Position.Bottom}

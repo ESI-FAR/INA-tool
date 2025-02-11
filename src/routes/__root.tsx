@@ -1,12 +1,9 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "@/components/Footer";
-import { ProjectName } from "@/components/ProjectName";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/theme-toggle";
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import {

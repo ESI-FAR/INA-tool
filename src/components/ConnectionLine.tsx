@@ -3,9 +3,9 @@ import { useMemo } from "react";
 
 const strokeColor = {
   color: "stroke-foreground",
-  "outcome-driven": "stroke-green-500",
-  "actor-driven": "stroke-purple-500",
-  "sanction-driven": "stroke-red-500",
+  outcome: "stroke-green-500",
+  actor: "stroke-purple-500",
+  sanction: "stroke-red-500",
 } as const;
 
 export function ConnectionLine({

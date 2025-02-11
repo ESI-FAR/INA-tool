@@ -8,8 +8,7 @@ import {
   OnNodesChange,
 } from "@xyflow/react";
 import {
-  buildEdge,
-  DrivenConnectionEdge,
+  builderDrivenConnectionEdge,
   INACEdge,
   ComponentEdge,
   isDrivenConnectionEdge,
@@ -173,7 +172,7 @@ function onStatementsChange(statements: Statement[]) {
 }
 
 function connection2id(connection: Connection): string {
-  return `${connection.driver}-${connection.source_statement}-${connection.source_component}-2-${connection.source_statement}-${connection.target_component}`;
+  return `${connection.driven_by}-${connection.source_statement}-${connection.source_component}-2-${connection.source_statement}-${connection.target_component}`;
 }
 
 function onConnectionsChange(connections: Connection[]) {
@@ -192,11 +191,11 @@ function onConnectionsChange(connections: Connection[]) {
     const id = connection2id(connection);
     if (!edgeIds.has(id)) {
       // new edge
-      const newEdge = buildEdge(
+      const newEdge = builderDrivenConnectionEdge(
         connection.source_statement + "-" + connection.source_component,
         connection.target_statement + "-" + connection.target_component,
-        (connection.driver + "-driven") as Exclude<INACEdge["type"], undefined>,
-      ) as DrivenConnectionEdge;
+        connection.driven_by,
+      );
       drivenConnectionEdges.push(newEdge);
     }
   }

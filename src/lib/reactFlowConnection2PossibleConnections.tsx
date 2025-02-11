@@ -1,5 +1,5 @@
 import { store } from "@/stores/global";
-import { ConnectionWithValues, DriverType } from "./schema";
+import { ConnectionWithValues, drivenbySchema } from "./schema";
 import type { Connection as ReactFlowConnection } from "@xyflow/react";
 
 export function reactFlowConnection2PossibleConnections(
@@ -15,11 +15,9 @@ export function reactFlowConnection2PossibleConnections(
   if (!sourceStatement || !connection.targetHandle || !targetStatement) {
     return [];
   }
-  const driver = DriverType.parse(
-    connection.targetHandle.replace("-driven", ""),
-  );
+  const driven_by = drivenbySchema.parse(connection.targetHandle);
   const connections: ConnectionWithValues[] = [];
-  if (driver === "actor") {
+  if (driven_by === "actor") {
     if (
       sourceStatement["Direct Object"] &&
       sourceStatement["Type of Direct Object"] === "animate"
@@ -31,7 +29,7 @@ export function reactFlowConnection2PossibleConnections(
         target_statement: connection.target,
         target_component: "attribute",
         target_value: targetStatement["Attribute"],
-        driver: driver,
+        driven_by,
       });
     }
     if (
@@ -45,7 +43,7 @@ export function reactFlowConnection2PossibleConnections(
         target_statement: connection.target,
         target_component: "attribute",
         target_value: targetStatement["Attribute"],
-        driver: driver,
+        driven_by,
       });
     }
     if (sourceStatement["Execution Constraint"]) {
@@ -56,10 +54,10 @@ export function reactFlowConnection2PossibleConnections(
         target_statement: connection.target,
         target_component: "attribute",
         target_value: targetStatement["Attribute"],
-        driver: driver,
+        driven_by,
       });
     }
-  } else if (driver === "outcome") {
+  } else if (driven_by === "outcome") {
     if (
       sourceStatement["Direct Object"] &&
       sourceStatement["Type of Direct Object"] === "inanimate" &&
@@ -72,7 +70,7 @@ export function reactFlowConnection2PossibleConnections(
         target_statement: connection.target,
         target_component: "activation-condition",
         target_value: targetStatement["Activation Condition"],
-        driver: driver,
+        driven_by,
       });
     }
     if (
@@ -87,10 +85,13 @@ export function reactFlowConnection2PossibleConnections(
         target_statement: connection.target,
         target_component: "activation-condition",
         target_value: targetStatement["Activation Condition"],
-        driver: driver,
+        driven_by,
       });
     }
-  } else if (driver === "sanction" && targetStatement["Activation Condition"]) {
+  } else if (
+    driven_by === "sanction" &&
+    targetStatement["Activation Condition"]
+  ) {
     connections.push({
       source_statement: connection.source,
       source_component: "aim",
@@ -98,7 +99,7 @@ export function reactFlowConnection2PossibleConnections(
       target_statement: connection.target,
       target_component: "activation-condition",
       target_value: targetStatement["Activation Condition"],
-      driver: driver,
+      driven_by,
     });
   }
   return connections;

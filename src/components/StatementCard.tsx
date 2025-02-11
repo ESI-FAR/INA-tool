@@ -1,10 +1,10 @@
-import { Statement } from "@/lib/schema";
+import { DrivenBy, Statement } from "@/lib/schema";
 import { useMemo } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useConnections } from "@/hooks/use-connections";
 
-function Outgoing({ type }: { type: string }) {
-  if (type === "actor-driven") {
+function Outgoing({ type }: { type: DrivenBy }) {
+  if (type === "actor") {
     return (
       <span
         title="Actor driven connection source"
@@ -13,7 +13,7 @@ function Outgoing({ type }: { type: string }) {
         ●➜
       </span>
     );
-  } else if (type === "outcome-driven") {
+  } else if (type === "outcome") {
     return (
       <span
         title="Outcome driven connection source"
@@ -33,8 +33,8 @@ function Outgoing({ type }: { type: string }) {
   );
 }
 
-function Incoming({ type }: { type: string }) {
-  if (type === "actor-driven") {
+function Incoming({ type }: { type: DrivenBy }) {
+  if (type === "actor") {
     return (
       <span
         title="Actor driven connection target"
@@ -43,7 +43,7 @@ function Incoming({ type }: { type: string }) {
         ➜●
       </span>
     );
-  } else if (type === "outcome-driven") {
+  } else if (type === "outcome") {
     return (
       <span
         title="Outcome driven connection target"
@@ -66,13 +66,13 @@ function Incoming({ type }: { type: string }) {
 function useConnectionsOfStatement(statementId: string) {
   const { connections } = useConnections();
   return useMemo(() => {
-    const incoming = new Map<string, string>();
-    const outgoing = new Map<string, string>();
+    const incoming = new Map<string, DrivenBy>();
+    const outgoing = new Map<string, DrivenBy>();
     for (const connection of connections) {
       if (connection.source_statement === statementId) {
-        outgoing.set(connection.driver, connection.target_statement);
+        outgoing.set(connection.target_statement, connection.driven_by);
       } else if (connection.target_statement === statementId) {
-        incoming.set(connection.driver, connection.source_statement);
+        incoming.set(connection.source_statement, connection.driven_by);
       }
     }
     return { incoming, outgoing };

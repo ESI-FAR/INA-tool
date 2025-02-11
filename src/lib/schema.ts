@@ -76,14 +76,15 @@ export type ConnectionComponent =
   | z.infer<typeof SourceComponentSchema>
   | z.infer<typeof TargetComponentSchema>;
 
-export const DriverType = z.enum(["actor", "outcome", "sanction"]);
+export const drivenbySchema = z.enum(["actor", "outcome", "sanction"]);
+export type DrivenBy = z.infer<typeof drivenbySchema>;
 
 const connectionUnrefinedSchema = z.object({
-  source_statement: z.string(),
+  source_statement: z.string().min(1),
   source_component: SourceComponentSchema,
-  target_statement: z.string(),
+  target_statement: z.string().min(1),
   target_component: TargetComponentSchema,
-  driver: DriverType,
+  driven_by: drivenbySchema,
 });
 export const connectionSchema = connectionUnrefinedSchema
   .refine((data) => data.source_statement !== data.target_statement, {
@@ -92,29 +93,29 @@ export const connectionSchema = connectionUnrefinedSchema
   })
   .refine(
     (data) =>
-      (data.driver === "sanction" &&
+      (data.driven_by === "sanction" &&
         data.source_component === "aim" &&
         data.target_component === "activation-condition") ||
-      data.driver !== "sanction",
+      data.driven_by !== "sanction",
     {
       message:
         'Sanction-driven connection must have source_component as "aim" and target_component as "activation-condition"',
-      path: ["driver"],
+      path: ["driven_by"],
     },
   )
   .refine(
     (data) =>
       // Cannot check that source_statement object is animate, so that is part of add connection logic
-      (data.driver === "actor" &&
+      (data.driven_by === "actor" &&
         (data.source_component === "execution-constraint" ||
           data.source_component === "direct-object" ||
           data.source_component === "indirect-object") &&
         data.target_component === "attribute") ||
-      data.driver !== "actor",
+      data.driven_by !== "actor",
     {
       message:
         'Actor-driven connection must have source_component as "execution-constraint", "direct-object" or "indirect-object" and target_component as "attribute"',
-      path: ["driver"],
+      path: ["driven_by"],
     },
   )
   .refine(
@@ -123,11 +124,11 @@ export const connectionSchema = connectionUnrefinedSchema
       ((data.source_component === "direct-object" ||
         data.source_component === "indirect-object") &&
         data.target_component === "activation-condition") ||
-      data.driver !== "outcome",
+      data.driven_by !== "outcome",
     {
       message:
         'Outcome-driven connection must have source_component as "direct-object" or "indirect-object" and target_component as "activation-condition"',
-      path: ["driver"],
+      path: ["driven_by"],
     },
   );
 export type Connection = z.infer<typeof connectionSchema>;

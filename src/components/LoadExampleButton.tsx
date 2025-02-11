@@ -98,21 +98,21 @@ const connections: Connection[] = [
     source_component: "aim",
     target_statement: "2",
     target_component: "activation-condition",
-    driver: "sanction",
+    driven_by: "sanction",
   },
   {
     source_statement: "2",
     source_component: "indirect-object",
     target_statement: "3",
     target_component: "attribute",
-    driver: "actor",
+    driven_by: "actor",
   },
   {
     source_statement: "3",
     source_component: "direct-object",
     target_statement: "4",
     target_component: "activation-condition",
-    driver: "outcome",
+    driven_by: "outcome",
   },
 ];
 

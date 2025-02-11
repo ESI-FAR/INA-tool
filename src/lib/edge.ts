@@ -1,4 +1,5 @@
 import { MarkerType, type Edge } from "@xyflow/react";
+import { DrivenBy } from "./schema";
 
 /*
 Connections:
@@ -17,17 +18,11 @@ export type ComponentEdge = Edge<
   { label?: string; statementId: string },
   "component"
 >;
-export type ActorDrivenConnection = Edge<
-  Record<string, unknown>,
-  "actor-driven"
->; // Purple
-export type OutcomeDrivenConnection = Edge<
-  Record<string, unknown>,
-  "outcome-driven"
->; // Green
+export type ActorDrivenConnection = Edge<Record<string, unknown>, "actor">; // Purple
+export type OutcomeDrivenConnection = Edge<Record<string, unknown>, "outcome">; // Green
 export type SanctionDrivenConnection = Edge<
   Record<string, unknown>,
-  "sanction-driven"
+  "sanction"
 >; // Red
 
 export type ConflictingEdge = Edge<Record<string, unknown>, "conflict">;
@@ -50,9 +45,7 @@ export function isDrivenConnectionEdge(
   edge: INACEdge | ConflictingEdge,
 ): edge is DrivenConnectionEdge {
   return (
-    edge.type === "actor-driven" ||
-    edge.type === "outcome-driven" ||
-    edge.type === "sanction-driven"
+    edge.type === "actor" || edge.type === "outcome" || edge.type === "sanction"
   );
 }
 
@@ -69,11 +62,11 @@ export function connectionMarkerEnd(type: keyof typeof drivenColors) {
   };
 }
 
-export function buildEdge(
+export function builderDrivenConnectionEdge(
   sourceId: string,
   targetId: string,
-  type: Exclude<INACEdge["type"], undefined>,
-): INACEdge {
+  type: DrivenBy,
+): DrivenConnectionEdge {
   return {
     id: `${sourceId}-2-${targetId}`,
     source: sourceId,
@@ -87,17 +80,15 @@ export function buildEdge(
 
 export const drivenColors = {
   component: "#000000",
-  "actor-driven": "#a855f7",
-  "outcome-driven": "#22c55e",
-  "sanction-driven": "#ef4444",
+  actor: "#a855f7",
+  outcome: "#22c55e",
+  sanction: "#ef4444",
 } as const;
 
 export function isDrivenConnection(
   edge: INACEdge,
 ): edge is DrivenConnectionEdge {
   return (
-    edge.type === "actor-driven" ||
-    edge.type === "outcome-driven" ||
-    edge.type === "sanction-driven"
+    edge.type === "actor" || edge.type === "outcome" || edge.type === "sanction"
   );
 }

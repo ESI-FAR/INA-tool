@@ -24,9 +24,9 @@ const nodeTypes = {
 } as const;
 
 const edgeTypes = {
-  "actor-driven": ActorDrivenConnection,
-  "outcome-driven": OutcomeDrivenConnection,
-  "sanction-driven": SanctionDrivenConnection,
+  actor: ActorDrivenConnection,
+  outcome: OutcomeDrivenConnection,
+  sanction: SanctionDrivenConnection,
   conflict: ConflictingEdge,
 } as const;
 

@@ -40,7 +40,7 @@ export function ComponentEdge({
 }
 
 const actorDrivenStyle = {
-  stroke: drivenColors["actor-driven"],
+  stroke: drivenColors["actor"],
   strokeWidth: 2,
 };
 
@@ -70,7 +70,7 @@ export function ActorDrivenConnection({
 }
 
 const outcomeDrivenStyle = {
-  stroke: drivenColors["outcome-driven"],
+  stroke: drivenColors["outcome"],
   strokeWidth: 2,
 };
 
@@ -100,7 +100,7 @@ export function OutcomeDrivenConnection({
 }
 
 const sactionDrivenStyle = {
-  stroke: drivenColors["sanction-driven"],
+  stroke: drivenColors["sanction"],
   strokeWidth: 2,
 };
 
@@ -149,7 +149,7 @@ export function ConflictingEdge({
 // eslint-disable-next-line react-refresh/only-export-components
 export const edgeTypes = {
   component: ComponentEdge,
-  "actor-driven": ActorDrivenConnection,
-  "outcome-driven": OutcomeDrivenConnection,
-  "sanction-driven": SanctionDrivenConnection,
+  actor: ActorDrivenConnection,
+  outcome: OutcomeDrivenConnection,
+  sanction: SanctionDrivenConnection,
 } as const;
