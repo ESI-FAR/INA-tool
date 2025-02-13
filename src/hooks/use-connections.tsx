@@ -9,7 +9,6 @@ import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
 import { useStatements } from "./use-statements";
-import { internal2col } from "@/lib/io";
 
 function compareConnection(a: Connection, b: Connection): boolean {
   return (
@@ -90,9 +89,7 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
         if (sourceStatement === undefined) {
           return undefined;
         }
-        const source_col = internal2col.get(
-          connection.source_component,
-        ) as keyof Statement;
+        const source_col = connection.source_component;
         const source_value = sourceStatement[source_col]!;
         const targetStatement = statementLookup.get(
           connection.target_statement,
@@ -100,9 +97,7 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
         if (targetStatement === undefined) {
           return undefined;
         }
-        const target_col = internal2col.get(
-          connection.target_component,
-        ) as keyof Statement;
+        const target_col = connection.target_component;
         const target_value = targetStatement[target_col]!;
         return {
           ...connection,

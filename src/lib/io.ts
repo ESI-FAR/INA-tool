@@ -10,7 +10,7 @@ import {
   StatementNode,
   StatementRelatedNode,
 } from "./node";
-import { Connection, ConnectionComponent, Statement } from "./schema";
+import { Connection, Statement } from "./schema";
 import { builderDrivenConnectionEdge } from "./edge";
 import { ComponentEdge, INACEdge } from "./edge";
 import { store } from "@/stores/global";
@@ -184,18 +184,6 @@ export function procesStatement(
 export function deriveStatements(nodes: INANode[]): Statement[] {
   return nodes.filter(isStatementNode).map((node) => node.data.raw);
 }
-
-export const internal2col = new Map<ConnectionComponent, keyof Statement>([
-  ["aim", "Aim"],
-  ["attribute", "Attribute"],
-  ["activation-condition", "Activation Condition"],
-  ["direct-object", "Direct Object"],
-  ["indirect-object", "Indirect Object"],
-  ["execution-constraint", "Execution Constraint"],
-]);
-export const col2internal = new Map<keyof Statement, ConnectionComponent>(
-  [...internal2col].map(([k, v]) => [v, k]),
-);
 
 export class InvalidConnectionError extends Error {
   constructor(message: string) {

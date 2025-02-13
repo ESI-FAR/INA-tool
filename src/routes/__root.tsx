@@ -1,10 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import {
   createRootRoute,

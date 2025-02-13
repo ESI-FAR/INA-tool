@@ -62,15 +62,15 @@ export const statementsSchema = z.array(statementSchema);
 export type Statements = z.infer<typeof statementsSchema>;
 
 export const SourceComponentSchema = z.enum([
-  "direct-object",
-  "indirect-object",
-  "aim",
-  "execution-constraint",
+  "Direct Object",
+  "Indirect Object",
+  "Aim",
+  "Execution Constraint",
 ]);
 
 export const TargetComponentSchema = z.enum([
-  "attribute",
-  "activation-condition",
+  "Attribute",
+  "Activation Condition",
 ]);
 export type ConnectionComponent =
   | z.infer<typeof SourceComponentSchema>
@@ -94,8 +94,8 @@ export const connectionSchema = connectionUnrefinedSchema
   .refine(
     (data) =>
       (data.driven_by === "sanction" &&
-        data.source_component === "aim" &&
-        data.target_component === "activation-condition") ||
+        data.source_component === "Aim" &&
+        data.target_component === "Activation Condition") ||
       data.driven_by !== "sanction",
     {
       message:
@@ -107,10 +107,10 @@ export const connectionSchema = connectionUnrefinedSchema
     (data) =>
       // Cannot check that source_statement object is animate, so that is part of add connection logic
       (data.driven_by === "actor" &&
-        (data.source_component === "execution-constraint" ||
-          data.source_component === "direct-object" ||
-          data.source_component === "indirect-object") &&
-        data.target_component === "attribute") ||
+        (data.source_component === "Execution Constraint" ||
+          data.source_component === "Direct Object" ||
+          data.source_component === "Indirect Object") &&
+        data.target_component === "Attribute") ||
       data.driven_by !== "actor",
     {
       message:
@@ -121,9 +121,9 @@ export const connectionSchema = connectionUnrefinedSchema
   .refine(
     (data) =>
       // Cannot check that source_statement object is imanimate, so that is part of add connection logic
-      ((data.source_component === "direct-object" ||
-        data.source_component === "indirect-object") &&
-        data.target_component === "activation-condition") ||
+      ((data.source_component === "Direct Object" ||
+        data.source_component === "Indirect Object") &&
+        data.target_component === "Activation Condition") ||
       data.driven_by !== "outcome",
     {
       message:

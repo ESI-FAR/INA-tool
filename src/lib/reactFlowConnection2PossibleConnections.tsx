@@ -24,10 +24,10 @@ export function reactFlowConnection2PossibleConnections(
     ) {
       connections.push({
         source_statement: connection.source,
-        source_component: "direct-object",
+        source_component: "Direct Object",
         source_value: sourceStatement["Direct Object"],
         target_statement: connection.target,
-        target_component: "attribute",
+        target_component: "Attribute",
         target_value: targetStatement["Attribute"],
         driven_by,
       });
@@ -38,10 +38,10 @@ export function reactFlowConnection2PossibleConnections(
     ) {
       connections.push({
         source_statement: connection.source,
-        source_component: "indirect-object",
+        source_component: "Indirect Object",
         source_value: sourceStatement["Indirect Object"],
         target_statement: connection.target,
-        target_component: "attribute",
+        target_component: "Attribute",
         target_value: targetStatement["Attribute"],
         driven_by,
       });
@@ -49,10 +49,10 @@ export function reactFlowConnection2PossibleConnections(
     if (sourceStatement["Execution Constraint"]) {
       connections.push({
         source_statement: connection.source,
-        source_component: "execution-constraint",
+        source_component: "Execution Constraint",
         source_value: sourceStatement["Execution Constraint"],
         target_statement: connection.target,
-        target_component: "attribute",
+        target_component: "Attribute",
         target_value: targetStatement["Attribute"],
         driven_by,
       });
@@ -65,10 +65,10 @@ export function reactFlowConnection2PossibleConnections(
     ) {
       connections.push({
         source_statement: connection.source,
-        source_component: "direct-object",
+        source_component: "Direct Object",
         source_value: sourceStatement["Direct Object"],
         target_statement: connection.target,
-        target_component: "activation-condition",
+        target_component: "Activation Condition",
         target_value: targetStatement["Activation Condition"],
         driven_by,
       });
@@ -80,10 +80,10 @@ export function reactFlowConnection2PossibleConnections(
     ) {
       connections.push({
         source_statement: connection.source,
-        source_component: "indirect-object",
+        source_component: "Indirect Object",
         source_value: sourceStatement["Indirect Object"],
         target_statement: connection.target,
-        target_component: "activation-condition",
+        target_component: "Activation Condition",
         target_value: targetStatement["Activation Condition"],
         driven_by,
       });
@@ -94,10 +94,10 @@ export function reactFlowConnection2PossibleConnections(
   ) {
     connections.push({
       source_statement: connection.source,
-      source_component: "aim",
+      source_component: "Aim",
       source_value: sourceStatement["Aim"],
       target_statement: connection.target,
-      target_component: "activation-condition",
+      target_component: "Activation Condition",
       target_value: targetStatement["Activation Condition"],
       driven_by,
     });

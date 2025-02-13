@@ -95,23 +95,23 @@ const statements: Statement[] = [
 const connections: Connection[] = [
   {
     source_statement: "1",
-    source_component: "aim",
+    source_component: "Aim",
     target_statement: "2",
-    target_component: "activation-condition",
+    target_component: "Activation Condition",
     driven_by: "sanction",
   },
   {
     source_statement: "2",
-    source_component: "indirect-object",
+    source_component: "Indirect Object",
     target_statement: "3",
-    target_component: "attribute",
+    target_component: "Attribute",
     driven_by: "actor",
   },
   {
     source_statement: "3",
-    source_component: "direct-object",
+    source_component: "Direct Object",
     target_statement: "4",
-    target_component: "activation-condition",
+    target_component: "Activation Condition",
     driven_by: "outcome",
   },
 ];
