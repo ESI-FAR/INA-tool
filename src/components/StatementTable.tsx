@@ -1,5 +1,6 @@
 import {
   Connection,
+  ConnectionComponent,
   deonticSchema,
   Statement,
   statementSchema,
@@ -215,7 +216,7 @@ export function StatementTable() {
         unknown,
       ][]) {
         if (value === "" && previous[component]) {
-          const componentOfConnection = col2internal.get(component)!;
+          const componentOfConnection = component as ConnectionComponent;
           connections.push(
             ...connectionsOfComponent(previous.Id!, componentOfConnection),
           );
@@ -225,9 +226,7 @@ export function StatementTable() {
       if (
         tosave["Type of Direct Object"] !== previous["Type of Direct Object"]
       ) {
-        const componentOfConnection = col2internal.get(
-          "Type of Direct Object",
-        )!;
+        const componentOfConnection = "Direct Object";
         connections.push(
           ...connectionsOfComponent(previous.Id!, componentOfConnection),
         );
@@ -236,9 +235,7 @@ export function StatementTable() {
         tosave["Type of Indirect Object"] !==
         previous["Type of Indirect Object"]
       ) {
-        const componentOfConnection = col2internal.get(
-          "Type of Indirect Object",
-        )!;
+        const componentOfConnection = "Indirect Object";
         connections.push(
           ...connectionsOfComponent(previous.Id!, componentOfConnection),
         );
