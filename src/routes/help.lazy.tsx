@@ -84,18 +84,18 @@ function RouteComponent() {
         connections. The file must respect the columns ordering and naming
         described below:
         <ol className="list-inside list-decimal">
-          <li>Source statement, id of source statement</li>
+          <li>"source_statement", id of source statement</li>
           <li>
-            Source component, must be one of{" "}
+            "source_component", must be one of{" "}
             {SourceComponentSchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
-          <li>Target statement, id of target statement</li>
+          <li>"target_statement", id of target statement</li>
           <li>
-            Target component, must be one of{" "}
+            "target_component", must be one of{" "}
             {TargetComponentSchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
           <li>
-            Driven by, must be one of{" "}
+            "driven_by", must be one of{" "}
             {drivenbySchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
         </ol>
