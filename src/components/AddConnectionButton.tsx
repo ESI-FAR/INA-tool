@@ -38,8 +38,10 @@ import {
   CommandList,
 } from "./ui/command";
 import { cn } from "@/lib/utils";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useConnections } from "@/hooks/use-connections";
+import { statementIdPair2PossibleConnections } from "@/lib/reactFlowConnection2PossibleConnections";
+import { connection2id } from "@/lib/connection2id";
 
 function DrivenByField() {
   const form = useFormContext();
@@ -296,210 +298,46 @@ function TargetStatementField({ statements }: { statements: Statement[] }) {
   );
 }
 
-interface SourceChoice {
-  type: string;
-  label: string;
-  value: string;
-}
-
-function deriveSourceChoices(statement: Statement, type: string) {
-  const choices: SourceChoice[] = [];
-  const id = statement.Id!;
-  // for each type return choice if it is present
-  if (type === "actor") {
-    if (
-      statement["Direct Object"] &&
-      statement["Type of Direct Object"] === "animate"
-    ) {
-      choices.push({
-        type: id + "-direct-object",
-        label: "Direct Object",
-        value: statement["Direct Object"],
-      });
-    }
-    if (
-      statement["Indirect Object"] &&
-      statement["Type of Indirect Object"] === "animate"
-    ) {
-      choices.push({
-        type: id + "-indirect-object",
-        label: "Indirect Object",
-        value: statement["Indirect Object"],
-      });
-    }
-    if (statement["Execution Constraint"]) {
-      choices.push({
-        type: id + "-execution-constraint",
-        label: "Execution Constraint",
-        value: statement["Execution Constraint"],
-      });
-    }
-  } else if (type === "outcome") {
-    if (
-      statement["Direct Object"] &&
-      statement["Type of Direct Object"] === "inanimate"
-    ) {
-      choices.push({
-        type: id + "-direct-object",
-        label: "Direct Object",
-        value: statement["Direct Object"],
-      });
-    }
-    if (
-      statement["Indirect Object"] &&
-      statement["Type of Indirect Object"] === "inanimate"
-    ) {
-      choices.push({
-        type: id + "-indirect-object",
-        label: "Indirect Object",
-        value: statement["Indirect Object"],
-      });
-    }
-  } else if (type === "sanction") {
-    choices.push({
-      type: id + "-aim",
-      label: "Aim",
-      value: statement["Aim"],
-    });
-  }
-
-  return choices;
-}
-
-function SourceComponentField({ statements }: { statements: Statement[] }) {
+function ConnectionPicker() {
   const form = useFormContext();
-  const statementId = useFormContext().watch("source_statement");
   const driven_by = useFormContext().watch("driven_by");
+  const sourceStatementId = useFormContext().watch("source_statement");
+  const targetStatementId = useFormContext().watch("target_statement");
   const choices = useMemo(() => {
-    const statement = statements.find(
-      (statement) => statement.Id === statementId,
+    return statementIdPair2PossibleConnections(
+      driven_by,
+      sourceStatementId,
+      targetStatementId,
     );
-    if (!statement) {
-      return [];
-    }
-    const choices = deriveSourceChoices(statement, driven_by);
-    return choices.map((c) => ({
-      ...c,
-      type: c.type.replace(statement.Id! + "-", ""),
-    }));
-  }, [driven_by, statementId, statements]);
+  }, [driven_by, sourceStatementId, targetStatementId]);
 
-  useEffect(() => {
-    // Auto select if there is only one choice
-    if (choices.length === 1) {
-      form.setValue("source_component", choices[0].type);
-    }
-  }, [choices, form]);
-  return (
-    <FormField
-      control={form.control}
-      name="source_component"
-      render={({ field }) => (
-        <FormItem className="space-y-3">
-          <FormLabel>Component</FormLabel>
-          <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              value={field.value}
-              className="flex flex-col space-y-1"
-            >
-              {choices.map((choice) => (
-                <FormItem
-                  key={choice.type}
-                  className="flex items-center space-x-3 space-y-0"
-                >
-                  <FormControl>
-                    <RadioGroupItem value={choice.type} />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    {choice.label}: {choice.value}
-                  </FormLabel>
-                </FormItem>
-              ))}
-            </RadioGroup>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-function deriveTargetChoices(statement: Statement, driven_by: DrivenBy) {
-  const choices = [];
-  if (driven_by === "actor") {
-    choices.push({
-      type: "attribute",
-      label: "Attribute",
-      value: statement.Attribute,
-    });
-  } else if (
-    (driven_by === "outcome" || driven_by === "sanction") &&
-    statement["Activation Condition"]
-  ) {
-    choices.push({
-      type: "activation-condition",
-      label: "Activation Condition",
-      value: statement["Activation Condition"],
-    });
+  if (!(driven_by && sourceStatementId && targetStatementId)) {
+    return null;
   }
-  return choices;
-}
-
-function TargetComponentField({ statements }: { statements: Statement[] }) {
-  const form = useFormContext();
-  const statementId = useFormContext().watch("target_statement");
-  const driven_by = useFormContext().watch("driven_by");
-  const choices = useMemo(() => {
-    const statement = statements.find(
-      (statement) => statement.Id === statementId,
-    );
-    if (!statement) {
-      return [];
-    }
-    const choices = deriveTargetChoices(statement, driven_by);
-    return choices;
-  }, [driven_by, statementId, statements]);
-
-  useEffect(() => {
-    // Auto select if there is only one choice
-    if (choices.length === 1) {
-      form.setValue("target_component", choices[0].type);
-    }
-  }, [choices, form]);
-
+  // TODO convert into radio group
   return (
-    <FormField
-      control={form.control}
-      name="target_component"
-      render={({ field }) => (
-        <FormItem className="space-y-3">
-          <FormLabel>Component</FormLabel>
-          <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              value={field.value}
-              className="flex flex-col space-y-1"
-            >
-              {choices.map((choice) => (
-                <FormItem
-                  className="flex items-center space-x-3 space-y-0"
-                  key={choice.type}
-                >
-                  <FormControl>
-                    <RadioGroupItem value={choice.type} />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    {choice.label}: {choice.value}
-                  </FormLabel>
-                </FormItem>
-              ))}
-            </RadioGroup>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <ul className="list-outside list-disc">
+      {choices.map((c) => (
+        <li key={connection2id(c)}>
+          <Button
+            variant="ghost"
+            onClick={(e) => {
+              e.preventDefault();
+              form.setValue("source_component", c.source_component);
+              form.setValue("target_component", c.target_component);
+            }}
+          >
+            <span>
+              {c.source_component}:{c.source_value}
+            </span>
+            <span>➜</span>
+            <span>
+              {c.target_component}:{c.target_value}
+            </span>
+          </Button>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -545,13 +383,12 @@ export function AddConnectionButton() {
               <fieldset className="border p-1">
                 <legend>Source</legend>
                 <SourceStatementField statements={statements} />
-                <SourceComponentField statements={statements} />
               </fieldset>
               <fieldset className="border p-1">
                 <legend>Target</legend>
                 <TargetStatementField statements={statements} />
-                <TargetComponentField statements={statements} />
               </fieldset>
+              <ConnectionPicker />
             </div>
             <DialogFooter>
               <DialogClose asChild>

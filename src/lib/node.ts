@@ -5,23 +5,23 @@ export type StatementNode = Node<
   { raw: Statement; label: string },
   "statement"
 >;
-export type AttributeNode = Node<{ label: string }, "attribute">;
-export type AimNode = Node<{ label: string }, "aim">;
+export type AttributeNode = Node<{ label: string }, "Attribute">;
+export type AimNode = Node<{ label: string }, "Aim">;
 export type DirectObjectNode = Node<
   { animation?: string; label: string },
-  "direct-object"
+  "Direct Object"
 >;
 export type InDirectObjectNode = Node<
   { animation?: string; label: string },
-  "indirect-object"
+  "Indirect Object"
 >;
 export type ActivationConditionNode = Node<
   { label: string },
-  "activation-condition"
+  "Activation Condition"
 >;
 export type ExecutionConstraintNode = Node<
   { label: string },
-  "execution-constraint"
+  "Execution Constraint"
 >;
 
 export type ConflictGroupNode = Node<Record<string, never>, "conflict">;
@@ -43,12 +43,12 @@ export function isStatementNode(node: INANode): node is StatementNode {
 
 export function isComponentNode(node: INANode): node is ComponentNode {
   return (
-    node.type === "attribute" ||
-    node.type === "aim" ||
-    node.type === "direct-object" ||
-    node.type === "indirect-object" ||
-    node.type === "activation-condition" ||
-    node.type === "execution-constraint"
+    node.type === "Attribute" ||
+    node.type === "Aim" ||
+    node.type === "Direct Object" ||
+    node.type === "Indirect Object" ||
+    node.type === "Activation Condition" ||
+    node.type === "Execution Constraint"
   );
 }
 

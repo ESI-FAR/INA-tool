@@ -1,87 +1,60 @@
-import { DrivenBy, Statement } from "@/lib/schema";
+import { ConnectionComponent, DrivenBy, Statement } from "@/lib/schema";
 import { useMemo } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useConnections } from "@/hooks/use-connections";
+import { cn } from "@/lib/utils";
+import { connection2id } from "@/lib/connection2id";
 
-function Outgoing({ type }: { type: DrivenBy }) {
-  if (type === "actor") {
-    return (
-      <span
-        title="Actor driven connection source"
-        className="ps-2 text-purple-500"
-      >
-        ●➜
-      </span>
-    );
-  } else if (type === "outcome") {
-    return (
-      <span
-        title="Outcome driven connection source"
-        className="ps-2 text-green-500"
-      >
-        ●➜
-      </span>
-    );
-  }
-  return (
-    <span
-      title="Sanction driven connection source"
-      className="ps-2 text-red-500"
-    >
-      ●➜
-    </span>
-  );
-}
+const drivenByTextColors: Record<DrivenBy, string> = {
+  actor: "text-purple-500",
+  outcome: "text-green-500",
+  sanction: "text-red-500",
+} as const;
 
-function Incoming({ type }: { type: DrivenBy }) {
-  if (type === "actor") {
-    return (
-      <span
-        title="Actor driven connection target"
-        className="ps-2 text-purple-500"
-      >
-        ➜●
-      </span>
+function ComponentWithConnections({
+  statement,
+  component,
+}: {
+  statement: Statement;
+  component: ConnectionComponent;
+}) {
+  const { connectionsOfComponent } = useConnections();
+  const { incoming, outgoing } = useMemo(() => {
+    const connections = connectionsOfComponent(statement.Id!, component);
+    const incoming = connections.filter(
+      (connection) => connection.target_statement === statement.Id,
     );
-  } else if (type === "outcome") {
-    return (
-      <span
-        title="Outcome driven connection target"
-        className="ps-2 text-green-500"
-      >
-        ➜●
-      </span>
+    const outgoing = connections.filter(
+      (connection) => connection.source_statement === statement.Id,
     );
-  }
-  return (
-    <span
-      title="Sanction driven connection target"
-      className="ps-2 text-red-500"
-    >
-      ➜●
-    </span>
-  );
-}
-
-function useConnectionsOfStatement(statementId: string) {
-  const { connections } = useConnections();
-  return useMemo(() => {
-    const incoming = new Map<string, DrivenBy>();
-    const outgoing = new Map<string, DrivenBy>();
-    for (const connection of connections) {
-      if (connection.source_statement === statementId) {
-        outgoing.set(connection.target_statement, connection.driven_by);
-      } else if (connection.target_statement === statementId) {
-        incoming.set(connection.source_statement, connection.driven_by);
-      }
-    }
     return { incoming, outgoing };
-  }, [connections, statementId]);
+  }, [connectionsOfComponent, statement.Id, component]);
+  return (
+    <>
+      <span>{statement[component]}</span>
+      {incoming.map((connection) => (
+        <span
+          key={connection2id(connection)}
+          className={cn("ps-2", drivenByTextColors[connection.driven_by])}
+          title={`Connection driven by ${connection.driven_by} from ${connection.source_statement}:${connection.source_component}`}
+        >
+          ➜●
+        </span>
+      ))}
+      {outgoing.map((connection) => (
+        <span
+          key={connection2id(connection)}
+          className={cn("ps-2", drivenByTextColors[connection.driven_by])}
+          title={`Connection driven by ${connection.driven_by} to ${connection.target_statement}:${connection.target_component}`}
+        >
+          ●➜
+        </span>
+      ))}
+    </>
+  );
 }
 
 export function StatementCard({ statement }: { statement: Statement }) {
-  const connections = useConnectionsOfStatement(statement.Id!);
-
   return (
     <div className="bg-card p-2 text-card-foreground shadow">
       <div className="absolute right-0 top-0 z-10 cursor-pointer p-1 text-muted-foreground hover:text-foreground">
@@ -92,10 +65,10 @@ export function StatementCard({ statement }: { statement: Statement }) {
         <dd>{statement["Statement Type"]}</dd>
         <dt className="font-semibold">Attribute:</dt>
         <dd>
-          {statement.Attribute}
-          {connections.incoming.has("attribute") && (
-            <Incoming type={connections.incoming.get("attribute")!} />
-          )}
+          <ComponentWithConnections
+            statement={statement}
+            component="Attribute"
+          />
         </dd>
         {statement.Deontic && (
           <Fragment key="Deontic">
@@ -105,19 +78,16 @@ export function StatementCard({ statement }: { statement: Statement }) {
         )}
         <dt className="font-semibold">Aim:</dt>
         <dd>
-          {statement.Aim}
-          {connections.outgoing.has("aim") && (
-            <Outgoing type={connections.outgoing.get("aim")!} />
-          )}
+          <ComponentWithConnections statement={statement} component="Aim" />
         </dd>
         {statement["Direct Object"] && (
           <Fragment key="Direct Object">
             <dt className="font-semibold">Direct Object:</dt>
             <dd>
-              {statement["Direct Object"]}
-              {connections.outgoing.has("direct-object") && (
-                <Outgoing type={connections.outgoing.get("direct-object")!} />
-              )}
+              <ComponentWithConnections
+                statement={statement}
+                component="Direct Object"
+              />
             </dd>
           </Fragment>
         )}
@@ -131,10 +101,10 @@ export function StatementCard({ statement }: { statement: Statement }) {
           <Fragment key="Indirect Object">
             <dt className="font-semibold">Indirect Object:</dt>
             <dd>
-              {statement["Indirect Object"]}
-              {connections.outgoing.has("indirect-object") && (
-                <Outgoing type={connections.outgoing.get("indirect-object")!} />
-              )}
+              <ComponentWithConnections
+                statement={statement}
+                component="Indirect Object"
+              />
             </dd>
           </Fragment>
         )}
@@ -148,12 +118,10 @@ export function StatementCard({ statement }: { statement: Statement }) {
           <Fragment key="Activation Condition">
             <dt className="font-semibold">Activation Condition:</dt>
             <dd>
-              {statement["Activation Condition"]}
-              {connections.incoming.has("activation-condition") && (
-                <Incoming
-                  type={connections.incoming.get("activation-condition")!}
-                />
-              )}
+              <ComponentWithConnections
+                statement={statement}
+                component="Activation Condition"
+              />
             </dd>
           </Fragment>
         )}
@@ -161,12 +129,10 @@ export function StatementCard({ statement }: { statement: Statement }) {
           <Fragment key="Execution Constraint">
             <dt className="font-semibold">Execution Constraint:</dt>
             <dd>
-              {statement["Execution Constraint"]}
-              {connections.outgoing.has("execution-constraint") && (
-                <Outgoing
-                  type={connections.outgoing.get("execution-constraint")!}
-                />
-              )}
+              <ComponentWithConnections
+                statement={statement}
+                component="Execution Constraint"
+              />
             </dd>
           </Fragment>
         )}

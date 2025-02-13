@@ -99,7 +99,7 @@ export const connectionSchema = connectionUnrefinedSchema
       data.driven_by !== "sanction",
     {
       message:
-        'Sanction-driven connection must have source_component as "aim" and target_component as "activation-condition"',
+        'Sanction-driven connection must have source_component as "Aim" and target_component as "Activation Condition"',
       path: ["driven_by"],
     },
   )
@@ -114,7 +114,7 @@ export const connectionSchema = connectionUnrefinedSchema
       data.driven_by !== "actor",
     {
       message:
-        'Actor-driven connection must have source_component as "execution-constraint", "direct-object" or "indirect-object" and target_component as "attribute"',
+        'Actor-driven connection must have source_component as "Execution Constraint", "Direct Object" or "Indirect Object" and target_component as "Attribute"',
       path: ["driven_by"],
     },
   )
@@ -127,7 +127,7 @@ export const connectionSchema = connectionUnrefinedSchema
       data.driven_by !== "outcome",
     {
       message:
-        'Outcome-driven connection must have source_component as "direct-object" or "indirect-object" and target_component as "activation-condition"',
+        'Outcome-driven connection must have source_component as "Direct Object" or "Indirect Object" and target_component as "Activation Condition"',
       path: ["driven_by"],
     },
   );

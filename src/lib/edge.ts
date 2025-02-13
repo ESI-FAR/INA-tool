@@ -63,12 +63,13 @@ export function connectionMarkerEnd(type: keyof typeof drivenColors) {
 }
 
 export function builderDrivenConnectionEdge(
+  id: string,
   sourceId: string,
   targetId: string,
   type: DrivenBy,
 ): DrivenConnectionEdge {
   return {
-    id: `${sourceId}-2-${targetId}`,
+    id: `${id}-${sourceId}-2-${targetId}`,
     source: sourceId,
     target: targetId,
     type,

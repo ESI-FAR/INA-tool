@@ -27,6 +27,7 @@ import { createStore } from "zustand";
 import { store as globalStore } from "./global";
 import { Conflict, Connection, Statement } from "../lib/schema";
 import { DEFAULT_STATEMENT_HEIGHT, procesStatement } from "../lib/io";
+import { connection2id } from "../lib/connection2id";
 
 export type State = {
   nodes: INANode[];
@@ -171,10 +172,6 @@ function onStatementsChange(statements: Statement[]) {
   store.getState().setEdges([...drivenConnectionEdges, ...newEdges]);
 }
 
-function connection2id(connection: Connection): string {
-  return `${connection.driven_by}-${connection.source_statement}-${connection.source_component}-2-${connection.source_statement}-${connection.target_component}`;
-}
-
 function onConnectionsChange(connections: Connection[]) {
   const connectionIds = new Set(connections.map(connection2id));
 
@@ -192,6 +189,7 @@ function onConnectionsChange(connections: Connection[]) {
     if (!edgeIds.has(id)) {
       // new edge
       const newEdge = builderDrivenConnectionEdge(
+        id,
         connection.source_statement + "-" + connection.source_component,
         connection.target_statement + "-" + connection.target_component,
         connection.driven_by,

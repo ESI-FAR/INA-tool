@@ -11,9 +11,8 @@ import {
   StatementRelatedNode,
 } from "./node";
 import { Connection, Statement } from "./schema";
-import { builderDrivenConnectionEdge } from "./edge";
-import { ComponentEdge, INACEdge } from "./edge";
-import { store } from "@/stores/global";
+import { ComponentEdge } from "./edge";
+import { store } from "../stores/global";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
 
@@ -37,10 +36,10 @@ export function procesStatement(
   };
   nodes.push(statementNode);
 
-  const attributeId = `${id}-attribute`;
+  const attributeId = `${id}-Attribute`;
   const attributeNode: AttributeNode = {
     id: attributeId,
-    type: "attribute",
+    type: "Attribute",
     data: { label: statement.Attribute },
     // TODO move right if left node has lots of text
     position: { x: 240, y: 30 },
@@ -50,10 +49,10 @@ export function procesStatement(
   nodes.push(attributeNode);
 
   if (statement["Activation Condition"]) {
-    const activationConditionId = `${id}-activation-condition`;
+    const activationConditionId = `${id}-Activation Condition`;
     const activationConditionNode: ActivationConditionNode = {
       id: activationConditionId,
-      type: "activation-condition",
+      type: "Activation Condition",
       data: { label: statement["Activation Condition"] },
       position: { x: 10, y: 30 },
       parentId: id,
@@ -74,10 +73,10 @@ export function procesStatement(
     edges.push(activationConditionEdge);
   }
 
-  const aimId = `${id}-aim`;
+  const aimId = `${id}-Aim`;
   const aimNode: AimNode = {
     id: aimId,
-    type: "aim",
+    type: "Aim",
     data: { label: statement.Aim },
     position: { x: 480, y: 30 },
     parentId: id,
@@ -99,10 +98,10 @@ export function procesStatement(
   edges.push(aimEdge);
 
   if (statement["Direct Object"]) {
-    const directObjectId = `${id}-direct-object`;
+    const directObjectId = `${id}-Direct Object`;
     const directObjectNode: DirectObjectNode = {
       id: directObjectId,
-      type: "direct-object",
+      type: "Direct Object",
       data: {
         label: statement["Direct Object"],
         animation: statement["Type of Direct Object"],
@@ -125,14 +124,14 @@ export function procesStatement(
     });
 
     if (statement["Indirect Object"]) {
-      const indirectObjectId = `${id}-indirect-object`;
+      const indirectObjectId = `${id}-Indirect Object`;
       const indirectObjectNode: InDirectObjectNode = {
         id: indirectObjectId,
         data: {
           label: statement["Indirect Object"],
           animation: statement["Type of Indirect Object"],
         },
-        type: "indirect-object",
+        type: "Indirect Object",
         position: { x: 715, y: 100 },
         parentId: id,
         extent: "parent",
@@ -152,10 +151,10 @@ export function procesStatement(
     }
   }
   if (statement["Execution Constraint"]) {
-    const executionConstraintId = `${id}-execution-constraint`;
+    const executionConstraintId = `${id}-Execution Constraint`;
     const executionConstraintNode: ExecutionConstraintNode = {
       id: executionConstraintId,
-      type: "execution-constraint",
+      type: "Execution Constraint",
       data: { label: statement["Execution Constraint"] },
       position: { x: 430, y: 100 },
       parentId: id,
@@ -190,96 +189,6 @@ export class InvalidConnectionError extends Error {
     super(message);
     this.name = "InvalidConnectionError";
   }
-}
-
-export function processConnection(
-  connection: Connection,
-  lookup: Map<string, INANode>,
-): INACEdge {
-  if (connection.source_statement === connection.target_statement) {
-    throw new InvalidConnectionError(
-      "Source and target statement can not be the same",
-    );
-  }
-  const sourceStatement = lookup.get(connection.source_statement);
-  if (!sourceStatement) {
-    throw new InvalidConnectionError(
-      `Source statement "${connection.source_statement}" not found`,
-    );
-  }
-  const targetStatement = lookup.get(connection.target_statement);
-  if (!targetStatement) {
-    throw new InvalidConnectionError(
-      `Target statement "${connection.target_statement}" not found`,
-    );
-  }
-  const sourceNodeId = `${connection.source_statement}-${connection.source_component}`;
-  const targetNodeId = `${connection.target_statement}-${connection.target_component}`;
-  const sourceNode = lookup.get(sourceNodeId);
-  const targetNode = lookup.get(targetNodeId);
-  if (!sourceNode) {
-    throw new InvalidConnectionError(`Source node "${sourceNodeId}" not found`);
-  }
-  if (!targetNode) {
-    throw new InvalidConnectionError(`Target node "${targetNodeId}" not found`);
-  }
-
-  // TODO gather all errors instead of throwing on first one
-  // TODO replace with zod somehow
-  if (connection.driven_by === "actor") {
-    if (targetNode.type !== "attribute") {
-      throw new InvalidConnectionError(
-        `Actor driven connection target can only be attribute, got "${targetNode.type}"`,
-      );
-    }
-    const sourceIsAnimateObject =
-      (sourceNode.type === "direct-object" ||
-        sourceNode.type === "indirect-object") &&
-      sourceNode.data.animation === "animate";
-    const sourceIsExecutionConstraint =
-      sourceNode.type === "execution-constraint";
-    if (!sourceIsAnimateObject && !sourceIsExecutionConstraint) {
-      throw new InvalidConnectionError(
-        `Actor driven connection source can only be animate direct/indirect object or execution constraint, got "${sourceNode.type}"`,
-      );
-    }
-    return builderDrivenConnectionEdge(sourceNode.id, targetNode.id, "actor");
-  } else if (connection.driven_by === "outcome") {
-    if (targetNode.type !== "activation-condition") {
-      throw new InvalidConnectionError(
-        `Outcome driven connection target can only be activation condition, got "${targetNode.type}"`,
-      );
-    }
-    const sourceIsInanimateObject =
-      (sourceNode.type === "direct-object" ||
-        sourceNode.type === "indirect-object") &&
-      sourceNode.data.animation === "inanimate";
-    if (!sourceIsInanimateObject) {
-      throw new InvalidConnectionError(
-        `Outcome driven connection source can only be inanimate direct/indirect object, got "${sourceNode.type}"`,
-      );
-    }
-    return builderDrivenConnectionEdge(sourceNode.id, targetNode.id, "outcome");
-  } else if (connection.driven_by === "sanction") {
-    if (targetNode.type !== "activation-condition") {
-      throw new InvalidConnectionError(
-        `Sanction driven connection target can only be activation condition, got "${targetNode.type}"`,
-      );
-    }
-    if (sourceNode.type !== "aim") {
-      throw new InvalidConnectionError(
-        `Sanction driven connection source can only be aim, got "${sourceNode.type}"`,
-      );
-    }
-    return builderDrivenConnectionEdge(
-      sourceNode.id,
-      targetNode.id,
-      "sanction",
-    );
-  }
-  throw new InvalidConnectionError(
-    `Unknown driven by "${connection.driven_by}"`,
-  );
 }
 
 export function offsetStatement(statement: StatementNode, index: number) {

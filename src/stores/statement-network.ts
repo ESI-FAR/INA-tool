@@ -18,6 +18,7 @@ import { StatementNode } from "../lib/node";
 import { createStore } from "zustand";
 import { store as globalStore } from "./global";
 import { Conflict, Connection, Statement } from "../lib/schema";
+import { connection2id } from "@/lib/connection2id";
 
 export type State = {
   nodes: StatementNode[];
@@ -96,10 +97,6 @@ function onStatementsChange(statements: Statement[]) {
     }
   }
   store.getState().setNodes([...newNodes]);
-}
-
-function connection2id(connection: Connection): string {
-  return `${connection.source_statement}-2-${connection.source_statement}`;
 }
 
 function onConnectionsChange(connections: Connection[]) {

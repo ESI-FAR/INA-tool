@@ -601,12 +601,12 @@ export function ConflictGroupNode() {
 // eslint-disable-next-line react-refresh/only-export-components
 export const nodeTypes = {
   statement: StatementNode,
-  attribute: AttributeNode,
-  aim: AimNode,
-  "direct-object": DirectObjectNode,
-  "indirect-object": InDirectObjectNode,
-  "activation-condition": ActivationConditionNode,
-  "execution-constraint": ExecutionConstraintNode,
+  Attribute: AttributeNode,
+  Aim: AimNode,
+  "Direct Object": DirectObjectNode,
+  "Indirect Object": InDirectObjectNode,
+  "Activation Condition": ActivationConditionNode,
+  "Execution Constraint": ExecutionConstraintNode,
 } as const;
 
 // eslint-disable-next-line react-refresh/only-export-components
