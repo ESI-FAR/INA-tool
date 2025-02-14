@@ -6,6 +6,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
@@ -21,8 +22,12 @@ import { UploadButton } from "./UploadButton";
 import { DownloadProjectButton } from "./DownloadProjectButton";
 import { LoadExampleButton } from "./LoadExampleButton";
 import { ClearButton } from "./ClearButton";
+import { useStore } from "zustand";
+import { store } from "@/stores/global";
 
 export function AppSidebar() {
+  const nrStatements = useStore(store, (state) => state.statements.length);
+  const nrConnections = useStore(store, (state) => state.connections.length);
   return (
     <Sidebar>
       <SidebarHeader className="px-4 text-2xl">
@@ -64,6 +69,7 @@ export function AppSidebar() {
                     <span>Statements table</span>
                   </Link>
                 </SidebarMenuButton>
+                <SidebarMenuBadge>{nrStatements}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
@@ -75,6 +81,7 @@ export function AppSidebar() {
                     <span>Connections table</span>
                   </Link>
                 </SidebarMenuButton>
+                <SidebarMenuBadge>{nrConnections}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
