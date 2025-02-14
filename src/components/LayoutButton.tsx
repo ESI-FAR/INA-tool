@@ -1,13 +1,18 @@
 import { useCallback } from "react";
 import { useReactFlow } from "@xyflow/react";
-import ELK from "elkjs/lib/elk.bundled";
+import ELK from "elkjs/lib/elk-api";
+import ELKworker from "elkjs/lib/elk-worker.js?worker";
 import { LayoutTemplateIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { isStatementNode } from "@/lib/node";
 import type { INANode, StatementNode } from "@/lib/node";
 import { INASEdge, INACEdge } from "@/lib/edge";
 
-const elk = new ELK();
+const elk = new ELK({
+  workerFactory: () => {
+    return new ELKworker();
+  },
+});
 
 // TODO make layout multi handle aware
 // see https://reactflow.dev/examples/layout/elkjs-multiple-handles
