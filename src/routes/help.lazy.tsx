@@ -259,10 +259,16 @@ function RouteComponent() {
           connections are explained.
         </li>
         <li>
-          <strong>Minimap:</strong>
-          The minimap in the lower right corner gives you an overview of the
-          network. You can drag the rectangle to navigate the network. You can
-          click to center the network there.
+          <strong>Minimap: </strong> The minimap in the lower right corner gives
+          you an overview of the network. You can drag the rectangle to navigate
+          the network. You can click to center the network there.
+        </li>
+        <li>
+          <strong>Selecting: </strong> To see details of a statement, click on
+          the statement. The details will be shown in a panel on the right side
+          on the node. To see details of multiple statements, hold down the ctrl
+          key and click on multiple nodes or hold shift key and drag a rectangle
+          around nodes.
         </li>
       </ul>
 
