@@ -3,10 +3,8 @@ import {
   Node,
   NodeToolbar,
   Position,
-  useReactFlow,
 } from "@xyflow/react";
 import { useCallback, useState } from "react";
-import "@xyflow/react/dist/style.css";
 import { isStatementNode, StatementNode } from "@/lib/node";
 import { StatementCard } from "./StatementCard";
 import { Button } from "./ui/button";
@@ -21,14 +19,9 @@ export function SelectedNodeToolbar() {
     onChange,
   });
 
-  const { updateNode } = useReactFlow();
   const clearSelection = useCallback(() => {
-    for (const node of selectedNodes) {
-      updateNode(node.id, {
-        selected: false,
-      });
-    }
-  }, [selectedNodes, updateNode]);
+    setSelectedNodes([]);
+  }, []);
   return (
     <NodeToolbar
       nodeId={selectedNodes.map((node) => node.id)}

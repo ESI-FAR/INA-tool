@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { useReactFlow } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
 import ELK from "elkjs/lib/elk.bundled";
 import { LayoutTemplateIcon } from "lucide-react";
 import { Button } from "./ui/button";
