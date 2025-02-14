@@ -22,6 +22,7 @@ import type {
   ConflictGroupNode,
   INANode,
 } from "@/lib/node";
+import { bgColor } from "./drivenColors";
 
 /*
 The statement graph should look like:
@@ -82,7 +83,7 @@ function SourceHandles({
         <Handle
           type="source"
           id="actor"
-          className="!bg-purple-500"
+          className={bgColor.actor}
           style={{ ...style, left: "25%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -92,7 +93,7 @@ function SourceHandles({
         <Handle
           type="source"
           id="outcome"
-          className="!bg-green-500"
+          className={bgColor.outcome}
           style={{ ...style, left: "50%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -101,7 +102,7 @@ function SourceHandles({
       <Handle
         type="source"
         id="sanction"
-        className="!bg-red-500"
+        className={bgColor.sanction}
         style={{ ...style, left: "75%" }}
         position={Position.Bottom}
         isConnectable={isConnectable}
@@ -129,7 +130,7 @@ function TargetHandles({
       <Handle
         type="target"
         id="actor"
-        className="!bg-purple-500"
+        className={bgColor.actor}
         style={{ ...style, left: "25%" }}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -139,7 +140,7 @@ function TargetHandles({
           <Handle
             type="target"
             id="outcome"
-            className="!bg-green-500"
+            className={bgColor.outcome}
             style={{ ...style, left: "50%" }}
             position={Position.Top}
             isConnectable={isConnectable}
@@ -147,7 +148,7 @@ function TargetHandles({
           <Handle
             type="target"
             id="sanction"
-            className="!bg-red-500"
+            className={bgColor.sanction}
             style={{ ...style, left: "75%" }}
             position={Position.Top}
             isConnectable={isConnectable}
@@ -171,7 +172,7 @@ function ConflictHandles({ isConnectable }: { isConnectable: boolean }) {
       <Handle
         type="target"
         id="conflict"
-        className="!bg-red-500"
+        className={bgColor.sanction}
         style={{ ...style }}
         position={Position.Left}
         isConnectable={isConnectable}
@@ -179,7 +180,7 @@ function ConflictHandles({ isConnectable }: { isConnectable: boolean }) {
       <Handle
         type="target"
         id="conflict"
-        className="!bg-red-500"
+        className={bgColor.sanction}
         style={{ ...style }}
         position={Position.Right}
         isConnectable={isConnectable}
@@ -287,7 +288,7 @@ export function AttributeNode({
       <Handle
         type="target"
         id="actor"
-        className="!bg-purple-500"
+        className={bgColor.actor}
         style={drivenConnectionHandleStye}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -327,7 +328,7 @@ export function AimNode({ data, isConnectable, selected }: NodeProps<AimNode>) {
       <Handle
         type="source"
         id="sanction"
-        className="!bg-red-500"
+        className={bgColor.sanction}
         style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Bottom}
         isConnectable={isConnectable}
@@ -366,7 +367,7 @@ export function DirectObjectNode({
         <Handle
           type="source"
           id="actor"
-          className="!bg-purple-500"
+          className={bgColor.actor}
           style={{ ...drivenConnectionHandleStye, left: "66%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -376,7 +377,7 @@ export function DirectObjectNode({
         <Handle
           type="source"
           id="outcome"
-          className="!bg-green-500"
+          className={bgColor.outcome}
           style={{ ...drivenConnectionHandleStye, left: "66%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -409,7 +410,7 @@ export function InDirectObjectNode({
         <Handle
           type="source"
           id="actor"
-          className="!bg-purple-500"
+          className={bgColor.actor}
           style={drivenConnectionHandleStye}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -419,7 +420,7 @@ export function InDirectObjectNode({
         <Handle
           type="source"
           id="outcome"
-          className="!bg-green-500"
+          className={bgColor.outcome}
           style={drivenConnectionHandleStye}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -544,7 +545,7 @@ export function ActivationConditionNode({
       <Handle
         type="target"
         id="outcome"
-        className="!bg-green-500"
+        className={bgColor.outcome}
         style={{ ...drivenConnectionHandleStye, left: "33%" }}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -552,7 +553,7 @@ export function ActivationConditionNode({
       <Handle
         type="target"
         id="sanction"
-        className="!bg-red-500"
+        className={bgColor.sanction}
         style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -583,7 +584,7 @@ export function ExecutionConstraintNode({
       <Handle
         type="source"
         id="actor"
-        className="!bg-purple-500"
+        className={bgColor.actor}
         style={drivenConnectionHandleStye}
         position={Position.Bottom}
         isConnectable={isConnectable}

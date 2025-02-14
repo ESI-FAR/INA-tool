@@ -1,12 +1,6 @@
 import { ConnectionLineComponentProps, useConnection } from "@xyflow/react";
 import { useMemo } from "react";
-
-const strokeColor = {
-  color: "stroke-foreground",
-  outcome: "stroke-green-500",
-  actor: "stroke-purple-500",
-  sanction: "stroke-red-500",
-} as const;
+import { strokeColor } from "./drivenColors";
 
 export function ConnectionLine({
   fromX,

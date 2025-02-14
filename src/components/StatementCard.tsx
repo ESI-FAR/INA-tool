@@ -4,12 +4,7 @@ import { Fragment } from "react/jsx-runtime";
 import { useConnections } from "@/hooks/use-connections";
 import { cn } from "@/lib/utils";
 import { connection2id } from "@/lib/connection2id";
-
-const drivenByTextColors: Record<DrivenBy, string> = {
-  actor: "text-purple-500",
-  outcome: "text-green-500",
-  sanction: "text-red-500",
-} as const;
+import { textColor } from "./drivenColors";
 
 function ComponentWithConnections({
   statement,
@@ -35,7 +30,7 @@ function ComponentWithConnections({
       {incoming.map((connection) => (
         <span
           key={connection2id(connection)}
-          className={cn("ps-2", drivenByTextColors[connection.driven_by])}
+          className={cn("ps-2", textColor[connection.driven_by])}
           title={`Connection driven by ${connection.driven_by} from ${connection.source_statement}:${connection.source_component}`}
         >
           ➜●
@@ -44,7 +39,7 @@ function ComponentWithConnections({
       {outgoing.map((connection) => (
         <span
           key={connection2id(connection)}
-          className={cn("ps-2", drivenByTextColors[connection.driven_by])}
+          className={cn("ps-2", textColor[connection.driven_by])}
           title={`Connection driven by ${connection.driven_by} to ${connection.target_statement}:${connection.target_component}`}
         >
           ●➜
