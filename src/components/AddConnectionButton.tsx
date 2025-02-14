@@ -27,7 +27,7 @@ import {
 } from "./ui/command";
 import { DialogDescription } from "@radix-ui/react-dialog";
 
-function searchStatements(query: string, statements: Statement[]) {
+function filterStatements(query: string, statements: Statement[]) {
   if (query === "") {
     return statements;
   }
@@ -46,18 +46,14 @@ function StatementComboBox({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const hits = useMemo(
-    () => searchStatements(query, statements),
+    () => filterStatements(query, statements),
     [query, statements],
   );
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" aria-expanded={open}>
-          {value ? (
-            <Hit className="w-fit" statement={value} query="" />
-          ) : (
-            "Select statement"
-          )}
+          {value ? <Hit statement={value} query="" /> : "Select statement"}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -101,37 +97,86 @@ function StatementComboBox({
   );
 }
 
+function useConnectionIds() {
+  const { connections } = useConnections();
+  return useMemo(() => {
+    return new Set(connections.map(connection2id));
+  }, [connections]);
+}
+
+function canConnect(
+  source: Statement,
+  target: Statement,
+  existingConnectionIds: Set<string>,
+) {
+  if (source.Id === target.Id) {
+    // Can not make connection with same statement
+    return false;
+  }
+  // Remove connections that are already present
+  const possibleConnections = new Set(
+    statementPair2PossibleConnections(source, target).map(connection2id),
+  );
+  let remainingPossibleConnectionCount = possibleConnections.size;
+  for (const possibleConnection of possibleConnections) {
+    if (existingConnectionIds.has(possibleConnection)) {
+      remainingPossibleConnectionCount--;
+    }
+  }
+  return remainingPossibleConnectionCount > 0;
+}
+
 function SourceStatementField({
-  value,
+  target,
   onSelect,
+  source,
 }: {
-  value: Statement | undefined;
+  target: Statement | undefined;
   onSelect: (statement: Statement) => void;
+  source: Statement | undefined;
 }) {
-  const { statements } = useStatements();
-  // TODO: filter out statements that already connections or can't be source for selected target
+  const { statements: allStatements } = useStatements();
+  const existingConnectionIds = useConnectionIds();
+  const statements = useMemo(() => {
+    if (target) {
+      return allStatements.filter((statement) =>
+        canConnect(statement, target, existingConnectionIds),
+      );
+    }
+    return allStatements;
+  }, [allStatements, existingConnectionIds, target]);
   return (
     <StatementComboBox
       statements={statements}
-      value={value}
+      value={source}
       onChange={onSelect}
     />
   );
 }
 
 function TargetStatementField({
-  value,
+  target,
   onSelect,
+  source,
 }: {
-  value: Statement | undefined;
+  target: Statement | undefined;
   onSelect: (statement: Statement) => void;
+  source: Statement | undefined;
 }) {
-  // TODO: filter out statements that already connections or can't be source for selected target
-  const { statements } = useStatements();
+  const { statements: allStatements } = useStatements();
+  const existingConnectionIds = useConnectionIds();
+  const statements = useMemo(() => {
+    if (source) {
+      return allStatements.filter((statement) =>
+        canConnect(source, statement, existingConnectionIds),
+      );
+    }
+    return allStatements;
+  }, [allStatements, existingConnectionIds, source]);
   return (
     <StatementComboBox
       statements={statements}
-      value={value}
+      value={target}
       onChange={onSelect}
     />
   );
@@ -146,9 +191,8 @@ function ConnectionPicker({
   target: Statement;
   onPick: (connection: Connection) => void;
 }) {
-  const { connections } = useConnections();
+  const existingConnectionIds = useConnectionIds();
   const choices = useMemo(() => {
-    const existingConnectionIds = new Set(connections.map(connection2id));
     const possibleConnections = statementPair2PossibleConnections(
       source,
       target,
@@ -157,7 +201,7 @@ function ConnectionPicker({
     return possibleConnections.filter(
       (c) => !existingConnectionIds.has(connection2id(c)),
     );
-  }, [connections, source, target]);
+  }, [existingConnectionIds, source, target]);
 
   if (choices.length === 0) {
     return (
@@ -207,7 +251,14 @@ export function AddConnectionButton() {
     [addConnection],
   );
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        setOpen(!open);
+        setSource(undefined);
+        setTarget(undefined);
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="secondary">
           <PlusIcon />
@@ -224,11 +275,19 @@ export function AddConnectionButton() {
 
         <fieldset className="border p-1">
           <legend>Source</legend>
-          <SourceStatementField value={source} onSelect={setSource} />
+          <SourceStatementField
+            source={source}
+            target={target}
+            onSelect={setSource}
+          />
         </fieldset>
         <fieldset className="border p-1">
           <legend>Target</legend>
-          <TargetStatementField value={target} onSelect={setTarget} />
+          <TargetStatementField
+            target={target}
+            source={source}
+            onSelect={setTarget}
+          />
         </fieldset>
         <fieldset className="border p-1">
           <legend>Possible connections</legend>
