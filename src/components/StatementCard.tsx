@@ -1,6 +1,5 @@
 import { ConnectionComponent, Statement } from "@/lib/schema";
 import { useMemo } from "react";
-import { Fragment } from "react/jsx-runtime";
 import { useConnections } from "@/hooks/use-connections";
 import { cn } from "@/lib/utils";
 import { connection2id } from "@/lib/connection2id";
@@ -9,9 +8,11 @@ import { textColor } from "./drivenColors";
 function ComponentWithConnections({
   statement,
   component,
+  title = component,
 }: {
   statement: Statement;
   component: ConnectionComponent;
+  title?: string;
 }) {
   const { connectionsOfComponent } = useConnections();
   const { incoming, outgoing } = useMemo(() => {
@@ -25,119 +26,76 @@ function ComponentWithConnections({
     return { incoming, outgoing };
   }, [connectionsOfComponent, statement.Id, component]);
   return (
-    <>
-      <span>{statement[component]}</span>
+    <span className="hover:underline">
       {incoming.map((connection) => (
         <span
           key={connection2id(connection)}
           className={cn("ps-2", textColor[connection.driven_by])}
           title={`Connection driven by ${connection.driven_by} from ${connection.source_statement}:${connection.source_component}`}
         >
-          ➜●
+          ➜●{" "}
         </span>
       ))}
+      <span title={title}>{statement[component]}</span>
       {outgoing.map((connection) => (
         <span
           key={connection2id(connection)}
           className={cn("ps-2", textColor[connection.driven_by])}
           title={`Connection driven by ${connection.driven_by} to ${connection.target_statement}:${connection.target_component}`}
         >
+          {" "}
           ●➜
         </span>
-      ))}
-    </>
+      ))}{" "}
+    </span>
   );
 }
 
 export function StatementCard({ statement }: { statement: Statement }) {
   return (
-    <div className="bg-card p-2 text-card-foreground shadow">
-      <div className="absolute right-0 top-0 z-10 cursor-pointer p-1 text-muted-foreground hover:text-foreground">
-        ✕
-      </div>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-2 text-sm">
-        <dt className="font-semibold">Statement Type:</dt>
-        <dd>{statement["Statement Type"]}</dd>
-        <dt className="font-semibold">Attribute:</dt>
-        <dd>
-          <ComponentWithConnections
-            statement={statement}
-            component="Attribute"
-          />
-        </dd>
-        {statement.Deontic && (
-          <Fragment key="Deontic">
-            <dt className="font-semibold">Deontic:</dt>
-            <dd>{statement.Deontic}</dd>
-          </Fragment>
-        )}
-        <dt className="font-semibold">Aim:</dt>
-        <dd>
-          <ComponentWithConnections statement={statement} component="Aim" />
-        </dd>
-        {statement["Direct Object"] && (
-          <Fragment key="Direct Object">
-            <dt className="font-semibold">Direct Object:</dt>
-            <dd>
-              <ComponentWithConnections
-                statement={statement}
-                component="Direct Object"
-              />
-            </dd>
-          </Fragment>
-        )}
-        {statement["Type of Direct Object"] && (
-          <Fragment key="Type of Direct Object">
-            <dt className="font-semibold">Type of Direct Object:</dt>
-            <dd>{statement["Type of Direct Object"]}</dd>
-          </Fragment>
-        )}
-        {statement["Indirect Object"] && (
-          <Fragment key="Indirect Object">
-            <dt className="font-semibold">Indirect Object:</dt>
-            <dd>
-              <ComponentWithConnections
-                statement={statement}
-                component="Indirect Object"
-              />
-            </dd>
-          </Fragment>
-        )}
-        {statement["Type of Indirect Object"] && (
-          <Fragment key="Type of Indirect Object">
-            <dt className="font-semibold">Type of Indirect Object:</dt>
-            <dd>{statement["Type of Indirect Object"]}</dd>
-          </Fragment>
-        )}
-        {statement["Activation Condition"] && (
-          <Fragment key="Activation Condition">
-            <dt className="font-semibold">Activation Condition:</dt>
-            <dd>
-              <ComponentWithConnections
-                statement={statement}
-                component="Activation Condition"
-              />
-            </dd>
-          </Fragment>
-        )}
-        {statement["Execution Constraint"] && (
-          <Fragment key="Execution Constraint">
-            <dt className="font-semibold">Execution Constraint:</dt>
-            <dd>
-              <ComponentWithConnections
-                statement={statement}
-                component="Execution Constraint"
-              />
-            </dd>
-          </Fragment>
-        )}
-        {statement["Or Else"] && (
-          <Fragment key="Or Else">
-            <dt className="font-semibold">Or Else:</dt>
-            <dd>{statement["Or Else"]}</dd>
-          </Fragment>
-        )}
-      </dl>
+    <div className="w-96 bg-card p-2 text-card-foreground shadow">
+      <span title="Statement Id" className="hover:underline">
+        {statement["Statement Type"] === "formal" ? "F" : "I"}
+        {statement.Id}:{" "}
+      </span>
+      <ComponentWithConnections statement={statement} component="Attribute" />{" "}
+      {statement.Deontic && (
+        <span className="hover:underline" title="Deontic">
+          {statement.Deontic}{" "}
+        </span>
+      )}
+      <ComponentWithConnections statement={statement} component="Aim" />
+      {statement["Direct Object"] && (
+        <ComponentWithConnections
+          statement={statement}
+          component="Direct Object"
+          title={`Direct Object ${statement["Type of Direct Object"]}`}
+        />
+      )}
+      {statement["Indirect Object"] && (
+        <ComponentWithConnections
+          statement={statement}
+          component="Indirect Object"
+          title={`Indirect Object ${statement["Type of Indirect Object"]} `}
+        />
+      )}
+      {statement["Activation Condition"] && (
+        <ComponentWithConnections
+          statement={statement}
+          component="Activation Condition"
+        />
+      )}
+      {statement["Execution Constraint"] && (
+        <ComponentWithConnections
+          statement={statement}
+          component="Execution Constraint"
+        />
+      )}
+      {statement["Or Else"] && (
+        <span title="Or Else" className="hover:underline">
+          {statement["Or Else"]}
+        </span>
+      )}
     </div>
   );
 }

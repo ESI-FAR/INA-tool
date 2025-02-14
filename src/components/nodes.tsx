@@ -1,16 +1,8 @@
 import { Statement } from "@/lib/schema";
 import { cn } from "@/lib/utils";
-import {
-  Handle,
-  NodeProps,
-  NodeResizeControl,
-  NodeToolbar,
-  Position,
-  useReactFlow,
-} from "@xyflow/react";
+import { Handle, NodeProps, NodeResizeControl, Position } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { StatementCard } from "./StatementCard";
+import { useMemo } from "react";
 import type {
   StatementNode,
   AttributeNode,
@@ -194,26 +186,11 @@ export function CollapsedStatementNode({
   isConnectable,
   selected,
 }: NodeProps<StatementNode>) {
-  const { updateNode } = useReactFlow();
   const statement = data.raw;
   const color = statementBackground[data.raw["Statement Type"]];
-  const onToolbarClick = useCallback(() => {
-    updateNode(statement.Id!, {
-      selected: false,
-    });
-  }, [statement.Id, updateNode]);
   const isConflictEditing = false;
   return (
     <>
-      {" "}
-      {/* TODO show statement card in drawer. nice if on hover drawer could be filled? */}
-      <NodeToolbar
-        nodeId={statement.Id}
-        position={Position.Right}
-        onClick={onToolbarClick}
-      >
-        <StatementCard statement={statement} />
-      </NodeToolbar>
       <SourceHandles isConnectable={isConnectable} statement={statement} />
       <TargetHandles isConnectable={isConnectable} statement={statement} />
       {/* TODO only show conflict handles if the conflict editing is enabled */}

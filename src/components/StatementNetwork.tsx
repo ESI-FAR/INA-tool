@@ -18,6 +18,7 @@ import { useConnections } from "@/hooks/use-connections";
 import { ConnectionWithValues } from "@/lib/schema";
 import { reactFlowConnection2PossibleConnections } from "../lib/possibleConnections";
 import { MyMiniMap } from "./MyMiniMap";
+import { SelectedNodeToolbar } from "./SelectedNodeToolbar";
 
 const nodeTypes = {
   statement: CollapsedStatementNode,
@@ -92,6 +93,7 @@ export function StatementNetwork() {
           onCancel={() => setPossibleConnections([])}
         />
       )}
+      <SelectedNodeToolbar />
     </>
   );
 }

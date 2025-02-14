@@ -37,7 +37,7 @@ export type ComponentNode =
 export type StatementRelatedNode = ComponentNode | StatementNode;
 export type INANode = StatementNode | ComponentNode | ConflictGroupNode;
 
-export function isStatementNode(node: INANode): node is StatementNode {
+export function isStatementNode(node: Node): node is StatementNode {
   return node.type === "statement";
 }
 
