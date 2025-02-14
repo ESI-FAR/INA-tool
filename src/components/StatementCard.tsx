@@ -1,4 +1,4 @@
-import { ConnectionComponent, DrivenBy, Statement } from "@/lib/schema";
+import { ConnectionComponent, Statement } from "@/lib/schema";
 import { useMemo } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useConnections } from "@/hooks/use-connections";
