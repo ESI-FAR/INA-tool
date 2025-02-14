@@ -16,7 +16,7 @@ import "@xyflow/react/dist/style.css";
 import { CollapsedStatementNode } from "./nodes";
 import { useConnections } from "@/hooks/use-connections";
 import { ConnectionWithValues } from "@/lib/schema";
-import { reactFlowConnection2PossibleConnections } from "../lib/reactFlowConnection2PossibleConnections";
+import { reactFlowConnection2PossibleConnections } from "../lib/possibleConnections";
 import { MyMiniMap } from "./MyMiniMap";
 
 const nodeTypes = {

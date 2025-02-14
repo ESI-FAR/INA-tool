@@ -13,16 +13,16 @@ export function reactFlowConnection2PossibleConnections(
   // The source statement can have multiple components, we need to return all possible connections
   const driven_by = drivenbySchema.parse(connection.targetHandle);
   return statementIdPair2PossibleConnections(
-    driven_by,
     connection.source,
     connection.target,
+    driven_by,
   );
 }
 
 export function statementIdPair2PossibleConnections(
-  driven_by: DrivenBy,
   sourceStatementId: string,
   targetStatementId: string,
+  driven_by: DrivenBy,
 ) {
   const sourceStatement = store
     .getState()
@@ -34,19 +34,19 @@ export function statementIdPair2PossibleConnections(
     return [];
   }
   return statementPair2PossibleConnections(
-    driven_by,
     sourceStatement,
     targetStatement,
+    driven_by,
   );
 }
 
-function statementPair2PossibleConnections(
-  driven_by: DrivenBy,
+export function statementPair2PossibleConnections(
   sourceStatement: Statement,
   targetStatement: Statement,
+  driven_by?: DrivenBy | undefined,
 ) {
   const connections: ConnectionWithValues[] = [];
-  if (driven_by === "actor") {
+  if (driven_by === "actor" || driven_by === undefined) {
     if (
       sourceStatement["Direct Object"] &&
       sourceStatement["Type of Direct Object"] === "animate"
@@ -58,7 +58,7 @@ function statementPair2PossibleConnections(
         target_statement: targetStatement.Id!,
         target_component: "Attribute",
         target_value: targetStatement["Attribute"],
-        driven_by,
+        driven_by: "actor",
       });
     }
     if (
@@ -72,7 +72,7 @@ function statementPair2PossibleConnections(
         target_statement: targetStatement.Id!,
         target_component: "Attribute",
         target_value: targetStatement["Attribute"],
-        driven_by,
+        driven_by: "actor",
       });
     }
     if (sourceStatement["Execution Constraint"]) {
@@ -83,10 +83,11 @@ function statementPair2PossibleConnections(
         target_statement: targetStatement.Id!,
         target_component: "Attribute",
         target_value: targetStatement["Attribute"],
-        driven_by,
+        driven_by: "actor",
       });
     }
-  } else if (driven_by === "outcome") {
+  }
+  if (driven_by === "outcome" || driven_by === undefined) {
     if (
       sourceStatement["Direct Object"] &&
       sourceStatement["Type of Direct Object"] === "inanimate" &&
@@ -99,7 +100,7 @@ function statementPair2PossibleConnections(
         target_statement: targetStatement.Id!,
         target_component: "Activation Condition",
         target_value: targetStatement["Activation Condition"],
-        driven_by,
+        driven_by: "outcome",
       });
     }
     if (
@@ -114,11 +115,12 @@ function statementPair2PossibleConnections(
         target_statement: targetStatement.Id!,
         target_component: "Activation Condition",
         target_value: targetStatement["Activation Condition"],
-        driven_by,
+        driven_by: "outcome",
       });
     }
-  } else if (
-    driven_by === "sanction" &&
+  }
+  if (
+    (driven_by === "sanction" || driven_by === undefined) &&
     targetStatement["Activation Condition"]
   ) {
     connections.push({
@@ -128,7 +130,7 @@ function statementPair2PossibleConnections(
       target_statement: targetStatement.Id!,
       target_component: "Activation Condition",
       target_value: targetStatement["Activation Condition"],
-      driven_by,
+      driven_by: "sanction",
     });
   }
   return connections;

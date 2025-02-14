@@ -16,7 +16,7 @@ import {
 } from "./ui/command";
 import { Button } from "./ui/button";
 import { SearchIcon } from "lucide-react";
-import { Statement } from "@/lib/schema";
+import { Hit, searchStatement } from "./search";
 
 function searchComponents(query: string, nodes: INANode[]) {
   if (query === "") {
@@ -103,77 +103,7 @@ export function ComponentNetworkSearch() {
   );
 }
 
-function Hit({ statement, query }: { statement: Statement; query: string }) {
-  // TODO not highlight whole statement prop, but only the part that matches the query
-  return (
-    <p>
-      <span>
-        {statement["Statement Type"] === "formal" ? "F" : "I"}
-        {statement.Id}:{" "}
-      </span>
-      <span className={statement.Attribute.includes(query) ? "font-bold" : ""}>
-        {statement.Attribute}
-      </span>{" "}
-      <span>{statement.Deontic}</span>{" "}
-      <span className={statement.Aim.includes(query) ? "font-bold" : ""}>
-        {statement.Aim}
-      </span>{" "}
-      {statement["Direct Object"] && (
-        <>
-          <span
-            title={statement["Type of Direct Object"]}
-            className={
-              statement["Direct Object"].includes(query) ? "font-bold" : ""
-            }
-          >
-            {statement["Direct Object"]}
-          </span>{" "}
-        </>
-      )}
-      {statement["Indirect Object"] && (
-        <>
-          <span
-            title={statement["Type of Indirect Object"]}
-            className={
-              statement["Indirect Object"].includes(query) ? "font-bold" : ""
-            }
-          >
-            {statement["Indirect Object"]}
-          </span>{" "}
-        </>
-      )}
-      <span
-        className={
-          statement["Activation Condition"]?.includes(query) ? "font-bold" : ""
-        }
-      >
-        {statement["Activation Condition"]}
-      </span>{" "}
-      <span
-        className={
-          statement["Execution Constraint"]?.includes(query) ? "font-bold" : ""
-        }
-      >
-        {statement["Execution Constraint"]}
-      </span>
-    </p>
-  );
-}
-
-function searchStatement(query: string, statement: Statement) {
-  return (
-    statement.Id === query ||
-    statement.Attribute.includes(query) ||
-    statement.Aim.includes(query) ||
-    statement["Activation Condition"]?.includes(query) ||
-    statement["Direct Object"]?.includes(query) ||
-    statement["Indirect Object"]?.includes(query) ||
-    statement["Execution Constraint"]?.includes(query) ||
-    statement["Or Else"]?.includes(query)
-  );
-}
-
-function searchStatements(query: string, nodes: StatementNode[]) {
+function searchStatementNodes(query: string, nodes: StatementNode[]) {
   if (query === "") {
     return [];
   }
@@ -210,7 +140,10 @@ export function StatementNetworkSearch() {
   const [query, setQuery] = useState("");
   const nodes = getNodes();
   // TODO should we select nodes of hits?
-  const hits = useMemo(() => searchStatements(query, nodes), [query, nodes]);
+  const hits = useMemo(
+    () => searchStatementNodes(query, nodes),
+    [query, nodes],
+  );
   const [open, setOpen] = useState(false);
   return (
     <search>
