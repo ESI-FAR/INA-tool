@@ -84,6 +84,7 @@ function onStatementsChange(statements: Statement[]) {
       newNodes.push(node);
     } else {
       // new
+      y += NODE_OFFSET;
       const statementNode: StatementNode = {
         id: statement.Id,
         type: "statement",
@@ -94,7 +95,6 @@ function onStatementsChange(statements: Statement[]) {
         position: { x: 0, y },
       };
       newNodes.push(statementNode);
-      y += NODE_OFFSET;
     }
   }
   store.getState().setNodes([...newNodes]);
