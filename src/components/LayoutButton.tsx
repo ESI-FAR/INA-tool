@@ -19,7 +19,7 @@ const elk = new ELK({
 const layoutOptions = {
   "elk.algorithm": "layered",
   "elk.layered.spacing.nodeNodeBetweenLayers": 140,
-  'elk.layered.nodePlacement.strategy': 'SIMPLE',
+  "elk.layered.nodePlacement.strategy": "SIMPLE",
   "elk.spacing.nodeNode": 240,
 } as const;
 
@@ -27,7 +27,7 @@ type Port = {
   id: string;
   properties?: {
     side?: "LEFT" | "RIGHT" | "TOP" | "BOTTOM";
-    'port.index'?: number;
+    "port.index"?: number;
   };
 };
 
@@ -39,39 +39,69 @@ function computePorts(node: INANode) {
   switch (node.type) {
     case "Activation Condition":
       return ports.concat([
-        { id: node.parentId + '-activation-condition-2-attribute', properties: { side: "RIGHT" } },
-        { id: "outcome", properties: { side: "TOP", 'port.index': 0 } },
-        { id: "sanction", properties: { side: "TOP", 'port.index': 1 } },
+        {
+          id: node.parentId + "-activation-condition-2-attribute",
+          properties: { side: "RIGHT" },
+        },
+        { id: "outcome", properties: { side: "TOP", "port.index": 0 } },
+        { id: "sanction", properties: { side: "TOP", "port.index": 1 } },
       ]);
     case "Attribute":
       return ports.concat([
-        { id: node.parentId + "-activation-condition-2-attribute", properties: { side: "RIGHT" } },
-        { id: node.parentId + '-attribute-2-aim', properties: { side: "LEFT" } },
+        {
+          id: node.parentId + "-activation-condition-2-attribute",
+          properties: { side: "RIGHT" },
+        },
+        {
+          id: node.parentId + "-attribute-2-aim",
+          properties: { side: "LEFT" },
+        },
         { id: "actor", properties: { side: "TOP" } },
       ]);
     case "Aim":
       return ports.concat([
-        { id: node.parentId + '-attribute-2-aim', properties: { side: "LEFT" } },
-        { id: node.parentId + "-aim-2-direct-object", properties: { side: "RIGHT" } },
-        { id: node.parentId + '-aim-2-execution-constraint', properties: { side: "BOTTOM", 'port.index': 0 } },
-        { id: "sanction", properties: { side: "BOTTOM", 'port.index': 1 } },
+        {
+          id: node.parentId + "-attribute-2-aim",
+          properties: { side: "LEFT" },
+        },
+        {
+          id: node.parentId + "-aim-2-direct-object",
+          properties: { side: "RIGHT" },
+        },
+        {
+          id: node.parentId + "-aim-2-execution-constraint",
+          properties: { side: "BOTTOM", "port.index": 0 },
+        },
+        { id: "sanction", properties: { side: "BOTTOM", "port.index": 1 } },
       ]);
     case "Direct Object":
       return ports.concat([
-        { id: node.parentId + '-aim-2-direct-object', properties: { side: "LEFT" } },
-        { id: node.parentId + '-direct-object-2-indirect-object', properties: { side: "BOTTOM", 'port.index': 0 } },
-        { id: "actor", properties: { side: "BOTTOM", 'port.index': 1 } },
-        { id: "outcome", properties: { side: "BOTTOM", 'port.index': 1 } },
+        {
+          id: node.parentId + "-aim-2-direct-object",
+          properties: { side: "LEFT" },
+        },
+        {
+          id: node.parentId + "-direct-object-2-indirect-object",
+          properties: { side: "BOTTOM", "port.index": 0 },
+        },
+        { id: "actor", properties: { side: "BOTTOM", "port.index": 1 } },
+        { id: "outcome", properties: { side: "BOTTOM", "port.index": 1 } },
       ]);
     case "Indirect Object":
       return ports.concat([
-        { id: node.parentId + '-direct-object-2-indirect-object', properties: { side: "TOP" } },
+        {
+          id: node.parentId + "-direct-object-2-indirect-object",
+          properties: { side: "TOP" },
+        },
         { id: "actor", properties: { side: "BOTTOM" } },
         { id: "outcome", properties: { side: "BOTTOM" } },
       ]);
     case "Execution Constraint":
       return ports.concat([
-        { id: node.parentId + '-aim-2-execution-constraint', properties: { side: "TOP" } },
+        {
+          id: node.parentId + "-aim-2-execution-constraint",
+          properties: { side: "TOP" },
+        },
         { id: "actor", properties: { side: "BOTTOM" } },
       ]);
     default:
@@ -106,18 +136,18 @@ const useComponentLayout = () => {
                 ...component,
                 width: component.measured!.width,
                 height: component.measured!.height,
-                // properties: {
-                //   "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-                // },
-                // ports: cports,
+                properties: {
+                  "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+                },
+                ports: cports,
               };
             }),
           width: node.measured!.width,
           height: node.measured!.height,
-          // properties: {
-          //   "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-          // },
-          // ports,
+          properties: {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+          },
+          ports,
         };
       }),
       edges,
@@ -137,10 +167,12 @@ const useComponentLayout = () => {
             x: component.x,
             y: component.y,
           };
+          component.ports = undefined;
           // @ts-expect-error copied from react-flow examples
           componentNodes.push(component);
         });
         node.children = undefined;
+        node.ports = undefined;
       });
 
       // @ts-expect-error copied from react-flow examples
