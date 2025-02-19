@@ -89,7 +89,7 @@ const columns: ColumnDef<Connection>[] = [
 ];
 
 export function DrivenConnectionTable() {
-  const { removeConnection } = useConnections();
+  const { removeConnections } = useConnections();
   const connections = useConnectionsWithValues();
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -159,7 +159,7 @@ export function DrivenConnectionTable() {
                     <Button
                       variant="destructive"
                       size="icon"
-                      onClick={() => removeConnection(row.original)}
+                      onClick={() => removeConnections([row.original])}
                     >
                       <TrashIcon />
                     </Button>

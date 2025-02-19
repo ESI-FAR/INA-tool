@@ -26,10 +26,12 @@ export function useConnections() {
     useShallow<Store, Connection[]>((state) => state.connections),
   );
   const setConnections = store.getState().setConnections;
-  const removeConnection = useCallback(
-    (connection: Connection) => {
+  const removeConnections = useCallback(
+    (connectionsToRemove: Connection[]) => {
       setConnections(
-        connections.filter((c) => !compareConnection(c, connection)),
+        connections.filter(
+          (c) => !connectionsToRemove.some((c2) => compareConnection(c, c2)),
+        ),
       );
     },
     [connections, setConnections],
@@ -67,7 +69,7 @@ export function useConnections() {
   );
   return {
     connections,
-    removeConnection,
+    removeConnections,
     addConnection,
     connectionsOfStatement,
     connectionsOfComponent,

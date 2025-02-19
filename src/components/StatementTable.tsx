@@ -152,7 +152,7 @@ const columns: ColumnDef<Statement>[] = [
 export function StatementTable() {
   const { statements, createFreshStatement, deleteStatement, updateStatement } =
     useStatements();
-  const { connectionsOfStatement, removeConnection, connectionsOfComponent } =
+  const { connectionsOfStatement, removeConnections, connectionsOfComponent } =
     useConnections();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -192,9 +192,7 @@ export function StatementTable() {
             "This statement is connected to other statement(s). Deleting it will also delete those connections. Are you sure you want to delete it?",
           )
         ) {
-          connections.forEach((connection) => {
-            removeConnection(connection);
-          });
+          removeConnections(connections);
           deleteStatement(id);
         } else {
           // Do nothing
@@ -204,7 +202,7 @@ export function StatementTable() {
         deleteStatement(id);
       }
     },
-    [connectionsOfStatement, removeConnection, deleteStatement],
+    [connectionsOfStatement, removeConnections, deleteStatement],
   );
 
   const onSave = useCallback(
@@ -247,16 +245,14 @@ export function StatementTable() {
             "A component of the statement has been cleared. That component is connected to another statement. Saving will delete those connections. Are you sure you want to save it?",
           )
         ) {
-          connections.forEach((connection) => {
-            removeConnection(connection);
-          });
+          removeConnections(connections);
           updateStatement(tosave);
         }
       } else {
         updateStatement(tosave);
       }
     },
-    [connectionsOfComponent, removeConnection, updateStatement],
+    [connectionsOfComponent, removeConnections, updateStatement],
   );
 
   return (
