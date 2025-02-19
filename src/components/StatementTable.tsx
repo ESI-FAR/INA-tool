@@ -1,11 +1,12 @@
 import {
+  Connection,
+  ConnectionComponent,
+  deonticSchema,
   Statement,
   statementSchema,
   StatementType,
   TypeOfObject,
 } from "@/lib/schema";
-import { store } from "@/lib/store";
-
 import {
   ColumnDef,
   Row,
@@ -17,7 +18,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -26,13 +26,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
-import { offsetStatement, procesStatement } from "@/lib/io";
-import { isStatementNode } from "@/lib/node";
 import { Button } from "./ui/button";
 import {
   PencilIcon,
@@ -41,7 +39,7 @@ import {
   TrashIcon,
   Undo2Icon,
 } from "lucide-react";
-import { FormProvider, useForm } from "react-hook-form";
+import { ControllerRenderProps, FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FormControl,
@@ -52,6 +50,14 @@ import {
 } from "./ui/form";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { useStatements } from "../hooks/use-statements";
+import { useConnections } from "@/hooks/use-connections";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 const columns: ColumnDef<Statement>[] = [
   {
@@ -73,6 +79,12 @@ const columns: ColumnDef<Statement>[] = [
     },
   },
   {
+    accessorKey: "Activation Condition",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Activation Condition" />
+    ),
+  },
+  {
     accessorKey: "Attribute",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Attribute" />
@@ -83,11 +95,20 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Deontic" />
     ),
+    meta: {
+      choices: deonticSchema.options,
+    },
   },
   {
     accessorKey: "Aim",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Aim" />
+    ),
+  },
+  {
+    accessorKey: "Execution Constraint",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Execution Constraint" />
     ),
   },
   {
@@ -121,18 +142,6 @@ const columns: ColumnDef<Statement>[] = [
     },
   },
   {
-    accessorKey: "Activation Condition",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Activation Condition" />
-    ),
-  },
-  {
-    accessorKey: "Execution Constraint",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Execution Constraint" />
-    ),
-  },
-  {
     accessorKey: "Or Else",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Or Else" />
@@ -140,68 +149,14 @@ const columns: ColumnDef<Statement>[] = [
   },
 ];
 
-function updateStatement(statement: Statement) {
-  const id = statement.Id!;
-  // Remove nodes and edges belonging to the statement
-  const origNodes = store.getState().nodes;
-  const oldNodesOfStatement = origNodes.filter(
-    (node) => node.id === id || node.parentId === id,
-  );
-  const oldIdOfNodesOfStatement = new Set(
-    oldNodesOfStatement.map((node) => node.id),
-  );
-  const prunedNodes = origNodes.filter(
-    (node) => !oldNodesOfStatement.includes(node),
-  );
-  const oldStatementNode = oldNodesOfStatement.find((node) => node.id === id);
-  const oldEdgesOfStatement = store
-    .getState()
-    .edges.filter(
-      (edge) =>
-        oldIdOfNodesOfStatement.has(edge.source) ||
-        oldIdOfNodesOfStatement.has(edge.target),
-    );
-  const prunedEdges = store
-    .getState()
-    .edges.filter((edge) => !oldEdgesOfStatement.includes(edge));
-  // TODO inter statement edges should be kept
-  // now we remove all edges belonging to the statement
-
-  // Add new nodes and edges
-  const [newNodes, newEdges] = procesStatement(statement, statement.Id!);
-  // Retain position and style of the old statement node
-  if (oldStatementNode && oldStatementNode.position && oldStatementNode.style) {
-    newNodes[0].position = oldStatementNode.position;
-    newNodes[0].style = oldStatementNode.style;
-  }
-  store.getState().setNodes([...newNodes, ...prunedNodes]);
-  store.getState().setEdges([...newEdges, ...prunedEdges]);
-}
-
-function deleteStatement(id: string) {
-  // TODO Ask for confirmation if statement has driven connection edges?
-  // Remove nodes
-  const ids2remove = new Set(
-    store
-      .getState()
-      .nodes.filter((n) => n.id === id || n.parentId === id)
-      .map((n) => n.id),
-  );
-  store
-    .getState()
-    .setNodes(store.getState().nodes.filter((n) => !ids2remove.has(n.id)));
-  // Remove edges without nodes
-  store.getState().setEdges(
-    store.getState().edges.filter((e) => {
-      return !ids2remove.has(e.source) && !ids2remove.has(e.target);
-    }),
-  );
-}
-
 export function StatementTable() {
-  const statements = useStatements();
+  const { statements, createFreshStatement, deleteStatement, updateStatement } =
+    useStatements();
+  const { connectionsOfStatement, removeConnections, connectionsOfComponent } =
+    useConnections();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  // TODO reset editing when you replace the statements by uploading a file or loading the example
   const [editing, setEditing] = useState<Statement | null>(null);
 
   const table = useReactTable({
@@ -222,34 +177,83 @@ export function StatementTable() {
   });
 
   function addStatement() {
-    let newId = statements.length;
-    // If id already exists, increment until it doesn't
-    while (statements.some((s) => s.Id === newId.toString())) {
-      newId++;
-    }
-    const newStatement: Statement = {
-      Id: newId.toString(),
-      "Statement Type": "formal",
-      Attribute: "",
-      Deontic: "",
-      Aim: "",
-      "Direct Object": "",
-      "Type of Direct Object": "",
-      "Indirect Object": "",
-      "Type of Indirect Object": "",
-      "Activation Condition": "",
-      "Execution Constraint": "",
-      "Or Else": "",
-    };
-    const [newNodes, newEdges] = procesStatement(newStatement, "new");
-    const statementNode = newNodes[0];
-    if (isStatementNode(statementNode)) {
-      offsetStatement(statementNode, statements.length);
-    }
-    store.getState().setNodes([...store.getState().nodes, ...newNodes]);
-    store.getState().setEdges([...store.getState().edges, ...newEdges]);
+    const newStatement = createFreshStatement();
     setEditing(newStatement);
   }
+
+  const removeStatement = useCallback(
+    (id: string) => {
+      // Check statement is unconnected
+      const connections = connectionsOfStatement(id);
+      if (connections.length > 0) {
+        // If statement is connected, ask for confirmation and remove connection as well
+        if (
+          window.confirm(
+            "This statement is connected to other statement(s). Deleting it will also delete those connections. Are you sure you want to delete it?",
+          )
+        ) {
+          removeConnections(connections);
+          deleteStatement(id);
+        } else {
+          // Do nothing
+        }
+      } else {
+        // If statement is unconnected, remove it
+        deleteStatement(id);
+      }
+    },
+    [connectionsOfStatement, removeConnections, deleteStatement],
+  );
+
+  const onSave = useCallback(
+    (tosave: Statement, previous: Statement) => {
+      const connections: Connection[] = [];
+      // on update, if component became empty then check it is connected or not
+      for (const [component, value] of Object.entries(tosave) as [
+        keyof Statement,
+        unknown,
+      ][]) {
+        if (value === "" && previous[component]) {
+          const componentOfConnection = component as ConnectionComponent;
+          connections.push(
+            ...connectionsOfComponent(previous.Id, componentOfConnection),
+          );
+        }
+      }
+      // if object type is switched then also check for connections as they will be invalid
+      if (
+        tosave["Type of Direct Object"] !== previous["Type of Direct Object"]
+      ) {
+        const componentOfConnection = "Direct Object";
+        connections.push(
+          ...connectionsOfComponent(previous.Id, componentOfConnection),
+        );
+      }
+      if (
+        tosave["Type of Indirect Object"] !==
+        previous["Type of Indirect Object"]
+      ) {
+        const componentOfConnection = "Indirect Object";
+        connections.push(
+          ...connectionsOfComponent(previous.Id, componentOfConnection),
+        );
+      }
+      // If connected then ask for confirmation and remove connection
+      if (connections.length > 0) {
+        if (
+          window.confirm(
+            "A component of the statement has been cleared. That component is connected to another statement. Saving will delete those connections. Are you sure you want to save it?",
+          )
+        ) {
+          removeConnections(connections);
+          updateStatement(tosave);
+        }
+      } else {
+        updateStatement(tosave);
+      }
+    },
+    [connectionsOfComponent, removeConnections, updateStatement],
+  );
 
   return (
     <div className="w-full">
@@ -296,9 +300,16 @@ export function StatementTable() {
                       row={row}
                       onSave={(statement) => {
                         setEditing(null);
-                        updateStatement(statement);
+                        onSave(statement, row.original);
                       }}
-                      onCancel={() => setEditing(null)}
+                      onCancel={() => {
+                        // When a new statement is added and then cancelled, it should be removed
+                        const result = statementSchema.safeParse(row.original);
+                        if (!result.success) {
+                          removeStatement(row.original.Id);
+                        }
+                        setEditing(null);
+                      }}
                     />
                   );
                 }
@@ -308,17 +319,18 @@ export function StatementTable() {
                     row={row}
                     setEditing={setEditing}
                     editingId={editing ? editing.Id : undefined}
-                    onDelete={() => deleteStatement(row.original.Id!)}
+                    onDelete={() => removeStatement(row.original.Id)}
                   />
                 );
               })
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+                  colSpan={12}
+                  className="h-24 text-center text-gray-500"
                 >
-                  No results.
+                  No statements found. Please add statement by using "Add
+                  statement" button or upload a file.
                 </TableCell>
               </TableRow>
             )}
@@ -348,11 +360,15 @@ function ShowRow({
   onDelete: () => void;
 }) {
   return (
-    <TableRow data-state={row.getIsSelected() && "selected"}>
+    <TableRow
+      data-state={row.getIsSelected() && "selected"}
+      aria-label={row.original["Id"]}
+    >
       <TableCell className="flex gap-1">
         <Button
           disabled={editingId !== undefined && row.original["Id"] !== editingId}
           title="Edit"
+          aria-label="Edit"
           variant="secondary"
           size="icon"
           onClick={() => setEditing(row.original)}
@@ -361,6 +377,7 @@ function ShowRow({
         </Button>
         <Button
           title="Delete"
+          aria-label="Delete"
           variant="destructive"
           size="icon"
           onClick={onDelete}
@@ -374,6 +391,67 @@ function ShowRow({
         </TableCell>
       ))}
     </TableRow>
+  );
+}
+
+function FormInput({
+  meta,
+  field,
+}: {
+  meta?: { choices?: string[] };
+  field: ControllerRenderProps<Statement>;
+}) {
+  if (!meta || meta.choices === undefined) {
+    return <Input {...field} />;
+  }
+  if (meta.choices.length > 4) {
+    // Select can not have empty string as value so we are using 'none' as value for empty string.
+    return (
+      <Select
+        required={false}
+        onValueChange={(v) => field.onChange(v === "none" ? "" : v)}
+        defaultValue={field.value}
+      >
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {meta.choices.map((choice) =>
+            choice === "" ? (
+              <SelectItem key={"none"} value="none">
+                &nbsp;
+              </SelectItem>
+            ) : (
+              <SelectItem key={choice} value={choice}>
+                {choice}
+              </SelectItem>
+            ),
+          )}
+        </SelectContent>
+      </Select>
+    );
+  }
+
+  return (
+    <RadioGroup
+      onValueChange={field.onChange}
+      defaultValue={field.value}
+      className="flex flex-col space-y-1"
+    >
+      {meta.choices.map((choice) => (
+        <FormItem
+          key={choice}
+          className="flex items-center space-x-3 space-y-0"
+        >
+          <FormControl>
+            <RadioGroupItem value={choice} />
+          </FormControl>
+          <FormLabel className="font-normal">
+            {choice === "" ? "none" : choice}
+          </FormLabel>
+        </FormItem>
+      ))}
+    </RadioGroup>
   );
 }
 
@@ -399,12 +477,19 @@ function EditRow({
     <TableRow data-state={row.getIsSelected() && "selected"}>
       <TableCell className="flex flex-col gap-1">
         <form onSubmit={myform.handleSubmit(onSave)}>
-          <Button title="Save" variant="secondary" size="icon" type="submit">
+          <Button
+            title="Save"
+            aria-label="Save"
+            variant="secondary"
+            size="icon"
+            type="submit"
+          >
             <SaveIcon />
           </Button>
         </form>
         <Button
           title="Cancel"
+          aria-label="Cancel"
           variant="secondary"
           size="icon"
           onClick={onCancel}
@@ -418,7 +503,6 @@ function EditRow({
         {row.getVisibleCells().map((cell) => {
           const meta = cell.column.columnDef.meta as {
             editable?: boolean;
-            type?: "select";
             choices?: string[];
           };
           if (meta && meta.editable !== undefined && meta.editable === false) {
@@ -436,29 +520,7 @@ function EditRow({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      {meta && meta.choices ? (
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex flex-col space-y-1"
-                        >
-                          {meta.choices.map((choice) => (
-                            <FormItem
-                              key={choice}
-                              className="flex items-center space-x-3 space-y-0"
-                            >
-                              <FormControl>
-                                <RadioGroupItem value={choice} />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {choice === "" ? "none" : choice}
-                              </FormLabel>
-                            </FormItem>
-                          ))}
-                        </RadioGroup>
-                      ) : (
-                        <Input {...field} />
-                      )}
+                      <FormInput meta={meta} field={field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

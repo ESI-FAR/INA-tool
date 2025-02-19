@@ -1,15 +1,18 @@
 import { useCallback } from "react";
 import { useReactFlow } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
-import ELK from "elkjs/lib/elk.bundled";
+import ELK from "elkjs/lib/elk-api";
+import ELKworker from "elkjs/lib/elk-worker.js?worker";
 import { LayoutTemplateIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { isStatementNode } from "@/lib/node";
-import type { INANode } from "@/lib/node";
-import { isDrivenConnectionEdge, type INAEdge } from "@/lib/edge";
-import { store } from "@/lib/store";
+import type { INANode, StatementNode } from "@/lib/node";
+import { INASEdge, INACEdge } from "@/lib/edge";
 
-const elk = new ELK();
+const elk = new ELK({
+  workerFactory: () => {
+    return new ELKworker();
+  },
+});
 
 // TODO make layout multi handle aware
 // see https://reactflow.dev/examples/layout/elkjs-multiple-handles
@@ -20,34 +23,31 @@ const layoutOptions = {
   "elk.direction": "RIGHT",
 } as const;
 
-const useLayoutedElements = () => {
+const useComponentLayout = () => {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
     INANode,
-    INAEdge
+    INACEdge
   >();
 
   const getLayoutedElements = useCallback(() => {
     const statementNodes = getNodes().filter(isStatementNode);
-    const isCompact = store.getState().isCompact;
-    const edges = isCompact
-      ? getEdges().filter(isDrivenConnectionEdge)
-      : getEdges();
+    const edges = getEdges();
     const graph = {
       id: "root",
       layoutOptions: {
         ...layoutOptions,
-        "elk.direction": isCompact ? "DOWN" : "RIGHT",
+        "elk.direction": "RIGHT",
       },
       children: statementNodes.map((node) => {
         return {
           ...node,
           children: getNodes()
             .filter((n) => n.parentId === node.id && !n.hidden)
-            .map((innerstatement) => {
+            .map((component) => {
               return {
-                ...innerstatement,
-                width: innerstatement.measured!.width,
-                height: innerstatement.measured!.height,
+                ...component,
+                width: component.measured!.width,
+                height: component.measured!.height,
               };
             }),
           width: node.measured!.width,
@@ -61,26 +61,24 @@ const useLayoutedElements = () => {
     elk.layout(graph).then(({ children }) => {
       // By mutating the children in-place we saves ourselves from creating a
       // needless copy of the nodes array.
-      const innernodes: INANode[] = isCompact
-        ? getNodes().filter((n) => n.type !== "statement")
-        : [];
+      const componentNodes: INANode[] = [];
       children!.forEach((node) => {
         // @ts-expect-error copied from react-flow examples
         node.position = { x: node.x, y: node.y };
-        node.children!.forEach((innerstatement) => {
+        node.children!.forEach((component) => {
           // @ts-expect-error copied from react-flow examples
-          innerstatement.position = {
-            x: innerstatement.x,
-            y: innerstatement.y,
+          component.position = {
+            x: component.x,
+            y: component.y,
           };
           // @ts-expect-error copied from react-flow examples
-          innernodes.push(innerstatement);
+          componentNodes.push(component);
         });
         node.children = undefined;
       });
 
       // @ts-expect-error copied from react-flow examples
-      setNodes([...children, ...innernodes]);
+      setNodes([...children, ...componentNodes]);
       window.requestAnimationFrame(() => {
         fitView();
       });
@@ -90,8 +88,60 @@ const useLayoutedElements = () => {
   return getLayoutedElements;
 };
 
-export function LayoutButton() {
-  const autoLayout = useLayoutedElements();
+function useStatementLayout() {
+  const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
+    StatementNode,
+    INASEdge
+  >();
+  const getLayoutedElements = useCallback(() => {
+    const nodes = getNodes();
+    const edges = getEdges();
+    const graph = {
+      id: "root",
+      layoutOptions: {
+        ...layoutOptions,
+        "elk.direction": "DOWN",
+      },
+      children: nodes.map((node) => ({
+        ...node,
+        width: node.measured!.width,
+        height: node.measured!.height,
+      })),
+      edges,
+    };
+
+    // @ts-expect-error copied from react-flow examples
+    elk.layout(graph).then(({ children }) => {
+      // By mutating the children in-place we saves ourselves from creating a
+      // needless copy of the nodes array.
+      children!.forEach((node) => {
+        // @ts-expect-error copied from react-flow examples
+        node.position = { x: node.x, y: node.y };
+      });
+
+      // @ts-expect-error copied from react-flow examples
+      setNodes(children);
+      window.requestAnimationFrame(() => {
+        fitView();
+      });
+    });
+  }, [fitView, getEdges, getNodes, setNodes]);
+
+  return getLayoutedElements;
+}
+
+export function ComponentLayoutButton() {
+  const autoLayout = useComponentLayout();
+  return (
+    <Button variant="outline" onClick={autoLayout} title="Auto layout nodes">
+      <LayoutTemplateIcon />
+      Layout
+    </Button>
+  );
+}
+
+export function StatementLayoutButton() {
+  const autoLayout = useStatementLayout();
   return (
     <Button variant="outline" onClick={autoLayout} title="Auto layout nodes">
       <LayoutTemplateIcon />
