@@ -16,7 +16,7 @@ function ComponentWithConnections({
 }) {
   const { connectionsOfComponent } = useConnections();
   const { incoming, outgoing } = useMemo(() => {
-    const connections = connectionsOfComponent(statement.Id!, component);
+    const connections = connectionsOfComponent(statement.Id, component);
     const incoming = connections.filter(
       (connection) => connection.target_statement === statement.Id,
     );

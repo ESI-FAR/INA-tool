@@ -5,7 +5,11 @@ import { store } from "@/stores/global";
 import { useToast } from "@/hooks/use-toast";
 import { csvParse } from "d3-dsv";
 import { read as readXLSX, utils as utilsXLSX } from "xlsx";
-import { Statements, statementsSchema } from "@/lib/schema";
+import {
+  Statement,
+  StatementsWithOptionalId,
+  statementsSchema,
+} from "@/lib/schema";
 import { load } from "@/lib/io";
 import { json2project } from "@/lib/project2json";
 import { ZodError } from "zod";
@@ -22,7 +26,7 @@ async function processJSONFile(file: File) {
  * @param data
  * @returns
  */
-function fillIds(data: Statements) {
+function fillIds(data: StatementsWithOptionalId): Statement[] {
   return data.map((row, index) => {
     return {
       Id: (index + 1).toString(),

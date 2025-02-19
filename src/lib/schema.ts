@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { RefinementCtx, z } from "zod";
 
 export const StatementType = z.enum(["formal", "informal"]);
 export type StatementType = z.infer<typeof StatementType>;
@@ -9,7 +9,7 @@ export const deonticSchema = z.enum(["must", "may", "must not", "may not", ""]);
 export type Deontic = z.infer<typeof deonticSchema>;
 
 const unrefinedStatementSchema = z.object({
-  Id: z.coerce.string().optional(),
+  Id: z.string(),
   "Statement Type": StatementType,
   Attribute: z.string().min(1),
   Deontic: deonticSchema,
@@ -22,44 +22,73 @@ const unrefinedStatementSchema = z.object({
   "Execution Constraint": z.string().optional(),
   "Or Else": z.string().optional(),
 });
-export const statementSchema = unrefinedStatementSchema
-  .refine(
-    (data) =>
-      (data["Direct Object"] && data["Type of Direct Object"]) ||
-      (!data["Direct Object"] && !data["Type of Direct Object"]),
-    {
-      message:
-        '"Type of Direct Object" must be provided if "Direct Object" is provided',
-      path: ["Direct Object", "Type of Direct Object"],
-    },
-  )
-  .refine(
-    (data) =>
-      (!data["Indirect Object"] && !data["Type of Indirect Object"]) ||
-      (data["Indirect Object"] && data["Type of Indirect Object"]),
-    {
-      message:
-        '"Type of Indirect Object" must be provided if "Indirect Object" is provided',
-      path: ["Indirect Object", "Type of Indirect Object"],
-    },
-  )
-  .refine(
-    (data) =>
-      (data["Indirect Object"] && data["Direct Object"]) ||
-      !data["Indirect Object"],
-    {
-      message:
-        '"Direct Object" must be provided if "Indirect Object" is provided',
+const unrefinedStatementSchemaWithOptionalId = unrefinedStatementSchema.extend({
+  Id: z.coerce.string().optional(),
+});
+
+// TODO make data better typed, but tricky due to 2 slightly different schemas it is used in
+const applyStatementLevelValidations = (
+  data: Record<string, string>,
+  ctx: RefinementCtx,
+) => {
+  // Direct Object validations
+  if (data["Type of Direct Object"] && !data["Direct Object"]) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Must be set when "Type of Direct Object" is set',
       path: ["Direct Object"],
-    },
+    });
+  }
+  if (data["Direct Object"] && !data["Type of Direct Object"]) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Must be set when "Direct Object" is set',
+      path: ["Type of Direct Object"],
+    });
+  }
+  // Indirect Object validations
+  if (data["Type of Indirect Object"] && !data["Indirect Object"]) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Must be set when "Type of Indirect Object" is set',
+      path: ["Indirect Object"],
+    });
+  }
+  if (data["Indirect Object"] && !data["Type of Indirect Object"]) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Must be set when "Indirect Object" is set',
+      path: ["Type of Indirect Object"],
+    });
+  }
+
+  // Indirect Object requires Direct Object
+  if (data["Indirect Object"] && !data["Direct Object"]) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Must be provided if "Indirect Object" is provided',
+      path: ["Direct Object"],
+    });
+  }
+};
+
+export const statementSchema = unrefinedStatementSchema.superRefine(
+  applyStatementLevelValidations,
+);
+const statementSchemaWithOptionalId =
+  unrefinedStatementSchemaWithOptionalId.superRefine(
+    applyStatementLevelValidations,
   );
+export type StatementWithOptionalId = z.infer<
+  typeof statementSchemaWithOptionalId
+>;
 export type Statement = z.infer<typeof statementSchema>;
 export const statementColumns = Object.keys(
   unrefinedStatementSchema.shape,
 ) as ReadonlyArray<keyof Statement>;
 
-export const statementsSchema = z.array(statementSchema);
-export type Statements = z.infer<typeof statementsSchema>;
+export const statementsSchema = z.array(statementSchemaWithOptionalId);
+export type StatementsWithOptionalId = z.infer<typeof statementsSchema>;
 
 export const SourceComponentSchema = z.enum([
   "Direct Object",

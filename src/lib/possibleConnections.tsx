@@ -52,10 +52,10 @@ export function statementPair2PossibleConnections(
       sourceStatement["Type of Direct Object"] === "animate"
     ) {
       connections.push({
-        source_statement: sourceStatement.Id!,
+        source_statement: sourceStatement.Id,
         source_component: "Direct Object",
         source_value: sourceStatement["Direct Object"],
-        target_statement: targetStatement.Id!,
+        target_statement: targetStatement.Id,
         target_component: "Attribute",
         target_value: targetStatement["Attribute"],
         driven_by: "actor",
@@ -66,10 +66,10 @@ export function statementPair2PossibleConnections(
       sourceStatement["Type of Indirect Object"] === "animate"
     ) {
       connections.push({
-        source_statement: sourceStatement.Id!,
+        source_statement: sourceStatement.Id,
         source_component: "Indirect Object",
         source_value: sourceStatement["Indirect Object"],
-        target_statement: targetStatement.Id!,
+        target_statement: targetStatement.Id,
         target_component: "Attribute",
         target_value: targetStatement["Attribute"],
         driven_by: "actor",
@@ -77,10 +77,10 @@ export function statementPair2PossibleConnections(
     }
     if (sourceStatement["Execution Constraint"]) {
       connections.push({
-        source_statement: sourceStatement.Id!,
+        source_statement: sourceStatement.Id,
         source_component: "Execution Constraint",
         source_value: sourceStatement["Execution Constraint"],
-        target_statement: targetStatement.Id!,
+        target_statement: targetStatement.Id,
         target_component: "Attribute",
         target_value: targetStatement["Attribute"],
         driven_by: "actor",
@@ -94,10 +94,10 @@ export function statementPair2PossibleConnections(
       targetStatement["Activation Condition"]
     ) {
       connections.push({
-        source_statement: sourceStatement.Id!,
+        source_statement: sourceStatement.Id,
         source_component: "Direct Object",
         source_value: sourceStatement["Direct Object"],
-        target_statement: targetStatement.Id!,
+        target_statement: targetStatement.Id,
         target_component: "Activation Condition",
         target_value: targetStatement["Activation Condition"],
         driven_by: "outcome",
@@ -109,10 +109,10 @@ export function statementPair2PossibleConnections(
       targetStatement["Activation Condition"]
     ) {
       connections.push({
-        source_statement: sourceStatement.Id!,
+        source_statement: sourceStatement.Id,
         source_component: "Indirect Object",
         source_value: sourceStatement["Indirect Object"],
-        target_statement: targetStatement.Id!,
+        target_statement: targetStatement.Id,
         target_component: "Activation Condition",
         target_value: targetStatement["Activation Condition"],
         driven_by: "outcome",
@@ -124,10 +124,10 @@ export function statementPair2PossibleConnections(
     targetStatement["Activation Condition"]
   ) {
     connections.push({
-      source_statement: sourceStatement.Id!,
+      source_statement: sourceStatement.Id,
       source_component: "Aim",
       source_value: sourceStatement["Aim"],
-      target_statement: targetStatement.Id!,
+      target_statement: targetStatement.Id,
       target_component: "Activation Condition",
       target_value: targetStatement["Activation Condition"],
       driven_by: "sanction",

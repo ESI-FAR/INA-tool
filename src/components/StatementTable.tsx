@@ -218,7 +218,7 @@ export function StatementTable() {
         if (value === "" && previous[component]) {
           const componentOfConnection = component as ConnectionComponent;
           connections.push(
-            ...connectionsOfComponent(previous.Id!, componentOfConnection),
+            ...connectionsOfComponent(previous.Id, componentOfConnection),
           );
         }
       }
@@ -228,7 +228,7 @@ export function StatementTable() {
       ) {
         const componentOfConnection = "Direct Object";
         connections.push(
-          ...connectionsOfComponent(previous.Id!, componentOfConnection),
+          ...connectionsOfComponent(previous.Id, componentOfConnection),
         );
       }
       if (
@@ -237,7 +237,7 @@ export function StatementTable() {
       ) {
         const componentOfConnection = "Indirect Object";
         connections.push(
-          ...connectionsOfComponent(previous.Id!, componentOfConnection),
+          ...connectionsOfComponent(previous.Id, componentOfConnection),
         );
       }
       // If connected then ask for confirmation and remove connection
@@ -306,7 +306,14 @@ export function StatementTable() {
                         setEditing(null);
                         onSave(statement, row.original);
                       }}
-                      onCancel={() => setEditing(null)}
+                      onCancel={() => {
+                        // When a new statement is added and then cancelled, it should be removed
+                        const result = statementSchema.safeParse(row.original);
+                        if (!result.success) {
+                          removeStatement(row.original.Id);
+                        }
+                        setEditing(null);
+                      }}
                     />
                   );
                 }
@@ -316,7 +323,7 @@ export function StatementTable() {
                     row={row}
                     setEditing={setEditing}
                     editingId={editing ? editing.Id : undefined}
-                    onDelete={() => removeStatement(row.original.Id!)}
+                    onDelete={() => removeStatement(row.original.Id)}
                   />
                 );
               })

@@ -70,12 +70,15 @@ function StatementComboBox({
             <CommandGroup>
               {hits.map((statement) => (
                 <CommandItem
-                  key={statement.Id!}
-                  value={statement.Id!}
+                  key={statement.Id}
+                  value={statement.Id}
                   onSelect={(currentValue) => {
                     const selectedStatement = statements.find(
                       (statement) => statement.Id === currentValue,
-                    )!;
+                    );
+                    if (!selectedStatement) {
+                      throw new Error("Statement not found");
+                    }
                     onChange(selectedStatement);
                     setOpen(false);
                   }}

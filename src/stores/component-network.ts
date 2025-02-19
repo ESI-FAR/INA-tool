@@ -107,9 +107,9 @@ function onStatementsChange(statements: Statement[]) {
   const newNodes: StatementRelatedNode[] = [];
   const newEdges: ComponentEdge[] = [];
   for (const statement of statements) {
-    if (statementNodeLookup.has(statement.Id!)) {
+    if (statementNodeLookup.has(statement.Id)) {
       // Possible updated statement
-      const statementNode = statementNodeLookup.get(statement.Id!)!;
+      const statementNode = statementNodeLookup.get(statement.Id)!;
       if (compareStatement(statement, statementNode.data.raw)) {
         // Same statement, no need to update
         // retain statement node, component nodes and edges
@@ -130,7 +130,7 @@ function onStatementsChange(statements: Statement[]) {
         // but retain position, dimensions and other ReactFlow specific data
         const [myNewNodes, myNewEdges] = procesStatement(
           statement,
-          statement.Id!,
+          statement.Id,
         );
         const myNewMergedNodes = myNewNodes.map((n) => {
           const oldNode = nodeLookup.get(n.id);
@@ -149,10 +149,7 @@ function onStatementsChange(statements: Statement[]) {
     } else {
       // New statement
       // create statement node, component nodes, component edges
-      const [myNewNodes, myNewEdges] = procesStatement(
-        statement,
-        statement.Id!,
-      );
+      const [myNewNodes, myNewEdges] = procesStatement(statement, statement.Id);
 
       // offset statement node position, to be below last statement node
       const maxY = Math.max(
@@ -161,7 +158,7 @@ function onStatementsChange(statements: Statement[]) {
       );
       // TODO use height of node with maxY instead of DEFAULT_STATEMENT_HEIGHT
       myNewNodes[0].position.y = maxY + DEFAULT_STATEMENT_HEIGHT + 10;
-      statementNodeLookup.set(statement.Id!, myNewNodes[0] as StatementNode);
+      statementNodeLookup.set(statement.Id, myNewNodes[0] as StatementNode);
 
       newNodes.push(...myNewNodes);
       newEdges.push(...myNewEdges);
@@ -224,14 +221,15 @@ function onConflictsChange(conflicts: Conflict[]) {
   const newNodes: Array<StatementRelatedNode | ConflictGroupNode> = [];
   for (const conflict of conflicts) {
     const id = conflict2id(conflict);
-    if (conflictGroupNodeLookup.has(id)) {
+    const conflictGroupNode = conflictGroupNodeLookup.get(id);
+    if (conflictGroupNode) {
       // No change, copy existing nodes
-      newNodes.push(conflictGroupNodeLookup.get(id)!);
-      newNodes.push(statementNodeLookup.get(conflict.formal.Id!)!);
-      newNodes.push(statementNodeLookup.get(conflict.informal.Id!)!);
+      newNodes.push(conflictGroupNode);
+      newNodes.push(statementNodeLookup.get(conflict.formal.Id)!);
+      newNodes.push(statementNodeLookup.get(conflict.informal.Id)!);
     } else {
-      const formalNode = statementNodeLookup.get(conflict.formal.Id!)!;
-      const informalNode = statementNodeLookup.get(conflict.informal.Id!)!;
+      const formalNode = statementNodeLookup.get(conflict.formal.Id)!;
+      const informalNode = statementNodeLookup.get(conflict.informal.Id)!;
       const bounds = getNodesBounds([formalNode, informalNode]);
       // New conflict group
       // create conflict group node

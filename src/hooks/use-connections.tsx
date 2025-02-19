@@ -79,7 +79,7 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
   const { statements } = useStatements();
   return useMemo(() => {
     const statementLookup = new Map<string, Statement>(
-      statements.map((statement) => [statement.Id!, statement]),
+      statements.map((statement) => [statement.Id, statement]),
     );
     return connections
       .map((connection) => {
@@ -90,7 +90,10 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
           return undefined;
         }
         const source_col = connection.source_component;
-        const source_value = sourceStatement[source_col]!;
+        if (!sourceStatement[source_col]) {
+          return undefined;
+        }
+        const source_value = sourceStatement[source_col];
         const targetStatement = statementLookup.get(
           connection.target_statement,
         );
@@ -98,7 +101,10 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
           return undefined;
         }
         const target_col = connection.target_component;
-        const target_value = targetStatement[target_col]!;
+        if (!targetStatement[target_col]) {
+          return undefined;
+        }
+        const target_value = targetStatement[target_col];
         return {
           ...connection,
           source_value,

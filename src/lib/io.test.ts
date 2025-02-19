@@ -6,6 +6,7 @@ describe("procesStatement", () => {
   describe("on empty store", () => {
     test("direct", () => {
       const statement: Statement = {
+        Id: "1",
         "Statement Type": "formal",
         Attribute: "VROMI minister",
         Deontic: "must",

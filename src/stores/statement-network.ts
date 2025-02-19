@@ -73,22 +73,23 @@ function onStatementsChange(statements: Statement[]) {
   // by not including it in the new nodes array
   const newNodes: StatementNode[] = [];
   for (const statement of statements) {
-    if (nodesIds.has(statement.Id!)) {
+    const foundNode = nodesIds.get(statement.Id);
+    if (foundNode) {
       // updated
-      const node = { ...nodesIds.get(statement.Id!)! };
+      const node = { ...foundNode };
       node.data = {
         raw: statement,
-        label: statement.Id!,
+        label: statement.Id,
       };
       newNodes.push(node);
     } else {
       // new
       const statementNode: StatementNode = {
-        id: statement.Id!,
+        id: statement.Id,
         type: "statement",
         data: {
           raw: statement,
-          label: statement.Id!,
+          label: statement.Id,
         },
         position: { x: 0, y },
       };
@@ -113,9 +114,10 @@ function onConnectionsChange(connections: Connection[]) {
   const newEdges: INASEdge[] = [];
   for (const connection of connections) {
     const id = connection2id(connection);
-    if (edgeIds.has(id)) {
+    const foundEdge = edgeIds.get(id);
+    if (foundEdge) {
       // updated
-      const edge = { ...edgeIds.get(id)! };
+      const edge = { ...foundEdge };
       edge.source = connection.source_statement;
       edge.target = connection.target_statement;
       newEdges.push(edge);
@@ -158,8 +160,8 @@ function onConflictsChange(conflicts: Conflict[]) {
     .map((conflict) => {
       const e: ConflictingEdge = {
         id: `${conflict.formal.Id}-${conflict.informal.Id}`,
-        source: conflict.formal.Id!,
-        target: conflict.informal.Id!,
+        source: conflict.formal.Id,
+        target: conflict.informal.Id,
         sourceHandle: "conflict",
         targetHandle: "conflict",
         type: "conflict",

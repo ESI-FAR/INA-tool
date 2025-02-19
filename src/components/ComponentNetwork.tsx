@@ -77,8 +77,11 @@ export function ComponentNetwork() {
       edgeTypes={edgeTypes}
       connectionLineComponent={ConnectionLine}
       isValidConnection={(connection) => {
-        const source = nodes.find((node) => node.id === connection.source)!;
-        const target = nodes.find((node) => node.id === connection.target)!;
+        const source = nodes.find((node) => node.id === connection.source);
+        const target = nodes.find((node) => node.id === connection.target);
+        if (!source || !target) {
+          throw new Error("Source or target node not found");
+        }
         return (
           connection.sourceHandle === connection.targetHandle &&
           source.id !== target.id
