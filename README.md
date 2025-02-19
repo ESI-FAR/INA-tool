@@ -34,6 +34,8 @@ npm run lint
 npm run typecheck
 # To run tests, tests are written with vitest and are named `*.test.ts[x]`.
 npm run test
+# To run e2e tests, tests are written with playwright and are in `tests/`.
+npm run test:e2e
 ```
 
 The application is built with

@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "format:check": "prettier --check .",
-    "test": "vitest"
+    "test": "vitest",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -47,6 +48,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.50.1",
     "@tanstack/router-devtools": "^1.95.5",
     "@tanstack/router-plugin": "^1.95.5",
     "@types/d3-dsv": "^3.0.7",
