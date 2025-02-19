@@ -364,11 +364,15 @@ function ShowRow({
   onDelete: () => void;
 }) {
   return (
-    <TableRow data-state={row.getIsSelected() && "selected"}>
+    <TableRow
+      data-state={row.getIsSelected() && "selected"}
+      aria-label={row.original["Id"]}
+    >
       <TableCell className="flex gap-1">
         <Button
           disabled={editingId !== undefined && row.original["Id"] !== editingId}
           title="Edit"
+          aria-label="Edit"
           variant="secondary"
           size="icon"
           onClick={() => setEditing(row.original)}
@@ -377,6 +381,7 @@ function ShowRow({
         </Button>
         <Button
           title="Delete"
+          aria-label="Delete"
           variant="destructive"
           size="icon"
           onClick={onDelete}
@@ -476,12 +481,19 @@ function EditRow({
     <TableRow data-state={row.getIsSelected() && "selected"}>
       <TableCell className="flex flex-col gap-1">
         <form onSubmit={myform.handleSubmit(onSave)}>
-          <Button title="Save" variant="secondary" size="icon" type="submit">
+          <Button
+            title="Save"
+            aria-label="Save"
+            variant="secondary"
+            size="icon"
+            type="submit"
+          >
             <SaveIcon />
           </Button>
         </form>
         <Button
           title="Cancel"
+          aria-label="Cancel"
           variant="secondary"
           size="icon"
           onClick={onCancel}
