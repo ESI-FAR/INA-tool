@@ -6,7 +6,10 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { exportComponentNetworkToGraphml } from "@/lib/export";
+import {
+  exportComponentNetworkToGEXF,
+  exportComponentNetworkToGraphml,
+} from "@/lib/export";
 import { download } from "@/lib/io";
 import { store as networkStore } from "@/stores/component-network";
 import { store } from "@/stores/global";
@@ -19,6 +22,15 @@ function exportAsGraphml() {
   const edges = networkStore.getState().edges;
 
   const file = exportComponentNetworkToGraphml(projectName, nodes, edges);
+  download(file);
+}
+
+function exportAsGexf() {
+  const projectName = store.getState().projectName;
+  const nodes = networkStore.getState().nodes;
+  const edges = networkStore.getState().edges;
+
+  const file = exportComponentNetworkToGEXF(projectName, nodes, edges);
   download(file);
 }
 
@@ -36,6 +48,10 @@ export function ComponentNetworkMenu() {
         <DropdownMenuItem onClick={exportAsGraphml}>
           <DownloadIcon />
           Export as graphml
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={exportAsGexf}>
+          <DownloadIcon />
+          Export as gexf
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

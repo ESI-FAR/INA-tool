@@ -203,4 +203,79 @@ export function exportComponentNetworkToGraphml(
   return generateGraphMLFile(xmlParts, projectName);
 }
 
-// TODO add GEXF export format as Gephi does not understand hierarchical graphs in GraphML
+// GEXF export format as Gephi does not understand hierarchical graphs in GraphML
+export function exportComponentNetworkToGEXF(
+  projectName: string,
+  nodes: INANode[],
+  edges: INACEdge[],
+) {
+  const xmlParts: string[] = [];
+  xmlParts.push('<?xml version="1.0" encoding="UTF-8"?>');
+  xmlParts.push(
+    '<gexf xmlns="http://gexf.net/1.3" xmlns:viz="http://gexf.net/1.3/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gexf.net/1.3 http://gexf.net/1.3/gexf.xsd" version="1.3">',
+  );
+  xmlParts.push(
+    '<graph mode="static" defaultedgetype="directed"><attributes class="node">',
+  );
+  xmlParts.push(
+    '<attribute id="0" title="type" type="string"><default>statement</default></attribute>',
+  );
+  xmlParts.push('</attributes><attributes class="edge">');
+  xmlParts.push(
+    '<attribute id="0" title="type" type="string"><default>component</default></attribute>',
+  );
+  xmlParts.push("</attributes><nodes>");
+
+  for (const node of nodes) {
+    if (node.parentId) {
+      // Skip component nodes, they are added as part of their parent node
+      continue;
+    }
+    xmlParts.push(`<node id="${node.id}" label="${node.data.label}">`);
+    xmlParts.push(
+      `<viz:position x="${node.position.x}" y="${node.position.y}" z="0.0"/>`,
+    );
+    xmlParts.push("<nodes>");
+
+    for (const component of nodes.filter((n) => n.parentId === node.id)) {
+      xmlParts.push(
+        `<node id="${component.id}" label="${component.data.label}">`,
+      );
+      xmlParts.push("<attvalues>");
+      xmlParts.push(`<attvalue for="0" value="${component.type}"/>`);
+      xmlParts.push("</attvalues>");
+      xmlParts.push(
+        `<viz:position x="${node.position.x + component.position.x}" y="${node.position.y + component.position.y}" z="0.0"/>`,
+      );
+      xmlParts.push("</node>");
+    }
+    xmlParts.push("</nodes></node>");
+  }
+
+  xmlParts.push("</nodes><edges>");
+
+  for (const edge of edges) {
+    if (edge.label) {
+      xmlParts.push(
+        `<edge id="${edge.id}" source="${edge.source}" target="${edge.target}" label="${edge.label}">`,
+      );
+    } else {
+      xmlParts.push(
+        `<edge id="${edge.id}" source="${edge.source}" target="${edge.target}">`,
+      );
+    }
+    if (edge.type !== "component") {
+      xmlParts.push(
+        `<attvalues><attvalue for="0" value="${edge.type}"/></attvalues>`,
+      );
+    }
+    xmlParts.push("</edge>");
+  }
+
+  xmlParts.push("</edges></graph></gexf>");
+  const xmlString = xmlParts.join("");
+  const file = new File([xmlString], `${projectName}.gexf`, {
+    type: "application/xml",
+  });
+  return file;
+}
