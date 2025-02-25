@@ -1,18 +1,8 @@
 import { Statement } from "@/lib/schema";
-import { store } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import {
-  Handle,
-  NodeProps,
-  NodeResizeControl,
-  NodeToolbar,
-  Position,
-  useReactFlow,
-} from "@xyflow/react";
+import { Handle, NodeProps, NodeResizeControl, Position } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { useStore } from "zustand";
-import { StatementCard } from "./StatementCard";
+import { useMemo } from "react";
 import type {
   StatementNode,
   AttributeNode,
@@ -21,7 +11,10 @@ import type {
   InDirectObjectNode,
   ActivationConditionNode,
   ExecutionConstraintNode,
+  ConflictGroupNode,
+  INANode,
 } from "@/lib/node";
+import { bgColor } from "./drivenColors";
 
 /*
 The statement graph should look like:
@@ -30,7 +23,26 @@ The statement graph should look like:
                                                        |                    |                
                                                        v                    v
                                             ExecutionConstraintNode?   InDirectObjectNode?
+
+
+Or in mermaid format:
+
+```mermaid
+graph LR;
+    ac{{Activation Condition}}-->att((Attribute))
+    att-->|Deontic|aim(Aim)
+    aim-->do([Direct Object])
+    do-->io([Indirect Object])
+    aim-->ec{{Execution Constraint}}
+```
 */
+
+// Keep in sync with colors in Hexagon.borderClassName
+// hexagon uses background instead border
+const selectedClassName = (v: boolean | undefined) =>
+  v
+    ? "border-slate-900 dark:border-slate-100"
+    : "border-slate-400 dark:border-slate-400 hover:border-slate-900 dark:hover:border-slate-100";
 
 function SourceHandles({
   isConnectable,
@@ -62,8 +74,8 @@ function SourceHandles({
       {allowActorDriven && (
         <Handle
           type="source"
-          id="actor-driven"
-          className="!bg-purple-500"
+          id="actor"
+          className={bgColor.actor}
           style={{ ...style, left: "25%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -72,8 +84,8 @@ function SourceHandles({
       {allowOutcomeDriven && (
         <Handle
           type="source"
-          id="outcome-driven"
-          className="!bg-green-500"
+          id="outcome"
+          className={bgColor.outcome}
           style={{ ...style, left: "50%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -81,8 +93,8 @@ function SourceHandles({
       )}
       <Handle
         type="source"
-        id="sanction-driven"
-        className="!bg-red-500"
+        id="sanction"
+        className={bgColor.sanction}
         style={{ ...style, left: "75%" }}
         position={Position.Bottom}
         isConnectable={isConnectable}
@@ -109,8 +121,8 @@ function TargetHandles({
     <>
       <Handle
         type="target"
-        id="actor-driven"
-        className="!bg-purple-500"
+        id="actor"
+        className={bgColor.actor}
         style={{ ...style, left: "25%" }}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -119,16 +131,16 @@ function TargetHandles({
         <>
           <Handle
             type="target"
-            id="outcome-driven"
-            className="!bg-green-500"
+            id="outcome"
+            className={bgColor.outcome}
             style={{ ...style, left: "50%" }}
             position={Position.Top}
             isConnectable={isConnectable}
           />
           <Handle
             type="target"
-            id="sanction-driven"
-            className="!bg-red-500"
+            id="sanction"
+            className={bgColor.sanction}
             style={{ ...style, left: "75%" }}
             position={Position.Top}
             isConnectable={isConnectable}
@@ -139,39 +151,56 @@ function TargetHandles({
   );
 }
 
-function CompactStatementNode({
-  statement,
-  isConnectable,
-  selected,
-}: {
-  statement: Statement;
-  isConnectable: boolean;
-  selected: boolean | undefined;
-}) {
-  const { updateNode } = useReactFlow();
-  const onToolbarClick = useCallback(() => {
-    updateNode(statement.Id!, {
-      selected: false,
-    });
-  }, [statement.Id, updateNode]);
+function ConflictHandles({ isConnectable }: { isConnectable: boolean }) {
+  const style = useMemo(
+    () => ({
+      width: isConnectable ? 10 : 4,
+      height: isConnectable ? 10 : 4,
+    }),
+    [isConnectable],
+  );
   return (
     <>
-      {" "}
-      {/* TODO show statement card in drawer. nice if on hover drawer could be filled? */}
-      <NodeToolbar
-        nodeId={statement.Id}
+      <Handle
+        type="target"
+        id="conflict"
+        className={bgColor.sanction}
+        style={{ ...style }}
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="target"
+        id="conflict"
+        className={bgColor.sanction}
+        style={{ ...style }}
         position={Position.Right}
-        onClick={onToolbarClick}
-      >
-        <StatementCard statement={statement} />
-      </NodeToolbar>
+        isConnectable={isConnectable}
+      />
+    </>
+  );
+}
+
+export function CollapsedStatementNode({
+  data,
+  isConnectable,
+  selected,
+}: NodeProps<StatementNode>) {
+  const statement = data.raw;
+  const color = statementBackground[data.raw["Statement Type"]];
+  const isConflictEditing = false;
+  return (
+    <>
       <SourceHandles isConnectable={isConnectable} statement={statement} />
       <TargetHandles isConnectable={isConnectable} statement={statement} />
+      {/* TODO only show conflict handles if the conflict editing is enabled */}
+      {isConflictEditing ?? <ConflictHandles isConnectable={isConnectable} />}
       <div
-        className={cn("min-w-12 cursor-pointer rounded border-2 p-1", {
-          "border-slate-400": !selected,
-          "border-slate-900": selected,
-        })}
+        className={cn(
+          "min-w-12 cursor-pointer rounded border-2 p-1",
+          color,
+          selectedClassName(selected),
+        )}
       >
         {statement["Statement Type"] === "formal" ? "F" : "I"}
         {statement.Id}
@@ -186,34 +215,22 @@ export const statementBackground = {
   informal: "bg-yellow-100/30 dark:bg-yellow-600/30",
 } as const;
 
-export function StatementNode({
-  data,
-  isConnectable,
-  selected,
-}: NodeProps<StatementNode>) {
-  const isCompact = useStore(store, (s) => s.isCompact);
-  if (isCompact) {
-    return (
-      <CompactStatementNode
-        statement={data.raw}
-        isConnectable={isConnectable}
-        selected={selected}
-      />
-    );
-  }
-  const color = statementBackground[data.raw["Statement Type"]];
+export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
+  const formalism = data.raw["Statement Type"];
+  const color = statementBackground[formalism];
   return (
     <fieldset
       className={cn(
-        "h-full w-full rounded-md border border-gray-300 p-4 shadow-md",
+        "h-full w-full rounded-md border border-gray-300 p-4 shadow-md dark:border-gray-700",
         color,
+        selectedClassName(selected),
       )}
     >
       <NodeResizeControl minWidth={100} minHeight={50}>
         <Maximize2Icon className="absolute bottom-2 right-2 h-2 w-2 rotate-90" />
       </NodeResizeControl>
       <legend>
-        {data.formalism === "formal" ? "F" : "I"}
+        {formalism === "formal" ? "F" : "I"}
         {data.label}
       </legend>
     </fieldset>
@@ -223,9 +240,15 @@ export function StatementNode({
 export function AttributeNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<AttributeNode>) {
   return (
-    <div className="border-1 max-w-48 rounded-full border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 rounded-full border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -241,8 +264,8 @@ export function AttributeNode({
       />
       <Handle
         type="target"
-        id="actor-driven"
-        className="!bg-purple-500"
+        id="actor"
+        className={bgColor.actor}
         style={drivenConnectionHandleStye}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -251,9 +274,14 @@ export function AttributeNode({
   );
 }
 
-export function AimNode({ data, isConnectable }: NodeProps<AimNode>) {
+export function AimNode({ data, isConnectable, selected }: NodeProps<AimNode>) {
   return (
-    <div className="border-1 max-w-48 border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -276,8 +304,8 @@ export function AimNode({ data, isConnectable }: NodeProps<AimNode>) {
       />
       <Handle
         type="source"
-        id="sanction-driven"
-        className="!bg-red-500"
+        id="sanction"
+        className={bgColor.sanction}
         style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Bottom}
         isConnectable={isConnectable}
@@ -289,9 +317,15 @@ export function AimNode({ data, isConnectable }: NodeProps<AimNode>) {
 export function DirectObjectNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<DirectObjectNode>) {
   return (
-    <div className="border-1 max-w-48 rounded-sm border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 rounded-sm border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -309,8 +343,8 @@ export function DirectObjectNode({
       {data.animation === "animate" && (
         <Handle
           type="source"
-          id="actor-driven"
-          className="!bg-purple-500"
+          id="actor"
+          className={bgColor.actor}
           style={{ ...drivenConnectionHandleStye, left: "66%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -319,8 +353,8 @@ export function DirectObjectNode({
       {data.animation === "inanimate" && (
         <Handle
           type="source"
-          id="outcome-driven"
-          className="!bg-green-500"
+          id="outcome"
+          className={bgColor.outcome}
           style={{ ...drivenConnectionHandleStye, left: "66%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -333,9 +367,15 @@ export function DirectObjectNode({
 export function InDirectObjectNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<InDirectObjectNode>) {
   return (
-    <div className="border-1 max-w-48 rounded-sm border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 rounded-sm border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -346,8 +386,8 @@ export function InDirectObjectNode({
       {data.animation === "animate" && (
         <Handle
           type="source"
-          id="actor-driven"
-          className="!bg-purple-500"
+          id="actor"
+          className={bgColor.actor}
           style={drivenConnectionHandleStye}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -356,8 +396,8 @@ export function InDirectObjectNode({
       {data.animation === "inanimate" && (
         <Handle
           type="source"
-          id="outcome-driven"
-          className="!bg-green-500"
+          id="outcome"
+          className={bgColor.outcome}
           style={drivenConnectionHandleStye}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -371,18 +411,26 @@ const drivenConnectionHandleStye = { width: 10, height: 10 } as const;
 
 function Hexagon({
   children,
-  className,
-  borderClassName,
+  selected,
 }: {
   children: React.ReactNode;
-  className: string;
-  borderClassName: string;
+  selected: boolean | undefined;
 }) {
   // Extracted from https://html-polygon.com/play
   // TODO make rectangle inside hexagon wider
+
+  // Keep in sync with colors in selectedClassName
+  const borderClassName = useMemo(
+    () =>
+      selected
+        ? "bg-slate-900 dark:bg-slate-100"
+        : "bg-slate-400 dark:bg-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-slate-100",
+    [selected],
+  );
+
   return (
     <div
-      className={className}
+      className="group"
       style={{
         clipPath:
           "polygon(75% 6.699%, 25% 6.699%, 0% 50%, 25% 93.301%, 75% 93.301%, 100% 50%)",
@@ -445,6 +493,7 @@ function Hexagon({
 export function ActivationConditionNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<ActivationConditionNode>) {
   /**
    * <div id="html-polygon"
@@ -461,7 +510,7 @@ export function ActivationConditionNode({
 
   return (
     <>
-      <Hexagon className="text-foreground" borderClassName="bg-foreground">
+      <Hexagon selected={selected}>
         <div className="max-w-48 px-12 py-1">{data.label}</div>
       </Hexagon>
       <Handle
@@ -472,16 +521,16 @@ export function ActivationConditionNode({
       />
       <Handle
         type="target"
-        id="outcome-driven"
-        className="!bg-green-500"
+        id="outcome"
+        className={bgColor.outcome}
         style={{ ...drivenConnectionHandleStye, left: "33%" }}
         position={Position.Top}
         isConnectable={isConnectable}
       />
       <Handle
         type="target"
-        id="sanction-driven"
-        className="!bg-red-500"
+        id="sanction"
+        className={bgColor.sanction}
         style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -493,9 +542,15 @@ export function ActivationConditionNode({
 export function ExecutionConstraintNode({
   data,
   isConnectable,
+  selected,
 }: NodeProps<ExecutionConstraintNode>) {
   return (
-    <div className="border-1 max-w-48 rounded-xl border border-foreground p-2">
+    <div
+      className={cn(
+        "border-1 max-w-48 rounded-xl border border-foreground p-2",
+        selectedClassName(selected),
+      )}
+    >
       <div className="h-fit w-fit">{data.label}</div>
       <Handle
         type="target"
@@ -505,8 +560,8 @@ export function ExecutionConstraintNode({
       />
       <Handle
         type="source"
-        id="actor-driven"
-        className="!bg-purple-500"
+        id="actor"
+        className={bgColor.actor}
         style={drivenConnectionHandleStye}
         position={Position.Bottom}
         isConnectable={isConnectable}
@@ -515,13 +570,31 @@ export function ExecutionConstraintNode({
   );
 }
 
+export function ConflictGroupNode() {
+  return (
+    <div className="h-full w-full rounded border-2 bg-red-500 shadow"></div>
+  );
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const nodeTypes = {
   statement: StatementNode,
-  attribute: AttributeNode,
-  aim: AimNode,
-  "direct-object": DirectObjectNode,
-  "indirect-object": InDirectObjectNode,
-  "activation-condition": ActivationConditionNode,
-  "execution-constraint": ExecutionConstraintNode,
+  Attribute: AttributeNode,
+  Aim: AimNode,
+  "Direct Object": DirectObjectNode,
+  "Indirect Object": InDirectObjectNode,
+  "Activation Condition": ActivationConditionNode,
+  "Execution Constraint": ExecutionConstraintNode,
 } as const;
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function minimapNodeClassName(node: INANode) {
+  if (node.type === "statement") {
+    if (node.data.raw["Statement Type"] === "formal") {
+      return "!fill-sky-50 dark:!fill-sky-700";
+    } else {
+      return "!fill-yellow-50 dark:!fill-yellow-700";
+    }
+  }
+  return "";
+}

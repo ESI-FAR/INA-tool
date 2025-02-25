@@ -1,5 +1,5 @@
 import path from "path";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
@@ -24,4 +24,8 @@ export default defineConfig({
     },
   },
   base: process.env.BASE_URL || "/",
+  test: {
+    // tests/ are for playwright test
+    include: ["src/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+  },
 });

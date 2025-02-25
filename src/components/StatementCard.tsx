@@ -1,196 +1,101 @@
-import { Statement } from "@/lib/schema";
-import { store } from "@/lib/store";
+import { ConnectionComponent, Statement } from "@/lib/schema";
 import { useMemo } from "react";
-import { Fragment } from "react/jsx-runtime";
-import { useStore } from "zustand";
-import { isDrivenConnectionEdge } from "@/lib/edge";
+import { useConnections } from "@/hooks/use-connections";
+import { cn } from "@/lib/utils";
+import { connection2id } from "@/lib/connection2id";
+import { textColor } from "./drivenColors";
 
-function Outgoing({ type }: { type: string }) {
-  if (type === "actor-driven") {
-    return (
-      <span
-        title="Actor driven connection source"
-        className="ps-2 text-purple-500"
-      >
-        ●➜
-      </span>
+function ComponentWithConnections({
+  statement,
+  component,
+  title = component,
+}: {
+  statement: Statement;
+  component: ConnectionComponent;
+  title?: string;
+}) {
+  const { connectionsOfComponent } = useConnections();
+  const { incoming, outgoing } = useMemo(() => {
+    const connections = connectionsOfComponent(statement.Id, component);
+    const incoming = connections.filter(
+      (connection) => connection.target_statement === statement.Id,
     );
-  } else if (type === "outcome-driven") {
-    return (
-      <span
-        title="Outcome driven connection source"
-        className="ps-2 text-green-500"
-      >
-        ●➜
-      </span>
+    const outgoing = connections.filter(
+      (connection) => connection.source_statement === statement.Id,
     );
-  }
+    return { incoming, outgoing };
+  }, [connectionsOfComponent, statement.Id, component]);
   return (
-    <span
-      title="Sanction driven connection source"
-      className="ps-2 text-red-500"
-    >
-      ●➜
+    <span className="hover:underline">
+      {incoming.map((connection) => (
+        <span
+          key={connection2id(connection)}
+          className={cn("ps-2", textColor[connection.driven_by])}
+          title={`Connection driven by ${connection.driven_by} from ${connection.source_statement}:${connection.source_component}`}
+        >
+          ➜●{" "}
+        </span>
+      ))}
+      <span title={title}>{statement[component]}</span>
+      {outgoing.map((connection) => (
+        <span
+          key={connection2id(connection)}
+          className={cn("ps-2", textColor[connection.driven_by])}
+          title={`Connection driven by ${connection.driven_by} to ${connection.target_statement}:${connection.target_component}`}
+        >
+          {" "}
+          ●➜
+        </span>
+      ))}{" "}
     </span>
   );
-}
-
-function Incoming({ type }: { type: string }) {
-  if (type === "actor-driven") {
-    return (
-      <span
-        title="Actor driven connection target"
-        className="ps-2 text-purple-500"
-      >
-        ➜●
-      </span>
-    );
-  } else if (type === "outcome-driven") {
-    return (
-      <span
-        title="Outcome driven connection target"
-        className="ps-2 text-green-500"
-      >
-        ➜●
-      </span>
-    );
-  }
-  return (
-    <span
-      title="Sanction driven connection target"
-      className="ps-2 text-red-500"
-    >
-      ➜●
-    </span>
-  );
-}
-
-function useConnections(statementId: string) {
-  const edges = useStore(store, (s) => s.edges);
-  const connections = useMemo(() => {
-    // TODO statement could have multiple connections from/to same field
-    // now only last one found is used
-    const outgoing = new Map(
-      edges
-        .filter((edge) => edge.source === statementId)
-        .filter(isDrivenConnectionEdge)
-        .map((e) => {
-          const col = e.uncompactSource!.replace(e.source + "-", "");
-          return [col, e.type];
-        }),
-    );
-    const incoming = new Map(
-      edges
-        .filter((edge) => edge.target === statementId)
-        .filter(isDrivenConnectionEdge)
-        .map((e) => {
-          const col = e.uncompactTarget!.replace(e.target + "-", "");
-          return [col, e.type];
-        }),
-    );
-    return { outgoing, incoming };
-  }, [edges, statementId]);
-  return connections;
 }
 
 export function StatementCard({ statement }: { statement: Statement }) {
-  const connections = useConnections(statement.Id!);
-
   return (
-    <div className="bg-card p-2 text-card-foreground shadow">
-      <div className="absolute right-0 top-0 z-10 cursor-pointer p-1 text-muted-foreground hover:text-foreground">
-        ✕
-      </div>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-2 text-sm">
-        <dt className="font-semibold">Statement Type:</dt>
-        <dd>{statement["Statement Type"]}</dd>
-        <dt className="font-semibold">Attribute:</dt>
-        <dd>
-          {statement.Attribute}
-          {connections.incoming.has("attribute") && (
-            <Incoming type={connections.incoming.get("attribute")!} />
-          )}
-        </dd>
-        {statement.Deontic && (
-          <Fragment key="Deontic">
-            <dt className="font-semibold">Deontic:</dt>
-            <dd>{statement.Deontic}</dd>
-          </Fragment>
-        )}
-        <dt className="font-semibold">Aim:</dt>
-        <dd>
-          {statement.Aim}
-          {connections.outgoing.has("aim") && (
-            <Outgoing type={connections.outgoing.get("aim")!} />
-          )}
-        </dd>
-        {statement["Direct Object"] && (
-          <Fragment key="Direct Object">
-            <dt className="font-semibold">Direct Object:</dt>
-            <dd>
-              {statement["Direct Object"]}
-              {connections.outgoing.has("direct-object") && (
-                <Outgoing type={connections.outgoing.get("direct-object")!} />
-              )}
-            </dd>
-          </Fragment>
-        )}
-        {statement["Type of Direct Object"] && (
-          <Fragment key="Type of Direct Object">
-            <dt className="font-semibold">Type of Direct Object:</dt>
-            <dd>{statement["Type of Direct Object"]}</dd>
-          </Fragment>
-        )}
-        {statement["Indirect Object"] && (
-          <Fragment key="Indirect Object">
-            <dt className="font-semibold">Indirect Object:</dt>
-            <dd>
-              {statement["Indirect Object"]}
-              {connections.outgoing.has("indirect-object") && (
-                <Outgoing type={connections.outgoing.get("indirect-object")!} />
-              )}
-            </dd>
-          </Fragment>
-        )}
-        {statement["Type of Indirect Object"] && (
-          <Fragment key="Type of Indirect Object">
-            <dt className="font-semibold">Type of Indirect Object:</dt>
-            <dd>{statement["Type of Indirect Object"]}</dd>
-          </Fragment>
-        )}
-        {statement["Activation Condition"] && (
-          <Fragment key="Activation Condition">
-            <dt className="font-semibold">Activation Condition:</dt>
-            <dd>
-              {statement["Activation Condition"]}
-              {connections.incoming.has("activation-condition") && (
-                <Incoming
-                  type={connections.incoming.get("activation-condition")!}
-                />
-              )}
-            </dd>
-          </Fragment>
-        )}
-        {statement["Execution Constraint"] && (
-          <Fragment key="Execution Constraint">
-            <dt className="font-semibold">Execution Constraint:</dt>
-            <dd>
-              {statement["Execution Constraint"]}
-              {connections.outgoing.has("execution-constraint") && (
-                <Outgoing
-                  type={connections.outgoing.get("execution-constraint")!}
-                />
-              )}
-            </dd>
-          </Fragment>
-        )}
-        {statement["Or Else"] && (
-          <Fragment key="Or Else">
-            <dt className="font-semibold">Or Else:</dt>
-            <dd>{statement["Or Else"]}</dd>
-          </Fragment>
-        )}
-      </dl>
+    <div className="w-96 bg-card p-2 text-card-foreground shadow">
+      <span title="Statement Id" className="hover:underline">
+        {statement["Statement Type"] === "formal" ? "F" : "I"}
+        {statement.Id}:{" "}
+      </span>
+      <ComponentWithConnections statement={statement} component="Attribute" />{" "}
+      {statement.Deontic && (
+        <span className="hover:underline" title="Deontic">
+          {statement.Deontic}{" "}
+        </span>
+      )}
+      <ComponentWithConnections statement={statement} component="Aim" />
+      {statement["Direct Object"] && (
+        <ComponentWithConnections
+          statement={statement}
+          component="Direct Object"
+          title={`Direct Object ${statement["Type of Direct Object"]}`}
+        />
+      )}
+      {statement["Indirect Object"] && (
+        <ComponentWithConnections
+          statement={statement}
+          component="Indirect Object"
+          title={`Indirect Object ${statement["Type of Indirect Object"]} `}
+        />
+      )}
+      {statement["Activation Condition"] && (
+        <ComponentWithConnections
+          statement={statement}
+          component="Activation Condition"
+        />
+      )}
+      {statement["Execution Constraint"] && (
+        <ComponentWithConnections
+          statement={statement}
+          component="Execution Constraint"
+        />
+      )}
+      {statement["Or Else"] && (
+        <span title="Or Else" className="hover:underline">
+          {statement["Or Else"]}
+        </span>
+      )}
     </div>
   );
 }

@@ -1,17 +1,13 @@
 import { DownloadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { download } from "@/lib/io";
-import { store } from "@/lib/store";
+import { project2json } from "@/lib/project2json";
+import { store } from "@/stores/global";
 
 function createProjectFile() {
   const projectName = store.getState().projectName;
   const fn = projectName ? `${projectName}.json` : "INA-tool.json";
-  const body = {
-    nodes: store.getState().nodes,
-    edges: store.getState().edges,
-    isCompact: store.getState().isCompact,
-  };
-  const content = JSON.stringify(body, null, 2);
+  const content = project2json();
   return new File([content], fn, { type: "application/json" });
 }
 
