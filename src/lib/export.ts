@@ -146,13 +146,13 @@ export function exportComponentNetworkToGraphml(
 ) {
   const xmlParts: string[] = generateGraphMLHeader();
   xmlParts.push(
-    '<key attr.name="type" attr.type="string" for="node" id="type" />',
+    '<key attr.name="type" attr.type="string" for="node" id="ntype" />',
   );
   // Edge keys
   xmlParts.push(
-    '<key attr.name="type" attr.type="string" id="type" for="edge"/>',
+    '<key attr.name="type" attr.type="string" for="edge" id="etype" />',
   );
-  // TODO keys
+
   xmlParts.push(`<graph id="${projectName}" edgedefault="directed">`);
 
   for (const node of nodes) {
@@ -164,7 +164,7 @@ export function exportComponentNetworkToGraphml(
     xmlParts.push(`<data key="label">${node.data.label}</data>`);
     xmlParts.push(`<data key="x">${node.position.x}</data>`);
     xmlParts.push(`<data key="y">${node.position.y}</data>`);
-    xmlParts.push(`<data key="type">${node.type}</data>`);
+    xmlParts.push(`<data key="ntype">${node.type}</data>`);
     xmlParts.push(`<graph id="${node.id}:" edgedefault="undirected">`);
     for (const component of nodes.filter((n) => n.parentId === node.id)) {
       xmlParts.push(`<node id="${component.id}">`);
@@ -175,15 +175,17 @@ export function exportComponentNetworkToGraphml(
       xmlParts.push(
         `<data key="y">${node.position.y + component.position.y}</data>`,
       );
-      xmlParts.push(`<data key="type">${component.type}</data>`);
+      xmlParts.push(`<data key="ntype">${component.type}</data>`);
       xmlParts.push(`</node>`);
     }
     for (const edge of edges.filter((e) => e.data?.statementId === node.id)) {
       xmlParts.push(
         `<edge id="${edge.id}" source="${edge.source}" target="${edge.target}">`,
       );
-      xmlParts.push(`<data key="label">${edge.label}</data>`);
-      xmlParts.push(`<data key="type">component</data>`);
+      if (edge.label) {
+        xmlParts.push(`<data key="label">${edge.label}</data>`);
+      }
+      xmlParts.push(`<data key="etype">component</data>`);
       xmlParts.push(`</edge>`);
     }
     xmlParts.push(`</graph>`);
@@ -193,7 +195,7 @@ export function exportComponentNetworkToGraphml(
     xmlParts.push(
       `<edge id="${edge.id}" source="${edge.source}" target="${edge.target}">`,
     );
-    xmlParts.push(`<data key="type">${edge.type}</data>`);
+    xmlParts.push(`<data key="etype">${edge.type}</data>`);
     xmlParts.push(`</edge
     >`);
   }

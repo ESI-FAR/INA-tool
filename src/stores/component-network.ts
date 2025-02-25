@@ -87,22 +87,20 @@ function compareStatement(a: Statement, b: Statement): boolean {
   );
 }
 
-function onStatementsChange(statements: Statement[]) {
-  const nonStatementNodes = store.getState().nodes.filter(isConflictGroupNode);
-  const drivenConnectionEdges = store
-    .getState()
-    .edges.filter(isDrivenConnectionEdge);
+export function applyStatementsChanges(
+  statements: Statement[],
+  nodes: INANode[],
+  edges: INACEdge[],
+): [INANode[], INACEdge[]] {
+  const nonStatementNodes = nodes.filter(isConflictGroupNode);
+  const drivenConnectionEdges = edges.filter(isDrivenConnectionEdge);
   const nodeLookup = new Map<string, StatementRelatedNode>(
-    store
-      .getState()
-      .nodes.filter((n) => isStatementNode(n) || isComponentNode(n))
+    nodes
+      .filter((n) => isStatementNode(n) || isComponentNode(n))
       .map((n) => [n.id, n]),
   );
   const statementNodeLookup = new Map<string, StatementNode>(
-    store
-      .getState()
-      .nodes.filter(isStatementNode)
-      .map((n) => [n.id, n]),
+    nodes.filter(isStatementNode).map((n) => [n.id, n]),
   );
   const newNodes: StatementRelatedNode[] = [];
   const newEdges: ComponentEdge[] = [];
@@ -114,14 +112,12 @@ function onStatementsChange(statements: Statement[]) {
         // Same statement, no need to update
         // retain statement node, component nodes and edges
         newNodes.push(statementNode);
-        const myComponentNodes = store
-          .getState()
-          .nodes.filter(isComponentNode)
+        const myComponentNodes = nodes
+          .filter(isComponentNode)
           .filter((n) => n.parentId === statement.Id);
         newNodes.push(...myComponentNodes);
-        const myComponentEdges = store
-          .getState()
-          .edges.filter(isComponentEdge)
+        const myComponentEdges = edges
+          .filter(isComponentEdge)
           .filter((e) => e.data?.statementId === statement.Id);
         newEdges.push(...myComponentEdges);
       } else {
@@ -164,19 +160,32 @@ function onStatementsChange(statements: Statement[]) {
       newEdges.push(...myNewEdges);
     }
   }
-
-  store.getState().setNodes([...nonStatementNodes, ...newNodes]);
-  store.getState().setEdges([...drivenConnectionEdges, ...newEdges]);
+  return [
+    [...nonStatementNodes, ...newNodes],
+    [...drivenConnectionEdges, ...newEdges],
+  ];
 }
 
-function onConnectionsChange(connections: Connection[]) {
+function onStatementsChange(statements: Statement[]) {
+  const [nodes, edges] = applyStatementsChanges(
+    statements,
+    store.getState().nodes,
+    store.getState().edges,
+  );
+  store.getState().setNodes(nodes);
+  store.getState().setEdges(edges);
+}
+
+export function applyConnectionsChanges(
+  connections: Connection[],
+  edges: INACEdge[],
+): INACEdge[] {
   const connectionIds = new Set(connections.map(connection2id));
 
   // find connection that are already edges, no need to update them
   // as id captures all the information
-  const drivenConnectionEdges = store
-    .getState()
-    .edges.filter(isDrivenConnectionEdge)
+  const drivenConnectionEdges = edges
+    .filter(isDrivenConnectionEdge)
     .filter((edge) => connectionIds.has(edge.id));
 
   // find connections that are not yet edges and add them
@@ -194,10 +203,13 @@ function onConnectionsChange(connections: Connection[]) {
       drivenConnectionEdges.push(newEdge);
     }
   }
-  const otherEdges = store
-    .getState()
-    .edges.filter((edge) => !isDrivenConnectionEdge(edge));
-  store.getState().setEdges([...otherEdges, ...drivenConnectionEdges]);
+  const otherEdges = edges.filter((edge) => !isDrivenConnectionEdge(edge));
+  return [...otherEdges, ...drivenConnectionEdges];
+}
+
+function onConnectionsChange(connections: Connection[]) {
+  const edges = applyConnectionsChanges(connections, store.getState().edges);
+  store.getState().setEdges(edges);
 }
 
 function conflict2id(conflict: Conflict): string {

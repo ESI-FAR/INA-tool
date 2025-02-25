@@ -1,8 +1,15 @@
-import { INANode, StatementNode } from "./node";
-import { Statement } from "./schema";
-import { exportComponentNetworkToGraphml, exportStatementNetworkToGraphml } from "./export";
+import { StatementNode } from "./node";
+import { Connection, Statement } from "./schema";
+import {
+  exportComponentNetworkToGraphml,
+  exportStatementNetworkToGraphml,
+} from "./export";
 import { describe, expect, test } from "vitest";
-import { INACEdge, INASEdge } from "./edge";
+import { INASEdge } from "./edge";
+import {
+  applyConnectionsChanges,
+  applyStatementsChanges,
+} from "@/stores/component-network";
 
 describe("exportStatementNetworkToGraphml", () => {
   test("single minimal node", async () => {
@@ -124,5 +131,53 @@ describe("exportStatementNetworkToGraphml", () => {
     const content = await file.text();
     expect(content).toContain("1-2");
     expect(content).toContain("actor");
+  });
+});
+
+describe("exportComponentNetworkToGraphml", () => {
+  test("2 statements with 1 connections", async () => {
+    const statement1: Statement = {
+      Id: "1",
+      "Statement Type": "formal",
+      Aim: "Aim1",
+      Attribute: "Attribute1",
+      Deontic: "",
+    };
+    const statement2: Statement = {
+      Id: "2",
+      "Statement Type": "informal",
+      Aim: "Aim2",
+      Attribute: "Attribute2",
+      Deontic: "must",
+      "Activation Condition": "Activation2",
+    };
+    const connection1: Connection = {
+      source_statement: "1",
+      source_component: "Aim",
+      target_statement: "2",
+      target_component: "Attribute",
+      driven_by: "sanction",
+    };
+    const [nodes, statementEdges] = applyStatementsChanges(
+      [statement1, statement2],
+      [],
+      [],
+    );
+    const edges = applyConnectionsChanges([connection1], statementEdges);
+
+    const file = exportComponentNetworkToGraphml(
+      "2-statements-1-connection",
+      nodes,
+      edges,
+    );
+
+    expect(file.name).toEqual("2-statements-1-connection.graphml");
+    expect(file.type).toEqual("application/xml");
+    const content = await file.text();
+    expect(content).toContain("Attribute1");
+    expect(content).toContain("must");
+    expect(content).toContain(
+      "sanction-1-Aim-2-1-Attribute-1-Aim-2-2-Attribute",
+    );
   });
 });
