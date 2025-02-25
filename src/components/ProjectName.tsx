@@ -1,4 +1,4 @@
-import { store } from "@/lib/store";
+import { store } from "@/stores/global";
 import { useRef, useState } from "react";
 import { useStore } from "zustand";
 

@@ -1,24 +1,23 @@
 import { UploadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useRef } from "react";
-import { store } from "@/lib/store";
+import { store } from "@/stores/global";
 import { useToast } from "@/hooks/use-toast";
 import { csvParse } from "d3-dsv";
 import { read as readXLSX, utils as utilsXLSX } from "xlsx";
-import { Statements, statementsSchema } from "@/lib/schema";
+import {
+  Statement,
+  StatementsWithOptionalId,
+  statementsSchema,
+} from "@/lib/schema";
 import { load } from "@/lib/io";
+import { json2project } from "@/lib/project2json";
 import { ZodError } from "zod";
 
 async function processJSONFile(file: File) {
   const content = await file.text();
-  const state = JSON.parse(content);
-  // TODO validate state using zod
-  store.setState({
-    projectName: projectNameFromFile(file),
-    nodes: state.nodes,
-    edges: state.edges,
-    isCompact: state.isCompact,
-  });
+  const projectName = projectNameFromFile(file);
+  json2project(content, projectName);
 }
 
 /**
@@ -27,7 +26,7 @@ async function processJSONFile(file: File) {
  * @param data
  * @returns
  */
-function fillIds(data: Statements) {
+function fillIds(data: StatementsWithOptionalId): Statement[] {
   return data.map((row, index) => {
     return {
       Id: (index + 1).toString(),
@@ -39,7 +38,6 @@ function fillIds(data: Statements) {
 async function processCSVFile(file: File) {
   const content = await file.text();
   const rawStatements = csvParse(content);
-  console.log(rawStatements);
 
   const statements = statementsSchema.parse(rawStatements);
 

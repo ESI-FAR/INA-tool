@@ -1,12 +1,17 @@
-import { store } from "@/lib/store";
 import { TrashIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { store } from "@/stores/global";
 
 function removeAllData() {
   const projectName = store.getState().projectName;
   localStorage.removeItem(`ina-project-${projectName}`);
-  window.history.replaceState({}, "", "?project=");
-  store.setState({ projectName: "", nodes: [], edges: [] });
+  window.history.replaceState({}, "", "?project=" + window.location.hash);
+  store.setState({
+    projectName: "",
+    statements: [],
+    connections: [],
+    conflicts: [],
+  });
 }
 
 export function ClearButton() {

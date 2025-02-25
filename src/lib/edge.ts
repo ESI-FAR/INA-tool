@@ -1,4 +1,5 @@
 import { MarkerType, type Edge } from "@xyflow/react";
+import { DrivenBy } from "./schema";
 
 /*
 Connections:
@@ -13,41 +14,46 @@ Red (Sanction-driven connection):
 - Aim -> Activation Condition
 */
 
-export type InnerStatementEdge = Edge<{ label?: string }, "inner-statement">;
-export type ActorDrivenConnection = Edge<
-  Record<string, unknown>,
-  "actor-driven"
->; // Purple
-export type OutcomeDrivenConnection = Edge<
-  Record<string, unknown>,
-  "outcome-driven"
->; // Green
+export type ComponentEdge = Edge<
+  { label?: string; statementId: string },
+  "component"
+>;
+export type ActorDrivenConnection = Edge<Record<string, unknown>, "actor">; // Purple
+export type OutcomeDrivenConnection = Edge<Record<string, unknown>, "outcome">; // Green
 export type SanctionDrivenConnection = Edge<
   Record<string, unknown>,
-  "sanction-driven"
+  "sanction"
 >; // Red
 
-export type DrivenConnection = (
+export type ConflictingEdge = Edge<Record<string, unknown>, "conflict">;
+
+export type DrivenConnectionEdge =
   | ActorDrivenConnection
   | OutcomeDrivenConnection
-  | SanctionDrivenConnection
-) & { uncompactSource?: string; uncompactTarget?: string };
+  | SanctionDrivenConnection;
 
-export type INAEdge = InnerStatementEdge | DrivenConnection;
+// Edges used in statement level network
+export type INASEdge = DrivenConnectionEdge | ConflictingEdge;
+// Edges used in component level network
+export type INACEdge = DrivenConnectionEdge | ComponentEdge;
 
-export function isInnerStatementEdge(
-  edge: INAEdge,
-): edge is InnerStatementEdge {
-  return edge.type === "inner-statement";
+export function isComponentEdge(edge: INACEdge): edge is ComponentEdge {
+  return edge.type === "component";
 }
 
 export function isDrivenConnectionEdge(
-  edge: INAEdge,
-): edge is DrivenConnection {
-  return !isInnerStatementEdge(edge);
+  edge: INACEdge | ConflictingEdge,
+): edge is DrivenConnectionEdge {
+  return (
+    edge.type === "actor" || edge.type === "outcome" || edge.type === "sanction"
+  );
 }
 
-function connectionMarkerEnd(type: keyof typeof drivenColors) {
+export function isConflictingEdge(edge: INASEdge): edge is ConflictingEdge {
+  return edge.type === "conflict";
+}
+
+export function connectionMarkerEnd(type: keyof typeof drivenColors) {
   return {
     type: MarkerType.Arrow,
     width: 10,
@@ -56,13 +62,14 @@ function connectionMarkerEnd(type: keyof typeof drivenColors) {
   };
 }
 
-export function buildEdge(
+export function builderDrivenConnectionEdge(
+  id: string,
   sourceId: string,
   targetId: string,
-  type: Exclude<INAEdge["type"], undefined>,
-): INAEdge {
+  type: DrivenBy,
+): DrivenConnectionEdge {
   return {
-    id: `${sourceId}-2-${targetId}`,
+    id: `${id}-${sourceId}-2-${targetId}`,
     source: sourceId,
     target: targetId,
     type,
@@ -73,16 +80,16 @@ export function buildEdge(
 }
 
 export const drivenColors = {
-  "inner-statement": "#000000",
-  "actor-driven": "#a855f7",
-  "outcome-driven": "#22c55e",
-  "sanction-driven": "#ef4444",
+  component: "#000000",
+  actor: "#a855f7",
+  outcome: "#22c55e",
+  sanction: "#ef4444",
 } as const;
 
-export function isDrivenConnection(edge: INAEdge): edge is DrivenConnection {
+export function isDrivenConnection(
+  edge: INACEdge,
+): edge is DrivenConnectionEdge {
   return (
-    edge.type === "actor-driven" ||
-    edge.type === "outcome-driven" ||
-    edge.type === "sanction-driven"
+    edge.type === "actor" || edge.type === "outcome" || edge.type === "sanction"
   );
 }
