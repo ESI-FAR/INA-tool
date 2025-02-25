@@ -9,7 +9,9 @@ import {
   AlignVerticalDistributeCenterIcon,
   CameraIcon,
   DownloadIcon,
+  LayoutTemplateIcon,
   Maximize2Icon,
+  MenuIcon,
   PanelLeft,
   PencilIcon,
   PlusIcon,
@@ -159,23 +161,6 @@ function RouteComponent() {
           </ol>
         </li>
         <li>
-          <strong>Layout:</strong> To layout the grap use a layout algorithm use
-          the layout button at the top right side.
-        </li>
-        <li>
-          <strong>Take screenshot:</strong> Download your network as PNG image
-          by clicking the{" "}
-          <i>
-            <CameraIcon className="inline" /> screenshot
-          </i>{" "}
-          button at the top right side.
-        </li>
-        <li>
-          <strong>Resize statement:</strong> The bottom right corner has a{" "}
-          <Maximize2Icon className="inline" /> which can be dragged to resize
-          the statement box.
-        </li>
-        <li>
           <strong>Search:</strong> Click the <SearchIcon className="inline" />{" "}
           search button and write text in text box. Click on a hit to center on
           that component.
@@ -186,6 +171,61 @@ function RouteComponent() {
           to see a legend of the network. The type components of a statement are
           shown as a sub-graph. The colors of the statements and connections are
           explained.
+        </li>
+        <li>
+          <strong>
+            <MenuIcon className="inline" /> Menu:
+          </strong>
+          : The menu in the top right holds less used actions.
+          <ul className="ml-6 list-inside list-disc">
+            <li>
+              <strong>
+                <LayoutTemplateIcon className="inline" />
+                Layout:
+              </strong>{" "}
+              To layout the grap use a layout algorithm use the layout button at
+              the top right side.
+            </li>
+            <li>
+              <strong>
+                <CameraIcon className="inline" /> Screenshot:
+              </strong>{" "}
+              Download your network as you see it at the moment as PNG image.
+            </li>
+            <li>
+              <strong>
+                <DownloadIcon className="inline" /> Export as graphml:
+              </strong>{" "}
+              Download the network as a{" "}
+              <a className="underline" href="http://graphml.graphdrawing.org/">
+                graphml
+              </a>{" "}
+              formatted file. The file can be imported in generic graph tools
+              like{" "}
+              <a
+                target="_blank"
+                className="underline"
+                href="https://gephi.org/"
+              >
+                Gephi
+              </a>{" "}
+              or{" "}
+              <a
+                target="_blank"
+                className="underline"
+                href="https://cytoscape.org"
+              >
+                Cytoscape
+              </a>
+              .
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>Resize statement:</strong> The bottom right corner has a{" "}
+          <Maximize2Icon className="inline" /> which can be dragged to resize
+          the statement box.
         </li>
 
         <li>
@@ -231,23 +271,6 @@ function RouteComponent() {
           </ol>
         </li>
         <li>
-          <strong>Layout:</strong> To layout the grap use a layout algorithm use
-          the layout button at the top right side.
-        </li>
-        <li>
-          <strong>Take screenshot:</strong> Download your network as PNG image
-          by clicking the{" "}
-          <i>
-            <CameraIcon className="inline" /> screenshot
-          </i>{" "}
-          button at the top right side.
-        </li>
-        <li>
-          <strong>Resize statement:</strong> The bottom right corner has a{" "}
-          <Maximize2Icon className="inline" /> which can be dragged to resize
-          the statement box.
-        </li>
-        <li>
           <strong>Search:</strong> Click the <SearchIcon className="inline" />{" "}
           search button and write text in text box. Click on a hit to center on
           that statement.
@@ -258,6 +281,60 @@ function RouteComponent() {
           to see a legend of the network. The colors of the statements and
           connections are explained.
         </li>
+        <li>
+          <strong>
+            <MenuIcon className="inline" /> Menu:
+          </strong>
+          : The menu in the top right holds less used actions.
+          <ul className="ml-6 list-inside list-disc">
+            <li>
+              <strong>
+                <LayoutTemplateIcon className="inline" /> Layout:
+              </strong>{" "}
+              To layout the grap use a layout algorithm use the layout button at
+              the top right side.
+            </li>
+            <li>
+              <strong>
+                <CameraIcon className="inline" /> Take screenshot:
+              </strong>{" "}
+              Download your network as PNG image.
+            </li>
+            <li>
+              <strong>
+                <DownloadIcon className="inline" /> Export as graphml:
+              </strong>{" "}
+              Download the network as a{" "}
+              <a className="underline" href="http://graphml.graphdrawing.org/">
+                graphml
+              </a>{" "}
+              formatted file. The file can be imported in generic graph tools
+              like{" "}
+              <a
+                target="_blank"
+                className="underline"
+                href="https://gephi.org/"
+              >
+                Gephi
+              </a>{" "}
+              or{" "}
+              <a
+                target="_blank"
+                className="underline"
+                href="https://cytoscape.org"
+              >
+                Cytoscape
+              </a>
+              .
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Resize statement:</strong> The bottom right corner has a{" "}
+          <Maximize2Icon className="inline" /> which can be dragged to resize
+          the statement box.
+        </li>
+
         <li>
           <strong>Minimap: </strong> The minimap in the lower right corner gives
           you an overview of the network. You can drag the rectangle to navigate
