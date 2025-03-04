@@ -53,6 +53,12 @@ The application is built with
 - [ESLint](https://eslint.org/) for linting
 - [Vitest](https://vitest.dev/) for unit testing
 
+### Dev container
+
+If you are using Visual Studio Code, you can use the [dev container extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to run the application. The dev container is a pre-configured environment that includes all the necessary tools and dependencies to run the application.
+
+When repository is opened in a devcontainer the website is running on http://localhost:5173 and will update when files are changed.
+
 ## Bugs and Issues
 
 Have a bug or an issue with this software? [Open a new issue](https://github.com/ESI-FAR/INA-tool/issues) here on GitHub or drop a message to us.
