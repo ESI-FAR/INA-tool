@@ -20,6 +20,7 @@ import { Route as PrivacyPolicyImport } from "./routes/privacy-policy";
 const StatementsLazyImport = createFileRoute("/statements")();
 const HelpLazyImport = createFileRoute("/help")();
 const ConnectionsLazyImport = createFileRoute("/connections")();
+const ConflictsLazyImport = createFileRoute("/conflicts")();
 const IndexLazyImport = createFileRoute("/")();
 const NetworkStatementLazyImport = createFileRoute("/network/statement")();
 const NetworkCompLazyImport = createFileRoute("/network/comp")();
@@ -43,6 +44,12 @@ const ConnectionsLazyRoute = ConnectionsLazyImport.update({
   path: "/connections",
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import("./routes/connections.lazy").then((d) => d.Route));
+
+const ConflictsLazyRoute = ConflictsLazyImport.update({
+  id: "/conflicts",
+  path: "/conflicts",
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import("./routes/conflicts.lazy").then((d) => d.Route));
 
 const PrivacyPolicyRoute = PrivacyPolicyImport.update({
   id: "/privacy-policy",
@@ -88,6 +95,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof PrivacyPolicyImport;
       parentRoute: typeof rootRoute;
     };
+    "/conflicts": {
+      id: "/conflicts";
+      path: "/conflicts";
+      fullPath: "/conflicts";
+      preLoaderRoute: typeof ConflictsLazyImport;
+      parentRoute: typeof rootRoute;
+    };
     "/connections": {
       id: "/connections";
       path: "/connections";
@@ -131,6 +145,7 @@ declare module "@tanstack/react-router" {
 export interface FileRoutesByFullPath {
   "/": typeof IndexLazyRoute;
   "/privacy-policy": typeof PrivacyPolicyRoute;
+  "/conflicts": typeof ConflictsLazyRoute;
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
@@ -141,6 +156,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   "/": typeof IndexLazyRoute;
   "/privacy-policy": typeof PrivacyPolicyRoute;
+  "/conflicts": typeof ConflictsLazyRoute;
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
@@ -152,6 +168,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute;
   "/": typeof IndexLazyRoute;
   "/privacy-policy": typeof PrivacyPolicyRoute;
+  "/conflicts": typeof ConflictsLazyRoute;
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
@@ -164,6 +181,7 @@ export interface FileRouteTypes {
   fullPaths:
     | "/"
     | "/privacy-policy"
+    | "/conflicts"
     | "/connections"
     | "/help"
     | "/statements"
@@ -173,6 +191,7 @@ export interface FileRouteTypes {
   to:
     | "/"
     | "/privacy-policy"
+    | "/conflicts"
     | "/connections"
     | "/help"
     | "/statements"
@@ -182,6 +201,7 @@ export interface FileRouteTypes {
     | "__root__"
     | "/"
     | "/privacy-policy"
+    | "/conflicts"
     | "/connections"
     | "/help"
     | "/statements"
@@ -193,6 +213,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute;
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute;
+  ConflictsLazyRoute: typeof ConflictsLazyRoute;
   ConnectionsLazyRoute: typeof ConnectionsLazyRoute;
   HelpLazyRoute: typeof HelpLazyRoute;
   StatementsLazyRoute: typeof StatementsLazyRoute;
@@ -203,6 +224,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  ConflictsLazyRoute: ConflictsLazyRoute,
   ConnectionsLazyRoute: ConnectionsLazyRoute,
   HelpLazyRoute: HelpLazyRoute,
   StatementsLazyRoute: StatementsLazyRoute,
@@ -222,6 +244,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/privacy-policy",
+        "/conflicts",
         "/connections",
         "/help",
         "/statements",
@@ -234,6 +257,9 @@ export const routeTree = rootRoute
     },
     "/privacy-policy": {
       "filePath": "privacy-policy.tsx"
+    },
+    "/conflicts": {
+      "filePath": "conflicts.lazy.tsx"
     },
     "/connections": {
       "filePath": "connections.lazy.tsx"

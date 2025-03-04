@@ -51,9 +51,17 @@ function ComponentWithConnections({
   );
 }
 
-export function StatementCard({ statement }: { statement: Statement }) {
+export function StatementCard({
+  statement,
+  className,
+}: {
+  statement: Statement;
+  className?: string;
+}) {
   return (
-    <div className="w-96 bg-card p-2 text-card-foreground shadow">
+    <div
+      className={cn("w-96 bg-card p-2 text-card-foreground shadow", className)}
+    >
       <span title="Statement Id" className="hover:underline">
         {statement["Statement Type"] === "formal" ? "F" : "I"}
         {statement.Id}:{" "}
