@@ -201,7 +201,7 @@ function onConnectionsChange(connections: Connection[]) {
 }
 
 function conflict2id(conflict: Conflict): string {
-  return `conflict-${conflict.formal.Id}-${conflict.informal.Id}`;
+  return `conflict-${conflict.formal}-${conflict.informal}`;
 }
 
 function onConflictsChange(conflicts: Conflict[]) {
@@ -225,11 +225,11 @@ function onConflictsChange(conflicts: Conflict[]) {
     if (conflictGroupNode) {
       // No change, copy existing nodes
       newNodes.push(conflictGroupNode);
-      newNodes.push(statementNodeLookup.get(conflict.formal.Id)!);
-      newNodes.push(statementNodeLookup.get(conflict.informal.Id)!);
+      newNodes.push(statementNodeLookup.get(conflict.formal)!);
+      newNodes.push(statementNodeLookup.get(conflict.informal)!);
     } else {
-      const formalNode = statementNodeLookup.get(conflict.formal.Id)!;
-      const informalNode = statementNodeLookup.get(conflict.informal.Id)!;
+      const formalNode = statementNodeLookup.get(conflict.formal)!;
+      const informalNode = statementNodeLookup.get(conflict.informal)!;
       const bounds = getNodesBounds([formalNode, informalNode]);
       // New conflict group
       // create conflict group node

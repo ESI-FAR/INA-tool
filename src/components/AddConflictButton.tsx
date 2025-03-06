@@ -57,7 +57,7 @@ export function AddConflictButton() {
     if (!formal || !informal) {
       return;
     }
-    addConflict({ formal, informal });
+    addConflict({ formal: formal.Id, informal: informal.Id });
     setFormal(undefined);
     setInformal(undefined);
     setOpen(false);

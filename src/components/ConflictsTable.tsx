@@ -1,4 +1,3 @@
-import { Conflict } from "@/lib/schema";
 import {
   ColumnDef,
   flexRender,
@@ -13,7 +12,11 @@ import {
 import { useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { StatementCard } from "./StatementCard";
-import { useConflicts } from "@/hooks/use-conflicts";
+import {
+  ConflictWithStatements,
+  useConflicts,
+  useConflictsWithStatements,
+} from "@/hooks/use-conflicts";
 import { Input } from "./ui/input";
 import {
   Table,
@@ -28,7 +31,7 @@ import { Button } from "./ui/button";
 import { DataTablePagination } from "./DataTablePagination";
 import { AddConflictButton } from "./AddConflictButton.tsx";
 
-const columns: ColumnDef<Conflict>[] = [
+const columns: ColumnDef<ConflictWithStatements>[] = [
   {
     accessorKey: "formal",
     header: ({ column }) => (
@@ -36,7 +39,7 @@ const columns: ColumnDef<Conflict>[] = [
     ),
     cell: (props) => (
       <StatementCard
-        statement={props.row.original.formal}
+        statement={props.row.original.formalStatement}
         className="w-full bg-inherit shadow-none"
       />
     ),
@@ -48,7 +51,7 @@ const columns: ColumnDef<Conflict>[] = [
     ),
     cell: (props) => (
       <StatementCard
-        statement={props.row.original.informal}
+        statement={props.row.original.informalStatement}
         className="w-full bg-inherit shadow-none"
       />
     ),
@@ -56,7 +59,8 @@ const columns: ColumnDef<Conflict>[] = [
 ];
 
 export function ConflictsTable() {
-  const { conflicts, removeConflicts } = useConflicts();
+  const { removeConflicts } = useConflicts();
+  const conflicts = useConflictsWithStatements();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const table = useReactTable({

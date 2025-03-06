@@ -1,8 +1,9 @@
-import { Conflict } from "@/lib/schema";
+import { Conflict, Statement } from "@/lib/schema";
 import { store, Store } from "@/stores/global";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
+import { useStatements } from "./use-statements";
 
 export function useConflicts() {
   const conflicts = useStore(
@@ -26,4 +27,26 @@ export function useConflicts() {
     removeConflicts,
     addConflict,
   };
+}
+
+export interface ConflictWithStatements {
+  formal: string;
+  informal: string;
+  formalStatement: Statement;
+  informalStatement: Statement;
+}
+
+export function useConflictsWithStatements(): ConflictWithStatements[] {
+  const { conflicts } = useConflicts();
+  const { statements } = useStatements();
+  return useMemo(() => {
+    const statementLookup = new Map<string, Statement>(
+      statements.map((statement) => [statement.Id, statement]),
+    );
+    return conflicts.map((conflict) => ({
+      ...conflict,
+      formalStatement: statementLookup.get(conflict.formal)!,
+      informalStatement: statementLookup.get(conflict.informal)!,
+    }));
+  }, [conflicts, statements]);
 }
