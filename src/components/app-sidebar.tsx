@@ -28,6 +28,7 @@ import { store } from "@/stores/global";
 export function AppSidebar() {
   const nrStatements = useStore(store, (state) => state.statements.length);
   const nrConnections = useStore(store, (state) => state.connections.length);
+  const nrConflicts = useStore(store, (state) => state.conflicts.length);
   return (
     <Sidebar>
       <SidebarHeader className="px-4 text-2xl">
@@ -82,6 +83,18 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
                 <SidebarMenuBadge>{nrConnections}</SidebarMenuBadge>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/conflicts"
+                    activeProps={{ className: "font-bold" }}
+                  >
+                    <TableIcon />
+                    <span>Conflicts table</span>
+                  </Link>
+                </SidebarMenuButton>
+                <SidebarMenuBadge>{nrConflicts}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>

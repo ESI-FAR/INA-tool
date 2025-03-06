@@ -172,8 +172,8 @@ export const connectionColumns = Object.keys(
 export const connectionsSchema = z.array(connectionSchema);
 
 export const Conflict = z.object({
-  formal: statementSchema,
-  informal: statementSchema,
+  formal: z.string(),
+  informal: z.string(),
 });
 export type Conflict = z.infer<typeof Conflict>;
 export const Conflicts = z.array(Conflict);
