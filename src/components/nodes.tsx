@@ -151,31 +151,22 @@ function TargetHandles({
   );
 }
 
-function ConflictHandles({ isConnectable }: { isConnectable: boolean }) {
-  const style = useMemo(
-    () => ({
-      width: isConnectable ? 10 : 4,
-      height: isConnectable ? 10 : 4,
-    }),
-    [isConnectable],
-  );
+function ConflictHandles() {
   return (
     <>
       <Handle
         type="target"
         id="conflict"
-        className={bgColor.sanction}
-        style={{ ...style }}
+        className="invisible"
         position={Position.Left}
-        isConnectable={isConnectable}
+        isConnectable={false}
       />
       <Handle
-        type="target"
+        type="source"
         id="conflict"
-        className={bgColor.sanction}
-        style={{ ...style }}
+        className="invisible"
         position={Position.Right}
-        isConnectable={isConnectable}
+        isConnectable={false}
       />
     </>
   );
@@ -188,13 +179,12 @@ export function CollapsedStatementNode({
 }: NodeProps<StatementNode>) {
   const statement = data.raw;
   const color = statementBackground[data.raw["Statement Type"]];
-  const isConflictEditing = false;
   return (
     <>
       <SourceHandles isConnectable={isConnectable} statement={statement} />
       <TargetHandles isConnectable={isConnectable} statement={statement} />
-      {/* TODO only show conflict handles if the conflict editing is enabled */}
-      {isConflictEditing ?? <ConflictHandles isConnectable={isConnectable} />}
+      {/* TODO show conflict handles if the conflict editing is enabled */}
+      <ConflictHandles />
       <div
         className={cn(
           "min-w-12 cursor-pointer rounded border-2 p-1",

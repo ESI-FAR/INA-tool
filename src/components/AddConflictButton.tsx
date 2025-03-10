@@ -1,4 +1,4 @@
-import { Statement } from "@/lib/schema";
+import { Statement, StatementType } from "@/lib/schema";
 import { useCallback, useMemo, useState } from "react";
 import {
   Dialog,
@@ -17,20 +17,22 @@ import { StatementComboBox } from "./StatementComboBox";
 
 function StatementField({
   selected,
-  other,
+  side,
   onSelect,
 }: {
   selected: Statement | undefined;
+  side: StatementType;
   other: Statement | undefined;
   onSelect: (statement: Statement) => void;
 }) {
   const { statements: allStatements } = useStatements();
   const statements = useMemo(() => {
-    if (other) {
-      return allStatements.filter((statement) => statement.Id !== other.Id);
-    }
-    return allStatements;
-  }, [allStatements, other]);
+    return allStatements.filter((statement) => {
+      // TODO skip statements that can not be in a new conflict
+      // aka given conflicts [F1-I1] then selecting F1 should not show I1
+      return statement["Statement Type"] === side;
+    });
+  }, [allStatements, side]);
   return (
     <>
       <StatementComboBox
@@ -90,6 +92,7 @@ export function AddConflictButton() {
           <legend>Formal</legend>
           <StatementField
             selected={formal}
+            side="formal"
             other={informal}
             onSelect={setFormal}
           />
@@ -98,6 +101,7 @@ export function AddConflictButton() {
           <legend>Informal</legend>
           <StatementField
             selected={informal}
+            side="informal"
             other={formal}
             onSelect={setInformal}
           />

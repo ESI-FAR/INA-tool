@@ -80,10 +80,13 @@ export function StatementNetworkLegend() {
 
           <p>Edges</p>
           <ul className="list-inside pl-4">
-            <EdgeLegend className="text-foreground" text="Component" />
             <EdgeLegend className={textColor.actor} text="Actor driven" />
             <EdgeLegend className={textColor.outcome} text="Outcome driven" />
             <EdgeLegend className={textColor.sanction} text="Sanction driven" />
+            <li>
+              {/* TODO make conflict icon + text align with other edges */}
+              <span className="text-red-500">━ ━ ━</span> Conflict
+            </li>
           </ul>
         </PopoverContent>
       </Popover>
