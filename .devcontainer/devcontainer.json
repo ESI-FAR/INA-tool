@@ -1,24 +1,24 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-	"name": "Node.js & TypeScript",
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+  "name": "Node.js & TypeScript",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
 
-	"forwardPorts": [5173],
+  "forwardPorts": [5173],
 
-	"updateContentCommand": "npm install",
-	"postAttachCommand": "npm run dev -- --host",
+  "updateContentCommand": "npm install",
+  "postAttachCommand": "npm run dev -- --host",
 
-	// Configure tool-specific properties.
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"dbaeumer.vscode-eslint",
-				"bradlc.vscode-tailwindcss",
-				"ms-playwright.playwright",
-				"yoavbls.pretty-ts-errors",
-				"vitest.explorer"
-			]
-		}
-	}
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "ms-playwright.playwright",
+        "yoavbls.pretty-ts-errors",
+        "vitest.explorer"
+      ]
+    }
+  }
 }
