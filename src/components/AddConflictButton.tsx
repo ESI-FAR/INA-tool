@@ -14,10 +14,12 @@ import { PlusIcon } from "lucide-react";
 import { useConflicts } from "@/hooks/use-conflicts";
 import { useStatements } from "@/hooks/use-statements";
 import { StatementComboBox } from "./StatementComboBox";
+import { store } from "@/stores/global";
 
 function StatementField({
   selected,
   side,
+  other,
   onSelect,
 }: {
   selected: Statement | undefined;
@@ -27,12 +29,33 @@ function StatementField({
 }) {
   const { statements: allStatements } = useStatements();
   const statements = useMemo(() => {
-    return allStatements.filter((statement) => {
-      // TODO skip statements that can not be in a new conflict
-      // aka given conflicts [F1-I1] then selecting F1 should not show I1
-      return statement["Statement Type"] === side;
-    });
-  }, [allStatements, side]);
+    const typeStatements = allStatements.filter(
+      (statement) => statement["Statement Type"] === side,
+    );
+    if (other) {
+      // Filter out statements that are already in a conflict with the other side
+      const present = store
+        .getState()
+        .conflicts.filter((c) => {
+          if (side === "formal") {
+            return c.informal === other.Id;
+          } else {
+            return c.formal === other.Id;
+          }
+        })
+        .map((c) => {
+          if (side === "formal") {
+            return c.formal;
+          } else {
+            return c.informal;
+          }
+        });
+      return typeStatements.filter((statement) => {
+        return !present.includes(statement.Id);
+      });
+    }
+    return typeStatements;
+  }, [allStatements, side, other]);
   return (
     <>
       <StatementComboBox
