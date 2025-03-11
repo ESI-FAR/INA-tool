@@ -157,7 +157,8 @@ function ConflictHandles({ type }: { type: StatementType }) {
       <Handle
         type="source"
         id="conflict"
-        className="!bg-red-500"
+        // TODO allow conflict connection to be made in network pages
+        className="invisible"
         position={Position.Right}
         isConnectable={false}
       />
@@ -167,7 +168,7 @@ function ConflictHandles({ type }: { type: StatementType }) {
     <Handle
       type="target"
       id="conflict"
-      className="!bg-red-500"
+      className="invisible"
       position={Position.Left}
       isConnectable={false}
     />
@@ -185,7 +186,6 @@ export function CollapsedStatementNode({
     <>
       <SourceHandles isConnectable={isConnectable} statement={statement} />
       <TargetHandles isConnectable={isConnectable} statement={statement} />
-      {/* TODO show conflict handles if the conflict editing is enabled */}
       <ConflictHandles type={statement["Statement Type"]} />
       <div
         className={cn(
@@ -225,6 +225,7 @@ export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
         {formalism === "formal" ? "F" : "I"}
         {data.label}
       </legend>
+      <ConflictHandles type={data.raw["Statement Type"]} />
     </fieldset>
   );
 }

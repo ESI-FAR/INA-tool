@@ -35,7 +35,7 @@ export type DrivenConnectionEdge =
 // Edges used in statement level network
 export type INASEdge = DrivenConnectionEdge | ConflictingEdge;
 // Edges used in component level network
-export type INACEdge = DrivenConnectionEdge | ComponentEdge;
+export type INACEdge = DrivenConnectionEdge | ComponentEdge | ConflictingEdge;
 
 export function isComponentEdge(edge: INACEdge): edge is ComponentEdge {
   return edge.type === "component";
@@ -49,7 +49,7 @@ export function isDrivenConnectionEdge(
   );
 }
 
-export function isConflictingEdge(edge: INASEdge): edge is ConflictingEdge {
+export function isConflictingEdge(edge: INACEdge): edge is ConflictingEdge {
   return edge.type === "conflict";
 }
 

@@ -1,6 +1,7 @@
 import { ConnectionLineComponentProps, useConnection } from "@xyflow/react";
 import { useMemo } from "react";
 import { strokeColor } from "./drivenColors";
+import { cn } from "@/lib/utils";
 
 export function ConnectionLine({
   fromX,
@@ -21,7 +22,7 @@ export function ConnectionLine({
     <g>
       <path
         fill="none"
-        className={"animated stroke-2 " + stroke}
+        className={cn("stroke-2", stroke)}
         d={`M${fromX},${fromY} C ${fromX} ${toY} ${fromX} ${toY} ${toX},${toY}`}
       />
       <circle

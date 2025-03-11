@@ -11,6 +11,7 @@ import {
   EdgeProps,
   getStraightPath,
   getSmoothStepPath,
+  Position,
 } from "@xyflow/react";
 
 export function ComponentEdge({
@@ -142,11 +143,13 @@ export function ConflictingEdge({
   targetX,
   targetY,
 }: EdgeProps<ConflictingEdge>) {
-  const [edgePath] = getStraightPath({
+  const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
     targetX,
     targetY,
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
   });
 
   return <BaseEdge id={id} path={edgePath} style={conflictingStyle} />;
@@ -158,4 +161,5 @@ export const edgeTypes = {
   actor: ActorDrivenConnection,
   outcome: OutcomeDrivenConnection,
   sanction: SanctionDrivenConnection,
+  conflict: ConflictingEdge,
 } as const;
