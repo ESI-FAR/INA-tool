@@ -31,6 +31,8 @@ const edgeTypes = {
   conflict: ConflictingEdge,
 } as const;
 
+const MAX_VISIBLE_STATEMENTS = 500;
+
 export function StatementNetwork() {
   const { theme } = useTheme();
   const { addConnection } = useConnections();
@@ -82,6 +84,7 @@ export function StatementNetwork() {
         fitView
         colorMode={theme}
         proOptions={{ hideAttribution: true }}
+        onlyRenderVisibleElements={nodes.length > MAX_VISIBLE_STATEMENTS}
       >
         <Controls />
         <MyMiniMap />
