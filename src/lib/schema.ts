@@ -85,7 +85,7 @@ export type StatementWithOptionalId = z.infer<
 export type Statement = z.infer<typeof statementSchema>;
 export const statementColumns = Object.keys(
   unrefinedStatementSchema.shape,
-) as ReadonlyArray<keyof Statement>;
+) as Array<keyof Statement>;
 
 export const statementsSchema = z.array(statementSchemaWithOptionalId);
 export type StatementsWithOptionalId = z.infer<typeof statementsSchema>;
@@ -167,7 +167,7 @@ export type ConnectionWithValues = Connection & {
 };
 export const connectionColumns = Object.keys(
   connectionUnrefinedSchema.shape,
-) as ReadonlyArray<keyof Connection>;
+) as Array<keyof Connection>;
 
 export const connectionsSchema = z.array(connectionSchema);
 
@@ -176,8 +176,9 @@ export const Conflict = z.object({
   informal: z.string(),
 });
 export type Conflict = z.infer<typeof Conflict>;
-export const conflictColumns = Object.keys(Conflict.shape) as ReadonlyArray<
+export const conflictColumns = Object.keys(Conflict.shape) as Array<
   keyof Conflict
 >;
+
 export const Conflicts = z.array(Conflict);
 export type Conflicts = z.infer<typeof Conflicts>;
