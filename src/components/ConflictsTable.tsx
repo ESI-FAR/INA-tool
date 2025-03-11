@@ -12,7 +12,6 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
-import { StatementCard } from "./StatementCard";
 import {
   ConflictWithStatements,
   useConflicts,
@@ -31,7 +30,10 @@ import { TrashIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { DataTablePagination } from "./DataTablePagination";
 import { AddConflictButton } from "./AddConflictButton.tsx";
-import { Statement } from "@/lib/schema.ts";
+import { DownloadConflictButton } from "./DownloadConflictButton.tsx";
+import { UploadConflictButton } from "./UploadConflictButton.tsx";
+import { StatementCell } from "./StatementCell.tsx";
+import { searchStatement } from "./search.tsx";
 
 const columns: ColumnDef<ConflictWithStatements>[] = [
   {
@@ -40,9 +42,8 @@ const columns: ColumnDef<ConflictWithStatements>[] = [
       <DataTableColumnHeader column={column} title="Formal statement" />
     ),
     cell: (props) => (
-      <StatementCard
+      <StatementCell
         statement={props.row.original.formalStatement}
-        className="w-full bg-inherit shadow-none"
       />
     ),
   },
@@ -52,40 +53,18 @@ const columns: ColumnDef<ConflictWithStatements>[] = [
       <DataTableColumnHeader column={column} title="Informal statement" />
     ),
     cell: (props) => (
-      <StatementCard
+      <StatementCell
         statement={props.row.original.informalStatement}
-        className="w-full bg-inherit shadow-none"
       />
     ),
   },
 ];
 
-function statement2label(statement: Statement) {
-  return `${statement["Statement Type"] === "formal" ? "F" : "I"}${statement.Id}`;
-}
-
-function statement2string(statement: Statement) {
-  const parts = [
-    statement2label(statement),
-    statement["Activation Condition"],
-    statement["Attribute"],
-    statement["Deontic"],
-    statement["Aim"],
-    statement["Direct Object"],
-    statement["Indirect Object"],
-    statement["Execution Constraint"],
-    statement["Or Else"],
-  ];
-  return parts.filter(Boolean).join(" ").toLowerCase();
-}
-
-function conflict2string(conflict: ConflictWithStatements) {
-  return `${statement2string(conflict.formalStatement)} ${statement2string(conflict.informalStatement)}`;
-}
-
 const search: FilterFn<ConflictWithStatements> = (row, _, filterValue) => {
-  const content = conflict2string(row.original);
-  return content.includes(filterValue.toLowerCase());
+  return Boolean(
+    searchStatement(filterValue, row.original.formalStatement) ||
+      searchStatement(filterValue, row.original.informalStatement),
+  );
 };
 
 export function ConflictsTable() {
@@ -121,7 +100,10 @@ export function ConflictsTable() {
           onChange={(e) => table.setGlobalFilter(String(e.target.value))}
           placeholder="Search..."
         />
-        {/* TODO add download and upload buttons, file should use statement ids */}
+        <div className="flex gap-2">
+          <DownloadConflictButton />
+          <UploadConflictButton />
+        </div>
       </div>
       <div className="w-full rounded-md border">
         <Table>

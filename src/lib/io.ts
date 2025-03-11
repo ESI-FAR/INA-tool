@@ -10,7 +10,7 @@ import {
   StatementNode,
   StatementRelatedNode,
 } from "./node";
-import { Connection, Statement } from "./schema";
+import { Conflict, Connection, Statement } from "./schema";
 import { ComponentEdge } from "./edge";
 import { store } from "../stores/global";
 
@@ -204,11 +204,13 @@ export function load(statements: Statement[], connections: Connection[]) {
 export function save(): {
   statements: Statement[];
   connections: Connection[];
+  conflicts: Conflict[];
 } {
   const statements = store.getState().statements;
   const connections = store.getState().connections;
+  const conflicts = store.getState().conflicts;
   // TODO add data of graphs
-  return { statements, connections };
+  return { statements, connections, conflicts };
 }
 
 export function download(file: File) {
@@ -222,5 +224,12 @@ export function download(file: File) {
 }
 
 export function loadConnections(connections: Connection[]) {
+  // TODO check if statement ids exist
+  // TODO check if statement has source/target component
   store.getState().setConnections(connections);
+}
+
+export function loadConflicts(conflicts: Conflict[]) {
+  // TODO check if statement ids exist and correct type (formal/informal)
+  store.getState().setConflicts(conflicts);
 }

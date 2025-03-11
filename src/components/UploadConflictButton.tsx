@@ -1,19 +1,19 @@
 import { UploadIcon } from "lucide-react";
 import { Button } from "./ui/button";
-import { useRef } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { csvParse } from "d3-dsv";
-import { read as readXLSX, utils as utilsXLSX } from "xlsx";
-import { connectionsSchema } from "@/lib/schema";
-import { loadConnections } from "@/lib/io";
 import { userFriendlyError } from "./userFriendlyError";
+import { useToast } from "@/hooks/use-toast";
+import { useRef } from "react";
+import { csvParse } from "d3-dsv";
+import { Conflicts } from "@/lib/schema";
+import { read as readXLSX, utils as utilsXLSX } from "xlsx";
+import { loadConflicts } from "@/lib/io";
 
 async function processCSVFile(file: File) {
   const content = await file.text();
-  const rawConnections = csvParse(content);
+  const rawConflicts = csvParse(content);
 
-  const connections = connectionsSchema.parse(rawConnections);
-  loadConnections(connections);
+  const connections = Conflicts.parse(rawConflicts);
+  loadConflicts(connections);
 }
 
 /**
@@ -29,9 +29,9 @@ async function processXLXSFile(file: File) {
   const content = await file.arrayBuffer();
   const workbook = readXLSX(content);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const rawConnections = utilsXLSX.sheet_to_json(sheet, { defval: "" });
-  const connections = connectionsSchema.parse(rawConnections);
-  loadConnections(connections);
+  const rawConflicts = utilsXLSX.sheet_to_json(sheet, { defval: "" });
+  const connections = Conflicts.parse(rawConflicts);
+  loadConflicts(connections);
 }
 
 async function processFile(file: File) {
@@ -48,7 +48,7 @@ async function processFile(file: File) {
   }
 }
 
-export function UploadConnectionButton() {
+export function UploadConflictButton() {
   const uploadRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   async function uploadFile(event: React.ChangeEvent<HTMLInputElement>) {

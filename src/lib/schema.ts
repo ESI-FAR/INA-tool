@@ -176,5 +176,8 @@ export const Conflict = z.object({
   informal: z.string(),
 });
 export type Conflict = z.infer<typeof Conflict>;
+export const conflictColumns = Object.keys(Conflict.shape) as ReadonlyArray<
+  keyof Conflict
+>;
 export const Conflicts = z.array(Conflict);
 export type Conflicts = z.infer<typeof Conflicts>;
