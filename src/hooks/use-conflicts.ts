@@ -5,6 +5,10 @@ import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
 import { useStatements } from "./use-statements";
 
+function equalConflicts(a: Conflict, b: Conflict) {
+  return a.formal === b.formal && a.informal === b.informal;
+}
+
 export function useConflicts() {
   const conflicts = useStore(
     store,
@@ -13,8 +17,13 @@ export function useConflicts() {
   const setConflicts = store.getState().setConflicts;
 
   const removeConflicts = useCallback(
-    (conflictsToRemove: Conflict[]) =>
-      setConflicts(conflicts.filter((c) => !conflictsToRemove.includes(c))),
+    (conflictsToRemove: Conflict[]) => {
+      return setConflicts(
+        conflicts.filter(
+          (c) => !conflictsToRemove.some((c2) => equalConflicts(c, c2)),
+        ),
+      );
+    },
     [conflicts, setConflicts],
   );
 
