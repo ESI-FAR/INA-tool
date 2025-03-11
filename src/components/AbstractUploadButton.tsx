@@ -1,8 +1,8 @@
-import { UploadIcon } from "lucide-react";
+import { CheckIcon, TriangleAlertIcon, UploadIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { userFriendlyError } from "./userFriendlyError";
-import { useToast } from "@/hooks/use-toast";
 import { useRef } from "react";
+import { toast } from "sonner";
 
 export function AbstractUploadButton({
   processFile,
@@ -16,19 +16,22 @@ export function AbstractUploadButton({
   title: string;
 }) {
   const uploadRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
   async function uploadFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
       await processFile(file);
-      toast({ title: "File uploaded successfully" });
+      toast("File uploaded successfully", {
+        icon: <CheckIcon />,
+        className: "!bg-green-500",
+      });
     } catch (error) {
       const description = userFriendlyError(error);
-      // TODO do not disappear after some time, switch to sonner
-      toast({
-        title: "Error uploading file",
-        variant: "destructive",
+      toast("Error uploading file", {
+        icon: <TriangleAlertIcon />,
+        closeButton: true,
+        className: "!bg-destructive !text-destructive-foreground",
+        duration: Infinity,
         description: (
           <>
             {description}
@@ -37,6 +40,9 @@ export function AbstractUploadButton({
         ),
       });
       console.error(error);
+    } finally {
+      // Reset the file input even when an error occurs
+      if (uploadRef.current) uploadRef.current.value = "";
     }
   }
 
