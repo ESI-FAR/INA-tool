@@ -2,13 +2,13 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/StartBootstrap/startbootstrap-sb-admin/master/LICENSE)
 [![Deploy app to GH Pages](https://github.com/ESI-FAR/INA-tool/actions/workflows/deploy.yml/badge.svg)](https://github.com/ESI-FAR/INA-tool/actions/workflows/deploy.yml)
-[![Lint](https://github.com/ESI-FAR/INA-tool/actions/workflows/build.yml/badge.svg)](https://github.com/ESI-FAR/INA-tool/actions/workflows/build.yml)
+[![Build](https://github.com/ESI-FAR/INA-tool/actions/workflows/build.yml/badge.svg)](https://github.com/ESI-FAR/INA-tool/actions/workflows/build.yml)
 
 INA Tool is an open-source digital tool developed by the eScience Center aimed at supporting the regulatory framework design process by facilitating the study, analysis, and decision-making through data visualization and interaction.
 
 The web application is running at [https://esi-far.github.io/INA-tool/](https://esi-far.github.io/INA-tool/).
 
-![INA](src/help/canvas.png)
+![INA](src/help/network.png)
 
 ## Development
 
@@ -34,6 +34,8 @@ npm run lint
 npm run typecheck
 # To run tests, tests are written with vitest and are named `*.test.ts[x]`.
 npm run test
+# To run e2e tests, tests are written with playwright and are in `tests/`.
+npm run test:e2e
 ```
 
 The application is built with

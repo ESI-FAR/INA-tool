@@ -1,11 +1,12 @@
 import {
-  DriverType,
-  SourceNodeType,
+  drivenbySchema,
+  SourceComponentSchema,
   statementColumns,
-  TargetNodeType,
+  TargetComponentSchema,
 } from "@/lib/schema";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import {
+  AlignVerticalDistributeCenterIcon,
   CameraIcon,
   DownloadIcon,
   Maximize2Icon,
@@ -13,11 +14,12 @@ import {
   PencilIcon,
   PlusIcon,
   SaveIcon,
+  SearchIcon,
   TrashIcon,
   Undo2Icon,
   UploadIcon,
 } from "lucide-react";
-import screenshot from "../help/canvas.png";
+import screenshot from "../help/network.png";
 import templatexlsx from "../help/Institutional_statement_template.xlsx?url";
 
 export const Route = createLazyFileRoute("/help")({
@@ -27,7 +29,9 @@ export const Route = createLazyFileRoute("/help")({
 function RouteComponent() {
   return (
     <main className="w-full">
-      <h1 className="text-2xl">Welcome to INA TOOL</h1>
+      <h1 className="text-2xl">
+        Welcome to Institutional Network Analyis (INA) tool
+      </h1>
 
       <h3 className="py-4 text-xl">Header</h3>
       <ul className="list-inside list-disc">
@@ -49,7 +53,8 @@ function RouteComponent() {
 
       <h3 className="py-4 text-xl">Upload your file with statements</h3>
       <p>
-        You can upload only <i>.csv</i> or <i>.xlsx</i> files. Please, use this{" "}
+        You can upload comma-separated (.csv) or Excel (.xlsx) file. Please, use
+        this{" "}
         <a
           className="underline"
           href={templatexlsx}
@@ -57,8 +62,8 @@ function RouteComponent() {
         >
           template
         </a>
-        . Alternatively, the file must respect the columns ordering and naming
-        described below:
+        . Alternatively, the file must respect the column naming described
+        below:
       </p>
       <ol className="list-inside list-decimal">
         {statementColumns.map((col) => (
@@ -75,23 +80,23 @@ function RouteComponent() {
         <Link className="underline" to="/connections">
           connections page
         </Link>{" "}
-        you can upload a CSV or XLSX file with connections. The file must
-        respect the columns ordering and naming described below:
+        you can upload a comma-separated (.csv) or Excel (.xlsx) file with
+        connections. The file must respect the columns ordering and naming
+        described below:
         <ol className="list-inside list-decimal">
-          <li>Source statement, id of source statement</li>
+          <li>"source_statement", id of source statement</li>
           <li>
-            Source node type, must be one of{" "}
-            {SourceNodeType.options.map((o) => `"${o}"`).join(", ")}
+            "source_component", must be one of{" "}
+            {SourceComponentSchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
-          <li>Source value, the value of the node. Can be empty.</li>
-          <li>Target statement, id of target statement</li>
+          <li>"target_statement", id of target statement</li>
           <li>
-            Target node type, must be one of{" "}
-            {TargetNodeType.options.map((o) => `"${o}"`).join(", ")}
+            "target_component", must be one of{" "}
+            {TargetComponentSchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
           <li>
-            Driver, must be one of{" "}
-            {DriverType.options.map((o) => `"${o}"`).join(", ")}
+            "driven_by", must be one of{" "}
+            {drivenbySchema.options.map((o) => `"${o}"`).join(", ")}
           </li>
         </ol>
       </p>
@@ -120,28 +125,29 @@ function RouteComponent() {
         </li>
       </ul>
 
-      <h3 className="py-4 text-xl">Canvas page</h3>
+      <h3 className="py-4 text-xl">Component level network page</h3>
       <p>
         The{" "}
-        <Link className="underline" to="/">
-          canvas page
+        <Link className="underline" to="/network/comp">
+          component network page
         </Link>{" "}
-        visualizes the statements and their connections as a graph network.
+        visualizes the statements, their inner components and their connections
+        as a graph network.
       </p>
       <ul className="list-inside list-disc">
         <li>
-          <strong>Dragging:</strong> Press left mouse key and start dragging the
-          statement or a inner statement node or the canvas.
+          <strong>Dragging:</strong> You can move things around by dragging.
+          Press left mouse key and start dragging the statement or a component
+          of a statement or the background.
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
-          out. Or use the mouse wheel to zoom in or out. The minimap on the
-          bottom right side help you orientate.
+          out. Or use the mouse wheel to zoom in or out.
         </li>
         <li>
-          <strong>Draw inter-statements connection:</strong>
+          <strong>Draw connection between statements:</strong>
           <ol className="ml-6 list-inside list-decimal">
-            <li>Find a node you want to start from.</li>
+            <li>Find a component you want to start from.</li>
             <li>
               Press left mouse button on colored circle to start making a
               connection.
@@ -153,27 +159,116 @@ function RouteComponent() {
           </ol>
         </li>
         <li>
-          <strong>Compact:</strong> To compact the graph use the compact switch.
-          This will render a statement as a single node. Useful for large
-          graphs. When turning off compact mode the layout can be a mess, you
-          can clean it up by using the layout button.
-        </li>
-        <li>
           <strong>Layout:</strong> To layout the grap use a layout algorithm use
-          the layout button at the top right side on the canvas.
+          the layout button at the top right side.
         </li>
         <li>
-          <strong>Take screenshot:</strong> Download your canvas as PNG image by
-          clicking the{" "}
+          <strong>Take screenshot:</strong> Download your network as PNG image
+          by clicking the{" "}
           <i>
             <CameraIcon className="inline" /> screenshot
           </i>{" "}
-          button at the top right side on the canvas.
+          button at the top right side.
         </li>
         <li>
           <strong>Resize statement:</strong> The bottom right corner has a{" "}
           <Maximize2Icon className="inline" /> which can be dragged to resize
           the statement box.
+        </li>
+        <li>
+          <strong>Search:</strong> Click the <SearchIcon className="inline" />{" "}
+          search button and write text in text box. Click on a hit to center on
+          that component.
+        </li>
+        <li>
+          <strong>Legend:</strong> Click the{" "}
+          <AlignVerticalDistributeCenterIcon className="inline" /> Legend button
+          to see a legend of the network. The type components of a statement are
+          shown as a sub-graph. The colors of the statements and connections are
+          explained.
+        </li>
+
+        <li>
+          <strong>Minimap:</strong>
+          The minimap in the lower right corner gives you an overview of the
+          network. You can drag the rectangle to navigate the network. You can
+          click to center the network there.
+        </li>
+      </ul>
+
+      <h3 className="py-4 text-xl">Statement level network page</h3>
+      <p>
+        The{" "}
+        <Link className="underline" to="/network/comp">
+          component network page
+        </Link>{" "}
+        visualizes the statements and their connections as a graph network. The
+        components of a statement are not shown, so the network more compact.
+      </p>
+      <ul className="list-inside list-disc">
+        <li>
+          <strong>Dragging:</strong> You can move things around by dragging.
+          Press left mouse key and start dragging the statement or the
+          background.
+        </li>
+        <li>
+          <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
+          out. Or use the mouse wheel to zoom in or out.
+        </li>
+        <li>
+          <strong>Draw connection between statements:</strong>
+          <ol className="ml-6 list-inside list-decimal">
+            <li>Find a statement you want to start from.</li>
+            <li>
+              Press left mouse button on colored circle to start making a
+              connection. Each color determines what the connections is driven
+              by.
+            </li>
+            <li>
+              Drag the mouse to same colored circle and release mouse key. If a
+              connection can be made it will snap in place.
+            </li>
+          </ol>
+        </li>
+        <li>
+          <strong>Layout:</strong> To layout the grap use a layout algorithm use
+          the layout button at the top right side.
+        </li>
+        <li>
+          <strong>Take screenshot:</strong> Download your network as PNG image
+          by clicking the{" "}
+          <i>
+            <CameraIcon className="inline" /> screenshot
+          </i>{" "}
+          button at the top right side.
+        </li>
+        <li>
+          <strong>Resize statement:</strong> The bottom right corner has a{" "}
+          <Maximize2Icon className="inline" /> which can be dragged to resize
+          the statement box.
+        </li>
+        <li>
+          <strong>Search:</strong> Click the <SearchIcon className="inline" />{" "}
+          search button and write text in text box. Click on a hit to center on
+          that statement.
+        </li>
+        <li>
+          <strong>Legend:</strong> Click the{" "}
+          <AlignVerticalDistributeCenterIcon className="inline" /> Legend button
+          to see a legend of the network. The colors of the statements and
+          connections are explained.
+        </li>
+        <li>
+          <strong>Minimap: </strong> The minimap in the lower right corner gives
+          you an overview of the network. You can drag the rectangle to navigate
+          the network. You can click to center the network there.
+        </li>
+        <li>
+          <strong>Selecting: </strong> To see details of a statement, click on
+          the statement. The details will be shown in a panel on the right side
+          on the node. To see details of multiple statements, hold down the ctrl
+          key and click on multiple nodes or hold shift key and drag a rectangle
+          around nodes.
         </li>
       </ul>
 
@@ -250,7 +345,7 @@ function RouteComponent() {
           <li>
             <strong>Adding:</strong> After pressing the{" "}
             <PlusIcon className="inline" /> button, a dialog will open where you
-            can select the driver, source and target statements. Press the{" "}
+            can select the driven by, source and target statements. Press the{" "}
             <SaveIcon className="inline" /> button to save the new connection.
           </li>
           <li>

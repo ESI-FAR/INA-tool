@@ -1,9 +1,10 @@
 import {
-  type InnerStatementEdge,
+  type ComponentEdge,
   type ActorDrivenConnection,
   type OutcomeDrivenConnection,
   type SanctionDrivenConnection,
   drivenColors,
+  type ConflictingEdge,
 } from "@/lib/edge";
 import {
   BaseEdge,
@@ -12,14 +13,14 @@ import {
   getSmoothStepPath,
 } from "@xyflow/react";
 
-export function InnerStatementEdge({
+export function ComponentEdge({
   id,
   sourceX,
   sourceY,
   targetX,
   targetY,
   label,
-}: EdgeProps<InnerStatementEdge>) {
+}: EdgeProps<ComponentEdge>) {
   const [edgePath, labelX, labelY] = getStraightPath({
     sourceX,
     sourceY,
@@ -39,7 +40,7 @@ export function InnerStatementEdge({
 }
 
 const actorDrivenStyle = {
-  stroke: drivenColors["actor-driven"],
+  stroke: drivenColors["actor"],
   strokeWidth: 2,
 };
 
@@ -69,7 +70,7 @@ export function ActorDrivenConnection({
 }
 
 const outcomeDrivenStyle = {
-  stroke: drivenColors["outcome-driven"],
+  stroke: drivenColors["outcome"],
   strokeWidth: 2,
 };
 
@@ -99,7 +100,7 @@ export function OutcomeDrivenConnection({
 }
 
 const sactionDrivenStyle = {
-  stroke: drivenColors["sanction-driven"],
+  stroke: drivenColors["sanction"],
   strokeWidth: 2,
 };
 
@@ -128,10 +129,27 @@ export function SanctionDrivenConnection({
   );
 }
 
+export function ConflictingEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+}: EdgeProps<ConflictingEdge>) {
+  const [edgePath] = getStraightPath({
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+  });
+
+  return <BaseEdge id={id} path={edgePath} />;
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const edgeTypes = {
-  "inner-statement": InnerStatementEdge,
-  "actor-driven": ActorDrivenConnection,
-  "outcome-driven": OutcomeDrivenConnection,
-  "sanction-driven": SanctionDrivenConnection,
+  component: ComponentEdge,
+  actor: ActorDrivenConnection,
+  outcome: OutcomeDrivenConnection,
+  sanction: SanctionDrivenConnection,
 } as const;

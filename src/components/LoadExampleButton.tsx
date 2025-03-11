@@ -1,8 +1,7 @@
 import { Connection, Statement } from "@/lib/schema";
 import { Button } from "./ui/button";
-import { load } from "@/lib/io";
 import { Wand2Icon } from "lucide-react";
-import { store } from "@/lib/store";
+import { store } from "@/stores/global";
 
 const statements: Statement[] = [
   {
@@ -69,7 +68,7 @@ const statements: Statement[] = [
     Aim: "clean",
     "Direct Object": "gutters",
     "Type of Direct Object": "inanimate",
-    // To test compact source picker uncomment line below, and comment line above
+    // To test source picker uncomment line below, and comment line above
     // "Type of Direct Object": "animate",
     "Indirect Object": "",
     "Type of Indirect Object": "",
@@ -96,30 +95,31 @@ const statements: Statement[] = [
 const connections: Connection[] = [
   {
     source_statement: "1",
-    source_node: "aim",
+    source_component: "Aim",
     target_statement: "2",
-    target_node: "activation-condition",
-    driver: "sanction",
+    target_component: "Activation Condition",
+    driven_by: "sanction",
   },
   {
     source_statement: "2",
-    source_node: "indirect-object",
+    source_component: "Indirect Object",
     target_statement: "3",
-    target_node: "attribute",
-    driver: "actor",
+    target_component: "Attribute",
+    driven_by: "actor",
   },
   {
     source_statement: "3",
-    source_node: "direct-object",
+    source_component: "Direct Object",
     target_statement: "4",
-    target_node: "activation-condition",
-    driver: "outcome",
+    target_component: "Activation Condition",
+    driven_by: "outcome",
   },
 ];
 
 function loadExample() {
   store.getState().setProjectName("Example");
-  load(statements, connections);
+  store.getState().setStatements(statements);
+  store.getState().setConnections(connections);
 }
 
 export function LoadExampleButton() {

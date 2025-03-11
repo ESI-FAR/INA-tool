@@ -1,6 +1,6 @@
 import { DownloadIcon } from "lucide-react";
 import { Button } from "./ui/button";
-import { store } from "@/lib/store";
+import { store } from "@/stores/global";
 import { csvFormat } from "d3-dsv";
 import { download, save } from "@/lib/io";
 import { connectionColumns } from "@/lib/schema";

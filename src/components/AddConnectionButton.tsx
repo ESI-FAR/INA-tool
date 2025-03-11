@@ -2,28 +2,21 @@ import { Check, ChevronsUpDown, PlusIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Connection, connectionSchema, Statement } from "@/lib/schema";
-import { useForm, useFormContext } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
-import { useStatements } from "../hooks/use-statements";
+import { Connection, Statement } from "@/lib/schema";
+import { useCallback, useMemo, useState } from "react";
+import { useConnections } from "@/hooks/use-connections";
+import { statementPair2PossibleConnections } from "@/lib/possibleConnections";
+import { connection2id } from "@/lib/connection2id";
+import { textColor } from "./drivenColors";
+import { useStatements } from "@/hooks/use-statements";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { cn } from "@/lib/utils";
+import { Hit, searchStatement } from "./search";
 import {
   Command,
   CommandEmpty,
@@ -32,432 +25,241 @@ import {
   CommandItem,
   CommandList,
 } from "./ui/command";
-import { cn } from "@/lib/utils";
-import { useEffect, useMemo, useState } from "react";
-import { deriveSourceChoices } from "./SourcePicker";
-import { store } from "@/lib/store";
-import { INANode } from "@/lib/node";
-import { processConnection } from "@/lib/io";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
-function DriverField() {
-  const form = useFormContext();
-
-  return (
-    <FormField
-      control={form.control}
-      name="driver"
-      render={({ field }) => (
-        <FormItem className="space-y-3">
-          <FormLabel>Driver</FormLabel>
-          <FormControl>
-            <RadioGroup
-              onValueChange={(e) => {
-                field.onChange(e);
-                form.resetField("source_statement");
-                form.resetField("target_statement");
-                form.resetField("source_node");
-                form.resetField("target_node");
-              }}
-              defaultValue={field.value}
-              className="flex flex-col space-y-1"
-            >
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value="actor" />
-                </FormControl>
-                <FormLabel className="font-normal">Actor</FormLabel>
-              </FormItem>
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value="outcome" />
-                </FormControl>
-                <FormLabel className="font-normal">Outcome</FormLabel>
-              </FormItem>
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value="sanction" />
-                </FormControl>
-                <FormLabel className="font-normal">Sanction</FormLabel>
-              </FormItem>
-            </RadioGroup>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-function canStatementBeSourceForDriver(driver: string) {
-  return (statement: Statement) => {
-    if (driver === "actor") {
-      const hassDirectAnimate =
-        statement["Direct Object"] &&
-        statement["Type of Direct Object"] === "animate";
-      const hasInDirectAnimate =
-        statement["Indirect Object"] &&
-        statement["Type of Indirect Object"] === "animate";
-      const hasExecutionConstraint = statement["Execution Constraint"];
-      return hassDirectAnimate || hasInDirectAnimate || hasExecutionConstraint;
-    }
-    if (driver === "outcome") {
-      const hasDirectInanimate =
-        statement["Direct Object"] &&
-        statement["Type of Direct Object"] === "inanimate";
-      const hasInDirectInanimate =
-        statement["Indirect Object"] &&
-        statement["Type of Indirect Object"] === "inanimate";
-      return hasDirectInanimate || hasInDirectInanimate;
-    }
-    if (driver === "sanction") {
-      // Aim is required so never ambiguous
-      return true;
-    }
-    return false;
-  };
-}
-
-function SourceStatementField({ statements }: { statements: Statement[] }) {
-  const form = useFormContext();
-  const driver = useFormContext().watch("driver");
-  const targetStatement = useFormContext().watch("target_statement");
-  const choices = useMemo(() => {
-    const filter = canStatementBeSourceForDriver(driver);
-    const choices = statements.filter(filter);
-    if (targetStatement) {
-      // TODO filter out current connections
-      return choices.filter((statement) => statement.Id !== targetStatement);
-    }
-    return choices;
-  }, [driver, statements, targetStatement]);
-  const [open, setOpen] = useState(false);
-
-  return (
-    <FormField
-      control={form.control}
-      name="source_statement"
-      render={({ field }) => (
-        <FormItem className="flex flex-col py-2">
-          <FormLabel>Statement</FormLabel>
-          <Popover modal={true} open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className={cn(
-                    "w-full justify-between",
-                    !field.value && "text-muted-foreground",
-                  )}
-                >
-                  {field.value
-                    ? choices.find((statement) => statement.Id === field.value)
-                        ?.Id
-                    : "Select statement"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
-                <CommandInput placeholder="Search statement..." />
-                <CommandList>
-                  <CommandEmpty>No statement found.</CommandEmpty>
-                  <CommandGroup>
-                    {choices.map((statement) => (
-                      <CommandItem
-                        value={statement.Id}
-                        key={statement.Id}
-                        onSelect={() => {
-                          form.setValue("source_statement", statement.Id);
-                          form.resetField("source_node");
-                          setOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            statement.Id === field.value
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {statement["Statement Type"] === "formal" ? "F" : "I"}
-                        {statement.Id}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-function canStatementBeTargetForDriver(driver: string) {
-  return (statement: Statement) => {
-    if (driver === "actor") {
-      // Attribute is required so always valid
-      return true;
-    } else if (
-      (driver === "outcome" || driver === "sanction") &&
-      statement["Activation Condition"]
-    ) {
-      return true;
-    }
-    return false;
-  };
-}
-
-function TargetStatementField({ statements }: { statements: Statement[] }) {
-  const form = useFormContext();
-  const driver = useFormContext().watch("driver");
-  const sourceStatement = useFormContext().watch("source_statement");
-  const choices = useMemo(() => {
-    const filter = canStatementBeTargetForDriver(driver);
-    const choices = statements.filter(filter);
-    if (sourceStatement) {
-      // TODO filter out current connections
-      return choices.filter((statement) => statement.Id !== sourceStatement);
-    }
-    return choices;
-  }, [driver, statements, sourceStatement]);
-  const [open, setOpen] = useState(false);
-
-  return (
-    <FormField
-      control={form.control}
-      name="target_statement"
-      render={({ field }) => (
-        <FormItem className="flex flex-col py-2">
-          <FormLabel>Statement</FormLabel>
-          <Popover modal={true} open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className={cn(
-                    "w-full justify-between",
-                    !field.value && "text-muted-foreground",
-                  )}
-                >
-                  {field.value
-                    ? choices.find((statement) => statement.Id === field.value)
-                        ?.Id
-                    : "Select statement"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
-                <CommandInput placeholder="Search statement..." />
-                <CommandList>
-                  <CommandEmpty>No statement found.</CommandEmpty>
-                  <CommandGroup>
-                    {choices.map((statement) => (
-                      <CommandItem
-                        value={statement.Id}
-                        key={statement.Id}
-                        onSelect={() => {
-                          form.setValue("target_statement", statement.Id);
-                          form.resetField("target_node");
-                          setOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            statement.Id === field.value
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {statement["Statement Type"] === "formal" ? "F" : "I"}
-                        {statement.Id}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-function SourceNodeField({ statements }: { statements: Statement[] }) {
-  const form = useFormContext();
-  const statementId = useFormContext().watch("source_statement");
-  const driver = useFormContext().watch("driver");
-  const choices = useMemo(() => {
-    const statement = statements.find(
-      (statement) => statement.Id === statementId,
-    );
-    if (!statement) {
-      return [];
-    }
-    // TODO get rid of renaming driver as arg and return
-    const choices = deriveSourceChoices(statement, driver + "-driven");
-    return choices.map((c) => ({
-      ...c,
-      type: c.type.replace(statement.Id! + "-", ""),
-    }));
-  }, [driver, statementId, statements]);
-
-  useEffect(() => {
-    // Auto select if there is only one choice
-    if (choices.length === 1) {
-      form.setValue("source_node", choices[0].type);
-    }
-  }, [choices, form]);
-  return (
-    <FormField
-      control={form.control}
-      name="source_node"
-      render={({ field }) => (
-        <FormItem className="space-y-3">
-          <FormLabel>Node</FormLabel>
-          <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              value={field.value}
-              className="flex flex-col space-y-1"
-            >
-              {choices.map((choice) => (
-                <FormItem
-                  key={choice.type}
-                  className="flex items-center space-x-3 space-y-0"
-                >
-                  <FormControl>
-                    <RadioGroupItem value={choice.type} />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    {choice.label}: {choice.value}
-                  </FormLabel>
-                </FormItem>
-              ))}
-            </RadioGroup>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-function deriveTargetChoices(statement: Statement, driver: string) {
-  const choices = [];
-  if (driver === "actor") {
-    choices.push({
-      type: "attribute",
-      label: "Attribute",
-      value: statement.Attribute,
-    });
-  } else if (
-    (driver === "outcome" || driver === "sanction") &&
-    statement["Activation Condition"]
-  ) {
-    choices.push({
-      type: "activation-condition",
-      label: "Activation Condition",
-      value: statement["Activation Condition"],
-    });
+function filterStatements(query: string, statements: Statement[]) {
+  if (query === "") {
+    return statements;
   }
-  return choices;
+  return statements.filter((statement) => searchStatement(query, statement));
 }
 
-function TargetNodeField({ statements }: { statements: Statement[] }) {
-  const form = useFormContext();
-  const statementId = useFormContext().watch("target_statement");
-  const driver = useFormContext().watch("driver");
-  const choices = useMemo(() => {
-    const statement = statements.find(
-      (statement) => statement.Id === statementId,
-    );
-    if (!statement) {
-      return [];
-    }
-    const choices = deriveTargetChoices(statement, driver);
-    return choices;
-  }, [driver, statementId, statements]);
-
-  useEffect(() => {
-    // Auto select if there is only one choice
-    if (choices.length === 1) {
-      form.setValue("target_node", choices[0].type);
-    }
-  }, [choices, form]);
-
+function StatementComboBox({
+  statements,
+  value,
+  onChange,
+}: {
+  statements: Statement[];
+  value: Statement | undefined;
+  onChange: (statement: Statement) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const hits = useMemo(
+    () => filterStatements(query, statements),
+    [query, statements],
+  );
   return (
-    <FormField
-      control={form.control}
-      name="target_node"
-      render={({ field }) => (
-        <FormItem className="space-y-3">
-          <FormLabel>Node</FormLabel>
-          <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              value={field.value}
-              className="flex flex-col space-y-1"
-            >
-              {choices.map((choice) => (
-                <FormItem
-                  className="flex items-center space-x-3 space-y-0"
-                  key={choice.type}
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" aria-expanded={open}>
+          {value ? <Hit statement={value} query="" /> : "Select statement"}
+          <ChevronsUpDown className="opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-96 p-0">
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search statement..."
+            className="h-9"
+            value={query}
+            onValueChange={setQuery}
+          />
+          <CommandList>
+            <CommandEmpty>No statements found.</CommandEmpty>
+            <CommandGroup>
+              {hits.map((statement) => (
+                <CommandItem
+                  key={statement.Id}
+                  value={statement.Id}
+                  onSelect={(currentValue) => {
+                    const selectedStatement = statements.find(
+                      (statement) => statement.Id === currentValue,
+                    );
+                    if (!selectedStatement) {
+                      throw new Error("Statement not found");
+                    }
+                    onChange(selectedStatement);
+                    setOpen(false);
+                  }}
                 >
-                  <FormControl>
-                    <RadioGroupItem value={choice.type} />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    {choice.label}: {choice.value}
-                  </FormLabel>
-                </FormItem>
+                  <Hit statement={statement} query={query} />
+                  <Check
+                    className={cn(
+                      "ml-auto",
+                      value?.Id === statement.Id ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                </CommandItem>
               ))}
-            </RadioGroup>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function useConnectionIds() {
+  const { connections } = useConnections();
+  return useMemo(() => {
+    return new Set(connections.map(connection2id));
+  }, [connections]);
+}
+
+function canConnect(
+  source: Statement,
+  target: Statement,
+  existingConnectionIds: Set<string>,
+) {
+  if (source.Id === target.Id) {
+    // Can not make connection with same statement
+    return false;
+  }
+  // Remove connections that are already present
+  const possibleConnections = new Set(
+    statementPair2PossibleConnections(source, target).map(connection2id),
+  );
+  let remainingPossibleConnectionCount = possibleConnections.size;
+  for (const possibleConnection of possibleConnections) {
+    if (existingConnectionIds.has(possibleConnection)) {
+      remainingPossibleConnectionCount--;
+    }
+  }
+  return remainingPossibleConnectionCount > 0;
+}
+
+function SourceStatementField({
+  target,
+  onSelect,
+  source,
+}: {
+  target: Statement | undefined;
+  onSelect: (statement: Statement) => void;
+  source: Statement | undefined;
+}) {
+  const { statements: allStatements } = useStatements();
+  const existingConnectionIds = useConnectionIds();
+  const statements = useMemo(() => {
+    if (target) {
+      return allStatements.filter((statement) =>
+        canConnect(statement, target, existingConnectionIds),
+      );
+    }
+    return allStatements;
+  }, [allStatements, existingConnectionIds, target]);
+  return (
+    <StatementComboBox
+      statements={statements}
+      value={source}
+      onChange={onSelect}
     />
+  );
+}
+
+function TargetStatementField({
+  target,
+  onSelect,
+  source,
+}: {
+  target: Statement | undefined;
+  onSelect: (statement: Statement) => void;
+  source: Statement | undefined;
+}) {
+  const { statements: allStatements } = useStatements();
+  const existingConnectionIds = useConnectionIds();
+  const statements = useMemo(() => {
+    if (source) {
+      return allStatements.filter((statement) =>
+        canConnect(source, statement, existingConnectionIds),
+      );
+    }
+    return allStatements;
+  }, [allStatements, existingConnectionIds, source]);
+  return (
+    <StatementComboBox
+      statements={statements}
+      value={target}
+      onChange={onSelect}
+    />
+  );
+}
+
+function ConnectionPicker({
+  source,
+  target,
+  onPick,
+}: {
+  source: Statement;
+  target: Statement;
+  onPick: (connection: Connection) => void;
+}) {
+  const existingConnectionIds = useConnectionIds();
+  const choices = useMemo(() => {
+    const possibleConnections = statementPair2PossibleConnections(
+      source,
+      target,
+    );
+    // Filter out existing connections
+    return possibleConnections.filter(
+      (c) => !existingConnectionIds.has(connection2id(c)),
+    );
+  }, [existingConnectionIds, source, target]);
+
+  if (choices.length === 0) {
+    return (
+      <span className="p-2 text-gray-500">
+        No possible connections. Please select other statements.
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-col items-start gap-1">
+      {choices.map((c) => (
+        <Button
+          className=""
+          key={connection2id(c)}
+          variant="secondary"
+          onClick={(e) => {
+            e.preventDefault();
+            onPick(c);
+          }}
+        >
+          <div>
+            {c.source_component}:{c.source_value}
+          </div>
+          <div className={textColor[c.driven_by]}>➜{c.driven_by}➜</div>
+          <div>
+            {c.target_component}:{c.target_value}
+          </div>
+        </Button>
+      ))}
+    </div>
   );
 }
 
 export function AddConnectionButton() {
-  const statements = useStatements();
-  const myform = useForm<Connection>({
-    resolver: zodResolver(connectionSchema),
-    defaultValues: {
-      driver: "actor",
-    },
-  });
+  const [open, setOpen] = useState(false);
+  const [source, setSource] = useState<Statement | undefined>(undefined);
+  const [target, setTarget] = useState<Statement | undefined>(undefined);
+  const { addConnection } = useConnections();
 
-  function onSubmit(connection: Connection) {
-    // TODO check if connection already exists, if so show error
-    const nodes = store.getState().nodes;
-    const edges = store.getState().edges;
-    const lookup = new Map<string, INANode>(
-      nodes.map((node) => [node.id, node]),
-    );
-    const newEdge = processConnection(connection, lookup);
-    store.setState({ edges: [...edges, newEdge] });
-    myform.reset();
-  }
+  const onPick = useCallback(
+    (connection: Connection) => {
+      addConnection(connection);
+      setSource(undefined);
+      setTarget(undefined);
+      setOpen(false);
+    },
+    [addConnection],
+  );
   return (
     <Dialog
-      onOpenChange={(open) => {
-        if (open) {
-          myform.reset();
-        }
+      open={open}
+      onOpenChange={() => {
+        setOpen(!open);
+        setSource(undefined);
+        setTarget(undefined);
       }}
     >
       <DialogTrigger asChild>
@@ -466,37 +268,40 @@ export function AddConnectionButton() {
           Add connection
         </Button>
       </DialogTrigger>
-      <DialogContent className="">
-        <Form {...myform}>
-          <form onSubmit={myform.handleSubmit(onSubmit)}>
-            <DialogHeader>
-              <DialogTitle>Add connection</DialogTitle>
-              <DialogDescription>
-                Add a connection between two statements.
-              </DialogDescription>
-            </DialogHeader>
-            <DriverField />
-            <div className="grid grid-cols-1 gap-1 py-1 md:grid-cols-2">
-              <fieldset className="border p-1">
-                <legend>Source</legend>
-                <SourceStatementField statements={statements} />
-                <SourceNodeField statements={statements} />
-              </fieldset>
-              <fieldset className="border p-1">
-                <legend>Target</legend>
-                <TargetStatementField statements={statements} />
-                <TargetNodeField statements={statements} />
-              </fieldset>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="submit">
-                  <PlusIcon /> Add
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </Form>
+      <DialogContent className="w-fit max-w-fit">
+        <DialogHeader>
+          <DialogTitle>Add connection</DialogTitle>
+          <DialogDescription>
+            First source and target statements then pick a connection.
+          </DialogDescription>
+        </DialogHeader>
+
+        <fieldset className="border p-1">
+          <legend>Source</legend>
+          <SourceStatementField
+            source={source}
+            target={target}
+            onSelect={setSource}
+          />
+        </fieldset>
+        <fieldset className="border p-1">
+          <legend>Target</legend>
+          <TargetStatementField
+            target={target}
+            source={source}
+            onSelect={setTarget}
+          />
+        </fieldset>
+        <fieldset className="border p-1">
+          <legend>Possible connections</legend>
+          {source && target ? (
+            <ConnectionPicker source={source} target={target} onPick={onPick} />
+          ) : (
+            <span className="p-2 text-gray-500">
+              Select source and target statements to see possible connections
+            </span>
+          )}
+        </fieldset>
       </DialogContent>
     </Dialog>
   );

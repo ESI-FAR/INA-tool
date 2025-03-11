@@ -4,31 +4,58 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@tanstack/react-router";
-import { CircleHelpIcon, HomeIcon, Table2Icon, TableIcon } from "lucide-react";
+import {
+  AlignJustifyIcon,
+  CircleHelpIcon,
+  NetworkIcon,
+  Table2Icon,
+  TableIcon,
+} from "lucide-react";
 import { UploadButton } from "./UploadButton";
 import { DownloadProjectButton } from "./DownloadProjectButton";
 import { LoadExampleButton } from "./LoadExampleButton";
 import { ClearButton } from "./ClearButton";
+import { useStore } from "zustand";
+import { store } from "@/stores/global";
 
 export function AppSidebar() {
+  const nrStatements = useStore(store, (state) => state.statements.length);
+  const nrConnections = useStore(store, (state) => state.connections.length);
   return (
     <Sidebar>
+      <SidebarHeader className="px-4 text-2xl">
+        Institutional Network Analysis Tool
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          {/* TODO show tool name when sidebar is collapsed */}
-          <SidebarGroupLabel>INA-tool</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/" activeProps={{ className: "font-bold" }}>
-                    <HomeIcon />
-                    <span>Canvas</span>
+                  <Link
+                    to="/network/comp"
+                    activeProps={{ className: "font-bold" }}
+                  >
+                    <AlignJustifyIcon />
+                    <span>Component network</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/network/statement"
+                    activeProps={{ className: "font-bold" }}
+                  >
+                    <NetworkIcon />
+                    <span>Statement network</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -39,9 +66,10 @@ export function AppSidebar() {
                     activeProps={{ className: "font-bold" }}
                   >
                     <Table2Icon />
-                    <span>Statements</span>
+                    <span>Statements table</span>
                   </Link>
                 </SidebarMenuButton>
+                <SidebarMenuBadge>{nrStatements}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
@@ -50,9 +78,10 @@ export function AppSidebar() {
                     activeProps={{ className: "font-bold" }}
                   >
                     <TableIcon />
-                    <span>Connections</span>
+                    <span>Connections table</span>
                   </Link>
                 </SidebarMenuButton>
+                <SidebarMenuBadge>{nrConnections}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
