@@ -1,10 +1,6 @@
 import { Statement } from "@/lib/schema";
 
-export function StatementCell({
-  statement,
-}: {
-  statement: Statement;
-}) {
+export function StatementCell({ statement }: { statement: Statement }) {
   return (
     <div>
       <span title="Statement Id" className="hover:underline">

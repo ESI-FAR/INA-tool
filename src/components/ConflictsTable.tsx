@@ -42,9 +42,7 @@ const columns: ColumnDef<ConflictWithStatements>[] = [
       <DataTableColumnHeader column={column} title="Formal statement" />
     ),
     cell: (props) => (
-      <StatementCell
-        statement={props.row.original.formalStatement}
-      />
+      <StatementCell statement={props.row.original.formalStatement} />
     ),
   },
   {
@@ -53,9 +51,7 @@ const columns: ColumnDef<ConflictWithStatements>[] = [
       <DataTableColumnHeader column={column} title="Informal statement" />
     ),
     cell: (props) => (
-      <StatementCell
-        statement={props.row.original.informalStatement}
-      />
+      <StatementCell statement={props.row.original.informalStatement} />
     ),
   },
 ];
