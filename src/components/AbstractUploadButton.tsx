@@ -25,6 +25,7 @@ export function AbstractUploadButton({
       toast({ title: "File uploaded successfully" });
     } catch (error) {
       const description = userFriendlyError(error);
+      // TODO do not disappear after some time, switch to sonner
       toast({
         title: "Error uploading file",
         variant: "destructive",

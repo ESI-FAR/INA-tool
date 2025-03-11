@@ -10,7 +10,7 @@ import {
   StatementNode,
   StatementRelatedNode,
 } from "./node";
-import { Conflict, Connection, Statement } from "./schema";
+import { Statement } from "./schema";
 import { ComponentEdge } from "./edge";
 import { store } from "../stores/global";
 import { ZodType } from "zod";
@@ -199,13 +199,6 @@ export function offsetStatement(statement: StatementNode, index: number) {
   statement.position.y = index * DEFAULT_STATEMENT_HEIGHT + index * gap;
 }
 
-export function loadStatements(statements: Statement[]) {
-  store.getState().setStatements(statements);
-  // TODO if statement ids changed then ask for confirmation to delete connections and conflicts
-  store.getState().setConnections([]);
-  store.getState().setConflicts([]);
-}
-
 export function download(file: File) {
   const url = URL.createObjectURL(file);
   const a = document.createElement("a");
@@ -216,15 +209,12 @@ export function download(file: File) {
   a.remove();
 }
 
-export function loadConnections(connections: Connection[]) {
-  // TODO check if statement ids exist
-  // TODO check if statement has source/target component
-  store.getState().setConnections(connections);
-}
-
-export function loadConflicts(conflicts: Conflict[]) {
-  // TODO check if statement ids exist and correct type (formal/informal)
-  store.getState().setConflicts(conflicts);
+export function loadStatements(statements: Statement[]) {
+  store.getState().setStatements(statements);
+  // TODO check if exsiting connections and conflicts are still valid
+  // TODO ask for confirmation to delete connections and conflicts?
+  store.getState().setConnections([]);
+  store.getState().setConflicts([]);
 }
 
 export async function parseCsvFile<T>(
