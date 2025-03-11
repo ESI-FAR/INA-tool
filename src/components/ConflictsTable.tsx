@@ -1,5 +1,6 @@
 import {
   ColumnDef,
+  FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -30,6 +31,7 @@ import { TrashIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { DataTablePagination } from "./DataTablePagination";
 import { AddConflictButton } from "./AddConflictButton.tsx";
+import { Statement } from "@/lib/schema.ts";
 
 const columns: ColumnDef<ConflictWithStatements>[] = [
   {
@@ -58,6 +60,34 @@ const columns: ColumnDef<ConflictWithStatements>[] = [
   },
 ];
 
+function statement2label(statement: Statement) {
+  return `${statement["Statement Type"] === "formal" ? "F" : "I"}${statement.Id}`;
+}
+
+function statement2string(statement: Statement) {
+  const parts = [
+    statement2label(statement),
+    statement["Activation Condition"],
+    statement["Attribute"],
+    statement["Deontic"],
+    statement["Aim"],
+    statement["Direct Object"],
+    statement["Indirect Object"],
+    statement["Execution Constraint"],
+    statement["Or Else"],
+  ];
+  return parts.filter(Boolean).join(" ").toLowerCase();
+}
+
+function conflict2string(conflict: ConflictWithStatements) {
+  return `${statement2string(conflict.formalStatement)} ${statement2string(conflict.informalStatement)}`;
+}
+
+const search: FilterFn<ConflictWithStatements> = (row, _, filterValue) => {
+  const content = conflict2string(row.original);
+  return content.includes(filterValue.toLowerCase());
+};
+
 export function ConflictsTable() {
   const { removeConflicts } = useConflicts();
   const conflicts = useConflictsWithStatements();
@@ -72,7 +102,7 @@ export function ConflictsTable() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
-    globalFilterFn: "includesString",
+    globalFilterFn: search,
     onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
