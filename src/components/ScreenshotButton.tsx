@@ -1,5 +1,4 @@
 import { CameraIcon } from "lucide-react";
-import { Button } from "./ui/button";
 import { useCallback } from "react";
 import {
   getNodesBounds,
@@ -8,6 +7,7 @@ import {
 } from "@xyflow/react";
 import { toPng } from "html-to-image";
 import { store } from "@/stores/global";
+import { DropdownMenuItem } from "./ui/dropdown-menu";
 
 function downloadImage(dataUrl: string) {
   const projectName = store.getState().projectName;
@@ -52,8 +52,8 @@ export function ScreenshotButton() {
   }, [getNodes]);
 
   return (
-    <Button variant="outline" onClick={onClick} title="Take a screenshot">
+    <DropdownMenuItem onClick={onClick} title="Take a screenshot">
       <CameraIcon /> Screenshot
-    </Button>
+    </DropdownMenuItem>
   );
 }
