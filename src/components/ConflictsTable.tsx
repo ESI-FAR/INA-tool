@@ -88,6 +88,10 @@ export function ConflictsTable() {
   return (
     <div className="w-full">
       <h1 className="text-xl">Conflicts</h1>
+      <p>
+        Marks a formal and an informal statement pair as conflicting with each
+        other.
+      </p>
       <div className="flex justify-between gap-4 py-2">
         <Input
           value={globalFilter}
