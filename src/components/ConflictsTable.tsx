@@ -89,7 +89,7 @@ export function ConflictsTable() {
     <div className="w-full">
       <h1 className="text-xl">Conflicts</h1>
       <p>
-        Marks a formal and an informal statement pair as conflicting with each
+        Mark a formal and an informal statement pair as conflicting with each
         other.
       </p>
       <div className="flex justify-between gap-4 py-2">
@@ -110,7 +110,23 @@ export function ConflictsTable() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                <TableHead></TableHead>
+                <TableHead>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    title="Delete all"
+                    disabled={!conflicts.length}
+                    onClick={() => {
+                      if (
+                        window.confirm("Are you sure you want to delete all?")
+                      ) {
+                        removeConflicts(conflicts);
+                      }
+                    }}
+                  >
+                    <TrashIcon />
+                  </Button>
+                </TableHead>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
