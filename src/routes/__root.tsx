@@ -2,7 +2,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/toaster";
 import {
   createRootRoute,
   Outlet,
@@ -12,6 +11,7 @@ import { lazy, Suspense } from "react";
 
 import { setupStorePersistence } from "@/lib/persist";
 import { Header } from "@/components/Header";
+import { Toaster } from "@/components/ui/sonner";
 
 setupStorePersistence();
 

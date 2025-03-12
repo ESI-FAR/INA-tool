@@ -1,18 +1,12 @@
-import { UploadIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { useRef } from "react";
 import { store } from "@/stores/global";
-import { useToast } from "@/hooks/use-toast";
-import { csvParse } from "d3-dsv";
-import { read as readXLSX, utils as utilsXLSX } from "xlsx";
 import {
   Statement,
   StatementsWithOptionalId,
   statementsSchema,
 } from "@/lib/schema";
-import { load } from "@/lib/io";
+import { loadStatements, parseCsvFile, parseXLSXFile } from "@/lib/io";
 import { json2project } from "@/lib/project2json";
-import { ZodError } from "zod";
+import { AbstractUploadButton } from "./AbstractUploadButton";
 
 async function processJSONFile(file: File) {
   const content = await file.text();
@@ -36,35 +30,15 @@ function fillIds(data: StatementsWithOptionalId): Statement[] {
 }
 
 async function processCSVFile(file: File) {
-  const content = await file.text();
-  const rawStatements = csvParse(content);
-
-  const statements = statementsSchema.parse(rawStatements);
-
+  const statements = await parseCsvFile(file, statementsSchema);
   const statementsWithIds = fillIds(statements);
-
-  load(statementsWithIds, []);
+  loadStatements(statementsWithIds);
 }
 
-/**
- * Reads a xlsx file and processes it.
- *
- * Expects
- * - first sheet to have the statents.
- * - first row to have the column names.
- *
- * @param file A xlsx file.
- */
 async function processXLXSFile(file: File) {
-  const content = await file.arrayBuffer();
-  const workbook = readXLSX(content);
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const rawStatements = utilsXLSX.sheet_to_json(sheet, { defval: "" });
-  const statements = statementsSchema.parse(rawStatements);
-
+  const statements = await parseXLSXFile(file, statementsSchema);
   const statementsWithIds = fillIds(statements);
-
-  load(statementsWithIds, []);
+  loadStatements(statementsWithIds);
 }
 
 function projectNameFromFile(file: File) {
@@ -88,79 +62,13 @@ async function processFile(file: File) {
   }
 }
 
-function userFriendlyError(error: unknown) {
-  if (error instanceof ZodError) {
-    // If column is missing then do not report error for each row, but only once.
-    const uniqueErrors = new Set(
-      error.issues.map((e) => {
-        if (Array.isArray(e.path)) {
-          if (e.path.length === 2) {
-            return `${e.path[1]} column ${e.message}`;
-          }
-          return `${e.path.join(",")} column ${e.message}`;
-        }
-        return e.message;
-      }),
-    );
-    return (
-      <ul className="list-inside list-disc">
-        {Array.from(uniqueErrors).map((e) => (
-          <li key={e}>{e}</li>
-        ))}
-      </ul>
-    );
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return "An error occurred";
-}
-
 export function UploadButton() {
-  const uploadRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
-  async function uploadFile(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    try {
-      await processFile(file);
-      toast({ title: "File uploaded successfully" });
-    } catch (error) {
-      const description = userFriendlyError(error);
-      toast({
-        title: "Error uploading file",
-        variant: "destructive",
-        description: (
-          <>
-            {description}
-            <p className="mt-2">
-              Make sure you use the right column seperator and column names.
-            </p>
-          </>
-        ),
-      });
-      console.error(error);
-    }
-  }
-
   return (
-    <Button
-      variant="outline"
-      onClick={() => uploadRef.current?.click()}
+    <AbstractUploadButton
+      processFile={processFile}
+      help="Make sure you use the right column seperator and column names."
+      accept="application/json, .json, text/csv, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xslx"
       title="Upload a JSON or CSV or XSLX file"
-    >
-      <UploadIcon />
-      <span>Upload file</span>
-      <input
-        ref={uploadRef}
-        type="file"
-        tabIndex={-1}
-        accept="application/json, .json, text/csv, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .xslx"
-        onChange={uploadFile}
-        style={{
-          display: "none",
-        }}
-      />
-    </Button>
+    />
   );
 }

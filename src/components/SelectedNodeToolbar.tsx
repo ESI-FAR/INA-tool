@@ -38,7 +38,7 @@ export function SelectedNodeToolbar() {
         ✕
       </Button>
       {selectedNodes.map((node) => (
-        <StatementCard statement={node.data.raw} />
+        <StatementCard key={node.id} statement={node.data.raw} />
       ))}
     </NodeToolbar>
   );

@@ -1,4 +1,4 @@
-import { Statement } from "@/lib/schema";
+import { Statement, StatementType } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { Handle, NodeProps, NodeResizeControl, Position } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
@@ -151,33 +151,27 @@ function TargetHandles({
   );
 }
 
-function ConflictHandles({ isConnectable }: { isConnectable: boolean }) {
-  const style = useMemo(
-    () => ({
-      width: isConnectable ? 10 : 4,
-      height: isConnectable ? 10 : 4,
-    }),
-    [isConnectable],
-  );
-  return (
-    <>
+function ConflictHandles({ type }: { type: StatementType }) {
+  if (type === "formal") {
+    return (
       <Handle
-        type="target"
+        type="source"
         id="conflict"
-        className={bgColor.sanction}
-        style={{ ...style }}
-        position={Position.Left}
-        isConnectable={isConnectable}
-      />
-      <Handle
-        type="target"
-        id="conflict"
-        className={bgColor.sanction}
-        style={{ ...style }}
+        // TODO allow conflict connection to be made in network pages
+        className="invisible"
         position={Position.Right}
-        isConnectable={isConnectable}
+        isConnectable={false}
       />
-    </>
+    );
+  }
+  return (
+    <Handle
+      type="target"
+      id="conflict"
+      className="invisible"
+      position={Position.Left}
+      isConnectable={false}
+    />
   );
 }
 
@@ -188,13 +182,11 @@ export function CollapsedStatementNode({
 }: NodeProps<StatementNode>) {
   const statement = data.raw;
   const color = statementBackground[data.raw["Statement Type"]];
-  const isConflictEditing = false;
   return (
     <>
       <SourceHandles isConnectable={isConnectable} statement={statement} />
       <TargetHandles isConnectable={isConnectable} statement={statement} />
-      {/* TODO only show conflict handles if the conflict editing is enabled */}
-      {isConflictEditing ?? <ConflictHandles isConnectable={isConnectable} />}
+      <ConflictHandles type={statement["Statement Type"]} />
       <div
         className={cn(
           "min-w-12 cursor-pointer rounded border-2 p-1",
@@ -233,6 +225,7 @@ export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
         {formalism === "formal" ? "F" : "I"}
         {data.label}
       </legend>
+      <ConflictHandles type={data.raw["Statement Type"]} />
     </fieldset>
   );
 }
