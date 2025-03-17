@@ -1,6 +1,7 @@
 import { DownloadIcon, MenuIcon } from "lucide-react";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
@@ -15,6 +16,7 @@ import { store as networkStore } from "@/stores/component-network";
 import { store } from "@/stores/global";
 import { ComponentLayoutButton } from "./LayoutButton";
 import { ScreenshotButton } from "./ScreenshotButton";
+import { useStore } from "zustand";
 
 function exportAsGraphml() {
   const projectName = store.getState().projectName;
@@ -35,6 +37,8 @@ function exportAsGexf() {
 }
 
 export function ComponentNetworkMenu() {
+  const deDuplicate = useStore(networkStore, (s) => s.deDuplicate);
+  const onDeDuplicateChange = networkStore.getState().setDeDuplicate;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -53,6 +57,12 @@ export function ComponentNetworkMenu() {
           <DownloadIcon />
           Export as gexf
         </DropdownMenuItem>
+        <DropdownMenuCheckboxItem
+          checked={deDuplicate}
+          onCheckedChange={onDeDuplicateChange}
+        >
+          De-duplicate components
+        </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
