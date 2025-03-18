@@ -13,6 +13,7 @@ import {
 import { Connection, Statement } from "./schema";
 import { ComponentEdge } from "./edge";
 import { store } from "../stores/global";
+import { statementLabel } from "./utils";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
 
@@ -23,10 +24,11 @@ export function procesStatement(
   const nodes: StatementRelatedNode[] = [];
   const edges: ComponentEdge[] = [];
   const id = statement.Id || fallBackId;
+  const label = statementLabel(statement);
   const statementNode: StatementNode = {
     id,
     type: "statement",
-    data: { raw: statement, label: id },
+    data: { raw: statement, label },
     position: { x: 0, y: 0 },
     style: {
       // TODO make smaller based on content
