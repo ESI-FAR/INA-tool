@@ -183,7 +183,7 @@ function RouteComponent() {
                 <LayoutTemplateIcon className="inline" />
                 Layout:
               </strong>{" "}
-              To layout the grap use a layout algorithm use the layout button at
+              To layout the graph using a layout algorithm use the layout button at
               the top right side.
             </li>
             <li>
@@ -302,7 +302,7 @@ function RouteComponent() {
               <strong>
                 <LayoutTemplateIcon className="inline" /> Layout:
               </strong>{" "}
-              To layout the grap use a layout algorithm use the layout button at
+              To layout the graph using a layout algorithm use the layout button at
               the top right side.
             </li>
             <li>
