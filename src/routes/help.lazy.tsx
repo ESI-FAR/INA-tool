@@ -338,6 +338,25 @@ function RouteComponent() {
               </a>
               .
             </li>
+            <li>
+              <strong>
+                <DownloadIcon className="inline" /> Export as gexf:
+              </strong>{" "}
+              Download the network as a{" "}
+              <a className="underline" href="https://gexf.net/">
+                GEXF
+              </a>{" "}
+              formatted file. The file can be imported in generic graph tools
+              like{" "}
+              <a
+                target="_blank"
+                className="underline"
+                href="https://gephi.org/"
+              >
+                Gephi
+              </a>
+              .
+            </li>
           </ul>
         </li>
         <li>
