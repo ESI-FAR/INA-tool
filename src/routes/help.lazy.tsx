@@ -136,14 +136,36 @@ function RouteComponent() {
       </p>
       <ul className="list-outside list-disc pl-4">
         <li>
-          <strong>Moving:</strong> You can move things around by dragging. Press
-          left mouse key and start dragging the statement or a component of a
-          statement. You can pan by dragging on the background. To move multiple
-          statements or components you can select them by holding down the ctrl
-          key and click on multiple nodes or hold shift key and drag a rectangle
-          around nodes. Selected nodes have a slightly thicker borders. After
-          selecting you can move them by dragging. You can clear selection by
-          clicking on the background.
+          <strong>Moving:</strong> You can move things around by dragging.
+          <ul className="list-outside list-disc pl-4">
+            <li>
+              <strong>To pan whole network:</strong> You can pan by dragging on
+              the background.
+            </li>
+            <li>
+              <strong>To move single component:</strong> While hovering over a
+              component press left mouse key and start dragging the component of
+              a statement.
+            </li>
+            <li>
+              <strong>To move single statement:</strong> While hovering inside
+              the statement border, but not on a component, press left mouse key
+              and start dragging the statement and all its components.
+            </li>
+            <li>
+              <strong>To move multiple nodes:</strong> First select multiple
+              statements or components by
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  holding down the CTRL/⌘ key and click on multiple nodes or
+                </li>
+                <li>holding SHIFT key and drag a rectangle around nodes.</li>
+                <li>After selecting you can move them by dragging.</li>
+                <li>Selected nodes have a slightly thicker borders.</li>
+                <li>You can clear selection by clicking on the background.</li>
+              </ul>
+            </li>
+          </ul>
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
