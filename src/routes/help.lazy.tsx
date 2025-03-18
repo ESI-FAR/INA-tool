@@ -183,8 +183,8 @@ function RouteComponent() {
                 <LayoutTemplateIcon className="inline" />
                 Layout:
               </strong>{" "}
-              To layout the graph using a layout algorithm use the layout button at
-              the top right side.
+              To layout the graph using a layout algorithm use the layout button
+              at the top right side.
             </li>
             <li>
               <strong>
@@ -250,11 +250,11 @@ function RouteComponent() {
       <h3 className="py-4 text-xl">Statement level network page</h3>
       <p>
         The{" "}
-        <Link className="underline" to="/network/comp">
-          component network page
+        <Link className="underline" to="/network/statement">
+          statement network page
         </Link>{" "}
         visualizes the statements and their connections as a graph network. The
-        components of a statement are not shown, so the network more compact.
+        components of a statement are not shown, so the network is more compact.
       </p>
       <ul className="list-inside list-disc">
         <li>
@@ -302,8 +302,8 @@ function RouteComponent() {
               <strong>
                 <LayoutTemplateIcon className="inline" /> Layout:
               </strong>{" "}
-              To layout the graph using a layout algorithm use the layout button at
-              the top right side.
+              To layout the graph using a layout algorithm use the layout button
+              at the top right side.
             </li>
             <li>
               <strong>
@@ -372,10 +372,36 @@ function RouteComponent() {
         </li>
         <li>
           <strong>Selecting: </strong> To see details of a statement, click on
-          the statement. The details will be shown in a panel on the right side
-          on the node. To see details of multiple statements, hold down the ctrl
-          key and click on multiple nodes or hold shift key and drag a rectangle
-          around nodes.
+          the statement.
+          <ul className="ml-6 list-inside list-disc">
+            <li>
+              The details will be shown in a panel on the right side on the
+              node.
+            </li>
+            <li>
+              You can hover over text to see the component of the text in a
+              tooltip.
+            </li>
+            <li>
+              Incoming connections are shown as arrows infront of the component
+              text. Tooltip will show from which statement/component the
+              connection came from.
+            </li>
+            <li>
+              Outgoing connections are shown as arrows behind the component
+              text. Tooltip will show from which statement/component the
+              connection goes to.
+            </li>
+            <li>
+              To see details of multiple statements,
+              <ul className="ml-6 list-inside list-disc">
+                <li>hold down the CTRL/⌘ key and click on multiple nodes or</li>
+                <li>hold SHIFT key and drag a rectangle around nodes.</li>
+              </ul>
+            </li>
+            <li>To close the details click the X button.</li>
+            <li>To deselect all nodes click on the background.</li>
+          </ul>
         </li>
       </ul>
 
