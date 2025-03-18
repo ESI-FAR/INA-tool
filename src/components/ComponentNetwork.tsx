@@ -43,6 +43,8 @@ function mapReactFlowConnectionToINAConnection(
   };
 }
 
+const MAX_VISIBLE_STATEMENTS = 500;
+
 export function ComponentNetwork() {
   const { theme } = useTheme();
   const { nodes, edges, onNodesChange, onEdgesChange } = useStore(store);
@@ -90,6 +92,7 @@ export function ComponentNetwork() {
       fitView
       colorMode={theme}
       proOptions={{ hideAttribution: true }}
+      onlyRenderVisibleElements={nodes.length > MAX_VISIBLE_STATEMENTS}
     >
       <Controls />
       <MyMiniMap />
