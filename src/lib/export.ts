@@ -1,5 +1,5 @@
 import { INACEdge, INASEdge } from "./edge";
-import { INANode, isStatementNode, StatementNode } from "./node";
+import { INANode, StatementNode } from "./node";
 import { Statement } from "./schema";
 
 export function exportStatementNetworkToGraphml(
