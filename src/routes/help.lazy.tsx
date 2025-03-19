@@ -530,6 +530,55 @@ function RouteComponent() {
           </li>
         </ul>
       </p>
+      <h3 className="py-4 text-xl">Conflicts page</h3>
+      <p>
+        The{" "}
+        <Link className="underline" to="/conflicts">
+          conflicts page
+        </Link>{" "}
+        allows you to mark a formal and an informal statement pair as
+        conflicting with each other.
+      </p>
+      <ul className="list-inside list-disc">
+        <li>
+          <strong>Search:</strong> Write text in the search box to search for a
+          conflict containing the query.
+        </li>
+        <li>
+          <strong>Sorting:</strong> Click on the column header to sort the data.
+        </li>
+        <li>
+          <strong>Paging:</strong> If not all data is displayed, use the paging
+          buttons to navigate through the data.
+        </li>
+        <li>
+          <strong>Deleting:</strong> A conflict can be deleted by pressing the{" "}
+          <TrashIcon className="inline" /> button.
+        </li>
+        <li>
+          <strong>Adding:</strong> After pressing the{" "}
+          <PlusIcon className="inline" /> button, a dialog will open where you
+          can select the formal and informal statements. Press the Add button to
+          save the new conflict.
+        </li>
+        <li>
+          <strong>Editing:</strong> There is no edit functionality for
+          conflicts. Delete and add a new conflict instead.
+        </li>
+        <li>
+          <strong>Download:</strong> Click on the{" "}
+          <DownloadIcon className="inline" /> download button to download the
+          connections as a CSV file.
+        </li>
+        <li>
+          <strong>Upload:</strong> Click on the{" "}
+          <UploadIcon className="inline" /> upload button to upload a CSV or
+          XLSX file with conflicts. Existing conflicts will be deleted and
+          replaced by the uploaded conflicts. The file should have a "formal"
+          column and "informal" column. Both columns should contain the
+          statement id.
+        </li>
+      </ul>
 
       <h3 className="py-4 text-xl">Persistence</h3>
       <ul className="list-outside list-disc pl-4">

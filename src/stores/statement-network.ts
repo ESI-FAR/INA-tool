@@ -145,7 +145,7 @@ function onConflictsChange(conflicts: Conflict[]) {
   const connectionEdges = store.getState().edges.filter(isDrivenConnectionEdge);
   const conflictIds = new Set(
     conflicts.map(
-      (conflict) => `${conflict.formal.Id}-${conflict.informal.Id}`,
+      (conflict) => `conflict-${conflict.formal}-${conflict.informal}`,
     ),
   );
   const unchangedConflictEdges = store
@@ -157,13 +157,14 @@ function onConflictsChange(conflicts: Conflict[]) {
 
   const newEdges: ConflictingEdge[] = conflicts
     .filter(
-      (c) => !unchangedConflictEdgesIds.has(`${c.formal.Id}-${c.informal.Id}`),
+      (c) =>
+        !unchangedConflictEdgesIds.has(`conflict-${c.formal}-${c.informal}`),
     )
     .map((conflict) => {
       const e: ConflictingEdge = {
-        id: `${conflict.formal.Id}-${conflict.informal.Id}`,
-        source: conflict.formal.Id,
-        target: conflict.informal.Id,
+        id: `conflict-${conflict.formal}-${conflict.informal}`,
+        source: conflict.formal,
+        target: conflict.informal,
         sourceHandle: "conflict",
         targetHandle: "conflict",
         type: "conflict",

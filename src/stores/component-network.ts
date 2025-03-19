@@ -2,7 +2,6 @@ import {
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
-  getNodesBounds,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
@@ -13,11 +12,11 @@ import {
   ComponentEdge,
   isDrivenConnectionEdge,
   isComponentEdge,
+  isConflictingEdge,
+  ConflictingEdge,
 } from "../lib/edge";
 import {
-  ConflictGroupNode,
   INANode,
-  isConflictGroupNode,
   isComponentNode,
   isStatementNode,
   StatementNode,
@@ -92,7 +91,7 @@ export function applyStatementsChanges(
   nodes: INANode[],
   edges: INACEdge[],
 ): [INANode[], INACEdge[]] {
-  const nonStatementNodes = nodes.filter(isConflictGroupNode);
+  const conflictEdges = store.getState().edges.filter(isConflictingEdge);
   const drivenConnectionEdges = edges.filter(isDrivenConnectionEdge);
   const nodeLookup = new Map<string, StatementRelatedNode>(
     nodes
@@ -160,10 +159,7 @@ export function applyStatementsChanges(
       newEdges.push(...myNewEdges);
     }
   }
-  return [
-    [...nonStatementNodes, ...newNodes],
-    [...drivenConnectionEdges, ...newEdges],
-  ];
+  return [newNodes, [...conflictEdges, ...drivenConnectionEdges, ...newEdges]];
 }
 
 function onStatementsChange(statements: Statement[]) {
@@ -213,90 +209,38 @@ function onConnectionsChange(connections: Connection[]) {
 }
 
 function conflict2id(conflict: Conflict): string {
-  return `conflict-${conflict.formal.Id}-${conflict.informal.Id}`;
+  return `conflict-${conflict.formal}-${conflict.informal}`;
 }
 
 function onConflictsChange(conflicts: Conflict[]) {
-  const otherNodes = store.getState().nodes.filter(isComponentNode);
-  const conflictGroupNodes = store.getState().nodes.filter(isConflictGroupNode);
-  const conflictGroupNodeLookup = new Map<string, ConflictGroupNode>(
-    conflictGroupNodes.map((n) => [n.id, n]),
+  const nonConflictEdges = store
+    .getState()
+    .edges.filter((e) => !isConflictingEdge(e));
+  const conflictIds = new Set(conflicts.map(conflict2id));
+  const unchangedConflictEdges = store
+    .getState()
+    .edges.filter((e) => isConflictingEdge(e) && conflictIds.has(e.id));
+  const unchangedConflictEdgesIds = new Set(
+    unchangedConflictEdges.map((edge) => edge.id),
   );
-  const statementNodeLookup = new Map<string, StatementNode>(
-    store
-      .getState()
-      .nodes.filter(isStatementNode)
-      .map((n) => [n.id, n]),
-  );
-  // TODO conflicts that are not yet a conflict group should be added as a conflict group
-  // by adding a conflict group node and adding parentid to its statement nodes
-  const newNodes: Array<StatementRelatedNode | ConflictGroupNode> = [];
-  for (const conflict of conflicts) {
-    const id = conflict2id(conflict);
-    const conflictGroupNode = conflictGroupNodeLookup.get(id);
-    if (conflictGroupNode) {
-      // No change, copy existing nodes
-      newNodes.push(conflictGroupNode);
-      newNodes.push(statementNodeLookup.get(conflict.formal.Id)!);
-      newNodes.push(statementNodeLookup.get(conflict.informal.Id)!);
-    } else {
-      const formalNode = statementNodeLookup.get(conflict.formal.Id)!;
-      const informalNode = statementNodeLookup.get(conflict.informal.Id)!;
-      const bounds = getNodesBounds([formalNode, informalNode]);
-      // New conflict group
-      // create conflict group node
-      const PAD = 10;
-      const conflictGroupNode: ConflictGroupNode = {
-        id,
+
+  const newEdges: ConflictingEdge[] = conflicts
+    .filter((c) => !unchangedConflictEdgesIds.has(conflict2id(c)))
+    .map((conflict) => {
+      const e: ConflictingEdge = {
+        id: conflict2id(conflict),
+        source: conflict.formal,
+        target: conflict.informal,
+        sourceHandle: "conflict",
+        targetHandle: "conflict",
         type: "conflict",
-        data: {},
-        // the conflict group should be a rectangle that contains both formal and informal nodes
-        position: {
-          x: bounds.x - PAD,
-          y: bounds.y - PAD,
-        },
-        style: {
-          width: bounds.width + PAD,
-          height: bounds.height + PAD,
-        },
       };
-      newNodes.push(conflictGroupNode);
-      // add parentid to statement nodes
-      newNodes.push({
-        ...formalNode,
-        parentId: id,
-        extent: "parent",
-      });
-      newNodes.push({
-        ...informalNode,
-        parentId: id,
-        extent: "parent",
-      });
-      conflictGroupNodeLookup.set(id, conflictGroupNode);
-    }
-  }
-  // conflict group that are not in conflicts should be removed
-  // by skipping conflict group node and removing parentid from its statement nodes
-  // TODO move positions of statements nodes of old conflict group, as child node positions are relative to parent
-  for (const statementNode of statementNodeLookup.values()) {
-    if (newNodes.includes(statementNode)) {
-      continue;
-    }
-    if (
-      statementNode.parentId !== undefined &&
-      statementNode.extent === "parent"
-    ) {
-      // remove parentid and extent
-      newNodes.push({
-        ...statementNode,
-        parentId: undefined,
-        extent: undefined,
-      });
-    } else {
-      newNodes.push(statementNode);
-    }
-  }
-  store.getState().setNodes([...newNodes, ...otherNodes]);
+      return e;
+    });
+
+  store
+    .getState()
+    .setEdges([...unchangedConflictEdges, ...newEdges, ...nonConflictEdges]);
 }
 
 globalStore.subscribe((state) => state.statements, onStatementsChange);

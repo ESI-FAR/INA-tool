@@ -10,9 +10,12 @@ import {
   StatementNode,
   StatementRelatedNode,
 } from "./node";
-import { Connection, Statement } from "./schema";
+import { Statement } from "./schema";
 import { ComponentEdge } from "./edge";
 import { store } from "../stores/global";
+import { ZodType } from "zod";
+import { read as readXLSX, utils as utilsXLSX } from "xlsx";
+import { csvFormat, csvParse } from "d3-dsv";
 import { statementLabel } from "./utils";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
@@ -198,21 +201,6 @@ export function offsetStatement(statement: StatementNode, index: number) {
   statement.position.y = index * DEFAULT_STATEMENT_HEIGHT + index * gap;
 }
 
-export function load(statements: Statement[], connections: Connection[]) {
-  store.getState().setStatements(statements);
-  store.getState().setConnections(connections);
-}
-
-export function save(): {
-  statements: Statement[];
-  connections: Connection[];
-} {
-  const statements = store.getState().statements;
-  const connections = store.getState().connections;
-  // TODO add data of graphs
-  return { statements, connections };
-}
-
 export function download(file: File) {
   const url = URL.createObjectURL(file);
   const a = document.createElement("a");
@@ -223,6 +211,65 @@ export function download(file: File) {
   a.remove();
 }
 
-export function loadConnections(connections: Connection[]) {
-  store.getState().setConnections(connections);
+export function loadStatements(statements: Statement[]) {
+  store.getState().setStatements(statements);
+  store.getState().setConnections([]);
+  store.getState().setConflicts([]);
+}
+
+export async function parseCsvFile<T>(
+  file: File,
+  schema: ZodType<T>,
+): Promise<T> {
+  const content = await file.text();
+  const raw = csvParse(content);
+  return schema.parse(raw);
+}
+
+/**
+ * Reads a xlsx file and processes it.
+ *
+ * Expects
+ * - first sheet to have the data.
+ * - first row to have the column names.
+ *
+ * @param file A xlsx file.
+ */
+export async function parseXLSXFile<T>(
+  file: File,
+  schema: ZodType<T>,
+): Promise<T> {
+  const content = await file.arrayBuffer();
+  const workbook = readXLSX(content);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rawConnections = utilsXLSX.sheet_to_json(sheet, { defval: "" });
+  return schema.parse(rawConnections);
+}
+
+export async function parseFile<T>(file: File, schema: ZodType<T>): Promise<T> {
+  if (file.type === "text/csv" || file.name.endsWith(".csv")) {
+    return parseCsvFile(file, schema);
+  } else if (
+    file.type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    file.name.endsWith(".xlsx")
+  ) {
+    return parseXLSXFile(file, schema);
+  } else {
+    throw new Error("Unsupported file type");
+  }
+}
+
+export function downloadCsvFile<T extends object>(
+  rows: T[],
+  columns: Array<keyof T>,
+  suffix: string,
+) {
+  const projectName = store.getState().projectName;
+  const fn = projectName
+    ? `${projectName}.${suffix}.csv`
+    : `INA-tool.${suffix}.csv`;
+  const content = csvFormat(rows, columns);
+  const file = new File([content], fn, { type: "text/csv" });
+  download(file);
 }
