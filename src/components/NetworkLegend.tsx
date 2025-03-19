@@ -16,9 +16,31 @@ import { ReactNode } from "react";
 
 function EdgeLegend({ className, text }: { className: string; text: string }) {
   return (
-    <li>
-      <span className={className}>●-●</span> {text}
+    <li className="flex gap-2">
+      <div className={cn("w-8", className)}>●-●</div>
+      <div>{text}</div>
     </li>
+  );
+}
+
+function DashedIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      height="1em"
+      viewBox="0 0 36 24"
+      strokeWidth="2"
+      stroke="currentColor"
+      className={className}
+    >
+      <title>Dashed icon</title>
+      <g strokeWidth="2">
+        <path d="M5 12h2"></path>
+        <path d="M11 12h2"></path>
+        <path d="M17 12h2"></path>
+        <path d="M23 12h2"></path>
+        <path d="M29 12h2"></path>
+      </g>
+    </svg>
   );
 }
 
@@ -56,9 +78,11 @@ function BaseLegend({
           <EdgeLegend className={textColor.actor} text="Actor driven" />
           <EdgeLegend className={textColor.outcome} text="Outcome driven" />
           <EdgeLegend className={textColor.sanction} text="Sanction driven" />
-          <li>
-            {/* TODO make conflict icon + text align with other edges */}
-            <span className="text-red-500">━ ━ ━</span> Conflict
+          <li className="flex items-center gap-2">
+            <div className="w-8">
+              <DashedIcon className="text-red-500" />
+            </div>
+            <div>Conflict</div>
           </li>
         </ul>
       </PopoverContent>
