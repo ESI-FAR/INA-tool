@@ -36,7 +36,7 @@ function RouteComponent() {
       </h1>
 
       <h3 className="py-4 text-xl">Header</h3>
-      <ul className="list-inside list-disc">
+      <ul className="list-outside list-disc pl-4">
         <li>
           Use <PanelLeft className="inline" /> to hide the sidebar.
         </li>
@@ -104,7 +104,7 @@ function RouteComponent() {
       </p>
 
       <h3 className="py-4 text-xl">Download/upload project</h3>
-      <ul className="list-inside list-disc">
+      <ul className="list-outside list-disc pl-4">
         <li>
           <strong>Download project:</strong> To download project with
           statements, connections as a JSON document.
@@ -136,11 +136,38 @@ function RouteComponent() {
         visualizes the statements, their inner components and their connections
         as a graph network.
       </p>
-      <ul className="list-inside list-disc">
+      <ul className="list-outside list-disc pl-4">
         <li>
-          <strong>Dragging:</strong> You can move things around by dragging.
-          Press left mouse key and start dragging the statement or a component
-          of a statement or the background.
+          <strong>Moving:</strong> You can move things around by dragging.
+          <ul className="list-outside list-disc pl-4">
+            <li>
+              <strong>To pan whole network:</strong> You can pan by dragging on
+              the background.
+            </li>
+            <li>
+              <strong>To move single component:</strong> While hovering over a
+              component press left mouse key and start dragging the component of
+              a statement.
+            </li>
+            <li>
+              <strong>To move single statement:</strong> While hovering inside
+              the statement border, but not on a component, press left mouse key
+              and start dragging the statement and all its components.
+            </li>
+            <li>
+              <strong>To move multiple nodes:</strong> First select multiple
+              statements or components by
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  holding down the CTRL/⌘ key and click on multiple nodes or
+                </li>
+                <li>holding SHIFT key and drag a rectangle around nodes.</li>
+                <li>After selecting you can move them by dragging.</li>
+                <li>Selected nodes have a slightly thicker borders.</li>
+                <li>You can clear selection by clicking on the background.</li>
+              </ul>
+            </li>
+          </ul>
         </li>
         <li>
           <strong>Zoom:</strong> Use zoom buttons in bottom left to zoom in or
@@ -256,10 +283,15 @@ function RouteComponent() {
         visualizes the statements and their connections as a graph network. The
         components of a statement are not shown, so the network is more compact.
       </p>
-      <ul className="list-inside list-disc">
+      <ul className="list-outside list-disc pl-4">
         <li>
-          <strong>Dragging:</strong> You can move things around by dragging.
-          Press left mouse key and start dragging the statement or the
+          <strong>Moving:</strong> You can move things around by dragging. Press
+          left mouse key and start dragging the statement. You can pan by
+          dragging on the background. To move multiple statements you can select
+          them by holding down the ctrl key and click on multiple statements or
+          hold shift key and drag a rectangle around statements. Selected
+          statements have a slightly thicker borders. After selecting you can
+          move them by dragging. You can clear selection by clicking on the
           background.
         </li>
         <li>
@@ -413,7 +445,7 @@ function RouteComponent() {
         </Link>{" "}
         allows you to manage the statements.
       </p>
-      <ul className="list-inside list-disc">
+      <ul className="list-outside list-disc pl-4">
         <li>
           <strong>Search:</strong> Write text in the search box to search for
           statements containing the query.
@@ -458,7 +490,7 @@ function RouteComponent() {
           connections page
         </Link>{" "}
         allows you to view and download the connections between statements.
-        <ul className="list-inside list-disc">
+        <ul className="list-outside list-disc pl-4">
           <li>
             <strong>Search:</strong> Write text in the search box to search for
             statements containing the query.
@@ -500,7 +532,7 @@ function RouteComponent() {
       </p>
 
       <h3 className="py-4 text-xl">Persistence</h3>
-      <ul className="list-inside list-disc">
+      <ul className="list-outside list-disc pl-4">
         <li>
           The project can be save to a file and loaded from a file. Share the
           file so the reciever can have the same data as you.
