@@ -1,5 +1,5 @@
 import { Statement } from "@/lib/schema";
-import { cn } from "@/lib/utils";
+import { cn, statementLabel } from "@/lib/utils";
 
 function Highlight({ text, query }: { text: string; query: string }) {
   // TODO not highlight whole text, but only the part that matches the query
@@ -18,10 +18,7 @@ export function Hit({
 }) {
   return (
     <p className={className}>
-      <span>
-        {statement["Statement Type"] === "formal" ? "F" : "I"}
-        {statement.Id}:{" "}
-      </span>
+      <span>{statementLabel(statement)}: </span>
       <Highlight text={statement.Attribute} query={query} />{" "}
       <span>{statement.Deontic}</span>{" "}
       <Highlight text={statement.Aim} query={query} />{" "}
@@ -47,8 +44,7 @@ export function Hit({
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function searchStatement(query: string, statement: Statement) {
-  const type = statement["Statement Type"] === "formal" ? "F" : "I";
-  const label = type + statement.Id;
+  const label = statementLabel(statement);
   return (
     label === query ||
     statement.Attribute.includes(query) ||

@@ -37,7 +37,7 @@ describe("exportStatementNetworkToGraphml", () => {
 
     const file = exportStatementNetworkToGraphml(projectName, nodes, edges);
 
-    expect(file.name).toEqual("single-node.graphml");
+    expect(file.name).toEqual("single-node.statements.graphml");
     expect(file.type).toEqual("application/xml");
     const content = await file.text();
     expect(content).toContain("Attribute1");
@@ -75,7 +75,7 @@ describe("exportStatementNetworkToGraphml", () => {
 
     const file = exportStatementNetworkToGraphml(projectName, nodes, edges);
 
-    expect(file.name).toEqual("single-node.graphml");
+    expect(file.name).toEqual("single-node.statements.graphml");
     expect(file.type).toEqual("application/xml");
     const content = await file.text();
     expect(content).toContain("Constraint1");
@@ -127,7 +127,7 @@ describe("exportStatementNetworkToGraphml", () => {
 
     const file = exportStatementNetworkToGraphml(projectName, nodes, edges);
 
-    expect(file.name).toEqual("single-edge.graphml");
+    expect(file.name).toEqual("single-edge.statements.graphml");
     expect(file.type).toEqual("application/xml");
     const content = await file.text();
     expect(content).toContain("1-2");
@@ -177,7 +177,7 @@ describe("exportComponentNetworkToGraphml", () => {
       edges,
     );
 
-    expect(file.name).toEqual("2-statements-1-connection.graphml");
+    expect(file.name).toEqual("2-statements-1-connection.components.graphml");
     expect(file.type).toEqual("application/xml");
     const content = await file.text();
     expect(content).toContain("Attribute1");
@@ -198,7 +198,7 @@ describe("exportComponentNetworkToGEXF()", () => {
       edges,
     );
 
-    expect(file.name).toEqual("2-statements-1-connection.gexf");
+    expect(file.name).toEqual("2-statements-1-connection.components.gexf");
     expect(file.type).toEqual("application/xml");
     const content = await file.text();
     expect(content).toContain("Attribute1");
