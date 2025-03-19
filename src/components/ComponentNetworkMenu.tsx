@@ -3,6 +3,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
@@ -15,6 +20,7 @@ import { store as networkStore } from "@/stores/component-network";
 import { store } from "@/stores/global";
 import { ComponentLayoutButton } from "./LayoutButton";
 import { ScreenshotButton } from "./ScreenshotButton";
+import { DeDuplicatedComponentsView } from "./DeDuplicatedComponentsView";
 
 function exportAsGraphml() {
   const projectName = store.getState().projectName;
@@ -53,6 +59,14 @@ export function ComponentNetworkMenu() {
           <DownloadIcon />
           Export as gexf
         </DropdownMenuItem>
+        <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Views</DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DeDuplicatedComponentsView/>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
       </DropdownMenuContent>
     </DropdownMenu>
   );
