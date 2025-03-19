@@ -11,6 +11,7 @@ export function project2json() {
       component: {
         nodes: componentGraphStore.getState().nodes,
         edges: componentGraphStore.getState().edges,
+        deDuplicate: componentGraphStore.getState().deDuplicate,
       },
       statement: {
         nodes: statementGraphStore.getState().nodes,
@@ -27,6 +28,7 @@ export function json2project(content: string, projectName: string) {
   componentGraphStore.setState({
     nodes: state.graph.component.nodes,
     edges: state.graph.component.edges,
+    deDuplicate: state.graph.component.deDuplicate,
   });
   statementGraphStore.setState({
     nodes: state.graph.statement.nodes,

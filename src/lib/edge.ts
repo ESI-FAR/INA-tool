@@ -14,16 +14,17 @@ Red (Sanction-driven connection):
 - Aim -> Activation Condition
 */
 
+// Used to store original source and target before deduplication
+// so it can be reverted back to original easily when dedup is turned off
+type DedupMemory = { originalTarget?: string; originalSource?: string };
+
 export type ComponentEdge = Edge<
-  { label?: string; statementId: string },
+  { label?: string; statementId: string } & DedupMemory,
   "component"
 >;
-export type ActorDrivenConnection = Edge<Record<string, unknown>, "actor">; // Purple
-export type OutcomeDrivenConnection = Edge<Record<string, unknown>, "outcome">; // Green
-export type SanctionDrivenConnection = Edge<
-  Record<string, unknown>,
-  "sanction"
->; // Red
+export type ActorDrivenConnection = Edge<DedupMemory, "actor">; // Purple
+export type OutcomeDrivenConnection = Edge<DedupMemory, "outcome">; // Green
+export type SanctionDrivenConnection = Edge<DedupMemory, "sanction">; // Red
 
 export type ConflictingEdge = Edge<Record<string, unknown>, "conflict">;
 

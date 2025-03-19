@@ -28,7 +28,10 @@ const statements: Statement[] = [
     "Type of Direct Object": "inanimate",
     "Indirect Object": "from Dutch Kingdom",
     "Type of Indirect Object": "animate",
-    "Activation Condition": "if requested by Prime minister",
+    // TODO revert to original value of prime minister
+    // "Activation Condition": "if requested by Prime minister",
+    // uncomment line below to test de-duplication
+    "Activation Condition": "if necessary after a storm event",
     "Execution Constraint": "",
     "Or Else": "",
   },

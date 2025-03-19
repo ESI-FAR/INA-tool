@@ -32,6 +32,7 @@ import { connection2id } from "../lib/connection2id";
 export type State = {
   nodes: INANode[];
   edges: INACEdge[];
+  deDuplicate: boolean;
 };
 
 export type Action = {
@@ -40,6 +41,7 @@ export type Action = {
   onConnect: OnConnect;
   setNodes: (nodes: INANode[]) => void;
   setEdges: (edges: INACEdge[]) => void;
+  setDeDuplicate: (deDuplicate: boolean) => void;
 };
 
 export type Store = State & Action;
@@ -47,6 +49,7 @@ export type Store = State & Action;
 export const store = createStore<Store>((set, get) => ({
   nodes: [],
   edges: [],
+  deDuplicate: false,
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -67,6 +70,9 @@ export const store = createStore<Store>((set, get) => ({
   },
   setEdges: (edges) => {
     set({ edges });
+  },
+  setDeDuplicate: (deDuplicate) => {
+    set({ ...applyDeDuplicateChanges(deDuplicate, get().nodes, get().edges) });
   },
 }));
 
@@ -180,6 +186,8 @@ export function applyConnectionsChanges(
   connections: Connection[],
   edges: INACEdge[],
 ): INACEdge[] {
+  // TODO when in dedup mode, adding a connection to a dedupped node, will hide other connections to/from node
+  // toggling dedup mode on -> off -> on, will show all connections again
   const connectionIds = new Set(connections.map(connection2id));
 
   // find connection that are already edges, no need to update them
@@ -297,6 +305,156 @@ function onConflictsChange(conflicts: Conflict[]) {
     }
   }
   store.getState().setNodes([...newNodes, ...otherNodes]);
+}
+
+function componentNodeKey(node: INANode): string {
+  if (node.type === "Direct Object" || node.type === "Indirect Object") {
+    return `${node.type}-${node.data.label}-${node.data.animation}`;
+  }
+  return `${node.type}-${node.data.label}`;
+}
+
+function applyDeDuplicateChanges(
+  newMode: boolean,
+  nodes: INANode[],
+  edges: INACEdge[],
+) {
+  const nonComponentNodes = nodes.filter((n) => !isComponentNode(n));
+  const nonComponentEdges: INACEdge[] = edges.filter(
+    (e) => !(isComponentEdge(e) || isDrivenConnectionEdge(e)),
+  );
+  const componentNodes: INANode[] = nodes.filter(isComponentNode);
+  const edgesBetweenComponents: INACEdge[] = edges.filter(
+    (e) => isComponentEdge(e) || isDrivenConnectionEdge(e),
+  );
+
+  // find component nodes with same type and text
+  const componentNodesMap = new Map<string, INANode[]>();
+  for (const node of componentNodes) {
+    const key = componentNodeKey(node);
+    const value = componentNodesMap.get(key);
+    if (value) {
+      value.push(node);
+    } else {
+      componentNodesMap.set(key, [node]);
+    }
+  }
+  const uniqueComponents: INANode[] = [];
+  // Where key is the first node and value is the rest
+  const duplicateComponents = new Map<INANode, INANode[]>();
+  for (const nodes of componentNodesMap.values()) {
+    if (nodes.length < 2) {
+      uniqueComponents.push(nodes[0]);
+    } else {
+      duplicateComponents.set(nodes[0], nodes.slice(1));
+    }
+  }
+
+  const touchedNodes: INANode[] = [];
+  if (newMode) {
+    // Turn on deduplication
+    for (const [node, duplicates] of duplicateComponents.entries()) {
+      for (const duplicate of duplicates) {
+        // hide non-first nodes
+        touchedNodes.push({
+          ...duplicate,
+          hidden: true,
+        });
+        // redirect edges of non-first nodes to first node
+        const edgesWithDuplicateAsSource = edgesBetweenComponents.filter(
+          (e) => e.source === duplicate.id,
+        );
+        for (const edge of edgesWithDuplicateAsSource) {
+          const edgeIndex = edgesBetweenComponents.indexOf(edge);
+          if (edgeIndex === -1) {
+            console.error("Edge not found", edge);
+            continue;
+          }
+          edgesBetweenComponents[edgeIndex] = {
+            ...edge,
+            data: {
+              ...edge.data,
+              originalSource: duplicate.id,
+            },
+            source: node.id,
+          } as INACEdge;
+        }
+        const edgesWithDuplicateAsTarget = edgesBetweenComponents.filter(
+          (e) => e.target === duplicate.id,
+        );
+        for (const edge of edgesWithDuplicateAsTarget) {
+          const edgeIndex = edgesBetweenComponents.indexOf(edge);
+          if (edgeIndex === -1) {
+            console.error("Edge not found", edge);
+            continue;
+          }
+          edgesBetweenComponents[edgeIndex] = {
+            ...edge,
+            data: {
+              ...edge.data,
+              originalTarget: duplicate.id,
+            },
+            target: node.id,
+          } as INACEdge;
+        }
+      }
+    }
+  } else {
+    // Turn off deduplication
+    for (const duplicates of duplicateComponents.values()) {
+      // show those non-first nodes again
+      for (const duplicate of duplicates) {
+        touchedNodes.push({
+          ...duplicate,
+          hidden: false,
+        });
+      }
+    }
+    // move edges from/to first node back to duplicate nodes
+    for (const edge of edgesBetweenComponents) {
+      if (edge.data?.originalSource) {
+        const edgeIndex = edgesBetweenComponents.indexOf(edge);
+        if (edgeIndex === -1) {
+          console.error("Edge not found", edge);
+          continue;
+        }
+        edgesBetweenComponents[edgeIndex] = {
+          ...edge,
+          source: edge.data?.originalSource,
+          data: {
+            ...edge.data,
+            originalSource: undefined,
+          },
+        } as INACEdge;
+      }
+      if (edge.data?.originalTarget) {
+        const edgeIndex = edgesBetweenComponents.indexOf(edge);
+        if (edgeIndex === -1) {
+          console.error("Edge not found", edge);
+          continue;
+        }
+        edgesBetweenComponents[edgeIndex] = {
+          ...edge,
+          target: edge.data?.originalTarget,
+          data: {
+            ...edge.data,
+            originalTarget: undefined,
+          },
+        } as INACEdge;
+      }
+    }
+  }
+  const originNodes = duplicateComponents.keys();
+  return {
+    nodes: [
+      ...nonComponentNodes,
+      ...uniqueComponents,
+      ...originNodes,
+      ...touchedNodes,
+    ],
+    edges: [...nonComponentEdges, ...edgesBetweenComponents],
+    deDuplicate: newMode,
+  };
 }
 
 globalStore.subscribe((state) => state.statements, onStatementsChange);
