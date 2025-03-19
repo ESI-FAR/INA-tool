@@ -1,7 +1,7 @@
 import { ConnectionComponent, Statement } from "@/lib/schema";
 import { useMemo } from "react";
 import { useConnections } from "@/hooks/use-connections";
-import { cn } from "@/lib/utils";
+import { cn, statementLabel } from "@/lib/utils";
 import { connection2id } from "@/lib/connection2id";
 import { textColor } from "./drivenColors";
 
@@ -55,8 +55,7 @@ export function StatementCard({ statement }: { statement: Statement }) {
   return (
     <div className="w-96 bg-card p-2 text-card-foreground shadow">
       <span title="Statement Id" className="hover:underline">
-        {statement["Statement Type"] === "formal" ? "F" : "I"}
-        {statement.Id}:{" "}
+        {statementLabel(statement)}:{" "}
       </span>
       <ComponentWithConnections statement={statement} component="Attribute" />{" "}
       {statement.Deontic && (
