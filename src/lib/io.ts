@@ -16,6 +16,7 @@ import { store } from "../stores/global";
 import { ZodType } from "zod";
 import { read as readXLSX, utils as utilsXLSX } from "xlsx";
 import { csvFormat, csvParse } from "d3-dsv";
+import { statementLabel } from "./utils";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
 
@@ -26,10 +27,11 @@ export function procesStatement(
   const nodes: StatementRelatedNode[] = [];
   const edges: ComponentEdge[] = [];
   const id = statement.Id || fallBackId;
+  const label = statementLabel(statement);
   const statementNode: StatementNode = {
     id,
     type: "statement",
-    data: { raw: statement, label: id },
+    data: { raw: statement, label },
     position: { x: 0, y: 0 },
     style: {
       // TODO make smaller based on content

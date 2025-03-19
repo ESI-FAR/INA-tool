@@ -19,6 +19,7 @@ import { createStore } from "zustand";
 import { store as globalStore } from "./global";
 import { Conflict, Connection, Statement } from "../lib/schema";
 import { connection2id } from "@/lib/connection2id";
+import { statementLabel } from "@/lib/utils";
 
 export type State = {
   nodes: StatementNode[];
@@ -74,12 +75,13 @@ function onStatementsChange(statements: Statement[]) {
   const newNodes: StatementNode[] = [];
   for (const statement of statements) {
     const foundNode = nodesIds.get(statement.Id);
+    const label = statementLabel(statement);
     if (foundNode) {
       // updated
       const node = { ...foundNode };
       node.data = {
         raw: statement,
-        label: statement.Id,
+        label,
       };
       newNodes.push(node);
     } else {
@@ -90,7 +92,7 @@ function onStatementsChange(statements: Statement[]) {
         type: "statement",
         data: {
           raw: statement,
-          label: statement.Id,
+          label,
         },
         position: { x: 0, y },
       };

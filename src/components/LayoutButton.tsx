@@ -3,10 +3,10 @@ import { useReactFlow } from "@xyflow/react";
 import ELK from "elkjs/lib/elk-api";
 import ELKworker from "elkjs/lib/elk-worker.js?worker";
 import { LayoutTemplateIcon } from "lucide-react";
-import { Button } from "./ui/button";
 import { isStatementNode } from "@/lib/node";
 import type { INANode, StatementNode } from "@/lib/node";
 import { INASEdge, INACEdge } from "@/lib/edge";
+import { DropdownMenuItem } from "./ui/dropdown-menu";
 
 const elk = new ELK({
   workerFactory: () => {
@@ -133,19 +133,19 @@ function useStatementLayout() {
 export function ComponentLayoutButton() {
   const autoLayout = useComponentLayout();
   return (
-    <Button variant="outline" onClick={autoLayout} title="Auto layout nodes">
+    <DropdownMenuItem onClick={autoLayout} title="Auto layout nodes">
       <LayoutTemplateIcon />
       Layout
-    </Button>
+    </DropdownMenuItem>
   );
 }
 
 export function StatementLayoutButton() {
   const autoLayout = useStatementLayout();
   return (
-    <Button variant="outline" onClick={autoLayout} title="Auto layout nodes">
+    <DropdownMenuItem onClick={autoLayout} title="Auto layout nodes">
       <LayoutTemplateIcon />
       Layout
-    </Button>
+    </DropdownMenuItem>
   );
 }

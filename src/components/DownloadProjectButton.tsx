@@ -17,7 +17,6 @@ function downloadProject() {
 }
 
 export function DownloadProjectButton() {
-  // TODO download in standard graph format so it can be viewed in CytoScape or Gephi.
   // TODO download in semantic web format so it can be viewed in Protege or OntoGraf.
   return (
     <Button variant="outline" onClick={downloadProject}>

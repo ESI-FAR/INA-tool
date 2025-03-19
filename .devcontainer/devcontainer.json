@@ -1,9 +1,24 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-  "name": "PHP & Node",
-  "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bullseye",
-  "forwardPorts": [8080],
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {}
-  },
-  "postCreateCommand": "sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html && apache2ctl start && npm install && npm run build"
+  "name": "Node.js & TypeScript",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+
+  "forwardPorts": [5173],
+
+  "updateContentCommand": "npm install",
+  "postAttachCommand": "npm run dev -- --host",
+
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "ms-playwright.playwright",
+        "yoavbls.pretty-ts-errors",
+        "vitest.explorer"
+      ]
+    }
+  }
 }

@@ -194,8 +194,7 @@ export function CollapsedStatementNode({
           selectedClassName(selected),
         )}
       >
-        {statement["Statement Type"] === "formal" ? "F" : "I"}
-        {statement.Id}
+        {data.label}
       </div>
     </>
   );
@@ -221,11 +220,8 @@ export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
       <NodeResizeControl minWidth={100} minHeight={50}>
         <Maximize2Icon className="absolute bottom-2 right-2 h-2 w-2 rotate-90" />
       </NodeResizeControl>
-      <legend>
-        {formalism === "formal" ? "F" : "I"}
-        {data.label}
-      </legend>
       <ConflictHandles type={data.raw["Statement Type"]} />
+      <legend>{data.label}</legend>
     </fieldset>
   );
 }
