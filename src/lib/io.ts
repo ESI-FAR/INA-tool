@@ -213,8 +213,6 @@ export function download(file: File) {
 
 export function loadStatements(statements: Statement[]) {
   store.getState().setStatements(statements);
-  // TODO check if exsiting connections and conflicts are still valid
-  // TODO ask for confirmation to delete connections and conflicts?
   store.getState().setConnections([]);
   store.getState().setConflicts([]);
 }
