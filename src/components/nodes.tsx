@@ -157,7 +157,6 @@ function ConflictHandles({ type }: { type: StatementType }) {
       <Handle
         type="source"
         id="conflict"
-        // TODO allow conflict connection to be made in network pages
         className="invisible"
         position={Position.Right}
         isConnectable={false}
