@@ -5,13 +5,13 @@ export function userFriendlyError(error: unknown) {
     // If column is missing then do not report error for each row, but only once.
     const uniqueErrors = new Set(
       error.issues.map((e) => {
-        if (Array.isArray(e.path)) {
-          if (e.path.length === 2) {
-            return `${e.path[1]} column ${e.message}`;
-          }
-          return `${e.path.join(",")} column ${e.message}`;
+        if (!Array.isArray(e.path)) {
+          return e.message;
         }
-        return e.message;
+        if (e.path.length === 2) {
+          return `${e.path[1]} column ${e.message}`;
+        }
+        return `${e.path.join(",")} column ${e.message}`;
       }),
     );
     return (
