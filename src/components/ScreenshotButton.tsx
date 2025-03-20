@@ -8,6 +8,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "./ui/dropdown-menu";
+import { useStoreApi } from "@xyflow/react";
+import { flushSync } from "react-dom";
+import { useIsInteractive } from "@/hooks/use-interactive";
 
 function downloadImage(dataUrl: string, extension: string) {
   const projectName = store.getState().projectName;
@@ -46,6 +49,32 @@ async function exportToPng() {
 }
 
 export function ScreenshotButton() {
+  const store = useStoreApi();
+  const isInteractive = useIsInteractive();
+
+  async function wrapper(fn: () => void) {
+    if (isInteractive) {
+      // Use flushSync to make sure the state is updated before taking the screenshot
+      flushSync(() =>
+        // Make network non-interactive while taking the screenshot,
+        // this causes handles and resizer to be hidden
+        store.setState({
+          nodesDraggable: false,
+          nodesConnectable: false,
+          elementsSelectable: false,
+        }),
+      );
+      await fn();
+      store.setState({
+        nodesDraggable: true,
+        nodesConnectable: true,
+        elementsSelectable: true,
+      });
+    } else {
+      fn();
+    }
+  }
+
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger title="Take a screenshot">
@@ -53,8 +82,12 @@ export function ScreenshotButton() {
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent>
-          <DropdownMenuItem onClick={exportToPng}>PNG</DropdownMenuItem>
-          <DropdownMenuItem onClick={exportToSvg}>SVG</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => wrapper(exportToPng)}>
+            PNG
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => wrapper(exportToSvg)}>
+            SVG
+          </DropdownMenuItem>
         </DropdownMenuSubContent>
       </DropdownMenuPortal>
     </DropdownMenuSub>

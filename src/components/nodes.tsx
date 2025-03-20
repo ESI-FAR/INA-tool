@@ -44,6 +44,11 @@ const selectedClassName = (v: boolean | undefined) =>
     ? "border-slate-900 dark:border-slate-100"
     : "border-slate-400 dark:border-slate-400 hover:border-slate-900 dark:hover:border-slate-100";
 
+const handleStyle = {
+  width: 10,
+  height: 10,
+};
+
 function SourceHandles({
   isConnectable,
   statement,
@@ -51,13 +56,6 @@ function SourceHandles({
   isConnectable: boolean;
   statement: Statement;
 }) {
-  const style = useMemo(
-    () => ({
-      width: isConnectable ? 10 : 4,
-      height: isConnectable ? 10 : 4,
-    }),
-    [isConnectable],
-  );
   const allowActorDriven =
     (statement["Direct Object"] &&
       statement["Type of Direct Object"] === "animate") ||
@@ -69,14 +67,18 @@ function SourceHandles({
       statement["Type of Direct Object"] === "inanimate") ||
     (statement["Indirect Object"] &&
       statement["Type of Indirect Object"] === "inanimate");
+
   return (
     <>
       {allowActorDriven && (
         <Handle
           type="source"
           id="actor"
-          className={bgColor.actor}
-          style={{ ...style, left: "25%" }}
+          className={cn(bgColor.actor, { invisible: !isConnectable })}
+          style={{
+            ...handleStyle,
+            left: "25%",
+          }}
           position={Position.Bottom}
           isConnectable={isConnectable}
         />
@@ -85,8 +87,8 @@ function SourceHandles({
         <Handle
           type="source"
           id="outcome"
-          className={bgColor.outcome}
-          style={{ ...style, left: "50%" }}
+          className={cn(bgColor.outcome, { invisible: !isConnectable })}
+          style={{ ...handleStyle, left: "50%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
         />
@@ -94,8 +96,8 @@ function SourceHandles({
       <Handle
         type="source"
         id="sanction"
-        className={bgColor.sanction}
-        style={{ ...style, left: "75%" }}
+        className={cn(bgColor.sanction, { invisible: !isConnectable })}
+        style={{ ...handleStyle, left: "75%" }}
         position={Position.Bottom}
         isConnectable={isConnectable}
       />
@@ -110,20 +112,13 @@ function TargetHandles({
   isConnectable: boolean;
   statement: Statement;
 }) {
-  const style = useMemo(
-    () => ({
-      width: isConnectable ? 10 : 4,
-      height: isConnectable ? 10 : 4,
-    }),
-    [isConnectable],
-  );
   return (
     <>
       <Handle
         type="target"
         id="actor"
-        className={bgColor.actor}
-        style={{ ...style, left: "25%" }}
+        className={cn(bgColor.actor, { invisible: !isConnectable })}
+        style={{ ...handleStyle, left: "25%" }}
         position={Position.Top}
         isConnectable={isConnectable}
       />
@@ -132,16 +127,16 @@ function TargetHandles({
           <Handle
             type="target"
             id="outcome"
-            className={bgColor.outcome}
-            style={{ ...style, left: "50%" }}
+            className={cn(bgColor.outcome, { invisible: !isConnectable })}
+            style={{ ...handleStyle, left: "50%" }}
             position={Position.Top}
             isConnectable={isConnectable}
           />
           <Handle
             type="target"
             id="sanction"
-            className={bgColor.sanction}
-            style={{ ...style, left: "75%" }}
+            className={cn(bgColor.sanction, { invisible: !isConnectable })}
+            style={{ ...handleStyle, left: "75%" }}
             position={Position.Top}
             isConnectable={isConnectable}
           />
@@ -205,7 +200,11 @@ export const statementBackground = {
   informal: "bg-yellow-100/30 dark:bg-yellow-600/30",
 } as const;
 
-export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
+export function StatementNode({
+  data,
+  selected,
+  isConnectable,
+}: NodeProps<StatementNode>) {
   const formalism = data.raw["Statement Type"];
   const color = statementBackground[formalism];
   return (
@@ -216,9 +215,11 @@ export function StatementNode({ data, selected }: NodeProps<StatementNode>) {
         selectedClassName(selected),
       )}
     >
-      <NodeResizeControl minWidth={100} minHeight={50}>
-        <Maximize2Icon className="absolute bottom-2 right-2 h-2 w-2 rotate-90" />
-      </NodeResizeControl>
+      {isConnectable && (
+        <NodeResizeControl minWidth={100} minHeight={50}>
+          <Maximize2Icon className="absolute bottom-2 right-2 h-2 w-2 rotate-90" />
+        </NodeResizeControl>
+      )}
       <ConflictHandles type={data.raw["Statement Type"]} />
       <legend>{data.label}</legend>
     </fieldset>
@@ -241,19 +242,21 @@ export function AttributeNode({
       <Handle
         type="target"
         id="statement"
+        className={isConnectable ? "" : "invisible"}
         position={Position.Left}
         isConnectable={false}
       />
       <Handle
         type="source"
         id="statement"
+        className={isConnectable ? "" : "invisible"}
         position={Position.Right}
         isConnectable={false}
       />
       <Handle
         type="target"
         id="actor"
-        className={bgColor.actor}
+        className={cn(bgColor.actor, { invisible: !isConnectable })}
         style={drivenConnectionHandleStye}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -274,18 +277,21 @@ export function AimNode({ data, isConnectable, selected }: NodeProps<AimNode>) {
       <Handle
         type="target"
         id="statement"
+        className={isConnectable ? "" : "invisible"}
         position={Position.Left}
         isConnectable={false}
       />
       <Handle
         type="source"
         id="direct-object"
+        className={isConnectable ? "" : "invisible"}
         position={Position.Right}
         isConnectable={false}
       />
       <Handle
         type="source"
         id="execution-constraint"
+        className={isConnectable ? "" : "invisible"}
         style={{ left: "33%" }}
         position={Position.Bottom}
         isConnectable={false}
@@ -293,7 +299,7 @@ export function AimNode({ data, isConnectable, selected }: NodeProps<AimNode>) {
       <Handle
         type="source"
         id="sanction"
-        className={bgColor.sanction}
+        className={cn(bgColor.sanction, { invisible: !isConnectable })}
         style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Bottom}
         isConnectable={isConnectable}
@@ -318,12 +324,14 @@ export function DirectObjectNode({
       <Handle
         type="target"
         id="statement"
+        className={isConnectable ? "" : "invisible"}
         position={Position.Left}
         isConnectable={false}
       />
       <Handle
         type="source"
         id="statement"
+        className={isConnectable ? "" : "invisible"}
         style={{ left: "33%" }}
         position={Position.Bottom}
         isConnectable={false}
@@ -332,7 +340,7 @@ export function DirectObjectNode({
         <Handle
           type="source"
           id="actor"
-          className={bgColor.actor}
+          className={cn(bgColor.actor, { invisible: !isConnectable })}
           style={{ ...drivenConnectionHandleStye, left: "66%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -342,7 +350,7 @@ export function DirectObjectNode({
         <Handle
           type="source"
           id="outcome"
-          className={bgColor.outcome}
+          className={cn(bgColor.outcome, { invisible: !isConnectable })}
           style={{ ...drivenConnectionHandleStye, left: "66%" }}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -368,6 +376,7 @@ export function InDirectObjectNode({
       <Handle
         type="target"
         id="statement"
+        className={isConnectable ? "" : "invisible"}
         position={Position.Top}
         isConnectable={false}
       />
@@ -375,7 +384,7 @@ export function InDirectObjectNode({
         <Handle
           type="source"
           id="actor"
-          className={bgColor.actor}
+          className={cn(bgColor.actor, { invisible: !isConnectable })}
           style={drivenConnectionHandleStye}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -385,7 +394,7 @@ export function InDirectObjectNode({
         <Handle
           type="source"
           id="outcome"
-          className={bgColor.outcome}
+          className={cn(bgColor.outcome, { invisible: !isConnectable })}
           style={drivenConnectionHandleStye}
           position={Position.Bottom}
           isConnectable={isConnectable}
@@ -504,13 +513,14 @@ export function ActivationConditionNode({
       <Handle
         type="source"
         id="statement"
+        className={isConnectable ? "" : "invisible"}
         position={Position.Right}
         isConnectable={false}
       />
       <Handle
         type="target"
         id="outcome"
-        className={bgColor.outcome}
+        className={cn(bgColor.outcome, { invisible: !isConnectable })}
         style={{ ...drivenConnectionHandleStye, left: "33%" }}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -518,7 +528,7 @@ export function ActivationConditionNode({
       <Handle
         type="target"
         id="sanction"
-        className={bgColor.sanction}
+        className={cn(bgColor.sanction, { invisible: !isConnectable })}
         style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Top}
         isConnectable={isConnectable}
@@ -543,13 +553,14 @@ export function ExecutionConstraintNode({
       <Handle
         type="target"
         id="statement"
+        className={isConnectable ? "" : "invisible"}
         position={Position.Top}
         isConnectable={false}
       />
       <Handle
         type="source"
         id="actor"
-        className={bgColor.actor}
+        className={cn(bgColor.actor, { invisible: !isConnectable })}
         style={drivenConnectionHandleStye}
         position={Position.Bottom}
         isConnectable={isConnectable}
