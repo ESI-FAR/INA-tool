@@ -211,7 +211,8 @@ function RouteComponent() {
               </strong>{" "}
               Download your network as you see it as a PNG image. Choose the
               size of the image in the sub menu. Large sizes can take a while to
-              generate.
+              generate. The bottom buttons and minimap are not shown in the
+              screenshot.
             </li>
             <li>
               <strong>
@@ -342,7 +343,8 @@ function RouteComponent() {
               </strong>{" "}
               Download your network as you see it as a PNG image. Choose the
               size of the image in the sub menu. Large sizes can take a while to
-              generate.
+              generate. The bottom buttons and minimap are not shown in the
+              screenshot.
             </li>
             <li>
               <strong>
