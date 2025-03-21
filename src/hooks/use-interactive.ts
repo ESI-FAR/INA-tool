@@ -17,15 +17,11 @@ interface EndPoints {
   targetPosition: Position;
 }
 
-export function usePathEndpoints(
-  endpoints: EndPoints,
-  handleSize: number,
-  hexPadding: number = 0,
-) {
+export function usePathEndpoints(endpoints: EndPoints, handleSize: number) {
   const isInteractive = useIsInteractive();
   const positions = useMemo(
-    () => unpadHandle(endpoints, isInteractive, handleSize, hexPadding),
-    [endpoints, isInteractive, handleSize, hexPadding],
+    () => unpadHandle(endpoints, isInteractive, handleSize),
+    [endpoints, isInteractive, handleSize],
   );
 
   return positions;
@@ -46,7 +42,6 @@ function unpadHandle(
   }: EndPoints,
   isInteractive: boolean,
   handleSize: number,
-  hexPadding: number = 0,
 ) {
   let sx = sourceX;
   let sy = sourceY;
@@ -69,12 +64,6 @@ function unpadHandle(
     } else if (targetPosition === Position.Left) {
       tx += handleSize;
     } else if (targetPosition === Position.Top) {
-      // The activation condition node renders handles slightl floating above border
-      // while for other nodes handle intersects with border
-      // so we add padding to make the edge connect to the hexagon's border
-      if (hexPadding > 0) {
-        ty += hexPadding;
-      }
       ty += handleSize;
     } else if (targetPosition === Position.Bottom) {
       ty -= handleSize;

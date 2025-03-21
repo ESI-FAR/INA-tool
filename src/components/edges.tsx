@@ -115,7 +115,6 @@ export function OutcomeDrivenConnection({
       targetPosition,
     },
     DRIVEN_CONNECTION_HANDLE_SIZE,
-    5,
   );
   const [edgePath] = getSmoothStepPath(endpoints);
 
@@ -154,7 +153,6 @@ export function SanctionDrivenConnection({
       targetPosition,
     },
     DRIVEN_CONNECTION_HANDLE_SIZE,
-    5,
   );
   const [edgePath] = getSmoothStepPath(endpoints);
 

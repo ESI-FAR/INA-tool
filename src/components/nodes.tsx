@@ -521,7 +521,7 @@ export function ActivationConditionNode({
         type="target"
         id="outcome"
         className={cn(bgColor.outcome, { invisible: !isConnectable })}
-        style={{ ...drivenConnectionHandleStye, left: "33%" }}
+        style={{ ...drivenConnectionHandleStye, left: "33%", top: "6px" }}
         position={Position.Top}
         isConnectable={isConnectable}
       />
@@ -529,7 +529,7 @@ export function ActivationConditionNode({
         type="target"
         id="sanction"
         className={cn(bgColor.sanction, { invisible: !isConnectable })}
-        style={{ ...drivenConnectionHandleStye, left: "66%" }}
+        style={{ ...drivenConnectionHandleStye, left: "66%", top: "6px" }}
         position={Position.Top}
         isConnectable={isConnectable}
       />
