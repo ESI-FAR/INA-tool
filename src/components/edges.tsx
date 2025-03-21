@@ -1,3 +1,4 @@
+import { usePathEndpoints } from "@/hooks/use-interactive";
 import {
   type ComponentEdge,
   type ActorDrivenConnection,
@@ -11,8 +12,11 @@ import {
   EdgeProps,
   getStraightPath,
   getSmoothStepPath,
-  Position,
 } from "@xyflow/react";
+
+const COMPONENT_HANDLE_SIZE = 4;
+const DRIVEN_CONNECTION_HANDLE_SIZE = 5;
+const CONFLICT_HANDLE_SIZE = 4;
 
 export function ComponentEdge({
   id,
@@ -21,13 +25,21 @@ export function ComponentEdge({
   targetX,
   targetY,
   label,
+  sourcePosition,
+  targetPosition,
 }: EdgeProps<ComponentEdge>) {
-  const [edgePath, labelX, labelY] = getStraightPath({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-  });
+  const endpoints = usePathEndpoints(
+    {
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      sourcePosition,
+      targetPosition,
+    },
+    COMPONENT_HANDLE_SIZE,
+  );
+  const [edgePath, labelX, labelY] = getStraightPath(endpoints);
 
   return (
     <BaseEdge
@@ -49,16 +61,24 @@ export function ActorDrivenConnection({
   id,
   sourceX,
   sourceY,
+  sourcePosition,
   targetX,
   targetY,
+  targetPosition,
   markerEnd,
 }: EdgeProps<ActorDrivenConnection>) {
-  const [edgePath] = getSmoothStepPath({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-  });
+  const endpoints = usePathEndpoints(
+    {
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      sourcePosition,
+      targetPosition,
+    },
+    DRIVEN_CONNECTION_HANDLE_SIZE,
+  );
+  const [edgePath] = getSmoothStepPath(endpoints);
 
   return (
     <BaseEdge
@@ -79,16 +99,24 @@ export function OutcomeDrivenConnection({
   id,
   sourceX,
   sourceY,
+  sourcePosition,
   targetX,
   targetY,
+  targetPosition,
   markerEnd,
 }: EdgeProps<OutcomeDrivenConnection>) {
-  const [edgePath] = getSmoothStepPath({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-  });
+  const endpoints = usePathEndpoints(
+    {
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      sourcePosition,
+      targetPosition,
+    },
+    DRIVEN_CONNECTION_HANDLE_SIZE,
+  );
+  const [edgePath] = getSmoothStepPath(endpoints);
 
   return (
     <BaseEdge
@@ -109,16 +137,24 @@ export function SanctionDrivenConnection({
   id,
   sourceX,
   sourceY,
+  sourcePosition,
   targetX,
   targetY,
+  targetPosition,
   markerEnd,
 }: EdgeProps<SanctionDrivenConnection>) {
-  const [edgePath] = getSmoothStepPath({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-  });
+  const endpoints = usePathEndpoints(
+    {
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      sourcePosition,
+      targetPosition,
+    },
+    DRIVEN_CONNECTION_HANDLE_SIZE,
+  );
+  const [edgePath] = getSmoothStepPath(endpoints);
 
   return (
     <BaseEdge
@@ -140,16 +176,26 @@ export function ConflictingEdge({
   id,
   sourceX,
   sourceY,
+  sourcePosition,
   targetX,
   targetY,
+  targetPosition,
 }: EdgeProps<ConflictingEdge>) {
+  const endpoints = usePathEndpoints(
+    {
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      sourcePosition,
+      targetPosition,
+    },
+    CONFLICT_HANDLE_SIZE,
+  );
   const [edgePath] = getSmoothStepPath({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
+    ...endpoints,
+    sourcePosition,
+    targetPosition,
   });
 
   return <BaseEdge id={id} path={edgePath} style={conflictingStyle} />;
