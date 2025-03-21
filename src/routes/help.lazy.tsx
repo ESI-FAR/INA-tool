@@ -207,55 +207,61 @@ function RouteComponent() {
           <ul className="ml-6 list-inside list-disc">
             <li>
               <strong>
-                <LayoutTemplateIcon className="inline" />
-                Layout:
-              </strong>{" "}
-              To layout the graph using a layout algorithm use the layout button
-              at the top right side.
-            </li>
-            <li>
-              <strong>
                 <CameraIcon className="inline" /> Screenshot:
               </strong>{" "}
-              Download your network as you see it at the moment as PNG image.
+              Download your network as you see it as a PNG image. Choose the
+              size of the image in the sub menu. Large sizes can take a while to
+              generate.
             </li>
             <li>
               <strong>
-                <DownloadIcon className="inline" /> Export as graphml:
+                <DownloadIcon className="inline" /> Export:
               </strong>{" "}
-              Download the network as a{" "}
-              <a className="underline" href="http://graphml.graphdrawing.org/">
-                graphml
-              </a>{" "}
-              formatted file. The file can be imported in generic graph tools
-              like{" "}
-              <a
-                target="_blank"
-                className="underline"
-                href="https://cytoscape.org"
-              >
-                Cytoscape
-              </a>
-              .
+              Download the network in one of the following formats:
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>graphml:</strong> A{" "}
+                  <a
+                    className="underline"
+                    href="http://graphml.graphdrawing.org/"
+                  >
+                    graphml
+                  </a>{" "}
+                  formatted file. The file can be imported in generic graph
+                  tools like{" "}
+                  <a
+                    target="_blank"
+                    className="underline"
+                    href="https://cytoscape.org"
+                  >
+                    Cytoscape
+                  </a>
+                  .
+                </li>
+                <li>
+                  <strong>gexf:</strong> A{" "}
+                  <a className="underline" href="https://gexf.net/">
+                    GEXF
+                  </a>{" "}
+                  formatted file. The file can be imported in generic graph
+                  tools like{" "}
+                  <a
+                    target="_blank"
+                    className="underline"
+                    href="https://gephi.org/"
+                  >
+                    Gephi
+                  </a>
+                  .
+                </li>
+              </ul>
             </li>
             <li>
               <strong>
-                <DownloadIcon className="inline" /> Export as gexf:
+                <LayoutTemplateIcon className="inline" /> Auto layout:
               </strong>{" "}
-              Download the network as a{" "}
-              <a className="underline" href="https://gexf.net/">
-                GEXF
-              </a>{" "}
-              formatted file. The file can be imported in generic graph tools
-              like{" "}
-              <a
-                target="_blank"
-                className="underline"
-                href="https://gephi.org/"
-              >
-                Gephi
-              </a>
-              .
+              To layout the graph using a layout algorithm use the auto layout
+              menu item.
             </li>
           </ul>
         </li>
@@ -332,62 +338,69 @@ function RouteComponent() {
           <ul className="ml-6 list-inside list-disc">
             <li>
               <strong>
-                <LayoutTemplateIcon className="inline" /> Layout:
+                <CameraIcon className="inline" /> Screenshot:
               </strong>{" "}
-              To layout the graph using a layout algorithm use the layout button
-              at the top right side.
+              Download your network as you see it as a PNG image. Choose the
+              size of the image in the sub menu. Large sizes can take a while to
+              generate.
             </li>
             <li>
               <strong>
-                <CameraIcon className="inline" /> Take screenshot:
+                <DownloadIcon className="inline" /> Export:
               </strong>{" "}
-              Download your network as PNG image.
+              Download the network in one of the following formats:
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>graphml:</strong> A{" "}
+                  <a
+                    className="underline"
+                    href="http://graphml.graphdrawing.org/"
+                  >
+                    graphml
+                  </a>{" "}
+                  formatted file. The file can be imported in generic graph
+                  tools like{" "}
+                  <a
+                    target="_blank"
+                    className="underline"
+                    href="https://gephi.org/"
+                  >
+                    Gephi
+                  </a>{" "}
+                  or{" "}
+                  <a
+                    target="_blank"
+                    className="underline"
+                    href="https://cytoscape.org"
+                  >
+                    Cytoscape
+                  </a>
+                  .
+                </li>
+                <li>
+                  <strong>gexf:</strong> A{" "}
+                  <a className="underline" href="https://gexf.net/">
+                    GEXF
+                  </a>{" "}
+                  formatted file. The file can be imported in generic graph
+                  tools like{" "}
+                  <a
+                    target="_blank"
+                    className="underline"
+                    href="https://gephi.org/"
+                  >
+                    Gephi
+                  </a>
+                  .
+                </li>
+              </ul>
             </li>
             <li>
               <strong>
-                <DownloadIcon className="inline" /> Export as graphml:
+                <LayoutTemplateIcon className="inline" /> Auto layout:
               </strong>{" "}
-              Download the network as a{" "}
-              <a className="underline" href="http://graphml.graphdrawing.org/">
-                graphml
-              </a>{" "}
-              formatted file. The file can be imported in generic graph tools
-              like{" "}
-              <a
-                target="_blank"
-                className="underline"
-                href="https://gephi.org/"
-              >
-                Gephi
-              </a>{" "}
-              or{" "}
-              <a
-                target="_blank"
-                className="underline"
-                href="https://cytoscape.org"
-              >
-                Cytoscape
-              </a>
-              .
-            </li>
-            <li>
-              <strong>
-                <DownloadIcon className="inline" /> Export as gexf:
-              </strong>{" "}
-              Download the network as a{" "}
-              <a className="underline" href="https://gexf.net/">
-                GEXF
-              </a>{" "}
-              formatted file. The file can be imported in generic graph tools
-              like{" "}
-              <a
-                target="_blank"
-                className="underline"
-                href="https://gephi.org/"
-              >
-                Gephi
-              </a>
-              .
+              To layout the graph using a layout algorithm use the auto layout
+              menu item.
             </li>
           </ul>
         </li>

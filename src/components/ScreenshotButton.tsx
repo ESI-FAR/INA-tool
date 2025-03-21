@@ -1,5 +1,6 @@
 import { CameraIcon } from "lucide-react";
-import { toPng, toSvg } from "html-to-image";
+import { toBlob } from "html-to-image";
+import { saveAs } from "file-saver";
 import { store } from "@/stores/global";
 import {
   DropdownMenuItem,
@@ -12,16 +13,6 @@ import { useStoreApi } from "@xyflow/react";
 import { flushSync } from "react-dom";
 import { useIsInteractive } from "@/hooks/use-interactive";
 
-function downloadImage(dataUrl: string, extension: string) {
-  const projectName = store.getState().projectName;
-  const a = document.createElement("a");
-
-  a.setAttribute("download", `${projectName}.${extension}`);
-  a.setAttribute("href", dataUrl);
-  a.click();
-  a.remove();
-}
-
 function getViewportElement() {
   const element = document.querySelector(
     ".react-flow__viewport",
@@ -32,27 +23,29 @@ function getViewportElement() {
   return element;
 }
 
-async function exportToSvg() {
-  const element = getViewportElement();
-  const value = await toSvg(element);
-  downloadImage(value, "svg");
-}
-
-async function exportToPng() {
+async function viewport2png(scale: number, suffix: string) {
   const rootClasses = window.document.documentElement.classList;
   const backgroundColor = rootClasses.contains("dark") ? "black" : "white";
   const element = getViewportElement();
-  const value = await toPng(element, {
+  const blob = await toBlob(element, {
     backgroundColor,
+    canvasWidth: element.clientWidth * scale,
+    canvasHeight: element.clientHeight * scale,
   });
-  downloadImage(value, "png");
+  if (!blob) {
+    throw new Error("Failed to create blob");
+  }
+  const projectName = store.getState().projectName;
+  const fn = `${projectName}.${suffix}.x${scale}.png`;
+  const file = new File([blob], fn, { type: "image/png" });
+  saveAs(file);
 }
 
-export function ScreenshotButton() {
+export function ScreenshotButton({ suffix }: { suffix: string }) {
   const store = useStoreApi();
   const isInteractive = useIsInteractive();
 
-  async function wrapper(fn: () => void) {
+  async function exportToPng(scale = 1) {
     if (isInteractive) {
       // Use flushSync to make sure the state is updated before taking the screenshot
       flushSync(() =>
@@ -64,14 +57,14 @@ export function ScreenshotButton() {
           elementsSelectable: false,
         }),
       );
-      await fn();
+      await viewport2png(scale, suffix);
       store.setState({
         nodesDraggable: true,
         nodesConnectable: true,
         elementsSelectable: true,
       });
     } else {
-      fn();
+      viewport2png(scale, suffix);
     }
   }
 
@@ -82,11 +75,17 @@ export function ScreenshotButton() {
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent>
-          <DropdownMenuItem onClick={() => wrapper(exportToPng)}>
-            PNG
+          <DropdownMenuItem onClick={() => exportToPng(1)}>
+            Original Size (1x)
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => wrapper(exportToSvg)}>
-            SVG
+          <DropdownMenuItem onClick={() => exportToPng(2)}>
+            Double Size (2x)
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => exportToPng(4)}>
+            Quadruple Size (4x)
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => exportToPng(8)}>
+            Octuple Size (8x)
           </DropdownMenuItem>
         </DropdownMenuSubContent>
       </DropdownMenuPortal>
