@@ -2,6 +2,7 @@ import { Connection, Statement } from "@/lib/schema";
 import { Button } from "./ui/button";
 import { Wand2Icon } from "lucide-react";
 import { store } from "@/stores/global";
+import { useEffect } from "react";
 
 const statements: Statement[] = [
   {
@@ -123,6 +124,19 @@ function loadExample() {
 }
 
 export function LoadExampleButton() {
+  // Add keyboard shortcut for clearing data
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "e") {
+        e.preventDefault();
+        loadExample();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <Button title="Load Example" variant="outline" onClick={loadExample}>
       <Wand2Icon /> Load Example
