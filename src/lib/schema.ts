@@ -5,7 +5,7 @@ export type StatementType = z.infer<typeof StatementType>;
 
 export const TypeOfObject = z.enum(["", "animate", "inanimate"]);
 
-export const deonticSchema = z.enum(["must", "may", "must not", "may not", ""]);
+export const deonticSchema = z.enum(["must", "may", "must not", "may not", "", "shall", "shall not", "should", "should not", "can", "cannot"]);
 export type Deontic = z.infer<typeof deonticSchema>;
 
 const unrefinedStatementSchema = z.object({
