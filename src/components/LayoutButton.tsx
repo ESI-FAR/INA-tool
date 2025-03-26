@@ -23,8 +23,8 @@ const layoutOptions = {
   "elk.direction": "RIGHT",
 } as const;
 
-const useComponentLayout = () => {
-  const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
+export const useComponentLayout = () => {
+  const { getNodes, setNodes, getEdges, setEdges, fitView } = useReactFlow<
     INANode,
     INACEdge
   >();
