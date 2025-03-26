@@ -119,11 +119,12 @@ function RouteComponent() {
           <a href={screenshot} target="_blank" className="underline">
             Screenshot
           </a>{" "}
-          of web application with example loaded.
+          of web application with example loaded. Keyboard shortcut is
+          CTRL+SHIFT+e.
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after
-          confirmation.
+          confirmation. Keyboard shortcut is CTRL+SHIFT+r.
         </li>
       </ul>
 
@@ -211,7 +212,7 @@ function RouteComponent() {
                 Layout:
               </strong>{" "}
               To layout the graph using a layout algorithm use the layout button
-              at the top right side.
+              at the top right side. Keyboard shortcut is CTRL+SHIFT+l.
             </li>
             <li>
               <strong>
