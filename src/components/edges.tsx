@@ -13,6 +13,7 @@ import {
   getSmoothStepPath,
   Position,
 } from "@xyflow/react";
+import { ElkEdgeSection } from "elkjs/lib/elk-api";
 
 export function ComponentEdge({
   id,
@@ -21,7 +22,26 @@ export function ComponentEdge({
   targetX,
   targetY,
   label,
+  data,
 }: EdgeProps<ComponentEdge>) {
+  // if (data?.bendPoints) {
+  //   const bendPoints = data.bendPoints as ElkEdgeSection['bendPoints']
+  //   const points = [
+  //     // { x: sourceX, y: sourceY },
+  //     data.startPoint,
+  //     ...bendPoints!,
+  //     data.endPoint,
+  //     // { x: targetX, y: targetY },
+  //   ]
+  //   const edgePath = points.map(({ x, y }, index) => `${index === 0 ? "M" : "L"} ${x} ${y}`).join(" ");
+  //   return (
+  //     <BaseEdge
+  //       id={id}
+  //       path={edgePath}
+  //       label={label}
+  //     />
+  //   );
+  // }
   const [edgePath, labelX, labelY] = getStraightPath({
     sourceX,
     sourceY,
@@ -52,14 +72,31 @@ export function ActorDrivenConnection({
   targetX,
   targetY,
   markerEnd,
+  data,
 }: EdgeProps<ActorDrivenConnection>) {
+  // if (data?.bendPoints) {
+  //   const bendPoints = data.bendPoints as ElkEdgeSection['bendPoints']
+  //   const points = [
+  //     { x: sourceX, y: sourceY },
+  //     ...bendPoints!,
+  //     { x: targetX, y: targetY },
+  //   ]
+  //   const edgePath = points.map(({ x, y }, index) => `${index === 0 ? "M" : "L"} ${x} ${y}`).join(" ");
+  //   return (
+  //     <BaseEdge
+  //       id={id}
+  //       path={edgePath}
+  //       style={actorDrivenStyle}
+  //       markerEnd={markerEnd}
+  //     />
+  //   );
+  // }
   const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
     targetX,
     targetY,
   });
-
   return (
     <BaseEdge
       id={id}
