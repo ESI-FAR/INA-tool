@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useReactFlow } from "@xyflow/react";
-import ELK from "elkjs/lib/elk-api";
+import ELK, { ElkEdge, ElkExtendedEdge } from "elkjs/lib/elk-api";
 import ELKworker from "elkjs/lib/elk-worker.js?worker";
 import { LayoutTemplateIcon } from "lucide-react";
 import { isComponentNode, isStatementNode } from "@/lib/node";
@@ -18,8 +18,10 @@ type Port = {
   id: string;
   layoutOptions?: {
     "elk.port.side"?: "WEST" | "EAST" | "NORTH" | "SOUTH";
-    "elk.port.index"?: number;
+    "elk.port.index"?: string;
   };
+  width?: number;
+  height?: number;
 };
 
 function computePorts(node: INANode) {
@@ -34,96 +36,115 @@ function computePorts(node: INANode) {
       return ports.concat([
         {
           id: node.parentId + "-Activation Condition-2-Attribute",
-          layoutOptions: { "elk.port.side": "EAST", "elk.port.index": 2 },
+          layoutOptions: { "elk.port.side": "EAST", "elk.port.index": "2" },
+          width: 5, height: 5,
         },
         {
           id: node.id + "-outcome",
-          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": 0 },
+          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": "0" },
+          width: 5, height: 5,
         },
         {
           id: node.id + "-sanction",
-          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": 1 },
+          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": "1" },
+          width: 5, height: 5,
         },
       ]);
     case "Attribute":
       return ports.concat([
         {
           id: node.parentId + "-Attribute-2-Activation Condition",
-          layoutOptions: { "elk.port.side": "WEST", "elk.port.index": 0 },
+          layoutOptions: { "elk.port.side": "WEST", "elk.port.index": "0" },
+          width: 5, height: 5,
         },
         {
           id: node.parentId + "-Attribute-2-Aim",
-          layoutOptions: { "elk.port.side": "EAST", "elk.port.index": 1 },
+          layoutOptions: { "elk.port.side": "EAST", "elk.port.index": "1" },
+          width: 5, height: 5,
         },
         {
           id: node.id + "-actor",
-          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": 2 },
+          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": "2" },
+          width: 5, height: 5,
         },
       ]);
     case "Aim":
       return ports.concat([
         {
           id: node.parentId + "-Aim-2-Attribute",
-          layoutOptions: { "elk.port.side": "WEST", "elk.port.index": 2 },
+          layoutOptions: { "elk.port.side": "WEST", "elk.port.index": "2" },
+          width: 5, height: 5,
         },
         {
           id: node.parentId + "-Aim-2-Direct Object",
-          layoutOptions: { "elk.port.side": "EAST", "elk.port.index": 3 },
+          layoutOptions: { "elk.port.side": "EAST", "elk.port.index": "3" },
+          width: 5, height: 5,
         },
         {
           id: node.parentId + "-Aim-2-Execution Constraint",
-          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": 0 },
+          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": "0" },
+          width: 5, height: 5,
         },
         {
           id: node.id + "-sanction",
-          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": 1 },
+          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": "1" },
+          width: 5, height: 5,
         },
       ]);
     case "Direct Object":
       return ports.concat([
         {
           id: node.parentId + "-Direct Object-2-Aim",
-          layoutOptions: { "elk.port.side": "WEST", "elk.port.index": 2 },
+          layoutOptions: { "elk.port.side": "WEST", "elk.port.index": "2" },
+          width: 5, height: 5,
         },
         {
           id: node.parentId + "-Direct Object-2-Indirect Object",
-          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": 0 },
+          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": "0" },
+          width: 5, height: 5,
         },
         node.data.animation === "animate"
           ? {
-              id: node.id + "-actor",
-              layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": 1 },
-            }
+          id: node.id + "-actor",
+          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": "1" },
+          width: 5, height: 5,
+        }
           : {
-              id: node.id + "-outcome",
-              layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": 1 },
-            },
+          id: node.id + "-outcome",
+          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": "1" },
+          width: 5, height: 5,
+        },
       ]);
     case "Indirect Object":
       return ports.concat([
         {
           id: node.parentId + "-Indirect Object-2-Direct Object",
-          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": 0 },
+          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": "0" },
+          width: 5, height: 5,
         },
         node.data.animation === "animate"
           ? {
-              id: node.id + "-actor",
-              layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": 1 },
-            }
+          id: node.id + "-actor",
+          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": "1" },
+          width: 5, height: 5,
+        }
           : {
-              id: node.id + "-outcome",
-              layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": 1 },
-            },
+          id: node.id + "-outcome",
+          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": "1" },
+          width: 5, height: 5,
+        },
       ]);
     case "Execution Constraint":
       return ports.concat([
         {
           id: node.parentId + "-Execution Constraint-2-Aim",
-          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": 0 },
+          layoutOptions: { "elk.port.side": "NORTH", "elk.port.index": "0" },
+          width: 5, height: 5,
         },
         {
           id: node.id + "-actor",
-          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": 1 },
+          layoutOptions: { "elk.port.side": "SOUTH", "elk.port.index": "1" },
+          width: 5, height: 5,
         },
       ]);
     default:
@@ -149,17 +170,17 @@ const layoutOptions = {
 
   "elk.hierarchyHandling": "INCLUDE_CHILDREN",
   // "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-  "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
+  // "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
   // "elk.layered.mergeEdges": "True",
-  "elk.layered.edgeRouting.splines.mode": "CONSERVATIVE",
+  // "elk.layered.edgeRouting.splines.mode": "CONSERVATIVE",
 
-  "elk.layered.layering.strategy": "LONGEST_PATH",
+  // "elk.layered.layering.strategy": "LONGEST_PATH",
   // "elk.layered.considerModelOrder.portModelOrder": true,
   // "elk.layered.considerModelOrder.crossingCounterPortInfluence": 0.001,
 
   // "elk.edgeRouting": "ORTHOGONAL",
   // "elk.layered.allowNonFlowPortsToSwitchSides": true,
-  "elk.layered.crossingMinimization.greedySwitchHierarchical.type": "TWO_SIDED",
+  // "elk.layered.crossingMinimization.greedySwitchHierarchical.type": "TWO_SIDED",
 } as const;
 
 export const useComponentLayout = () => {
@@ -194,42 +215,57 @@ export const useComponentLayout = () => {
                 "-2-" +
                 edge.source.replace(edge.data?.statementId + "-", "");
             }
-            return {
-              ...edge,
+            // TODO 
+            const elkedge: ElkExtendedEdge ={
+              id: edge.id,
               sources: [source],
               targets: [target],
             };
+            if (edge.label) {
+              elkedge.labels = [{ 
+                text: edge.label as string ,
+                layoutOptions: {
+                  // TODO label is placed right instead of center
+                  "elk.edgeLabels.placement": "CENTER",
+                }
+              }]
+            }
+            return elkedge;
           });
         return {
-          ...node,
+          id: node.id,
+          width: node.measured!.width,
+          height: node.measured!.height,
+          labels: [{ text: node.data.label }],
           children: getNodes()
             .filter((n) => n.parentId === node.id && !n.hidden)
             .map((component) => {
               const cports = computePorts(component);
               return {
-                ...component,
+                id: component.id,
                 width: component.measured!.width,
                 height: component.measured!.height,
+                // x: component.position?.x,
+                // y: component.position?.y,
                 labels: [{ text: component.data.label }],
                 layoutOptions: {
-                  "elk.direction": "RIGHT", // Components next to each other
+                  // "elk.direction": "RIGHT", // Components next to each other
                   "elk.portConstraints": "FIXED_ORDER",
-                  "elk.spacing.nodeNode": nodePadding.toString(),
-                  "elk.padding": `[top=${nodePadding},left=${nodePadding},bottom=${nodePadding},right=${nodePadding}]`,
-                  "elk.spacing.portPort": "10",
+                  // "elk.spacing.nodeNode": nodePadding.toString(),
+                  // "elk.padding": `[top=${nodePadding},left=${nodePadding},bottom=${nodePadding},right=${nodePadding}]`,
+                  // "elk.spacing.portPort": "10",
                   "nodeLabels.placement": "[INSIDE]",
                 },
                 ports: cports,
               };
             }),
-          width: node.measured!.width,
-          height: node.measured!.height,
           layoutOptions: {
-            "elk.direction": "RIGHT", // Components next to each other
+            // "elk.direction": "RIGHT", // Components next to each other
             "elk.portConstraints": "FIXED_ORDER",
-            "elk.spacing.nodeNode": nodePadding.toString(),
-            "elk.padding": `[top=${nodePadding},left=${nodePadding},bottom=${nodePadding},right=${nodePadding}]`,
-            "elk.spacing.portPort": "10",
+            // "elk.spacing.nodeNode": nodePadding.toString(),
+            // "elk.padding": `[top=${nodePadding},left=${nodePadding},bottom=${nodePadding},right=${nodePadding}]`,
+            // "elk.spacing.portPort": "10",
+            "elk.nodeLabels.placement": "[INSIDE]"
           },
           edges: componentEdges,
         };
@@ -250,7 +286,7 @@ export const useComponentLayout = () => {
               edge.source.replace(edge.data?.statementId + "-", "");
           }
           return {
-            ...edge,
+            id: edge.id,
             sources: [source],
             targets: [target],
           };
@@ -260,8 +296,11 @@ export const useComponentLayout = () => {
     console.log(JSON.stringify(graph));
     // @ts-expect-error copied from react-flow examples
     const layout = await elk.layout(graph);
-
     // console.log(JSON.stringify(layout))
+
+    // TODO copy positions and edge sections back to react-flow graph
+    return
+    
 
     const { children } = layout;
     // By mutating the children in-place we saves ourselves from creating a
