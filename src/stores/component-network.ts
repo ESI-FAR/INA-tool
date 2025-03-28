@@ -208,7 +208,7 @@ function onConnectionsChange(connections: Connection[]) {
   store.getState().setEdges(edges);
 }
 
-function conflict2id(conflict: Conflict): string {
+export function conflict2id(conflict: Conflict): string {
   return `conflict-${conflict.formal}-${conflict.informal}`;
 }
 
