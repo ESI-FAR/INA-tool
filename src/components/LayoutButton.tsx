@@ -23,6 +23,7 @@ const layoutOptions = {
   "elk.direction": "RIGHT",
 } as const;
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useComponentLayout = () => {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
     INANode,
@@ -88,6 +89,7 @@ export const useComponentLayout = () => {
   return getLayoutedElements;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useStatementLayout() {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
     StatementNode,
