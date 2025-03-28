@@ -9,6 +9,7 @@ Purple (Actor-driven connection):
 
 Green (Outcome-driven connection):
 - (Inanimate) Direct/Indirect Object -> Activation Condition
+- Execution Constraint -> Activation Condition
 
 Red (Sanction-driven connection):
 - Aim -> Activation Condition
