@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
@@ -160,6 +160,7 @@ export function StatementTable() {
   const [globalFilter, setGlobalFilter] = useState("");
   // TODO reset editing when you replace the statements by uploading a file or loading the example
   const [editing, setEditing] = useState<Statement | null>(null);
+  const [needsToGoToLastPage, setNeedsToGoToLastPage] = useState(false);
 
   const table = useReactTable({
     data: statements,
@@ -172,6 +173,7 @@ export function StatementTable() {
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,
     enableRowSelection: true,
+    autoResetPageIndex: false,
     state: {
       sorting,
       globalFilter,
@@ -181,7 +183,17 @@ export function StatementTable() {
   function addStatement() {
     const newStatement = createFreshStatement();
     setEditing(newStatement);
+    setNeedsToGoToLastPage(true);
   }
+
+  useEffect(() => {
+    if (needsToGoToLastPage) {
+      setTimeout(() => {
+        table.setPageIndex(table.getPageCount() - 1);
+        setNeedsToGoToLastPage(false);
+      }, 0);
+    }
+  }, [needsToGoToLastPage, table]);
 
   const removeStatement = useCallback(
     (id: string) => {
