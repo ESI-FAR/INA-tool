@@ -1,5 +1,4 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
@@ -48,7 +47,9 @@ export const Route = createRootRoute({
               <Toaster />
             </SidebarInset>
           </SidebarProvider>
-          <Suspense>{/* <TanStackRouterDevtools /> */}</Suspense>
+          <Suspense>
+            <TanStackRouterDevtools />
+          </Suspense>
         </ThemeProvider>
       </>
     );

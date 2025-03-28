@@ -24,7 +24,7 @@ const layoutOptions = {
 } as const;
 
 export const useComponentLayout = () => {
-  const { getNodes, setNodes, getEdges, setEdges, fitView } = useReactFlow<
+  const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
     INANode,
     INACEdge
   >();
