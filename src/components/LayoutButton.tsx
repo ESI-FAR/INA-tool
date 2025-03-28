@@ -135,7 +135,7 @@ export function ComponentLayoutButton() {
   return (
     <DropdownMenuItem onClick={autoLayout} title="Auto layout nodes">
       <LayoutTemplateIcon />
-      Layout
+      Auto layout
     </DropdownMenuItem>
   );
 }
@@ -145,7 +145,7 @@ export function StatementLayoutButton() {
   return (
     <DropdownMenuItem onClick={autoLayout} title="Auto layout nodes">
       <LayoutTemplateIcon />
-      Layout
+      Auto layout
     </DropdownMenuItem>
   );
 }

@@ -3,6 +3,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
@@ -43,16 +47,21 @@ export function ComponentNetworkMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <ScreenshotButton />
+        <ScreenshotButton suffix="component" />
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger title="Take a screenshot">
+            <DownloadIcon /> Export
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={exportAsGraphml}>
+                graphml
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportAsGexf}>gexf</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
         <ComponentLayoutButton />
-        <DropdownMenuItem onClick={exportAsGraphml}>
-          <DownloadIcon />
-          Export as graphml
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={exportAsGexf}>
-          <DownloadIcon />
-          Export as gexf
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
