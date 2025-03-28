@@ -50,7 +50,7 @@ export function ProjectName() {
 
   return (
     <button
-      className="group/name flex flex-row"
+      className="flex flex-row"
       title="Click to change project name"
       onClick={() => {
         setEditing(true);
@@ -60,7 +60,7 @@ export function ProjectName() {
       }}
     >
       {name}
-      <span className="invisible ps-1 group-hover/name:visible">🖉</span>
+      <span className="text-muted-foreground hover:text-foreground">🖉</span>
     </button>
   );
 }
