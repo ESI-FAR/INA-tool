@@ -59,6 +59,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { ButtonWithTooltip } from "./ButtonWithTooltip";
+import { Block } from "@tanstack/react-router";
 
 const columns: ColumnDef<Statement>[] = [
   {
@@ -291,6 +292,16 @@ export function StatementTable() {
               </TableRow>
             ))}
           </TableHeader>
+          <Block
+            shouldBlockFn={() => {
+              if (!editing) return false;
+
+              const shouldLeave = confirm(
+                "You have unsaved changes. Are you sure you want to leave?",
+              );
+              return !shouldLeave;
+            }}
+          />
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => {
