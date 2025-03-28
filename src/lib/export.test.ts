@@ -182,9 +182,7 @@ describe("exportComponentNetworkToGraphml", () => {
     const content = await file.text();
     expect(content).toContain("Attribute1");
     expect(content).toContain("must");
-    expect(content).toContain(
-      "sanction-1-Aim-2-1-Attribute-1-Aim-2-2-Attribute",
-    );
+    expect(content).toContain("sanction-1-Aim-2-2-Attribute");
   });
 });
 
@@ -203,8 +201,6 @@ describe("exportComponentNetworkToGEXF()", () => {
     const content = await file.text();
     expect(content).toContain("Attribute1");
     expect(content).toContain("must");
-    expect(content).toContain(
-      "sanction-1-Aim-2-1-Attribute-1-Aim-2-2-Attribute",
-    );
+    expect(content).toContain("sanction-1-Aim-2-2-Attribute");
   });
 });

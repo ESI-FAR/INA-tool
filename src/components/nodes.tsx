@@ -66,7 +66,8 @@ function SourceHandles({
     (statement["Direct Object"] &&
       statement["Type of Direct Object"] === "inanimate") ||
     (statement["Indirect Object"] &&
-      statement["Type of Indirect Object"] === "inanimate");
+      statement["Type of Indirect Object"] === "inanimate") ||
+    statement["Execution Constraint"];
 
   return (
     <>
@@ -561,7 +562,15 @@ export function ExecutionConstraintNode({
         type="source"
         id="actor"
         className={cn(bgColor.actor, { invisible: !isConnectable })}
-        style={drivenConnectionHandleStye}
+        style={{ ...drivenConnectionHandleStye, left: "33%" }}
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="source"
+        id="outcome"
+        className={cn(bgColor.outcome, { invisible: !isConnectable })}
+        style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Bottom}
         isConnectable={isConnectable}
       />

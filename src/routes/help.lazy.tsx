@@ -9,6 +9,7 @@ import {
   AlignVerticalDistributeCenterIcon,
   CameraIcon,
   DownloadIcon,
+  EyeOff,
   LayoutTemplateIcon,
   Maximize2Icon,
   MenuIcon,
@@ -119,11 +120,12 @@ function RouteComponent() {
           <a href={screenshot} target="_blank" className="underline">
             Screenshot
           </a>{" "}
-          of web application with example loaded.
+          of web application with example loaded. Keyboard shortcut is
+          CTRL+SHIFT+e.
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after
-          confirmation.
+          confirmation. Keyboard shortcut is CTRL+SHIFT+r.
         </li>
       </ul>
 
@@ -262,7 +264,7 @@ function RouteComponent() {
                 <LayoutTemplateIcon className="inline" /> Auto layout:
               </strong>{" "}
               To layout the graph using a layout algorithm use the auto layout
-              menu item.
+              menu item. Keyboard shortcut is CTRL+SHIFT+l.
             </li>
           </ul>
         </li>
@@ -402,7 +404,7 @@ function RouteComponent() {
                 <LayoutTemplateIcon className="inline" /> Auto layout:
               </strong>{" "}
               To layout the graph using a layout algorithm use the auto layout
-              menu item.
+              menu item. Keyboard shortcut is CTRL+SHIFT+l.
             </li>
           </ul>
         </li>
@@ -446,7 +448,15 @@ function RouteComponent() {
                 <li>hold SHIFT key and drag a rectangle around nodes.</li>
               </ul>
             </li>
-            <li>To close the details click the X button.</li>
+            <li>
+              To close the details click the <EyeOff className="inline" />{" "}
+              button.
+            </li>
+            <li>
+              To delete selected statement click the{" "}
+              <TrashIcon className="inline" /> button. You will be asked for
+              confirmation.
+            </li>
             <li>To deselect all nodes click on the background.</li>
           </ul>
         </li>

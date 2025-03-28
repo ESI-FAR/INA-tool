@@ -12,7 +12,7 @@ export const Route = createLazyFileRoute("/network/comp")({
 function RouteComponent() {
   return (
     <ReactFlowProvider>
-      <div className="h-full">
+      <div className="flex h-full flex-col">
         <div className="flex justify-between">
           <h1 className="text-xl">Component level network</h1>
           <div className="flex gap-1">
