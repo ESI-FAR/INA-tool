@@ -70,7 +70,7 @@ export function builderDrivenConnectionEdge(
   type: DrivenBy,
 ): DrivenConnectionEdge {
   return {
-    id: `${id}-${sourceId}-2-${targetId}`,
+    id,
     source: sourceId,
     target: targetId,
     type,
