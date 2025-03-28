@@ -165,7 +165,7 @@ const layoutOptions = {
 
   // "elk.spacing.nodeNode": 40,
   // "elk.padding": "[top=20,left=20,bottom=20,right=20]",
-  // "elk.direction": "RIGHT",
+  "elk.direction": "RIGHT",
   // "elk.direction": "DOWN", // Statements underneat each other
 
   "elk.hierarchyHandling": "INCLUDE_CHILDREN",
@@ -181,6 +181,7 @@ const layoutOptions = {
   // "elk.edgeRouting": "ORTHOGONAL",
   // "elk.layered.allowNonFlowPortsToSwitchSides": true,
   // "elk.layered.crossingMinimization.greedySwitchHierarchical.type": "TWO_SIDED",
+  "elk.layered.wrapping.strategy": "MULTI_EDGE"
 } as const;
 
 export const useComponentLayout = () => {
@@ -193,6 +194,7 @@ export const useComponentLayout = () => {
     const statementNodes = getNodes().filter(isStatementNode);
     const edges = getEdges();
     const nodePadding = 15;
+    let i= 0;
     const graph = {
       id: "root",
       layoutOptions: {
@@ -226,7 +228,7 @@ export const useComponentLayout = () => {
                 text: edge.label as string ,
                 layoutOptions: {
                   // TODO label is placed right instead of center
-                  "elk.edgeLabels.placement": "CENTER",
+                  // "elk.edgeLabels.placement": "CENTER",
                 }
               }]
             }
@@ -249,23 +251,25 @@ export const useComponentLayout = () => {
                 // y: component.position?.y,
                 labels: [{ text: component.data.label }],
                 layoutOptions: {
-                  // "elk.direction": "RIGHT", // Components next to each other
                   "elk.portConstraints": "FIXED_ORDER",
+                  // "elk.direction": "RIGHT", // Components next to each other
                   // "elk.spacing.nodeNode": nodePadding.toString(),
                   // "elk.padding": `[top=${nodePadding},left=${nodePadding},bottom=${nodePadding},right=${nodePadding}]`,
                   // "elk.spacing.portPort": "10",
-                  "nodeLabels.placement": "[INSIDE]",
+                  // "nodeLabels.placement": "[INSIDE]",
+
                 },
                 ports: cports,
               };
             }),
           layoutOptions: {
-            // "elk.direction": "RIGHT", // Components next to each other
             "elk.portConstraints": "FIXED_ORDER",
+            // "elk.direction": "RIGHT", // Components next to each other
             // "elk.spacing.nodeNode": nodePadding.toString(),
             // "elk.padding": `[top=${nodePadding},left=${nodePadding},bottom=${nodePadding},right=${nodePadding}]`,
             // "elk.spacing.portPort": "10",
-            "elk.nodeLabels.placement": "[INSIDE]"
+            // "elk.nodeLabels.placement": "[INSIDE]"
+            // "layering.layerChoiceConstraint": i++,
           },
           edges: componentEdges,
         };
