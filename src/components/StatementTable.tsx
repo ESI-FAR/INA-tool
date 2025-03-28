@@ -58,6 +58,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { ButtonWithTooltip } from "./ButtonWithTooltip";
 
 const columns: ColumnDef<Statement>[] = [
   {
@@ -338,10 +339,18 @@ export function StatementTable() {
         </Table>
       </div>
       <div className="flex justify-between gap-4 py-2">
-        <Button variant="secondary" onClick={addStatement}>
+        <ButtonWithTooltip
+          onClick={addStatement}
+          disabled={editing !== null}
+          tooltip={
+            editing
+              ? "Please save or cancel the current statement before adding a new one"
+              : "Add statement"
+          }
+        >
           <PlusIcon />
           Add statement
-        </Button>
+        </ButtonWithTooltip>
         <DataTablePagination table={table} />
       </div>
     </div>
@@ -365,16 +374,18 @@ function ShowRow({
       aria-label={row.original["Id"]}
     >
       <TableCell className="flex gap-1">
-        <Button
-          disabled={editingId !== undefined && row.original["Id"] !== editingId}
-          title="Edit"
-          aria-label="Edit"
-          variant="secondary"
-          size="icon"
+        <ButtonWithTooltip
           onClick={() => setEditing(row.original)}
+          disabled={editingId !== undefined && row.original["Id"] !== editingId}
+          tooltip={
+            editingId
+              ? "Please save or cancel the current statement before editing another one"
+              : "Edit"
+          }
+          size="icon"
         >
           <PencilIcon />
-        </Button>
+        </ButtonWithTooltip>
         <Button
           title="Delete"
           aria-label="Delete"
