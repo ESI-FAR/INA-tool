@@ -9,6 +9,7 @@ import {
   AlignVerticalDistributeCenterIcon,
   CameraIcon,
   DownloadIcon,
+  EyeOff,
   LayoutTemplateIcon,
   Maximize2Icon,
   MenuIcon,
@@ -447,7 +448,15 @@ function RouteComponent() {
                 <li>hold SHIFT key and drag a rectangle around nodes.</li>
               </ul>
             </li>
-            <li>To close the details click the X button.</li>
+            <li>
+              To close the details click the <EyeOff className="inline" />{" "}
+              button.
+            </li>
+            <li>
+              To delete selected statement click the{" "}
+              <TrashIcon className="inline" /> button. You will be asked for
+              confirmation.
+            </li>
             <li>To deselect all nodes click on the background.</li>
           </ul>
         </li>

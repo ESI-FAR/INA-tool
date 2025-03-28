@@ -41,6 +41,13 @@ export function useStatements() {
     [statements, setStatements],
   );
 
+  const deleteStatements = useCallback(
+    (ids: string[]) => {
+      setStatements(statements.filter((s) => !ids.includes(s.Id)));
+    },
+    [statements, setStatements],
+  );
+
   const updateStatement = useCallback(
     (newStatement: Statement) => {
       setStatements(
@@ -53,6 +60,7 @@ export function useStatements() {
     statements,
     createFreshStatement,
     deleteStatement,
+    deleteStatements,
     updateStatement,
   };
 }
