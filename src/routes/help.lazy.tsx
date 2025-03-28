@@ -403,7 +403,7 @@ function RouteComponent() {
                 <LayoutTemplateIcon className="inline" /> Auto layout:
               </strong>{" "}
               To layout the graph using a layout algorithm use the auto layout
-              menu item.
+              menu item. Keyboard shortcut is CTRL+SHIFT+l.
             </li>
           </ul>
         </li>

@@ -88,7 +88,7 @@ export const useComponentLayout = () => {
   return getLayoutedElements;
 };
 
-function useStatementLayout() {
+export function useStatementLayout() {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
     StatementNode,
     INASEdge
