@@ -8,7 +8,7 @@ function removeAllData() {
   localStorage.removeItem(`ina-project-${projectName}`);
   window.history.replaceState({}, "", "?project=" + window.location.hash);
   store.setState({
-    projectName: "",
+    projectName: "Untitled",
     statements: [],
     connections: [],
     conflicts: [],

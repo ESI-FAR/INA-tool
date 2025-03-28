@@ -26,7 +26,6 @@ export function ProjectName() {
           maxLength={200}
           minLength={1}
           ref={inputRef}
-          onBlur={() => setEditing(false)}
           onKeyDown={(event) => {
             if (event.key === "Escape") {
               setEditing(false);
@@ -35,6 +34,15 @@ export function ProjectName() {
         />
         <button title="Save" type="submit">
           🖉
+        </button>{" "}
+        <button
+          title="Cancel"
+          type="button"
+          onClick={() => {
+            setEditing(false);
+          }}
+        >
+          X
         </button>
       </form>
     );

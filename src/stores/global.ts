@@ -21,8 +21,8 @@ export type Store = State & Action;
 function initialProjectName() {
   // Initialize project name from URL query parameter
   return typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search).get("project") || ""
-    : "";
+    ? new URLSearchParams(window.location.search).get("project") || "Untitled"
+    : "Untitled";
 }
 
 function saveProjectName(projectName: string, prevProjectName: string) {
