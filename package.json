@@ -46,6 +46,7 @@
     "sonner": "^2.0.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "wordnet-db": "^3.1.14",
     "xlsx": "^0.18.5",
     "zod": "^3.24.1",
     "zustand": "^5.0.3"
@@ -66,7 +67,7 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "postcss": "^8.4.49",
-    "prettier": "^3.4.2",
+    "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.6.2",
