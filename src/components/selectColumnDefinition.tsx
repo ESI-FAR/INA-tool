@@ -3,7 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 /**
  * Tanstack Table column definition to select rows.
- * 
+ *
  * @see https://ui.shadcn.com/docs/components/data-table#update-column-definitions
  * @returns A column definition for a checkbox column in a table.
  */
