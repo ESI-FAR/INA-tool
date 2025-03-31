@@ -37,6 +37,8 @@ npm run typecheck
 npm run test
 # To run e2e tests, tests are written with playwright and are in `tests/`.
 npm run test:e2e
+# To run e2e test in headfull dashboard mode
+npm run test:e2e -- --headed --ui
 ```
 
 The application is built with
