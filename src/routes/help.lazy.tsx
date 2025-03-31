@@ -517,10 +517,6 @@ function RouteComponent() {
         allows you to view and download the connections between statements.
         <ul className="list-outside list-disc pl-4">
           <li>
-            <strong>Search:</strong> Write text in the search box to search for
-            statements containing the query.
-          </li>
-          <li>
             <strong>Sorting:</strong> Click on the column header to sort the
             data. Initially sorted on the Id column.
           </li>
@@ -552,6 +548,11 @@ function RouteComponent() {
             <UploadIcon className="inline" /> upload button to upload a CSV or
             XLSX file with connections. Existing connections will be deleted and
             replaced by the uploaded connections.
+          </li>
+          <li>
+            <strong>Filtering:</strong>
+            The table header has combo boxes and text boxes to filter the data
+            in that column.
           </li>
         </ul>
       </p>

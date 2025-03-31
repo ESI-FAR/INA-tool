@@ -1,9 +1,12 @@
 import {
+  Column,
   ColumnDef,
+  ColumnFiltersState,
   RowSelectionState,
   SortingState,
   flexRender,
   getCoreRowModel,
+  getFacetedUniqueValues,
   getFilteredRowModel,
   getGroupedRowModel,
   getPaginationRowModel,
@@ -19,10 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
-import { Input } from "./ui/input";
 import { DownloadConnectionButton } from "./DownloadConnectionButton";
 import { UploadConnectionButton } from "./UploadConnectionButton";
 import { Connection } from "@/lib/schema";
@@ -33,6 +35,10 @@ import {
 } from "@/hooks/use-connections";
 import { selectColumnDefinition } from "./selectColumnDefinition";
 import { DeleteSelectedButton } from "./DeleteSelectedButton";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { FilterXIcon } from "lucide-react";
 
 const columns: ColumnDef<Connection>[] = [
   selectColumnDefinition(),
@@ -62,6 +68,7 @@ const columns: ColumnDef<Connection>[] = [
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Value" />
         ),
+        filterFn: "includesString",
       },
     ],
   },
@@ -85,6 +92,7 @@ const columns: ColumnDef<Connection>[] = [
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Value" />
         ),
+        filterFn: "includesString",
       },
     ],
   },
@@ -95,38 +103,48 @@ export function DrivenConnectionTable() {
   const connections = useConnectionsWithValues();
 
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const table = useReactTable({
     data: connections,
     columns,
     onRowSelectionChange: setRowSelection,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
-    globalFilterFn: "includesString",
-    onGlobalFilterChange: setGlobalFilter,
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
-      globalFilter,
       rowSelection,
+      columnFilters,
     },
   });
+
+  useEffect(() => {
+    if (connections.length === 0) {
+      table.resetColumnFilters();
+    }
+  }, [connections.length, table]);
 
   return (
     <div className="w-full">
       <h1 className="text-xl">Connections</h1>
       <div className="flex justify-between gap-4 py-2">
-        <Input
-          value={globalFilter}
-          type="search"
-          className="w-64"
-          onChange={(e) => table.setGlobalFilter(String(e.target.value))}
-          placeholder="Search..."
-        />
+        <div className="flex gap-2">
+          <Button
+            onClick={() => table.resetColumnFilters()}
+            variant="secondary"
+            disabled={Object.keys(columnFilters).length === 0}
+          >
+            <FilterXIcon />
+            Clear filters
+          </Button>
+        </div>
         <div className="flex gap-2">
           <DownloadConnectionButton />
           <UploadConnectionButton />
@@ -140,12 +158,19 @@ export function DrivenConnectionTable() {
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
+                      {header.isPlaceholder ? null : (
+                        <>
+                          {flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
                           )}
+                          {header.column.getCanFilter() ? (
+                            <div className="pb-1">
+                              <Filter column={header.column} />
+                            </div>
+                          ) : null}
+                        </>
+                      )}
                     </TableHead>
                   );
                 })}
@@ -201,4 +226,96 @@ export function DrivenConnectionTable() {
       </div>
     </div>
   );
+}
+
+function FilterSelect({
+  value,
+  onValueChange,
+  options,
+  placeholder = "any",
+  disabled = false,
+}: {
+  value: string | null | undefined;
+  onValueChange: (value: string) => void;
+  options: string[];
+  placeholder?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <Select
+      disabled={disabled}
+      onValueChange={onValueChange}
+      value={value as unknown as string}
+    >
+      <SelectTrigger>{value ?? placeholder}</SelectTrigger>
+      <SelectContent>
+        <SelectItem value={null as unknown as string}>{placeholder}</SelectItem>
+        {options.map((option) => (
+          <SelectItem key={option} value={option}>
+            {option}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function Filter({
+  column,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  column: Column<any, unknown>;
+}) {
+  const columnKey = column.id;
+  const columnFilterValue = column.getFilterValue();
+  const sortedUniqueValues = useMemo(
+    () =>
+      columnKey.endsWith("_value")
+        ? []
+        : Array.from(column.getFacetedUniqueValues().keys()).sort(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [column.getFacetedUniqueValues(), columnKey],
+  );
+  switch (columnKey) {
+    case "driven_by":
+      return (
+        <FilterSelect
+          value={columnFilterValue?.toString()}
+          onValueChange={column.setFilterValue}
+          options={sortedUniqueValues}
+        />
+      );
+    case "source_statement":
+    case "target_statement":
+      return (
+        <FilterSelect
+          value={columnFilterValue?.toString()}
+          onValueChange={column.setFilterValue}
+          options={sortedUniqueValues}
+        />
+      );
+    case "source_component":
+    case "target_component":
+      return (
+        <FilterSelect
+          value={columnFilterValue?.toString()}
+          onValueChange={column.setFilterValue}
+          options={sortedUniqueValues}
+          placeholder="Any"
+        />
+      );
+    case "source_value":
+    case "target_value":
+      return (
+        <Input
+          className="w-36 rounded border shadow"
+          onChange={(e) => column.setFilterValue(e.target.value)}
+          placeholder={`Search...`}
+          type="search"
+          value={(columnFilterValue ?? "") as string}
+        />
+      );
+    default:
+      return null;
+  }
 }
