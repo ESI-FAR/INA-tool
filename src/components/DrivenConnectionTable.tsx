@@ -27,18 +27,16 @@ import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { DownloadConnectionButton } from "./DownloadConnectionButton";
 import { UploadConnectionButton } from "./UploadConnectionButton";
-import { Connection } from "@/lib/schema";
+import { Connection, ConnectionWithValues } from "@/lib/schema";
 import { AddConnectionButton } from "./AddConnectionButton";
-import {
-  useConnections,
-  useConnectionsWithValues,
-} from "@/hooks/use-connections";
+import { useConnections } from "@/hooks/use-connections";
 import { selectColumnDefinition } from "./selectColumnDefinition";
 import { DeleteSelectedButton } from "./DeleteSelectedButton";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { FilterXIcon } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 const columns: ColumnDef<Connection>[] = [
   selectColumnDefinition(),
@@ -98,9 +96,14 @@ const columns: ColumnDef<Connection>[] = [
   },
 ];
 
-export function DrivenConnectionTable() {
+export function DrivenConnectionTable({
+  connections,
+  statement,
+}: {
+  statement?: string;
+  connections: ConnectionWithValues[];
+}) {
   const { removeConnections } = useConnections();
-  const connections = useConnectionsWithValues();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -133,7 +136,10 @@ export function DrivenConnectionTable() {
 
   return (
     <div className="w-full">
-      <h1 className="text-xl">Connections</h1>
+      <h1 className="text-xl">
+        Connections
+        {statement ? ` of statement ${statement}` : null}
+      </h1>
       <div className="flex justify-between gap-4 py-2">
         <div className="flex gap-2">
           <Button
@@ -144,6 +150,15 @@ export function DrivenConnectionTable() {
             <FilterXIcon />
             Clear filters
           </Button>
+          {statement && (
+            <Button
+              asChild
+              variant="secondary"
+              title={`Showing connections of statement ${statement}`}
+            >
+              <Link to="/connections">All connections</Link>
+            </Button>
+          )}
         </div>
         <div className="flex gap-2">
           <DownloadConnectionButton />

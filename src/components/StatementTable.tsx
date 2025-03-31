@@ -33,7 +33,13 @@ import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
 import { Button } from "./ui/button";
-import { PencilIcon, PlusIcon, SaveIcon, Undo2Icon } from "lucide-react";
+import {
+  LinkIcon,
+  PencilIcon,
+  PlusIcon,
+  SaveIcon,
+  Undo2Icon,
+} from "lucide-react";
 import { ControllerRenderProps, FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -54,7 +60,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { ButtonWithTooltip } from "./ButtonWithTooltip";
-import { Block } from "@tanstack/react-router";
+import { Block, Link } from "@tanstack/react-router";
 import { selectColumnDefinition } from "./selectColumnDefinition";
 import { DeleteSelectedButton } from "./DeleteSelectedButton";
 
@@ -414,7 +420,7 @@ function ShowRow({
       data-state={row.getIsSelected() && "selected"}
       aria-label={row.original["Id"]}
     >
-      <TableCell>
+      <TableCell className="flex- flex gap-1">
         <ButtonWithTooltip
           onClick={() => setEditing(row.original)}
           disabled={editingId !== undefined && row.original["Id"] !== editingId}
@@ -427,6 +433,15 @@ function ShowRow({
         >
           <PencilIcon />
         </ButtonWithTooltip>
+        <Button variant="secondary" size="icon" asChild>
+          <Link
+            to={`/connections/$statement`}
+            params={{ statement: row.original.Id }}
+            title="Goto connections of statement"
+          >
+            <LinkIcon />
+          </Link>
+        </Button>
       </TableCell>
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>

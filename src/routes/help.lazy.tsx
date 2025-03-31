@@ -10,7 +10,9 @@ import {
   CameraIcon,
   DownloadIcon,
   EyeOff,
+  FilterXIcon,
   LayoutTemplateIcon,
+  LinkIcon,
   Maximize2Icon,
   MenuIcon,
   PanelLeft,
@@ -506,6 +508,11 @@ function RouteComponent() {
           <DownloadIcon className="inline" /> download button to download the
           statements as a CSV file.
         </li>
+        <li>
+          <strong>Connections:</strong> To go to the connections of a statement
+          click the <LinkIcon className="inline" /> button. This will open the
+          connections page with the statement selected as target or source.
+        </li>
       </ul>
 
       <h3 className="py-4 text-xl">Connections page</h3>
@@ -553,6 +560,18 @@ function RouteComponent() {
             <strong>Filtering:</strong>
             The table header has combo boxes and text boxes to filter the data
             in that column.
+            <ul className="ml-6 list-inside list-disc">
+              <li>
+                If you have one or more filters applied they can be cleared by
+                pressing the "<FilterXIcon className="inline" />
+                Clear all filters" button.
+              </li>
+              <li>
+                If you came from <LinkIcon className="inline" /> on the
+                statements page, the source and target can be cleared by
+                clicking the "All connections" button in the top left corner.
+              </li>
+            </ul>
           </li>
         </ul>
       </p>
