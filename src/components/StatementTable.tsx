@@ -10,6 +10,7 @@ import {
 import {
   ColumnDef,
   Row,
+  RowSelectionState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -32,13 +33,7 @@ import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
 import { Button } from "./ui/button";
-import {
-  PencilIcon,
-  PlusIcon,
-  SaveIcon,
-  TrashIcon,
-  Undo2Icon,
-} from "lucide-react";
+import { PencilIcon, PlusIcon, SaveIcon, Undo2Icon } from "lucide-react";
 import { ControllerRenderProps, FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -60,8 +55,11 @@ import {
 } from "./ui/select";
 import { ButtonWithTooltip } from "./ButtonWithTooltip";
 import { Block } from "@tanstack/react-router";
+import { selectColumnDefinition } from "./selectColumnDefinition";
+import { DeleteSelectedButton } from "./DeleteSelectedButton";
 
 const columns: ColumnDef<Statement>[] = [
+  selectColumnDefinition(),
   {
     accessorKey: "Id",
     header: ({ column }) => (
@@ -152,8 +150,13 @@ const columns: ColumnDef<Statement>[] = [
 ];
 
 export function StatementTable() {
-  const { statements, createFreshStatement, deleteStatement, updateStatement } =
-    useStatements();
+  const {
+    statements,
+    createFreshStatement,
+    deleteStatement,
+    deleteStatements,
+    updateStatement,
+  } = useStatements();
   const { connectionsOfStatement, removeConnections, connectionsOfComponent } =
     useConnections();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -161,12 +164,14 @@ export function StatementTable() {
   // TODO reset editing when you replace the statements by uploading a file or loading the example
   const [editing, setEditing] = useState<Statement | null>(null);
   const [needsToGoToLastPage, setNeedsToGoToLastPage] = useState(false);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const table = useReactTable({
     data: statements,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -177,6 +182,7 @@ export function StatementTable() {
     state: {
       sorting,
       globalFilter,
+      rowSelection,
     },
   });
 
@@ -341,9 +347,11 @@ export function StatementTable() {
                   <ShowRow
                     key={row.id}
                     row={row}
-                    setEditing={setEditing}
+                    setEditing={(v) => {
+                      setEditing(v);
+                      row.toggleSelected(false);
+                    }}
                     editingId={editing ? editing.Id : undefined}
-                    onDelete={() => removeStatement(row.original.Id)}
                   />
                 );
               })
@@ -374,6 +382,18 @@ export function StatementTable() {
           <PlusIcon />
           Add statement
         </ButtonWithTooltip>
+        <DeleteSelectedButton
+          nrSelectedRows={Object.keys(rowSelection).length}
+          nrTotalRows={statements.length}
+          what="statements"
+          onDelete={() => {
+            const toDelete = table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original.Id);
+            deleteStatements(toDelete);
+            table.resetRowSelection();
+          }}
+        />
         <DataTablePagination table={table} />
       </div>
     </div>
@@ -384,19 +404,17 @@ function ShowRow({
   row,
   setEditing,
   editingId,
-  onDelete,
 }: {
   row: Row<Statement>;
   editingId: string | undefined;
   setEditing: (statement: Statement) => void;
-  onDelete: () => void;
 }) {
   return (
     <TableRow
       data-state={row.getIsSelected() && "selected"}
       aria-label={row.original["Id"]}
     >
-      <TableCell className="flex gap-1">
+      <TableCell>
         <ButtonWithTooltip
           onClick={() => setEditing(row.original)}
           disabled={editingId !== undefined && row.original["Id"] !== editingId}
@@ -409,15 +427,6 @@ function ShowRow({
         >
           <PencilIcon />
         </ButtonWithTooltip>
-        <Button
-          title="Delete"
-          aria-label="Delete"
-          variant="destructive"
-          size="icon"
-          onClick={onDelete}
-        >
-          <TrashIcon />
-        </Button>
       </TableCell>
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>
@@ -545,6 +554,9 @@ function EditRow({
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             );
+          }
+          if (cell.column.id === "select") {
+            return <TableCell key={cell.id} />;
           }
           return (
             <TableCell key={cell.id}>

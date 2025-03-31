@@ -491,9 +491,9 @@ function RouteComponent() {
           <Undo2Icon className="inline" /> button to cancel the changes.
         </li>
         <li>
-          <strong>Deleting:</strong> A statement can be deleted by pressing the{" "}
-          <TrashIcon className="inline" /> button. Any connections to or from
-          this statement will also be deleted.
+          <strong>Deleting:</strong> A statement can be deleted by selecting it
+          and pressing the <TrashIcon className="inline" /> button. Any
+          connections to or from this statement will also be deleted.
         </li>
         <li>
           <strong>Adding:</strong> After pressing the{" "}
@@ -529,8 +529,8 @@ function RouteComponent() {
             paging buttons to navigate through the data.
           </li>
           <li>
-            <strong>Deleting:</strong> A connection can be deleted by pressing
-            the <TrashIcon className="inline" /> button.
+            <strong>Deleting:</strong> A connection can be deleted by selecting
+            it and by pressing the <TrashIcon className="inline" /> button.
           </li>
           <li>
             <strong>Adding:</strong> After pressing the{" "}
@@ -577,8 +577,8 @@ function RouteComponent() {
           buttons to navigate through the data.
         </li>
         <li>
-          <strong>Deleting:</strong> A conflict can be deleted by pressing the{" "}
-          <TrashIcon className="inline" /> button.
+          <strong>Deleting:</strong> A conflict can be deleted by selecting it
+          and pressing the <TrashIcon className="inline" /> button.
         </li>
         <li>
           <strong>Adding:</strong> After pressing the{" "}

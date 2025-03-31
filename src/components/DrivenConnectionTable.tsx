@@ -1,5 +1,6 @@
 import {
   ColumnDef,
+  RowSelectionState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -25,15 +26,16 @@ import { Input } from "./ui/input";
 import { DownloadConnectionButton } from "./DownloadConnectionButton";
 import { UploadConnectionButton } from "./UploadConnectionButton";
 import { Connection } from "@/lib/schema";
-import { TrashIcon } from "lucide-react";
-import { Button } from "./ui/button";
 import { AddConnectionButton } from "./AddConnectionButton";
 import {
   useConnections,
   useConnectionsWithValues,
 } from "@/hooks/use-connections";
+import { selectColumnDefinition } from "./selectColumnDefinition";
+import { DeleteSelectedButton } from "./DeleteSelectedButton";
 
 const columns: ColumnDef<Connection>[] = [
+  selectColumnDefinition(),
   {
     accessorKey: "driven_by",
     header: ({ column }) => (
@@ -94,9 +96,11 @@ export function DrivenConnectionTable() {
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const table = useReactTable({
     data: connections,
     columns,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -108,6 +112,7 @@ export function DrivenConnectionTable() {
     state: {
       sorting,
       globalFilter,
+      rowSelection,
     },
   });
 
@@ -132,7 +137,6 @@ export function DrivenConnectionTable() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                <TableHead></TableHead>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
@@ -155,15 +159,6 @@ export function DrivenConnectionTable() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  <TableCell>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => removeConnections([row.original])}
-                    >
-                      <TrashIcon />
-                    </Button>
-                  </TableCell>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -188,8 +183,20 @@ export function DrivenConnectionTable() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex justify-between gap-4 py-2">
+      <div className="flex items-center justify-between gap-4 py-2">
         <AddConnectionButton />
+        <DeleteSelectedButton
+          nrSelectedRows={Object.keys(rowSelection).length}
+          nrTotalRows={connections.length}
+          what="connections"
+          onDelete={() => {
+            const toDelete = table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original);
+            removeConnections(toDelete);
+            table.resetRowSelection();
+          }}
+        />
         <DataTablePagination table={table} />
       </div>
     </div>
