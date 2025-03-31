@@ -408,10 +408,9 @@ export function InDirectObjectNode({
 const drivenConnectionHandleStye = { width: 10, height: 10 } as const;
 
 function useWrappedText(text: string) {
-  const maxCharsPerLine = 12;
+  // TODO make constants configurable as arguments
+  const maxCharsPerLine = 20;
   const minCharsPerLine = 8;
-  const charWidth = 8;
-  const charHeight = 16;
   const tokens = text.split(" ");
   const lines = [];
   let currentLine = "";
@@ -426,12 +425,9 @@ function useWrappedText(text: string) {
   if (currentLine) {
     lines.push(currentLine);
   }
-  const width =
-    Math.max(...lines.map((l) => l.length), minCharsPerLine) * charWidth;
-  const height = lines.length * charHeight;
+  const widthInChars = Math.max(...lines.map((l) => l.length), minCharsPerLine);
   return {
-    width,
-    height,
+    widthInChars,
     lines,
   };
 }
@@ -443,44 +439,17 @@ function Hexagon({
   text: string;
   selected: boolean | undefined;
 }) {
-  /*
-  <div class="react-flow__node react-flow__node-shape nopan selectable draggable" 
-    data-id="4" data-testid="rf__node-4" tabindex="0" 
-    role="button" aria-describedby="react-flow__node-desc-1" 
-    style="z-index: 0; transform: translate(200px, 140px); 
-    pointer-events: all; visibility: visible; width: 120px; height: 60px;">
-    <svg width="120" height="60" class="shape-svg">
-    <g transform="translate(2, 2)">
-    <path
-       d="M0,28 L11.600000000000001,0 L104.4,0 L116,28 L104.4,56 L11.600000000000001,56 Z" 
-       fill="#CF4C2C" stroke-width="2" stroke="#CF4C2C" fill-opacity="0.8">
-    </path></g></svg>
-    <div data-handleid="top" data-nodeid="4" 
-    data-handlepos="top" data-id="1-4-top-source" 
-    class="react-flow__handle react-flow__handle-top nodrag nopan source connectable connectablestart connectableend connectionindicator" 
-    style="background-color: rgb(207, 76, 44);"></div><div data-handleid="right" 
-    data-nodeid="4" data-handlepos="right" data-id="1-4-right-source"
-     class="react-flow__handle react-flow__handle-right nodrag nopan source connectable connectablestart connectableend
-      connectionindicator" style="background-color: rgb(207, 76, 44);">
-    </div>
-    <div data-handleid="bottom" data-nodeid="4" data-handlepos="bottom" data-id="1-4-bottom-source" 
-    class="react-flow__handle react-flow__handle-bottom nodrag nopan source connectable connectablestart connectableend connectionindicator" 
-    style="background-color: rgb(207, 76, 44);">
-    </div>
-    <div data-handleid="left" data-nodeid="4" data-handlepos="left" data-id="1-4-left-source" 
-    class="react-flow__handle react-flow__handle-left nodrag nopan source connectable connectablestart connectableend connectionindicator" 
-    style="background-color: rgb(207, 76, 44);">
-    </div>
-    <input type="text" class="node-label" placeholder="hexagon">
-    </div>
-  */
-  const { width, height, lines } = useWrappedText(text);
-  const centerHeight = (lines.length * 24) / 2;
-  const sideLength = width * 1.3 * 0.1; // Length of the flat top/bottom sides
-  const hexagonWidth = width * 1.3 - 4; // Total width of hexagon
+  const { widthInChars, lines } = useWrappedText(text);
+  // TODO make useHexagon hook that returns d,
+  // so code can be reused for different paths like parralelogram
   const hexagonHeight = lines.length * 24; // Total height of hexagon
+  const centerHeight = hexagonHeight / 2;
+  // TODO any nr of lines look good, aka handles in right place and text inside path and text inside statement fieldset
+  // TODO dont use fractions
+  const sideLength = widthInChars * 12 * 0.1; // Length of the flat top/bottom sides
+  const hexagonWidth = widthInChars * 10; // Total width of hexagon
 
-  const path = `M0,${centerHeight} L${sideLength},0 L${hexagonWidth - sideLength},0 L${hexagonWidth},${centerHeight} L${hexagonWidth - sideLength},${hexagonHeight} L${sideLength},${hexagonHeight} Z`;
+  const d = `M0,${centerHeight} L${sideLength},0 L${hexagonWidth - sideLength},0 L${hexagonWidth},${centerHeight} L${hexagonWidth - sideLength},${hexagonHeight} L${sideLength},${hexagonHeight} Z`;
   const borderClassName = useMemo(
     () =>
       selected
@@ -490,92 +459,19 @@ function Hexagon({
   );
 
   return (
-    <svg width={width + 30} height={height + 24} className="group">
+    <svg width={hexagonWidth} height={hexagonHeight} className="group">
       <path
-        d={path}
+        d={d}
         strokeWidth="1"
         fill="transparent"
         className={borderClassName}
       />
       {lines.map((line, index) => (
-        <text x={20} y={20 + index * 20} key={line}>
+        <text x={16} y={20 + index * 20} key={line}>
           {line}
         </text>
       ))}
     </svg>
-  );
-
-  // Extracted from https://html-polygon.com/play
-  // TODO make rectangle inside hexagon wider
-
-  // Keep in sync with colors in selectedClassName
-  // const borderClassName = useMemo(
-  //   () =>
-  //     selected
-  //       ? "bg-slate-900 dark:bg-slate-100"
-  //       : "bg-slate-400 dark:bg-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-slate-100",
-  //   [selected],
-  // );
-
-  return (
-    <div
-      className="group"
-      style={{
-        clipPath:
-          "polygon(75% 6.699%, 25% 6.699%, 0% 50%, 25% 93.301%, 75% 93.301%, 100% 50%)",
-      }}
-    >
-      <div className="relative h-full w-full overflow-hidden">
-        <div
-          className={cn("absolute h-full w-full", borderClassName)}
-          style={{
-            clipPath:
-              "polygon(74.423% 7.699%, 25.577% 7.699%, 1.155% 50%, 25.577% 92.301%, 74.423% 92.301%, 98.845% 50%, 74.423% 7.699%, 74.423% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 74.423% 0%)",
-          }}
-        />
-        <div style={{ height: "12.699%" }} />
-        <div
-          className="float-left clear-left mx-0"
-          style={{
-            height: "37.301%",
-            width: "28.464%",
-            shapeOutside: "polygon(0% 0%, 100% 0%, 24.34% 100%, 0% 100%)",
-          }}
-        />
-        <div
-          className="float-right clear-right mx-0"
-          style={{
-            height: "37.301%",
-            width: "28.464%",
-            shapeOutside: "polygon(0% 0%, 100% 0%, 100% 100%, 75.66% 100%)",
-          }}
-        />
-        <div
-          className="float-left clear-left mx-0"
-          style={{
-            height: "37.301%",
-            width: "28.464%",
-            shapeOutside: "polygon(0% 0%, 24.34% 0%, 100% 100%, 0% 100%)",
-          }}
-        />
-        <div
-          className="float-right clear-right mx-0"
-          style={{
-            height: "37.301%",
-            width: "28.464%",
-            shapeOutside: "polygon(75.66% 0%, 100% 0%, 100% 100%, 0% 100%)",
-          }}
-        />
-        <div
-          className="float-left clear-left w-full"
-          style={{
-            height: "12.699%",
-            shapeOutside: "polygon(0px 0px, 100% 0px, 100% 100%, 0px 100%)",
-          }}
-        />
-        {children}
-      </div>
-    </div>
   );
 }
 
@@ -584,19 +480,6 @@ export function ActivationConditionNode({
   isConnectable,
   selected,
 }: NodeProps<ActivationConditionNode>) {
-  /**
-   * <div id="html-polygon"
-   * class="html-polygon html-polygon-sides-6" style="height: 425px;width:
-   * 425px;background-color: rgb(204, 204, 204);color: rgb(0, 0, 0);text-align: justify;
-   * clip-path: polygon(50% 0%, 6.699% 25%, 6.699% 75%, 50% 100%, 93.301% 75%, 93.301% 25%);">
-   * <div id="html-polygon-border-container"
-   * class="html-polygon-border-container" style="height: 100%; position: relative; width: 100%; overflow: hidden;">
-   * <div id="html-polygon-border" class="html-polygon-border"
-   * style="background-color: rgb(0, 0, 0); position: absolute; height: 100%; width: 100%;
-   * clip-path: polygon(50% 1.155%, 7.699% 25.577%, 7.699% 74.423%, 50% 98.845%, 92.301% 74.423%, 92.301% 25.577%, 50% 1.155%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);">
-   * </div><div id="html-polygon-buffer-top" class="html-polygon-buffer html-polygon-buffer-top" style="height: 6.928%;"></div><div id="html-polygon-buffer-side-0" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 25.398% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-1" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 74.602% 100%);"></div><div id="html-polygon-buffer-side-2" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 43.072%; width: 12.699%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-3" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 43.072%; width: 12.699%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-4" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 25.398% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-5" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(74.602% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-bottom" class="html-polygon-buffer html-polygon-buffer-bottom" style="height: 6.928%; width: 100%; clear: left; float: left; shape-outside: polygon(0px 0px, 100% 0px, 100% 100%, 0px 100%);"></div>Consequat ad esse mollit nostrud mollit. Exercitation exercitation nostrud ut est aliqua laboris velit. Reprehenderit nostrud tempor elit adipisicing culpa officia. Sunt do aliqua minim consectetur consequat amet. In consequat.</div></div>
-   */
-
   return (
     <>
       <Hexagon selected={selected} text={data.label}></Hexagon>
@@ -604,6 +487,11 @@ export function ActivationConditionNode({
         type="source"
         id="statement"
         className={isConnectable ? "" : "invisible"}
+        style={
+          {
+            // right: "14px"
+          }
+        }
         position={Position.Right}
         isConnectable={false}
       />
@@ -611,7 +499,7 @@ export function ActivationConditionNode({
         type="target"
         id="outcome"
         className={cn(bgColor.outcome, { invisible: !isConnectable })}
-        style={{ ...drivenConnectionHandleStye, left: "33%", top: "6px" }}
+        style={{ ...drivenConnectionHandleStye, left: "33%" }}
         position={Position.Top}
         isConnectable={isConnectable}
       />
@@ -619,7 +507,7 @@ export function ActivationConditionNode({
         type="target"
         id="sanction"
         className={cn(bgColor.sanction, { invisible: !isConnectable })}
-        style={{ ...drivenConnectionHandleStye, left: "66%", top: "6px" }}
+        style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Top}
         isConnectable={isConnectable}
       />
