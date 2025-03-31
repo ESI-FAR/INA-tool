@@ -34,8 +34,8 @@ export function ClearButton() {
   return (
     <Button
       title="Remove all data"
+      className="text-destructive"
       variant="outline"
-      className="bg-destructive text-destructive-foreground"
       onClick={() => {
         if (confirm("Are you sure you want to remove all data?")) {
           removeAllData();
