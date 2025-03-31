@@ -15,7 +15,8 @@ test.describe("Shuffle statements", () => {
     await page.getByRole("button", { name: "Load Example" }).click();
 
     /// Delete statement 3
-    await page.getByRole("row", { name: "3" }).getByLabel("Delete").click();
+    await page.getByRole("row", { name: "3" }).getByLabel("Select").click();
+    await page.getByRole("button", { name: "Delete selected" }).click();
 
     // Add statement
     await page.getByRole("button", { name: "Add statement" }).click();

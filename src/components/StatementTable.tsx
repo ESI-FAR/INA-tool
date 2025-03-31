@@ -231,6 +231,31 @@ export function StatementTable() {
     [connectionsOfStatement, removeConnections, deleteStatement],
   );
 
+  const removeStatements = useCallback(
+    (ids: string[]) => {
+      const connections2delete: Connection[] = [];
+      for (const id of ids) {
+        // Check statement is unconnected
+        const connections = connectionsOfStatement(id);
+        if (connections.length > 0) {
+          // If statement is connected, ask for confirmation and remove connection as well
+          if (
+            window.confirm(
+              `Statement ${id} is connected to other statement(s). Deleting it will also delete those connections. Are you sure you want to delete it?`,
+            )
+          ) {
+            connections2delete.push(...connections);
+          } else {
+            return;
+          }
+        }
+      }
+      deleteStatements(ids);
+      removeConnections(connections2delete);
+    },
+    [deleteStatements, removeConnections, connectionsOfStatement],
+  );
+
   const onSave = useCallback(
     (tosave: Statement, previous: Statement) => {
       const connections: Connection[] = [];
@@ -396,7 +421,7 @@ export function StatementTable() {
             const toDelete = table
               .getSelectedRowModel()
               .rows.map((row) => row.original.Id);
-            deleteStatements(toDelete);
+            removeStatements(toDelete);
             table.resetRowSelection();
           }}
         />

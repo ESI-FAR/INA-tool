@@ -495,7 +495,8 @@ function RouteComponent() {
         <li>
           <strong>Deleting:</strong> A statement can be deleted by selecting it
           and pressing the <TrashIcon className="inline" /> button. Any
-          connections to or from this statement will also be deleted.
+          connections to or from this statement will also be deleted after
+          confirmation.
         </li>
         <li>
           <strong>Adding:</strong> After pressing the{" "}
