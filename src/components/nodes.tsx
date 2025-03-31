@@ -407,24 +407,115 @@ export function InDirectObjectNode({
 
 const drivenConnectionHandleStye = { width: 10, height: 10 } as const;
 
+function useWrappedText(text: string) {
+  const maxCharsPerLine = 12;
+  const minCharsPerLine = 8;
+  const charWidth = 8;
+  const charHeight = 16;
+  const tokens = text.split(" ");
+  const lines = [];
+  let currentLine = "";
+  for (const token of tokens) {
+    if (currentLine.length + token.length <= maxCharsPerLine) {
+      currentLine += token + " ";
+    } else {
+      lines.push(currentLine.trim());
+      currentLine = token + " ";
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  const width =
+    Math.max(...lines.map((l) => l.length), minCharsPerLine) * charWidth;
+  const height = lines.length * charHeight;
+  return {
+    width,
+    height,
+    lines,
+  };
+}
+
 function Hexagon({
-  children,
+  text,
   selected,
 }: {
-  children: React.ReactNode;
+  text: string;
   selected: boolean | undefined;
 }) {
+  /*
+  <div class="react-flow__node react-flow__node-shape nopan selectable draggable" 
+    data-id="4" data-testid="rf__node-4" tabindex="0" 
+    role="button" aria-describedby="react-flow__node-desc-1" 
+    style="z-index: 0; transform: translate(200px, 140px); 
+    pointer-events: all; visibility: visible; width: 120px; height: 60px;">
+    <svg width="120" height="60" class="shape-svg">
+    <g transform="translate(2, 2)">
+    <path
+       d="M0,28 L11.600000000000001,0 L104.4,0 L116,28 L104.4,56 L11.600000000000001,56 Z" 
+       fill="#CF4C2C" stroke-width="2" stroke="#CF4C2C" fill-opacity="0.8">
+    </path></g></svg>
+    <div data-handleid="top" data-nodeid="4" 
+    data-handlepos="top" data-id="1-4-top-source" 
+    class="react-flow__handle react-flow__handle-top nodrag nopan source connectable connectablestart connectableend connectionindicator" 
+    style="background-color: rgb(207, 76, 44);"></div><div data-handleid="right" 
+    data-nodeid="4" data-handlepos="right" data-id="1-4-right-source"
+     class="react-flow__handle react-flow__handle-right nodrag nopan source connectable connectablestart connectableend
+      connectionindicator" style="background-color: rgb(207, 76, 44);">
+    </div>
+    <div data-handleid="bottom" data-nodeid="4" data-handlepos="bottom" data-id="1-4-bottom-source" 
+    class="react-flow__handle react-flow__handle-bottom nodrag nopan source connectable connectablestart connectableend connectionindicator" 
+    style="background-color: rgb(207, 76, 44);">
+    </div>
+    <div data-handleid="left" data-nodeid="4" data-handlepos="left" data-id="1-4-left-source" 
+    class="react-flow__handle react-flow__handle-left nodrag nopan source connectable connectablestart connectableend connectionindicator" 
+    style="background-color: rgb(207, 76, 44);">
+    </div>
+    <input type="text" class="node-label" placeholder="hexagon">
+    </div>
+  */
+  const { width, height, lines } = useWrappedText(text);
+  const centerHeight = (lines.length * 24) / 2;
+  const sideLength = width * 1.3 * 0.1; // Length of the flat top/bottom sides
+  const hexagonWidth = width * 1.3 - 4; // Total width of hexagon
+  const hexagonHeight = lines.length * 24; // Total height of hexagon
+
+  const path = `M0,${centerHeight} L${sideLength},0 L${hexagonWidth - sideLength},0 L${hexagonWidth},${centerHeight} L${hexagonWidth - sideLength},${hexagonHeight} L${sideLength},${hexagonHeight} Z`;
+  const borderClassName = useMemo(
+    () =>
+      selected
+        ? "stroke-slate-900 dark:stroke-slate-100"
+        : "stroke-slate-400 dark:stroke-slate-400 group-hover:stroke-slate-900 dark:group-hover:stroke-slate-100",
+    [selected],
+  );
+
+  return (
+    <svg width={width + 30} height={height + 24} className="group">
+      <path
+        d={path}
+        strokeWidth="1"
+        fill="transparent"
+        className={borderClassName}
+      />
+      {lines.map((line, index) => (
+        <text x={20} y={20 + index * 20} key={line}>
+          {line}
+        </text>
+      ))}
+    </svg>
+  );
+
   // Extracted from https://html-polygon.com/play
   // TODO make rectangle inside hexagon wider
 
   // Keep in sync with colors in selectedClassName
-  const borderClassName = useMemo(
-    () =>
-      selected
-        ? "bg-slate-900 dark:bg-slate-100"
-        : "bg-slate-400 dark:bg-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-slate-100",
-    [selected],
-  );
+  // const borderClassName = useMemo(
+  //   () =>
+  //     selected
+  //       ? "bg-slate-900 dark:bg-slate-100"
+  //       : "bg-slate-400 dark:bg-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-slate-100",
+  //   [selected],
+  // );
 
   return (
     <div
@@ -508,9 +599,7 @@ export function ActivationConditionNode({
 
   return (
     <>
-      <Hexagon selected={selected}>
-        <div className="max-w-48 px-12 py-1">{data.label}</div>
-      </Hexagon>
+      <Hexagon selected={selected} text={data.label}></Hexagon>
       <Handle
         type="source"
         id="statement"
