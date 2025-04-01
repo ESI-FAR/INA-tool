@@ -199,7 +199,7 @@ function RouteComponent() {
         <li>
           <strong>Legend:</strong> Click the{" "}
           <AlignVerticalDistributeCenterIcon className="inline" /> Legend button
-          to see a legend of the network. The type components of a statement are
+          to see a legend of the network. The components of a statement are
           shown as a sub-graph. The colors of the statements and connections are
           explained.
         </li>
