@@ -319,7 +319,7 @@ export function DirectObjectNode({
   return (
     <div
       className={cn(
-        "border-1 max-w-48 rounded-sm border border-foreground p-2",
+        "border-1 max-w-48 rounded-md border border-foreground p-2",
         selectedClassName(selected),
       )}
     >
@@ -371,7 +371,7 @@ export function InDirectObjectNode({
   return (
     <div
       className={cn(
-        "border-1 max-w-48 rounded-sm border border-foreground p-2",
+        "border-1 max-w-48 rounded-md border border-foreground p-2",
         selectedClassName(selected),
       )}
     >
