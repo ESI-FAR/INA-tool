@@ -521,13 +521,8 @@ export function ExecutionConstraintNode({
   selected,
 }: NodeProps<ExecutionConstraintNode>) {
   return (
-    <div
-      className={cn(
-        "border-1 max-w-48 rounded-xl border border-foreground p-2",
-        selectedClassName(selected),
-      )}
-    >
-      <div className="h-fit w-fit">{data.label}</div>
+    <>
+      <Hexagon selected={selected} text={data.label}></Hexagon>
       <Handle
         type="target"
         id="statement"
@@ -551,7 +546,7 @@ export function ExecutionConstraintNode({
         position={Position.Bottom}
         isConnectable={isConnectable}
       />
-    </div>
+    </>
   );
 }
 
