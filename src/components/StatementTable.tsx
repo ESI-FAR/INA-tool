@@ -10,6 +10,7 @@ import {
 import {
   ColumnDef,
   Row,
+  RowSelectionState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -26,17 +27,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
 import { Button } from "./ui/button";
 import {
+  LinkIcon,
   PencilIcon,
   PlusIcon,
   SaveIcon,
-  TrashIcon,
   Undo2Icon,
 } from "lucide-react";
 import { ControllerRenderProps, FormProvider, useForm } from "react-hook-form";
@@ -58,8 +59,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { ButtonWithTooltip } from "./ButtonWithTooltip";
+import { Block, Link } from "@tanstack/react-router";
+import { selectColumnDefinition } from "./selectColumnDefinition";
+import { DeleteSelectedButton } from "./DeleteSelectedButton";
 
 const columns: ColumnDef<Statement>[] = [
+  selectColumnDefinition(),
   {
     accessorKey: "Id",
     header: ({ column }) => (
@@ -150,36 +156,56 @@ const columns: ColumnDef<Statement>[] = [
 ];
 
 export function StatementTable() {
-  const { statements, createFreshStatement, deleteStatement, updateStatement } =
-    useStatements();
+  const {
+    statements,
+    createFreshStatement,
+    deleteStatement,
+    deleteStatements,
+    updateStatement,
+  } = useStatements();
   const { connectionsOfStatement, removeConnections, connectionsOfComponent } =
     useConnections();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   // TODO reset editing when you replace the statements by uploading a file or loading the example
   const [editing, setEditing] = useState<Statement | null>(null);
+  const [needsToGoToLastPage, setNeedsToGoToLastPage] = useState(false);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const table = useReactTable({
     data: statements,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,
     enableRowSelection: true,
+    autoResetPageIndex: false,
     state: {
       sorting,
       globalFilter,
+      rowSelection,
     },
   });
 
   function addStatement() {
     const newStatement = createFreshStatement();
     setEditing(newStatement);
+    setNeedsToGoToLastPage(true);
   }
+
+  useEffect(() => {
+    if (needsToGoToLastPage) {
+      setTimeout(() => {
+        table.setPageIndex(table.getPageCount() - 1);
+        setNeedsToGoToLastPage(false);
+      }, 0);
+    }
+  }, [needsToGoToLastPage, table]);
 
   const removeStatement = useCallback(
     (id: string) => {
@@ -203,6 +229,31 @@ export function StatementTable() {
       }
     },
     [connectionsOfStatement, removeConnections, deleteStatement],
+  );
+
+  const removeStatements = useCallback(
+    (ids: string[]) => {
+      const connections2delete: Connection[] = [];
+      for (const id of ids) {
+        // Check statement is unconnected
+        const connections = connectionsOfStatement(id);
+        if (connections.length > 0) {
+          // If statement is connected, ask for confirmation and remove connection as well
+          if (
+            window.confirm(
+              `Statement ${id} is connected to other statement(s). Deleting it will also delete those connections. Are you sure you want to delete it?`,
+            )
+          ) {
+            connections2delete.push(...connections);
+          } else {
+            return;
+          }
+        }
+      }
+      deleteStatements(ids);
+      removeConnections(connections2delete);
+    },
+    [deleteStatements, removeConnections, connectionsOfStatement],
   );
 
   const onSave = useCallback(
@@ -290,6 +341,16 @@ export function StatementTable() {
               </TableRow>
             ))}
           </TableHeader>
+          <Block
+            shouldBlockFn={() => {
+              if (!editing) return false;
+
+              const shouldLeave = confirm(
+                "You have unsaved changes. Are you sure you want to leave?",
+              );
+              return !shouldLeave;
+            }}
+          />
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => {
@@ -317,9 +378,11 @@ export function StatementTable() {
                   <ShowRow
                     key={row.id}
                     row={row}
-                    setEditing={setEditing}
+                    setEditing={(v) => {
+                      setEditing(v);
+                      row.toggleSelected(false);
+                    }}
                     editingId={editing ? editing.Id : undefined}
-                    onDelete={() => removeStatement(row.original.Id)}
                   />
                 );
               })
@@ -338,10 +401,30 @@ export function StatementTable() {
         </Table>
       </div>
       <div className="flex justify-between gap-4 py-2">
-        <Button variant="secondary" onClick={addStatement}>
+        <ButtonWithTooltip
+          onClick={addStatement}
+          disabled={editing !== null}
+          tooltip={
+            editing
+              ? "Please save or cancel the current statement before adding a new one"
+              : "Add statement"
+          }
+        >
           <PlusIcon />
           Add statement
-        </Button>
+        </ButtonWithTooltip>
+        <DeleteSelectedButton
+          nrSelectedRows={Object.keys(rowSelection).length}
+          nrTotalRows={statements.length}
+          what="statements"
+          onDelete={() => {
+            const toDelete = table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original.Id);
+            removeStatements(toDelete);
+            table.resetRowSelection();
+          }}
+        />
         <DataTablePagination table={table} />
       </div>
     </div>
@@ -352,37 +435,37 @@ function ShowRow({
   row,
   setEditing,
   editingId,
-  onDelete,
 }: {
   row: Row<Statement>;
   editingId: string | undefined;
   setEditing: (statement: Statement) => void;
-  onDelete: () => void;
 }) {
   return (
     <TableRow
       data-state={row.getIsSelected() && "selected"}
       aria-label={row.original["Id"]}
     >
-      <TableCell className="flex gap-1">
-        <Button
-          disabled={editingId !== undefined && row.original["Id"] !== editingId}
-          title="Edit"
-          aria-label="Edit"
-          variant="secondary"
-          size="icon"
+      <TableCell className="flex- flex gap-1">
+        <ButtonWithTooltip
           onClick={() => setEditing(row.original)}
+          disabled={editingId !== undefined && row.original["Id"] !== editingId}
+          tooltip={
+            editingId
+              ? "Please save or cancel the current statement before editing another one"
+              : "Edit"
+          }
+          size="icon"
         >
           <PencilIcon />
-        </Button>
-        <Button
-          title="Delete"
-          aria-label="Delete"
-          variant="destructive"
-          size="icon"
-          onClick={onDelete}
-        >
-          <TrashIcon />
+        </ButtonWithTooltip>
+        <Button variant="secondary" size="icon" asChild>
+          <Link
+            to={`/connections/$statement`}
+            params={{ statement: row.original.Id }}
+            title="Goto connections of statement"
+          >
+            <LinkIcon />
+          </Link>
         </Button>
       </TableCell>
       {row.getVisibleCells().map((cell) => (
@@ -511,6 +594,9 @@ function EditRow({
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             );
+          }
+          if (cell.column.id === "select") {
+            return <TableCell key={cell.id} />;
           }
           return (
             <TableCell key={cell.id}>

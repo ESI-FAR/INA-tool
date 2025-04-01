@@ -118,6 +118,20 @@ export function statementPair2PossibleConnections(
         driven_by: "outcome",
       });
     }
+    if (
+      sourceStatement["Execution Constraint"] &&
+      targetStatement["Activation Condition"]
+    ) {
+      connections.push({
+        source_statement: sourceStatement.Id,
+        source_component: "Execution Constraint",
+        source_value: sourceStatement["Execution Constraint"],
+        target_statement: targetStatement.Id,
+        target_component: "Activation Condition",
+        target_value: targetStatement["Activation Condition"],
+        driven_by: "outcome",
+      });
+    }
   }
   if (
     (driven_by === "sanction" || driven_by === undefined) &&

@@ -12,7 +12,7 @@ export const Route = createLazyFileRoute("/network/statement")({
 function RouteComponent() {
   return (
     <ReactFlowProvider>
-      <div className="h-full w-full">
+      <div className="flex h-full flex-col">
         <div className="flex justify-between">
           <h1 className="text-xl">Statement level network</h1>
           <div className="flex gap-1">

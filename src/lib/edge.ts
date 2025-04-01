@@ -9,6 +9,7 @@ Purple (Actor-driven connection):
 
 Green (Outcome-driven connection):
 - (Inanimate) Direct/Indirect Object -> Activation Condition
+- Execution Constraint -> Activation Condition
 
 Red (Sanction-driven connection):
 - Aim -> Activation Condition
@@ -69,7 +70,7 @@ export function builderDrivenConnectionEdge(
   type: DrivenBy,
 ): DrivenConnectionEdge {
   return {
-    id: `${id}-${sourceId}-2-${targetId}`,
+    id,
     source: sourceId,
     target: targetId,
     type,

@@ -89,13 +89,13 @@ export function StatementNetwork() {
         <Controls />
         <MyMiniMap />
       </ReactFlow>
-      {possibleConnections.length && (
+      {possibleConnections.length ? (
         <SourcePicker
           choices={possibleConnections}
           onPick={addConnection}
           onCancel={() => setPossibleConnections([])}
         />
-      )}
+      ) : null}
       <SelectedNodeToolbar />
     </>
   );

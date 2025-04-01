@@ -17,8 +17,9 @@ import {
 import { download } from "@/lib/io";
 import { store as networkStore } from "@/stores/statement-network";
 import { store } from "@/stores/global";
-import { StatementLayoutButton } from "./LayoutButton";
+import { StatementLayoutButton, useStatementLayout } from "./LayoutButton";
 import { ScreenshotButton } from "./ScreenshotButton";
+import { useEffect } from "react";
 
 function exportAsGraphml() {
   const projectName = store.getState().projectName;
@@ -39,6 +40,18 @@ function exportAsGexf() {
 }
 
 export function StatementNetworkMenu() {
+  const autoLayout = useStatementLayout();
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "l") {
+        e.preventDefault();
+        autoLayout();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [autoLayout]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

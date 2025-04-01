@@ -62,7 +62,7 @@ export const store = createStore<Store>((set, get) => ({
   },
 }));
 
-const NODE_OFFSET = 60;
+const NODE_OFFSET = 100;
 
 function onStatementsChange(statements: Statement[]) {
   const nodes = store.getState().nodes;

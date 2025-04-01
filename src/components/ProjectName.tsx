@@ -26,7 +26,6 @@ export function ProjectName() {
           maxLength={200}
           minLength={1}
           ref={inputRef}
-          onBlur={() => setEditing(false)}
           onKeyDown={(event) => {
             if (event.key === "Escape") {
               setEditing(false);
@@ -35,6 +34,15 @@ export function ProjectName() {
         />
         <button title="Save" type="submit">
           🖉
+        </button>{" "}
+        <button
+          title="Cancel"
+          type="button"
+          onClick={() => {
+            setEditing(false);
+          }}
+        >
+          X
         </button>
       </form>
     );
@@ -42,7 +50,7 @@ export function ProjectName() {
 
   return (
     <button
-      className="group/name flex flex-row"
+      className="flex flex-row"
       title="Click to change project name"
       onClick={() => {
         setEditing(true);
@@ -52,7 +60,7 @@ export function ProjectName() {
       }}
     >
       {name}
-      <span className="invisible ps-1 group-hover/name:visible">🖉</span>
+      <span className="text-muted-foreground hover:text-foreground">🖉</span>
     </button>
   );
 }

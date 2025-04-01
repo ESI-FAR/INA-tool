@@ -1,6 +1,7 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -24,6 +25,7 @@ import { LoadExampleButton } from "./LoadExampleButton";
 import { ClearButton } from "./ClearButton";
 import { useStore } from "zustand";
 import { store } from "@/stores/global";
+import { Footer } from "./Footer";
 
 export function AppSidebar() {
   const nrStatements = useStore(store, (state) => state.statements.length);
@@ -135,6 +137,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="p-0">
+        <Footer />
+      </SidebarFooter>
     </Sidebar>
   );
 }

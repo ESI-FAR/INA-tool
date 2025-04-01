@@ -2,6 +2,7 @@ import { Connection, Statement } from "@/lib/schema";
 import { Button } from "./ui/button";
 import { Wand2Icon } from "lucide-react";
 import { store } from "@/stores/global";
+import { useEffect } from "react";
 
 const statements: Statement[] = [
   {
@@ -87,6 +88,9 @@ const statements: Statement[] = [
     "Indirect Object": "",
     "Type of Indirect Object": "",
     "Activation Condition": "",
+    // To test text wrapping uncomment line below, and comment line above
+    // "Activation Condition":
+    //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat",
     "Execution Constraint": "at least once every two years",
     "Or Else": "",
   },
@@ -123,6 +127,19 @@ function loadExample() {
 }
 
 export function LoadExampleButton() {
+  // Add keyboard shortcut for clearing data
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "e") {
+        e.preventDefault();
+        loadExample();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <Button title="Load Example" variant="outline" onClick={loadExample}>
       <Wand2Icon /> Load Example
