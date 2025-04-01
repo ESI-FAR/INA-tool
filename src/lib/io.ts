@@ -17,6 +17,7 @@ import { ZodType } from "zod";
 import { read as readXLSX, utils as utilsXLSX } from "xlsx";
 import { csvFormat, csvParse } from "d3-dsv";
 import { statementLabel } from "./utils";
+import { calcMaxComponentHeight } from "./textwrap";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
 
@@ -28,6 +29,9 @@ export function procesStatement(
   const edges: ComponentEdge[] = [];
   const id = statement.Id || fallBackId;
   const label = statementLabel(statement);
+
+  const maxComponentHeight = calcMaxComponentHeight(statement);
+
   const statementNode: StatementNode = {
     id,
     type: "statement",
@@ -36,7 +40,7 @@ export function procesStatement(
     style: {
       // TODO make smaller based on content
       width: 940,
-      height: DEFAULT_STATEMENT_HEIGHT,
+      height: Math.max(DEFAULT_STATEMENT_HEIGHT, maxComponentHeight),
     },
   };
   nodes.push(statementNode);

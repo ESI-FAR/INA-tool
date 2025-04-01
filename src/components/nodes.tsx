@@ -2,7 +2,6 @@ import { Statement, StatementType } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { Handle, NodeProps, NodeResizeControl, Position } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
-import { useMemo } from "react";
 import type {
   StatementNode,
   AttributeNode,
@@ -15,6 +14,9 @@ import type {
   INANode,
 } from "@/lib/node";
 import { bgColor } from "./drivenColors";
+import { hexagonPolygonPoints } from "@/lib/shapes";
+import { wrapText, lines2Box } from "@/lib/textwrap";
+import { useMemo } from "react";
 
 /*
 The statement graph should look like:
@@ -407,31 +409,6 @@ export function InDirectObjectNode({
 
 const drivenConnectionHandleStye = { width: 10, height: 10 } as const;
 
-function useWrappedText(text: string) {
-  // TODO make constants configurable as arguments
-  const maxCharsPerLine = 20;
-  const minCharsPerLine = 8;
-  const tokens = text.split(" ");
-  const lines = [];
-  let currentLine = "";
-  for (const token of tokens) {
-    if (currentLine.length + token.length <= maxCharsPerLine) {
-      currentLine += token + " ";
-    } else {
-      lines.push(currentLine.trim());
-      currentLine = token + " ";
-    }
-  }
-  if (currentLine) {
-    lines.push(currentLine);
-  }
-  const widthInChars = Math.max(...lines.map((l) => l.length), minCharsPerLine);
-  return {
-    widthInChars,
-    lines,
-  };
-}
-
 function Hexagon({
   text,
   selected,
@@ -439,35 +416,33 @@ function Hexagon({
   text: string;
   selected: boolean | undefined;
 }) {
-  const { widthInChars, lines } = useWrappedText(text);
-  // TODO make useHexagon hook that returns d,
-  // so code can be reused for different paths like parralelogram
-  const hexagonHeight = lines.length * 24; // Total height of hexagon
-  const centerHeight = hexagonHeight / 2;
-  // TODO any nr of lines look good, aka handles in right place and text inside path and text inside statement fieldset
-  // TODO dont use fractions
-  const sideLength = widthInChars * 12 * 0.1; // Length of the flat top/bottom sides
-  const hexagonWidth = widthInChars * 10; // Total width of hexagon
+  const sideWidth = 20;
+  const { lines, height, positions, points, width } = useMemo(() => {
+    const { widthInChars, lines } = wrapText(text);
+    const {
+      width: textboxWidth,
+      height,
+      positions,
+    } = lines2Box(lines, { widthInChars: widthInChars });
+    const points = hexagonPolygonPoints(height, textboxWidth, sideWidth);
+    const width = textboxWidth + sideWidth * 2;
+    return { lines, height, positions, points, width, sideWidth };
+  }, [text]);
 
-  const d = `M0,${centerHeight} L${sideLength},0 L${hexagonWidth - sideLength},0 L${hexagonWidth},${centerHeight} L${hexagonWidth - sideLength},${hexagonHeight} L${sideLength},${hexagonHeight} Z`;
-  const borderClassName = useMemo(
-    () =>
-      selected
-        ? "stroke-slate-900 dark:stroke-slate-100"
-        : "stroke-slate-400 dark:stroke-slate-400 group-hover:stroke-slate-900 dark:group-hover:stroke-slate-100",
-    [selected],
-  );
+  const borderClassName = selected
+    ? "stroke-slate-900 dark:stroke-slate-100"
+    : "stroke-slate-400 dark:stroke-slate-400 group-hover:stroke-slate-900 dark:group-hover:stroke-slate-100";
 
   return (
-    <svg width={hexagonWidth} height={hexagonHeight} className="group">
-      <path
-        d={d}
+    <svg width={width} height={height} className="group">
+      <polygon
+        points={points}
         strokeWidth="1"
         fill="transparent"
         className={borderClassName}
       />
-      {lines.map((line, index) => (
-        <text x={16} y={20 + index * 20} key={line}>
+      {lines.map((line, i) => (
+        <text x={sideWidth + positions[i].x} y={positions[i].y} key={line}>
           {line}
         </text>
       ))}
@@ -487,11 +462,6 @@ export function ActivationConditionNode({
         type="source"
         id="statement"
         className={isConnectable ? "" : "invisible"}
-        style={
-          {
-            // right: "14px"
-          }
-        }
         position={Position.Right}
         isConnectable={false}
       />
