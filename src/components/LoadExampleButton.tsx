@@ -88,6 +88,9 @@ const statements: Statement[] = [
     "Indirect Object": "",
     "Type of Indirect Object": "",
     "Activation Condition": "",
+    // To test text wrapping uncomment line below, and comment line above
+    // "Activation Condition":
+    //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat",
     "Execution Constraint": "at least once every two years",
     "Or Else": "",
   },
