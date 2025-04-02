@@ -3,6 +3,7 @@ import { findConnectionsByType } from "@/nlp/connectionFinding";
 import { preloadWordNetForStatements } from "@/nlp/fuzzyStringComparison";
 import { mockStatements } from "@/nlp/testData";
 
+// Preload WordNet before running tests
 if (mockStatements) {
   await preloadWordNetForStatements(mockStatements);
 }

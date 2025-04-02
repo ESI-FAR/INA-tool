@@ -25,7 +25,7 @@ export const mockStatements: Statement[] = [
     "Type of Direct Object": "animate",
     "Indirect Object": "",
     "Type of Indirect Object": "",
-    "Activation Condition": "if named storm and damage and not payed out",
+    "Activation Condition": "if named storm and damage and not paid out",
     "Execution Constraint": "",
     "Or Else": "",
   },
@@ -200,6 +200,46 @@ export const mockStatements: Statement[] = [
     "Or Else": "",
   },
 ] as const;
+
+type NegationEntry = {
+  word: string;
+  sent: string;
+};
+
+export const negationData: Record<string, NegationEntry[]> = {
+  true: [
+    {
+      word: "pay",
+      sent: "The service remains unpaid",
+    },
+    {
+      word: "pay",
+      sent: "if named storm and damage and not paid out",
+    },
+    {
+      word: "request",
+      sent: "This is not a request",
+    },
+    {
+      word: "not pay",
+      sent: "It should be paid",
+    },
+    {
+      word: "not request",
+      sent: "It should request from workers",
+    },
+  ],
+  false: [
+    {
+      word: "request",
+      sent: "This is a request for work",
+    },
+    {
+      word: "pay",
+      sent: "The service is paid",
+    },
+  ],
+};
 
 export const statements: Statement[] = [
   {
