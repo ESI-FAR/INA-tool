@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { checkWordOccurrence } from "@/nlp/negationDetection";
-import { negationData } from "@/nlp/testData";
+import { negationData } from "@/nlp/testdata/testData";
 
 describe("detectNegations", () => {
   test("true cases", async () => {

@@ -1,5 +1,5 @@
-import { wordNetRelations } from "@/nlp/wordNetRelations";
-import { negationPrefixes } from "@/nlp/wordNetNegationPrefixes";
+import { wordNetRelations } from "@/nlp/resources/wordNetRelations";
+import { negationPrefixes } from "@/nlp/resources/wordNetNegationPrefixes";
 import nlp from "compromise";
 
 // Define type interfaces to match the data structure
