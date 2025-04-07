@@ -36,7 +36,7 @@ export const Route = createRootRoute({
   component: () => {
     return (
       <>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <ThemeProvider>
           <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
