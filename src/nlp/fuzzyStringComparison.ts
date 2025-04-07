@@ -1,26 +1,38 @@
 import Fuse from "fuse.js";
-import natural from "natural";
+import nlp from "compromise";
 import { Statement } from "@/lib/schema";
 
-// Initialise wordnet instance
-const wn = new natural.WordNet();
+// Define interfaces for compromise.js conjugation results
+interface VerbConjugation {
+  PresentTense?: string;
+  PastTense?: string;
+  FutureTense?: string;
+  Gerund?: string;
+  [key: string]: string | undefined;
+}
+
+interface AdjectiveConjugation {
+  Comparative?: string;
+  Superlative?: string;
+  [key: string]: string | undefined;
+}
+
 // Maintain a global cache of word lookups
-const wordnetCache: Record<string, Promise<string[]>> = {};
+const wordCache: Record<string, Promise<string[]>> = {};
 // Keep track of precomputed word similarities
 const similarityCache: Record<string, Record<string, boolean>> = {};
 
 /**
- * Preloads WordNet for all words in all statements at once
+ * Preloads word data for all words in all statements at once
  * This should dramatically reduce the number of separate lookups
- * and reduce the size of search space (by only looking at words from
- * WordNet that are relevant to the input statements
+ * and reduce the size of search space
  * @param statements Array of Statement objects to extract words from
  * @returns A promise that resolves when preloading is complete
  */
 export async function preloadWordNetForStatements(
   statements: Statement[],
 ): Promise<void> {
-  console.log("Starting WordNet preloading...");
+  console.log("Starting word data preloading...");
   const startTime = performance.now();
 
   // Create a set of all unique words across all statements
@@ -70,24 +82,24 @@ export async function preloadWordNetForStatements(
 
   // Prepare batched lookup
   const words = Array.from(allWords);
-  console.log(`Preloading WordNet for ${words.length} unique words`);
+  console.log(`Preloading word data for ${words.length} unique words`);
 
   // Create and cache promises for all words at once
   for (const word of words) {
-    if (!wordnetCache[word]) {
-      wordnetCache[word] = getLemmas(word);
+    if (!wordCache[word]) {
+      wordCache[word] = getWordForms(word);
     }
   }
 
   // Wait for all lookups to complete in parallel
-  await Promise.all(Object.values(wordnetCache));
+  await Promise.all(Object.values(wordCache));
 
   // Pre-compute similarities between common words to avoid repeated comparisons
   await precomputeSimilarities(words);
 
   const endTime = performance.now();
   console.log(
-    `WordNet preloading completed in ${(endTime - startTime) / 1000} seconds`,
+    `Word data preloading completed in ${(endTime - startTime) / 1000} seconds`,
   );
 }
 
@@ -109,7 +121,7 @@ async function precomputeSimilarities(words: string[]): Promise<void> {
       if (j >= words.length) break;
 
       const word2 = words[j];
-      const similarity = await matchWithLemmatizerCached(word1, word2);
+      const similarity = await matchWithWordFormsCached(word1, word2);
 
       similarityCache[word1][word2] = similarity;
       // Store the reverse relationship too
@@ -122,38 +134,106 @@ async function precomputeSimilarities(words: string[]): Promise<void> {
 }
 
 /**
- * Get lemmas for a word from WordNet with caching
+ * Get different forms of a word using compromise.js
  */
-async function getLemmas(word: string): Promise<string[]> {
+async function getWordForms(word: string): Promise<string[]> {
   const lowerWord = word.toLowerCase();
 
   // Return cached result if available
-  if (Object.prototype.hasOwnProperty.call(wordnetCache, lowerWord)) {
-    const words = await wordnetCache[lowerWord]; // Await only if the key exists
+  if (Object.prototype.hasOwnProperty.call(wordCache, lowerWord)) {
+    const words = await wordCache[lowerWord]; // Await only if the key exists
     if (words?.length > 0) {
       // Prevents TypeError if words is undefined
       return words;
     }
   }
 
-  const promise = new Promise<string[]>((resolve) => {
-    wn.lookup(lowerWord, (results) => {
-      const lemmas = results.map((result) => result.lemma);
-      // If no lemmas found, use the original word
-      if (lemmas.length === 0) lemmas.push(lowerWord);
-      resolve(lemmas);
-    });
-  });
+  try {
+    // Use compromise to analyze the word
+    const doc = nlp(lowerWord);
+    const wordForms: string[] = [lowerWord]; // Always include the original word
 
-  // Cache the promise
-  wordnetCache[lowerWord] = promise;
-  return promise;
+    // Get verb conjugations
+    const verbs = doc.verbs();
+    if (verbs.found) {
+      // Get verb conjugation result with proper typing
+      const conjugations = verbs.conjugate()[0] as VerbConjugation;
+
+      // Get present tense
+      if (
+        conjugations?.PresentTense &&
+        !wordForms.includes(conjugations.PresentTense)
+      ) {
+        wordForms.push(conjugations.PresentTense);
+      }
+
+      // Get past tense
+      if (
+        conjugations?.PastTense &&
+        !wordForms.includes(conjugations.PastTense)
+      ) {
+        wordForms.push(conjugations.PastTense);
+      }
+
+      // Get future tense (remove 'will ' prefix)
+      if (conjugations?.FutureTense) {
+        const future = conjugations.FutureTense.replace("will ", "");
+        if (!wordForms.includes(future)) wordForms.push(future);
+      }
+
+      // Get gerund form
+      if (conjugations?.Gerund && !wordForms.includes(conjugations.Gerund)) {
+        wordForms.push(conjugations.Gerund);
+      }
+    }
+
+    // Get noun forms
+    const nouns = doc.nouns();
+    if (nouns.found) {
+      // Get plural form
+      const plural = nouns.toPlural().text();
+      if (plural && !wordForms.includes(plural)) wordForms.push(plural);
+
+      // Get singular form
+      const singular = nouns.toSingular().text();
+      if (singular && !wordForms.includes(singular)) wordForms.push(singular);
+    }
+
+    // Get adjective forms
+    const adjectives = doc.adjectives();
+    if (adjectives.found) {
+      // Get adjective conjugation result with proper typing
+      const adjConjugations = adjectives.conjugate()[0] as AdjectiveConjugation;
+
+      // Get comparative form
+      if (
+        adjConjugations?.Comparative &&
+        !wordForms.includes(adjConjugations.Comparative)
+      ) {
+        wordForms.push(adjConjugations.Comparative);
+      }
+
+      // Get superlative form
+      if (
+        adjConjugations?.Superlative &&
+        !wordForms.includes(adjConjugations.Superlative)
+      ) {
+        wordForms.push(adjConjugations.Superlative);
+      }
+    }
+
+    return wordForms;
+  } catch (error) {
+    console.error(`Error getting word forms for ${lowerWord}:`, error);
+    // If there's an error, return the original word
+    return [lowerWord];
+  }
 }
 
 /**
- * Match two words using WordNet lemmatization with cached results
+ * Match two words using their different forms with cached results
  */
-export async function matchWithLemmatizerCached(
+export async function matchWithWordFormsCached(
   word1: string,
   word2: string,
 ): Promise<boolean> {
@@ -168,15 +248,15 @@ export async function matchWithLemmatizerCached(
     return similarityCache[word1][word2];
   }
 
-  // Get lemmas for both words from cache or compute them
-  const [lemmas1, lemmas2] = await Promise.all([
-    getLemmas(word1),
-    getLemmas(word2),
+  // Get word forms for both words from cache or compute them
+  const [forms1, forms2] = await Promise.all([
+    getWordForms(word1),
+    getWordForms(word2),
   ]);
 
-  // Check if any lemmas match
-  const hasMatch = lemmas1.some((lemma1) =>
-    lemmas2.some((lemma2) => lemma1 === lemma2),
+  // Check if any forms match
+  const hasMatch = forms1.some((form1) =>
+    forms2.some((form2) => form1 === form2),
   );
 
   // Cache the result
@@ -193,13 +273,13 @@ export async function matchWithLemmatizerCached(
  */
 export function resetWordNetCache(): void {
   // Clear all cached data
-  Object.keys(wordnetCache).forEach((key) => delete wordnetCache[key]);
+  Object.keys(wordCache).forEach((key) => delete wordCache[key]);
   Object.keys(similarityCache).forEach((key) => delete similarityCache[key]);
-  console.log("WordNet cache reset");
+  console.log("Word cache reset");
 }
 
 /**
- * Optimized version of fuzzyIncludes that uses cached WordNet lookups
+ * Optimized version of fuzzyIncludes that uses cached word form lookups
  */
 export async function fuzzyIncludesOptimized(
   word: string,
@@ -218,13 +298,13 @@ export async function fuzzyIncludesOptimized(
     return true;
   }
 
-  // Now use WordNet...
+  // Now use compromise...
 
   // Process all words in parallel using cached lookups
   const words = sentence.split(/\s+/);
 
   // Map to an array of promises for matching each word
-  const matchPromises = words.map((w) => matchWithLemmatizerCached(w, word));
+  const matchPromises = words.map((w) => matchWithWordFormsCached(w, word));
 
   // Wait for all matches to complete and check if any are true
   const matchResults = await Promise.all(matchPromises);

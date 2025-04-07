@@ -3,6 +3,7 @@ import {
   fuzzyIncludesOptimized,
   fuzzyMatchOptimized,
 } from "@/nlp/fuzzyStringComparison";
+import { checkWordOccurrence } from "@/nlp/negationDetection";
 
 /**
  * Defines the rules for Actor-driven connections.
@@ -178,8 +179,6 @@ async function findSanctionDrivenConnections(
   const connections: Connection[] = [];
 
   const sourceAim = source.Aim ?? "";
-  const sourceDeontic = source.Deontic ?? "";
-  const sourceDeonticContainsNegation = sourceDeontic.includes("not");
   const aimBase = sourceAim.replace(/s$/, ""); // Remove trailing 's' if present
 
   const targetActivationCondition = target["Activation Condition"] ?? "";
@@ -205,13 +204,8 @@ async function findSanctionDrivenConnections(
     " " +
     targetOrElse;
 
-  let adjustedAim = aimBase;
-  if (!sourceDeonticContainsNegation) {
-    adjustedAim = "not " + adjustedAim;
-  }
-
   try {
-    const rule = await fuzzyIncludesOptimized(adjustedAim, targetSentence);
+    const rule = await checkWordOccurrence(aimBase, true, targetSentence);
     if (rule) {
       connections.push({
         source_statement: source.Id,
