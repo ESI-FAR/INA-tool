@@ -84,7 +84,7 @@ export const drivenColors = {
   actor: "#a855f7",
   outcome: "#22c55e",
   sanction: "#ef4444",
-  conflict: "#ef4444",
+  conflict: "#fd9a00",
 } as const;
 
 export function isDrivenConnection(

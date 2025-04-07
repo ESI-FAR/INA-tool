@@ -80,7 +80,7 @@ function BaseLegend({
           <EdgeLegend className={textColor.sanction} text="Sanction driven" />
           <li className="flex items-center gap-2">
             <div className="w-8">
-              <DashedIcon className="text-red-500" />
+              <DashedIcon className="text-amber-500" />
             </div>
             <div>Conflict</div>
           </li>

@@ -14,6 +14,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { Route as rootRoute } from "./routes/__root";
 import { Route as PrivacyPolicyImport } from "./routes/privacy-policy";
+import { Route as AnalysisNlpImport } from "./routes/analysis/nlp";
 
 // Create Virtual Routes
 
@@ -77,6 +78,12 @@ const NetworkCompLazyRoute = NetworkCompLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import("./routes/network/comp.lazy").then((d) => d.Route));
 
+const AnalysisNlpRoute = AnalysisNlpImport.update({
+  id: "/analysis/nlp",
+  path: "/analysis/nlp",
+  getParentRoute: () => rootRoute,
+} as any);
+
 // Populate the FileRoutesByPath interface
 
 declare module "@tanstack/react-router" {
@@ -123,6 +130,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof StatementsLazyImport;
       parentRoute: typeof rootRoute;
     };
+    "/analysis/nlp": {
+      id: "/analysis/nlp";
+      path: "/analysis/nlp";
+      fullPath: "/analysis/nlp";
+      preLoaderRoute: typeof AnalysisNlpImport;
+      parentRoute: typeof rootRoute;
+    };
     "/network/comp": {
       id: "/network/comp";
       path: "/network/comp";
@@ -149,6 +163,7 @@ export interface FileRoutesByFullPath {
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/analysis/nlp": typeof AnalysisNlpRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
 }
@@ -160,6 +175,7 @@ export interface FileRoutesByTo {
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/analysis/nlp": typeof AnalysisNlpRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
 }
@@ -172,6 +188,7 @@ export interface FileRoutesById {
   "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/analysis/nlp": typeof AnalysisNlpRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
 }
@@ -185,6 +202,7 @@ export interface FileRouteTypes {
     | "/connections"
     | "/help"
     | "/statements"
+    | "/analysis/nlp"
     | "/network/comp"
     | "/network/statement";
   fileRoutesByTo: FileRoutesByTo;
@@ -195,6 +213,7 @@ export interface FileRouteTypes {
     | "/connections"
     | "/help"
     | "/statements"
+    | "/analysis/nlp"
     | "/network/comp"
     | "/network/statement";
   id:
@@ -205,6 +224,7 @@ export interface FileRouteTypes {
     | "/connections"
     | "/help"
     | "/statements"
+    | "/analysis/nlp"
     | "/network/comp"
     | "/network/statement";
   fileRoutesById: FileRoutesById;
@@ -217,6 +237,7 @@ export interface RootRouteChildren {
   ConnectionsLazyRoute: typeof ConnectionsLazyRoute;
   HelpLazyRoute: typeof HelpLazyRoute;
   StatementsLazyRoute: typeof StatementsLazyRoute;
+  AnalysisNlpRoute: typeof AnalysisNlpRoute;
   NetworkCompLazyRoute: typeof NetworkCompLazyRoute;
   NetworkStatementLazyRoute: typeof NetworkStatementLazyRoute;
 }
@@ -228,6 +249,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConnectionsLazyRoute: ConnectionsLazyRoute,
   HelpLazyRoute: HelpLazyRoute,
   StatementsLazyRoute: StatementsLazyRoute,
+  AnalysisNlpRoute: AnalysisNlpRoute,
   NetworkCompLazyRoute: NetworkCompLazyRoute,
   NetworkStatementLazyRoute: NetworkStatementLazyRoute,
 };
@@ -248,6 +270,7 @@ export const routeTree = rootRoute
         "/connections",
         "/help",
         "/statements",
+        "/analysis/nlp",
         "/network/comp",
         "/network/statement"
       ]
@@ -269,6 +292,9 @@ export const routeTree = rootRoute
     },
     "/statements": {
       "filePath": "statements.lazy.tsx"
+    },
+    "/analysis/nlp": {
+      "filePath": "analysis/nlp.tsx"
     },
     "/network/comp": {
       "filePath": "network/comp.lazy.tsx"
