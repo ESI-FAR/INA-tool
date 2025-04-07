@@ -63,6 +63,7 @@ import { ButtonWithTooltip } from "./ButtonWithTooltip";
 import { Block, Link } from "@tanstack/react-router";
 import { selectColumnDefinition } from "./selectColumnDefinition";
 import { DeleteSelectedButton } from "./DeleteSelectedButton";
+import { useSidebar } from "./ui/sidebar";
 
 const columns: ColumnDef<Statement>[] = [
   selectColumnDefinition(),
@@ -306,8 +307,13 @@ export function StatementTable() {
     [connectionsOfComponent, removeConnections, updateStatement],
   );
 
+  const { open: sidebarOpen, isMobile } = useSidebar();
+  const tableWidth = sidebarOpen
+    ? "calc(100vw - 4rem - 16rem)"
+    : "calc(100vw - 4rem)";
+
   return (
-    <div className="w-full">
+    <div className="flex w-full flex-col">
       <h1 className="text-xl">Statements</h1>
       <div className="flex justify-between gap-4 py-2">
         <Input
@@ -319,86 +325,93 @@ export function StatementTable() {
         />
         <DownloadStatementButton />
       </div>
-      {/* TODO show vertical scrollbar if window is too small */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                <TableHead></TableHead>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <Block
-            shouldBlockFn={() => {
-              if (!editing) return false;
+      {/* Table container with horizontal scrolling */}
+      <div className="flex flex-grow flex-col rounded-md border">
+        <div
+          className="w-full overflow-x-auto"
+          style={isMobile ? {} : { width: tableWidth }}
+        >
+          <Table className="w-full">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  <TableHead></TableHead>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <Block
+              shouldBlockFn={() => {
+                if (!editing) return false;
 
-              const shouldLeave = confirm(
-                "You have unsaved changes. Are you sure you want to leave?",
-              );
-              return !shouldLeave;
-            }}
-          />
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => {
-                if (editing && row.original.Id === editing.Id) {
+                const shouldLeave = confirm(
+                  "You have unsaved changes. Are you sure you want to leave?",
+                );
+                return !shouldLeave;
+              }}
+            />
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => {
+                  if (editing && row.original.Id === editing.Id) {
+                    return (
+                      <EditRow
+                        key={row.id}
+                        row={row}
+                        onSave={(statement) => {
+                          setEditing(null);
+                          onSave(statement, row.original);
+                        }}
+                        onCancel={() => {
+                          // When a new statement is added and then cancelled, it should be removed
+                          const result = statementSchema.safeParse(
+                            row.original,
+                          );
+                          if (!result.success) {
+                            removeStatement(row.original.Id);
+                          }
+                          setEditing(null);
+                        }}
+                      />
+                    );
+                  }
                   return (
-                    <EditRow
+                    <ShowRow
                       key={row.id}
                       row={row}
-                      onSave={(statement) => {
-                        setEditing(null);
-                        onSave(statement, row.original);
+                      setEditing={(v) => {
+                        setEditing(v);
+                        row.toggleSelected(false);
                       }}
-                      onCancel={() => {
-                        // When a new statement is added and then cancelled, it should be removed
-                        const result = statementSchema.safeParse(row.original);
-                        if (!result.success) {
-                          removeStatement(row.original.Id);
-                        }
-                        setEditing(null);
-                      }}
+                      editingId={editing ? editing.Id : undefined}
                     />
                   );
-                }
-                return (
-                  <ShowRow
-                    key={row.id}
-                    row={row}
-                    setEditing={(v) => {
-                      setEditing(v);
-                      row.toggleSelected(false);
-                    }}
-                    editingId={editing ? editing.Id : undefined}
-                  />
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={12}
-                  className="h-24 text-center text-gray-500"
-                >
-                  No statements found. Please add statement by using "Add
-                  statement" button or upload a file.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                })
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={12}
+                    className="h-24 text-center text-gray-500"
+                  >
+                    No statements found. Please add statement by using "Add
+                    statement" button or upload a file.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       <div className="flex justify-between gap-4 py-2">
         <ButtonWithTooltip
