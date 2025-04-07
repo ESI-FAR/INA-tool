@@ -51,7 +51,7 @@ const applyStatementLevelValidations = (
       path: ["Direct Object"],
     });
   }
-  if (data["Direct Object"] && !data["Type of Direct Object"]) {
+  if (data["Direct Object"] && !("Type of Direct Object" in data)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Must be set when "Direct Object" is set',
@@ -66,7 +66,7 @@ const applyStatementLevelValidations = (
       path: ["Indirect Object"],
     });
   }
-  if (data["Indirect Object"] && !data["Type of Indirect Object"]) {
+  if (data["Indirect Object"] && !("Type of Indirect Object" in data)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Must be set when "Indirect Object" is set',
