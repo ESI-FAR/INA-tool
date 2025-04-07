@@ -99,19 +99,18 @@ export function AppSidebar() {
               <SidebarGroup>
                 <SidebarGroupLabel>Analysis</SidebarGroupLabel>
                 <SidebarGroupContent>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <Link
-                          to="/analysis/nlp"
-                          activeProps={{ className: "font-bold" }}
-                        >
-                          <CircleHelpIcon />
-                          <span>NLP Analysis</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                   
-                    </SidebarGroupContent>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        to="/analysis/nlp"
+                        activeProps={{ className: "font-bold" }}
+                      >
+                        <CircleHelpIcon />
+                        <span>NLP Analysis</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarGroupContent>
               </SidebarGroup>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
