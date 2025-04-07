@@ -442,7 +442,12 @@ function Hexagon({
         className={borderClassName}
       />
       {lines.map((line, i) => (
-        <text x={sideWidth + positions[i].x} y={positions[i].y} key={line}>
+        <text
+          x={sideWidth + positions[i].x}
+          y={positions[i].y}
+          key={line}
+          className="fill-primary"
+        >
           {line}
         </text>
       ))}
