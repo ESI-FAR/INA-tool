@@ -22,7 +22,7 @@ export function ProjectName() {
       >
         <input
           defaultValue={name}
-          className="mx-1 rounded border-2 bg-background p-1 text-xl"
+          className="mx-1 w-48 rounded border-2 bg-background p-1 text-xl"
           maxLength={200}
           minLength={1}
           ref={inputRef}
