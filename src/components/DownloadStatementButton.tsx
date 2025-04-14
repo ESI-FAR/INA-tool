@@ -1,11 +1,15 @@
 import { DownloadIcon } from "lucide-react";
 import { Button } from "./ui/button";
-import { store } from "@/stores/global";
-import { downloadCsvFile } from "@/lib/io";
+import { downloadCsvFile, getSanctionedStatements } from "@/lib/io";
 import { statementColumns } from "@/lib/schema";
+import { store } from "@/stores/global";
 
 function downloadCSV() {
-  downloadCsvFile(store.getState().statements, statementColumns, "statements");
+  const sanctionedStatements = getSanctionedStatements(
+    store.getState().statements,
+    store.getState().connections,
+  );
+  downloadCsvFile(sanctionedStatements, statementColumns, "statements");
 }
 
 export function DownloadStatementButton() {

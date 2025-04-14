@@ -263,7 +263,7 @@ export function deriveConnectionsFromStatements(
       target_component: "Activation Condition",
       driven_by: "sanction",
     });
-    delete statement["Or Else"];
+    statement["Or Else"] = "";
   }
 
   return connections;
@@ -324,4 +324,23 @@ export function downloadCsvFile<T extends object>(
   const content = csvFormat(rows, columns);
   const file = new File([content], fn, { type: "text/csv" });
   download(file);
+}
+
+export function getSanctionedStatements(
+  statements: Statement[],
+  connections: Connection[],
+) {
+  const sanctionedStatements = statements;
+  const sanctionSourceStatement = new Map(
+    connections
+      .filter((c) => c.driven_by === "sanction")
+      .map((c) => [c.source_statement, c.target_statement]),
+  );
+  for (const statement of sanctionedStatements) {
+    const sanctionTargetStatement = sanctionSourceStatement.get(statement.Id);
+    if (sanctionTargetStatement) {
+      statement["Or Else"] = sanctionTargetStatement;
+    }
+  }
+  return sanctionedStatements;
 }

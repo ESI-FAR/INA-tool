@@ -64,6 +64,7 @@ import { Block, Link } from "@tanstack/react-router";
 import { selectColumnDefinition } from "./selectColumnDefinition";
 import { DeleteSelectedButton } from "./DeleteSelectedButton";
 import { useSidebar } from "./ui/sidebar";
+import { getSanctionedStatements } from "@/lib/io";
 
 const columns: ColumnDef<Statement>[] = [
   selectColumnDefinition(),
@@ -148,6 +149,16 @@ const columns: ColumnDef<Statement>[] = [
       choices: TypeOfObject.options,
     },
   },
+  {
+    accessorKey: "Or Else",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Or Else" />
+    ),
+    meta: {
+      editable:
+        "To edit goto to connections table page or network pages and edit as saction driven connection",
+    },
+  },
 ];
 
 export function StatementTable() {
@@ -158,8 +169,12 @@ export function StatementTable() {
     deleteStatements,
     updateStatement,
   } = useStatements();
-  const { connectionsOfStatement, removeConnections, connectionsOfComponent } =
-    useConnections();
+  const {
+    connectionsOfStatement,
+    removeConnections,
+    connectionsOfComponent,
+    connections,
+  } = useConnections();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   // TODO reset editing when you replace the statements by uploading a file or loading the example
@@ -167,8 +182,12 @@ export function StatementTable() {
   const [needsToGoToLastPage, setNeedsToGoToLastPage] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
+  const sanctionedStatements = useMemo(() => {
+    return getSanctionedStatements(statements, connections);
+  }, [connections, statements]);
+
   const table = useReactTable({
-    data: statements,
+    data: sanctionedStatements,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -595,10 +614,19 @@ function EditRow({
             editable?: boolean;
             choices?: string[];
           };
-          if (meta && meta.editable !== undefined && meta.editable === false) {
+          if (
+            meta &&
+            meta.editable !== undefined &&
+            (meta.editable === false || typeof meta.editable === "string")
+          ) {
             return (
               <TableCell key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                {typeof meta.editable === "string" && (
+                  <div className="text-xs text-muted-foreground">
+                    {meta.editable}
+                  </div>
+                )}
               </TableCell>
             );
           }
