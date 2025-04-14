@@ -10,7 +10,7 @@ import {
   StatementNode,
   StatementRelatedNode,
 } from "./node";
-import { Statement } from "./schema";
+import { Connection, Statement } from "./schema";
 import { ComponentEdge } from "./edge";
 import { store } from "../stores/global";
 import { ZodType } from "zod";
@@ -215,10 +215,58 @@ export function download(file: File) {
   a.remove();
 }
 
-export function loadStatements(statements: Statement[]) {
+export function loadStatements(
+  statements: Statement[],
+  connections: Connection[] = [],
+) {
   store.getState().setStatements(statements);
-  store.getState().setConnections([]);
+  store.getState().setConnections(connections);
   store.getState().setConflicts([]);
+}
+
+/**
+ * If statement has filled in the Or Else field and its value is a statement id that exists
+ * and that statment has a activation condition,
+ * then between those two statements a sanction connection can be returned.
+ *
+ * @param statements
+ * @returns sanction connections
+ *
+ * @throws when the Or Else field is not a valid statement id
+ * @throws when the Or Else field points to a statement that does not have an activation condition
+ */
+export function deriveConnectionsFromStatements(
+  statements: Statement[],
+): Connection[] {
+  const connections: Connection[] = [];
+  const statementMap = new Map(statements.map((s) => [s.Id, s]));
+  for (const statement of statements) {
+    if (!statement["Or Else"]) {
+      continue;
+    }
+    const orElseId = statement["Or Else"];
+    const orElseStatement = statementMap.get(orElseId);
+    if (!orElseStatement) {
+      throw new InvalidConnectionError(
+        `Or Else value "${orElseId}" in statement ${statement.Id} is not a valid statement id`,
+      );
+    }
+    if (!orElseStatement["Activation Condition"]) {
+      throw new InvalidConnectionError(
+        `Statement ${orElseId} does not have an activation condition for sanction from ${statement.Id} Or Else`,
+      );
+    }
+    connections.push({
+      source_statement: statement.Id,
+      source_component: "Aim",
+      target_statement: orElseId,
+      target_component: "Activation Condition",
+      driven_by: "sanction",
+    });
+    delete statement["Or Else"];
+  }
+
+  return connections;
 }
 
 export async function parseCsvFile<T>(

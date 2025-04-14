@@ -4,7 +4,12 @@ import {
   StatementsWithOptionalId,
   statementsSchema,
 } from "@/lib/schema";
-import { loadStatements, parseCsvFile, parseXLSXFile } from "@/lib/io";
+import {
+  deriveConnectionsFromStatements,
+  loadStatements,
+  parseCsvFile,
+  parseXLSXFile,
+} from "@/lib/io";
 import { json2project } from "@/lib/project2json";
 import { AbstractUploadButton } from "./AbstractUploadButton";
 
@@ -32,13 +37,15 @@ function fillIds(data: StatementsWithOptionalId): Statement[] {
 async function processCSVFile(file: File) {
   const statements = await parseCsvFile(file, statementsSchema);
   const statementsWithIds = fillIds(statements);
-  loadStatements(statementsWithIds);
+  const connections = deriveConnectionsFromStatements(statementsWithIds);
+  loadStatements(statementsWithIds, connections);
 }
 
 async function processXLXSFile(file: File) {
   const statements = await parseXLSXFile(file, statementsSchema);
   const statementsWithIds = fillIds(statements);
-  loadStatements(statementsWithIds);
+  const connections = deriveConnectionsFromStatements(statementsWithIds);
+  loadStatements(statementsWithIds, connections);
 }
 
 function projectNameFromFile(file: File) {

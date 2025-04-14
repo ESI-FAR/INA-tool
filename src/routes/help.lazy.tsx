@@ -79,6 +79,11 @@ function RouteComponent() {
         Any existing statements will be deleted and replaced by the uploaded
         statements.
       </p>
+      <p>
+        If the "Or Else" column is filled a sanction driven connection will be
+        made from that rows "Aim" to the "Activation Condition" of the statement
+        with the id in the "Or Else" column.
+      </p>
       <h3 className="py-4 text-xl">Upload your file with connections</h3>
       <p>
         On the{" "}
@@ -507,7 +512,9 @@ function RouteComponent() {
         <li>
           <strong>Download:</strong> Click on the{" "}
           <DownloadIcon className="inline" /> download button to download the
-          statements as a CSV file.
+          statements as a CSV file. When CSV/XLSX was uploaded with values in
+          "Or Else" column then those values have been moved to the connections
+          table as sanctions.
         </li>
         <li>
           <strong>Connections:</strong> To go to the connections of a statement

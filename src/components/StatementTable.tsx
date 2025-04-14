@@ -148,12 +148,6 @@ const columns: ColumnDef<Statement>[] = [
       choices: TypeOfObject.options,
     },
   },
-  {
-    accessorKey: "Or Else",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Or Else" />
-    ),
-  },
 ];
 
 export function StatementTable() {
