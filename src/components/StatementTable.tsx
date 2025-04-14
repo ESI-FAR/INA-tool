@@ -156,7 +156,7 @@ const columns: ColumnDef<Statement>[] = [
     ),
     meta: {
       editable:
-        "To edit goto to connections table page or network pages and edit as saction driven connection",
+        "To edit sanction connection goto to connections table page or network pages",
     },
   },
 ];
@@ -623,7 +623,7 @@ function EditRow({
               <TableCell key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 {typeof meta.editable === "string" && (
-                  <div className="text-xs text-muted-foreground">
+                  <div className="w-36 text-xs text-muted-foreground">
                     {meta.editable}
                   </div>
                 )}
