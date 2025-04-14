@@ -327,9 +327,9 @@ export function downloadCsvFile<T extends object>(
 }
 
 /**
- * Returns a new array of statements with the "Or Else" field filled in 
+ * Returns a new array of statements with the "Or Else" field filled in
  * with optional sanction driven connections.
- * 
+ *
  * @param statements
  * @param connections
  */
