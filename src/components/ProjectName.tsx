@@ -22,7 +22,7 @@ export function ProjectName() {
       >
         <input
           defaultValue={name}
-          className="mx-1 rounded border-2 bg-background p-1"
+          className="mx-1 rounded border-2 bg-background p-1 text-xl"
           maxLength={200}
           minLength={1}
           ref={inputRef}
@@ -50,7 +50,7 @@ export function ProjectName() {
 
   return (
     <button
-      className="flex flex-row"
+      className="flex flex-row text-xl"
       title="Click to change project name"
       onClick={() => {
         setEditing(true);
