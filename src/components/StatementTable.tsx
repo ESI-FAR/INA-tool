@@ -279,7 +279,7 @@ export function StatementTable() {
           onChange={(e) => table.setGlobalFilter(String(e.target.value))}
           placeholder="Search..."
         />
-        <DownloadStatementButton />
+        <DownloadStatementButton statements={sanctionedStatements} />
       </div>
       {/* Table container with horizontal scrolling */}
       <div className="flex flex-grow flex-col rounded-md border">

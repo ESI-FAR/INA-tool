@@ -326,21 +326,30 @@ export function downloadCsvFile<T extends object>(
   download(file);
 }
 
+/**
+ * Returns a new array of statements with the "Or Else" field filled in 
+ * with optional sanction driven connections.
+ * 
+ * @param statements
+ * @param connections
+ */
 export function getSanctionedStatements(
   statements: Statement[],
   connections: Connection[],
-) {
-  const sanctionedStatements = statements;
+): Statement[] {
   const sanctionSourceStatement = new Map(
     connections
       .filter((c) => c.driven_by === "sanction")
       .map((c) => [c.source_statement, c.target_statement]),
   );
-  for (const statement of sanctionedStatements) {
+  return statements.map((statement) => {
     const sanctionTargetStatement = sanctionSourceStatement.get(statement.Id);
     if (sanctionTargetStatement) {
-      statement["Or Else"] = sanctionTargetStatement;
+      return {
+        ...statement,
+        "Or Else": sanctionTargetStatement,
+      };
     }
-  }
-  return sanctionedStatements;
+    return statement;
+  });
 }
