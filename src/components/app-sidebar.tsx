@@ -41,7 +41,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Project</SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuItem className="pl-2">
+            <SidebarMenuItem className="px-2">
               <ProjectName />
             </SidebarMenuItem>
           </SidebarMenu>
