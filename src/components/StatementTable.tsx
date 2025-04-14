@@ -50,7 +50,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { useStatements } from "../hooks/use-statements";
+import { useStatementDeleter, useStatements } from "../hooks/use-statements";
 import { useConnections } from "@/hooks/use-connections";
 import {
   Select,
@@ -162,19 +162,9 @@ const columns: ColumnDef<Statement>[] = [
 ];
 
 export function StatementTable() {
-  const {
-    statements,
-    createFreshStatement,
-    deleteStatement,
-    deleteStatements,
-    updateStatement,
-  } = useStatements();
-  const {
-    connectionsOfStatement,
-    removeConnections,
-    connectionsOfComponent,
-    connections,
-  } = useConnections();
+  const { statements, createFreshStatement, updateStatement } = useStatements();
+  const { removeConnections, connectionsOfComponent, connections } =
+    useConnections();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   // TODO reset editing when you replace the statements by uploading a file or loading the example
@@ -221,54 +211,7 @@ export function StatementTable() {
     }
   }, [needsToGoToLastPage, table]);
 
-  const removeStatement = useCallback(
-    (id: string) => {
-      // Check statement is unconnected
-      const connections = connectionsOfStatement(id);
-      if (connections.length > 0) {
-        // If statement is connected, ask for confirmation and remove connection as well
-        if (
-          window.confirm(
-            "This statement is connected to other statement(s). Deleting it will also delete those connections. Are you sure you want to delete it?",
-          )
-        ) {
-          removeConnections(connections);
-          deleteStatement(id);
-        } else {
-          // Do nothing
-        }
-      } else {
-        // If statement is unconnected, remove it
-        deleteStatement(id);
-      }
-    },
-    [connectionsOfStatement, removeConnections, deleteStatement],
-  );
-
-  const removeStatements = useCallback(
-    (ids: string[]) => {
-      const connections2delete: Connection[] = [];
-      for (const id of ids) {
-        // Check statement is unconnected
-        const connections = connectionsOfStatement(id);
-        if (connections.length > 0) {
-          // If statement is connected, ask for confirmation and remove connection as well
-          if (
-            window.confirm(
-              `Statement ${id} is connected to other statement(s). Deleting it will also delete those connections. Are you sure you want to delete it?`,
-            )
-          ) {
-            connections2delete.push(...connections);
-          } else {
-            return;
-          }
-        }
-      }
-      deleteStatements(ids);
-      removeConnections(connections2delete);
-    },
-    [deleteStatements, removeConnections, connectionsOfStatement],
-  );
+  const removeStatements = useStatementDeleter();
 
   const onSave = useCallback(
     (tosave: Statement, previous: Statement) => {
@@ -392,7 +335,7 @@ export function StatementTable() {
                             row.original,
                           );
                           if (!result.success) {
-                            removeStatement(row.original.Id);
+                            removeStatements([row.original.Id]);
                           }
                           setEditing(null);
                         }}

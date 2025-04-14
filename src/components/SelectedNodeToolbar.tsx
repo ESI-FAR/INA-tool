@@ -9,10 +9,10 @@ import { isStatementNode, StatementNode } from "@/lib/node";
 import { StatementCard } from "./StatementCard";
 import { Button } from "./ui/button";
 import { EyeOff, TrashIcon } from "lucide-react";
-import { useStatements } from "@/hooks/use-statements";
+import { useStatementDeleter } from "@/hooks/use-statements";
 
 export function SelectedNodeToolbar() {
-  const { deleteStatements } = useStatements();
+  const removeStatement = useStatementDeleter();
   const [selectedNodes, setSelectedNodes] = useState<StatementNode[]>([]);
   const onChange = useCallback(({ nodes }: { nodes: Node[] }) => {
     setSelectedNodes(nodes.filter(isStatementNode));
@@ -46,13 +46,7 @@ export function SelectedNodeToolbar() {
           title="Delete selected statements"
           variant="ghost"
           onClick={() => {
-            if (
-              confirm(
-                `Are you sure you want to delete the ${selectedNodes.length} selected statements?`,
-              )
-            ) {
-              deleteStatements(selectedNodes.map((s) => s.id));
-            }
+            removeStatement(selectedNodes.map((s) => s.id));
           }}
           size="icon"
           className="text-destructive"
