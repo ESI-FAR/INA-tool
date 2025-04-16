@@ -4,12 +4,14 @@ import { ComponentNetwork } from "@/components/ComponentNetwork";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { ReactFlowProvider } from "@xyflow/react";
 import { ComponentNetworkMenu } from "@/components/ComponentNetworkMenu";
+import { useLibAvoid } from "@/components/edges";
 
 export const Route = createLazyFileRoute("/network/comp")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  useLibAvoid();
   return (
     <ReactFlowProvider>
       <div className="flex h-full flex-col">
