@@ -19,11 +19,14 @@ import { Route as PrivacyPolicyImport } from "./routes/privacy-policy";
 
 const StatementsLazyImport = createFileRoute("/statements")();
 const HelpLazyImport = createFileRoute("/help")();
-const ConnectionsLazyImport = createFileRoute("/connections")();
 const ConflictsLazyImport = createFileRoute("/conflicts")();
 const IndexLazyImport = createFileRoute("/")();
+const ConnectionsIndexLazyImport = createFileRoute("/connections/")();
 const NetworkStatementLazyImport = createFileRoute("/network/statement")();
 const NetworkCompLazyImport = createFileRoute("/network/comp")();
+const ConnectionsStatementLazyImport = createFileRoute(
+  "/connections/$statement",
+)();
 
 // Create/Update Routes
 
@@ -38,12 +41,6 @@ const HelpLazyRoute = HelpLazyImport.update({
   path: "/help",
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import("./routes/help.lazy").then((d) => d.Route));
-
-const ConnectionsLazyRoute = ConnectionsLazyImport.update({
-  id: "/connections",
-  path: "/connections",
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import("./routes/connections.lazy").then((d) => d.Route));
 
 const ConflictsLazyRoute = ConflictsLazyImport.update({
   id: "/conflicts",
@@ -63,6 +60,14 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import("./routes/index.lazy").then((d) => d.Route));
 
+const ConnectionsIndexLazyRoute = ConnectionsIndexLazyImport.update({
+  id: "/connections/",
+  path: "/connections/",
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import("./routes/connections/index.lazy").then((d) => d.Route),
+);
+
 const NetworkStatementLazyRoute = NetworkStatementLazyImport.update({
   id: "/network/statement",
   path: "/network/statement",
@@ -76,6 +81,14 @@ const NetworkCompLazyRoute = NetworkCompLazyImport.update({
   path: "/network/comp",
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import("./routes/network/comp.lazy").then((d) => d.Route));
+
+const ConnectionsStatementLazyRoute = ConnectionsStatementLazyImport.update({
+  id: "/connections/$statement",
+  path: "/connections/$statement",
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import("./routes/connections/$statement.lazy").then((d) => d.Route),
+);
 
 // Populate the FileRoutesByPath interface
 
@@ -102,13 +115,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ConflictsLazyImport;
       parentRoute: typeof rootRoute;
     };
-    "/connections": {
-      id: "/connections";
-      path: "/connections";
-      fullPath: "/connections";
-      preLoaderRoute: typeof ConnectionsLazyImport;
-      parentRoute: typeof rootRoute;
-    };
     "/help": {
       id: "/help";
       path: "/help";
@@ -121,6 +127,13 @@ declare module "@tanstack/react-router" {
       path: "/statements";
       fullPath: "/statements";
       preLoaderRoute: typeof StatementsLazyImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/connections/$statement": {
+      id: "/connections/$statement";
+      path: "/connections/$statement";
+      fullPath: "/connections/$statement";
+      preLoaderRoute: typeof ConnectionsStatementLazyImport;
       parentRoute: typeof rootRoute;
     };
     "/network/comp": {
@@ -137,6 +150,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof NetworkStatementLazyImport;
       parentRoute: typeof rootRoute;
     };
+    "/connections/": {
+      id: "/connections/";
+      path: "/connections";
+      fullPath: "/connections";
+      preLoaderRoute: typeof ConnectionsIndexLazyImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
@@ -146,22 +166,24 @@ export interface FileRoutesByFullPath {
   "/": typeof IndexLazyRoute;
   "/privacy-policy": typeof PrivacyPolicyRoute;
   "/conflicts": typeof ConflictsLazyRoute;
-  "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/connections/$statement": typeof ConnectionsStatementLazyRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
+  "/connections": typeof ConnectionsIndexLazyRoute;
 }
 
 export interface FileRoutesByTo {
   "/": typeof IndexLazyRoute;
   "/privacy-policy": typeof PrivacyPolicyRoute;
   "/conflicts": typeof ConflictsLazyRoute;
-  "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/connections/$statement": typeof ConnectionsStatementLazyRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
+  "/connections": typeof ConnectionsIndexLazyRoute;
 }
 
 export interface FileRoutesById {
@@ -169,11 +191,12 @@ export interface FileRoutesById {
   "/": typeof IndexLazyRoute;
   "/privacy-policy": typeof PrivacyPolicyRoute;
   "/conflicts": typeof ConflictsLazyRoute;
-  "/connections": typeof ConnectionsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/connections/$statement": typeof ConnectionsStatementLazyRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
+  "/connections/": typeof ConnectionsIndexLazyRoute;
 }
 
 export interface FileRouteTypes {
@@ -182,31 +205,34 @@ export interface FileRouteTypes {
     | "/"
     | "/privacy-policy"
     | "/conflicts"
-    | "/connections"
     | "/help"
     | "/statements"
+    | "/connections/$statement"
     | "/network/comp"
-    | "/network/statement";
+    | "/network/statement"
+    | "/connections";
   fileRoutesByTo: FileRoutesByTo;
   to:
     | "/"
     | "/privacy-policy"
     | "/conflicts"
-    | "/connections"
     | "/help"
     | "/statements"
+    | "/connections/$statement"
     | "/network/comp"
-    | "/network/statement";
+    | "/network/statement"
+    | "/connections";
   id:
     | "__root__"
     | "/"
     | "/privacy-policy"
     | "/conflicts"
-    | "/connections"
     | "/help"
     | "/statements"
+    | "/connections/$statement"
     | "/network/comp"
-    | "/network/statement";
+    | "/network/statement"
+    | "/connections/";
   fileRoutesById: FileRoutesById;
 }
 
@@ -214,22 +240,24 @@ export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute;
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute;
   ConflictsLazyRoute: typeof ConflictsLazyRoute;
-  ConnectionsLazyRoute: typeof ConnectionsLazyRoute;
   HelpLazyRoute: typeof HelpLazyRoute;
   StatementsLazyRoute: typeof StatementsLazyRoute;
+  ConnectionsStatementLazyRoute: typeof ConnectionsStatementLazyRoute;
   NetworkCompLazyRoute: typeof NetworkCompLazyRoute;
   NetworkStatementLazyRoute: typeof NetworkStatementLazyRoute;
+  ConnectionsIndexLazyRoute: typeof ConnectionsIndexLazyRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ConflictsLazyRoute: ConflictsLazyRoute,
-  ConnectionsLazyRoute: ConnectionsLazyRoute,
   HelpLazyRoute: HelpLazyRoute,
   StatementsLazyRoute: StatementsLazyRoute,
+  ConnectionsStatementLazyRoute: ConnectionsStatementLazyRoute,
   NetworkCompLazyRoute: NetworkCompLazyRoute,
   NetworkStatementLazyRoute: NetworkStatementLazyRoute,
+  ConnectionsIndexLazyRoute: ConnectionsIndexLazyRoute,
 };
 
 export const routeTree = rootRoute
@@ -245,11 +273,12 @@ export const routeTree = rootRoute
         "/",
         "/privacy-policy",
         "/conflicts",
-        "/connections",
         "/help",
         "/statements",
+        "/connections/$statement",
         "/network/comp",
-        "/network/statement"
+        "/network/statement",
+        "/connections/"
       ]
     },
     "/": {
@@ -261,20 +290,23 @@ export const routeTree = rootRoute
     "/conflicts": {
       "filePath": "conflicts.lazy.tsx"
     },
-    "/connections": {
-      "filePath": "connections.lazy.tsx"
-    },
     "/help": {
       "filePath": "help.lazy.tsx"
     },
     "/statements": {
       "filePath": "statements.lazy.tsx"
     },
+    "/connections/$statement": {
+      "filePath": "connections/$statement.lazy.tsx"
+    },
     "/network/comp": {
       "filePath": "network/comp.lazy.tsx"
     },
     "/network/statement": {
       "filePath": "network/statement.lazy.tsx"
+    },
+    "/connections/": {
+      "filePath": "connections/index.lazy.tsx"
     }
   }
 }

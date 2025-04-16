@@ -10,13 +10,14 @@ import {
   StatementNode,
   StatementRelatedNode,
 } from "./node";
-import { Statement } from "./schema";
+import { Connection, Statement } from "./schema";
 import { ComponentEdge } from "./edge";
 import { store } from "../stores/global";
 import { ZodType } from "zod";
 import { read as readXLSX, utils as utilsXLSX } from "xlsx";
 import { csvFormat, csvParse } from "d3-dsv";
 import { statementLabel } from "./utils";
+import { calcMaxComponentHeight } from "./textwrap";
 
 export const DEFAULT_STATEMENT_HEIGHT = 180;
 
@@ -28,6 +29,9 @@ export function procesStatement(
   const edges: ComponentEdge[] = [];
   const id = statement.Id || fallBackId;
   const label = statementLabel(statement);
+
+  const maxComponentHeight = calcMaxComponentHeight(statement);
+
   const statementNode: StatementNode = {
     id,
     type: "statement",
@@ -36,7 +40,7 @@ export function procesStatement(
     style: {
       // TODO make smaller based on content
       width: 940,
-      height: DEFAULT_STATEMENT_HEIGHT,
+      height: Math.max(DEFAULT_STATEMENT_HEIGHT, maxComponentHeight),
     },
   };
   nodes.push(statementNode);
@@ -211,10 +215,58 @@ export function download(file: File) {
   a.remove();
 }
 
-export function loadStatements(statements: Statement[]) {
+export function loadStatements(
+  statements: Statement[],
+  connections: Connection[] = [],
+) {
   store.getState().setStatements(statements);
-  store.getState().setConnections([]);
+  store.getState().setConnections(connections);
   store.getState().setConflicts([]);
+}
+
+/**
+ * If statement has filled in the Or Else field and its value is a statement id that exists
+ * and that statment has a activation condition,
+ * then between those two statements a sanction connection can be returned.
+ *
+ * @param statements
+ * @returns sanction connections
+ *
+ * @throws when the Or Else field is not a valid statement id
+ * @throws when the Or Else field points to a statement that does not have an activation condition
+ */
+export function deriveConnectionsFromStatements(
+  statements: Statement[],
+): Connection[] {
+  const connections: Connection[] = [];
+  const statementMap = new Map(statements.map((s) => [s.Id, s]));
+  for (const statement of statements) {
+    if (!statement["Or Else"]) {
+      continue;
+    }
+    const orElseId = statement["Or Else"];
+    const orElseStatement = statementMap.get(orElseId);
+    if (!orElseStatement) {
+      throw new InvalidConnectionError(
+        `Or Else value "${orElseId}" in statement ${statement.Id} is not a valid statement id`,
+      );
+    }
+    if (!orElseStatement["Activation Condition"]) {
+      throw new InvalidConnectionError(
+        `Statement ${orElseId} does not have an activation condition for sanction from ${statement.Id} Or Else`,
+      );
+    }
+    connections.push({
+      source_statement: statement.Id,
+      source_component: "Aim",
+      target_statement: orElseId,
+      target_component: "Activation Condition",
+      driven_by: "sanction",
+    });
+    statement["Or Else"] = "";
+  }
+
+  return connections;
 }
 
 export async function parseCsvFile<T>(
@@ -272,4 +324,32 @@ export function downloadCsvFile<T extends object>(
   const content = csvFormat(rows, columns);
   const file = new File([content], fn, { type: "text/csv" });
   download(file);
+}
+
+/**
+ * Returns a new array of statements with the "Or Else" field filled in
+ * with optional sanction driven connections.
+ *
+ * @param statements
+ * @param connections
+ */
+export function getSanctionedStatements(
+  statements: Statement[],
+  connections: Connection[],
+): Statement[] {
+  const sanctionSourceStatement = new Map(
+    connections
+      .filter((c) => c.driven_by === "sanction")
+      .map((c) => [c.source_statement, c.target_statement]),
+  );
+  return statements.map((statement) => {
+    const sanctionTargetStatement = sanctionSourceStatement.get(statement.Id);
+    if (sanctionTargetStatement) {
+      return {
+        ...statement,
+        "Or Else": sanctionTargetStatement,
+      };
+    }
+    return statement;
+  });
 }

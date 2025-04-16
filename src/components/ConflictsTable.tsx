@@ -7,6 +7,7 @@ import {
   getGroupedRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  RowSelectionState,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -26,16 +27,17 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { TrashIcon } from "lucide-react";
-import { Button } from "./ui/button";
 import { DataTablePagination } from "./DataTablePagination";
 import { AddConflictButton } from "./AddConflictButton.tsx";
 import { DownloadConflictButton } from "./DownloadConflictButton.tsx";
 import { UploadConflictButton } from "./UploadConflictButton.tsx";
 import { StatementCell } from "./StatementCell.tsx";
 import { searchStatement } from "./search.tsx";
+import { DeleteSelectedButton } from "./DeleteSelectedButton.tsx";
+import { selectColumnDefinition } from "./selectColumnDefinition.tsx";
 
 const columns: ColumnDef<ConflictWithStatements>[] = [
+  selectColumnDefinition(),
   {
     accessorKey: "formal",
     header: ({ column }) => (
@@ -68,9 +70,11 @@ export function ConflictsTable() {
   const conflicts = useConflictsWithStatements();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const table = useReactTable({
     data: conflicts,
     columns,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -82,6 +86,7 @@ export function ConflictsTable() {
     state: {
       sorting,
       globalFilter,
+      rowSelection,
     },
   });
 
@@ -110,23 +115,6 @@ export function ConflictsTable() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                <TableHead>
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    title="Delete all"
-                    disabled={!conflicts.length}
-                    onClick={() => {
-                      if (
-                        window.confirm("Are you sure you want to delete all?")
-                      ) {
-                        removeConflicts(conflicts);
-                      }
-                    }}
-                  >
-                    <TrashIcon />
-                  </Button>
-                </TableHead>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
@@ -149,15 +137,6 @@ export function ConflictsTable() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  <TableCell>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => removeConflicts([row.original])}
-                    >
-                      <TrashIcon />
-                    </Button>
-                  </TableCell>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -184,6 +163,18 @@ export function ConflictsTable() {
       </div>
       <div className="flex justify-between gap-4 py-2">
         <AddConflictButton />
+        <DeleteSelectedButton
+          nrSelectedRows={Object.keys(rowSelection).length}
+          nrTotalRows={conflicts.length}
+          what="conflicts"
+          onDelete={() => {
+            const toDelete = table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original);
+            removeConflicts(toDelete);
+            table.resetRowSelection();
+          }}
+        />
         <DataTablePagination table={table} />
       </div>
     </div>

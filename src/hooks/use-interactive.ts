@@ -74,5 +74,7 @@ function unpadHandle(
     sourceY: sy,
     targetX: tx,
     targetY: ty,
+    sourcePosition,
+    targetPosition,
   };
 }

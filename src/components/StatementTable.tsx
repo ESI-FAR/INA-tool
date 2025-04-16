@@ -10,6 +10,7 @@ import {
 import {
   ColumnDef,
   Row,
+  RowSelectionState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -26,17 +27,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { Input } from "./ui/input";
 import { DownloadStatementButton } from "./DownloadStatementButton";
 import { Button } from "./ui/button";
 import {
+  LinkIcon,
   PencilIcon,
   PlusIcon,
   SaveIcon,
-  TrashIcon,
   Undo2Icon,
 } from "lucide-react";
 import { ControllerRenderProps, FormProvider, useForm } from "react-hook-form";
@@ -49,7 +50,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { useStatements } from "../hooks/use-statements";
+import { useStatementDeleter, useStatements } from "../hooks/use-statements";
 import { useConnections } from "@/hooks/use-connections";
 import {
   Select,
@@ -58,8 +59,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { ButtonWithTooltip } from "./ButtonWithTooltip";
+import { Block, Link } from "@tanstack/react-router";
+import { selectColumnDefinition } from "./selectColumnDefinition";
+import { DeleteSelectedButton } from "./DeleteSelectedButton";
+import { useSidebar } from "./ui/sidebar";
+import { getSanctionedStatements } from "@/lib/io";
 
 const columns: ColumnDef<Statement>[] = [
+  selectColumnDefinition(),
   {
     accessorKey: "Id",
     header: ({ column }) => (
@@ -146,64 +154,64 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Or Else" />
     ),
+    meta: {
+      editable:
+        "To edit sanction connection goto to connections table page or network pages",
+    },
   },
 ];
 
 export function StatementTable() {
-  const { statements, createFreshStatement, deleteStatement, updateStatement } =
-    useStatements();
-  const { connectionsOfStatement, removeConnections, connectionsOfComponent } =
+  const { statements, createFreshStatement, updateStatement } = useStatements();
+  const { removeConnections, connectionsOfComponent, connections } =
     useConnections();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   // TODO reset editing when you replace the statements by uploading a file or loading the example
   const [editing, setEditing] = useState<Statement | null>(null);
+  const [needsToGoToLastPage, setNeedsToGoToLastPage] = useState(false);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+  const sanctionedStatements = useMemo(() => {
+    return getSanctionedStatements(statements, connections);
+  }, [connections, statements]);
 
   const table = useReactTable({
-    data: statements,
+    data: sanctionedStatements,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilter,
     enableRowSelection: true,
+    autoResetPageIndex: false,
     state: {
       sorting,
       globalFilter,
+      rowSelection,
     },
   });
 
   function addStatement() {
     const newStatement = createFreshStatement();
     setEditing(newStatement);
+    setNeedsToGoToLastPage(true);
   }
 
-  const removeStatement = useCallback(
-    (id: string) => {
-      // Check statement is unconnected
-      const connections = connectionsOfStatement(id);
-      if (connections.length > 0) {
-        // If statement is connected, ask for confirmation and remove connection as well
-        if (
-          window.confirm(
-            "This statement is connected to other statement(s). Deleting it will also delete those connections. Are you sure you want to delete it?",
-          )
-        ) {
-          removeConnections(connections);
-          deleteStatement(id);
-        } else {
-          // Do nothing
-        }
-      } else {
-        // If statement is unconnected, remove it
-        deleteStatement(id);
-      }
-    },
-    [connectionsOfStatement, removeConnections, deleteStatement],
-  );
+  useEffect(() => {
+    if (needsToGoToLastPage) {
+      setTimeout(() => {
+        table.setPageIndex(table.getPageCount() - 1);
+        setNeedsToGoToLastPage(false);
+      }, 0);
+    }
+  }, [needsToGoToLastPage, table]);
+
+  const removeStatements = useStatementDeleter();
 
   const onSave = useCallback(
     (tosave: Statement, previous: Statement) => {
@@ -255,8 +263,13 @@ export function StatementTable() {
     [connectionsOfComponent, removeConnections, updateStatement],
   );
 
+  const { open: sidebarOpen, isMobile } = useSidebar();
+  const tableWidth = sidebarOpen
+    ? "calc(100vw - 4rem - 16rem)"
+    : "calc(100vw - 4rem)";
+
   return (
-    <div className="w-full">
+    <div className="flex w-full flex-col">
       <h1 className="text-xl">Statements</h1>
       <div className="flex justify-between gap-4 py-2">
         <Input
@@ -266,82 +279,121 @@ export function StatementTable() {
           onChange={(e) => table.setGlobalFilter(String(e.target.value))}
           placeholder="Search..."
         />
-        <DownloadStatementButton />
+        <DownloadStatementButton statements={sanctionedStatements} />
       </div>
-      {/* TODO show vertical scrollbar if window is too small */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                <TableHead></TableHead>
-                {headerGroup.headers.map((header) => {
+      {/* Table container with horizontal scrolling */}
+      <div className="flex flex-grow flex-col rounded-md border">
+        <div
+          className="w-full overflow-x-auto"
+          style={isMobile ? {} : { width: tableWidth }}
+        >
+          <Table className="w-full">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  <TableHead></TableHead>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <Block
+              shouldBlockFn={() => {
+                if (!editing) return false;
+
+                const shouldLeave = confirm(
+                  "You have unsaved changes. Are you sure you want to leave?",
+                );
+                return !shouldLeave;
+              }}
+            />
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => {
+                  if (editing && row.original.Id === editing.Id) {
+                    return (
+                      <EditRow
+                        key={row.id}
+                        row={row}
+                        onSave={(statement) => {
+                          setEditing(null);
+                          onSave(statement, row.original);
+                        }}
+                        onCancel={() => {
+                          // When a new statement is added and then cancelled, it should be removed
+                          const result = statementSchema.safeParse(
+                            row.original,
+                          );
+                          if (!result.success) {
+                            removeStatements([row.original.Id]);
+                          }
+                          setEditing(null);
+                        }}
+                      />
+                    );
+                  }
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => {
-                if (editing && row.original.Id === editing.Id) {
-                  return (
-                    <EditRow
+                    <ShowRow
                       key={row.id}
                       row={row}
-                      onSave={(statement) => {
-                        setEditing(null);
-                        onSave(statement, row.original);
+                      setEditing={(v) => {
+                        setEditing(v);
+                        row.toggleSelected(false);
                       }}
-                      onCancel={() => {
-                        // When a new statement is added and then cancelled, it should be removed
-                        const result = statementSchema.safeParse(row.original);
-                        if (!result.success) {
-                          removeStatement(row.original.Id);
-                        }
-                        setEditing(null);
-                      }}
+                      editingId={editing ? editing.Id : undefined}
                     />
                   );
-                }
-                return (
-                  <ShowRow
-                    key={row.id}
-                    row={row}
-                    setEditing={setEditing}
-                    editingId={editing ? editing.Id : undefined}
-                    onDelete={() => removeStatement(row.original.Id)}
-                  />
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={12}
-                  className="h-24 text-center text-gray-500"
-                >
-                  No statements found. Please add statement by using "Add
-                  statement" button or upload a file.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                })
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={12}
+                    className="h-24 text-center text-gray-500"
+                  >
+                    No statements found. Please add statement by using "Add
+                    statement" button or upload a file.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       <div className="flex justify-between gap-4 py-2">
-        <Button variant="secondary" onClick={addStatement}>
+        <ButtonWithTooltip
+          onClick={addStatement}
+          disabled={editing !== null}
+          tooltip={
+            editing
+              ? "Please save or cancel the current statement before adding a new one"
+              : "Add statement"
+          }
+        >
           <PlusIcon />
           Add statement
-        </Button>
+        </ButtonWithTooltip>
+        <DeleteSelectedButton
+          nrSelectedRows={Object.keys(rowSelection).length}
+          nrTotalRows={statements.length}
+          what="statements"
+          onDelete={() => {
+            const toDelete = table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original.Id);
+            removeStatements(toDelete);
+            table.resetRowSelection();
+          }}
+        />
         <DataTablePagination table={table} />
       </div>
     </div>
@@ -352,37 +404,37 @@ function ShowRow({
   row,
   setEditing,
   editingId,
-  onDelete,
 }: {
   row: Row<Statement>;
   editingId: string | undefined;
   setEditing: (statement: Statement) => void;
-  onDelete: () => void;
 }) {
   return (
     <TableRow
       data-state={row.getIsSelected() && "selected"}
       aria-label={row.original["Id"]}
     >
-      <TableCell className="flex gap-1">
-        <Button
-          disabled={editingId !== undefined && row.original["Id"] !== editingId}
-          title="Edit"
-          aria-label="Edit"
-          variant="secondary"
-          size="icon"
+      <TableCell className="flex- flex gap-1">
+        <ButtonWithTooltip
           onClick={() => setEditing(row.original)}
+          disabled={editingId !== undefined && row.original["Id"] !== editingId}
+          tooltip={
+            editingId
+              ? "Please save or cancel the current statement before editing another one"
+              : "Edit"
+          }
+          size="icon"
         >
           <PencilIcon />
-        </Button>
-        <Button
-          title="Delete"
-          aria-label="Delete"
-          variant="destructive"
-          size="icon"
-          onClick={onDelete}
-        >
-          <TrashIcon />
+        </ButtonWithTooltip>
+        <Button variant="secondary" size="icon" asChild>
+          <Link
+            to={`/connections/$statement`}
+            params={{ statement: row.original.Id }}
+            title="Goto connections of statement"
+          >
+            <LinkIcon />
+          </Link>
         </Button>
       </TableCell>
       {row.getVisibleCells().map((cell) => (
@@ -505,12 +557,24 @@ function EditRow({
             editable?: boolean;
             choices?: string[];
           };
-          if (meta && meta.editable !== undefined && meta.editable === false) {
+          if (
+            meta &&
+            meta.editable !== undefined &&
+            (meta.editable === false || typeof meta.editable === "string")
+          ) {
             return (
               <TableCell key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                {typeof meta.editable === "string" && (
+                  <div className="w-36 text-xs text-muted-foreground">
+                    {meta.editable}
+                  </div>
+                )}
               </TableCell>
             );
+          }
+          if (cell.column.id === "select") {
+            return <TableCell key={cell.id} />;
           }
           return (
             <TableCell key={cell.id}>

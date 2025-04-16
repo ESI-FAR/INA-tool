@@ -1,8 +1,9 @@
-import { Statement } from "@/lib/schema";
+import { Connection, Statement } from "@/lib/schema";
 import { Store, store } from "@/stores/global";
 import { useCallback } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
+import { useConnections } from "./use-connections";
 
 export function useStatements() {
   const statements = useStore(
@@ -34,13 +35,6 @@ export function useStatements() {
     return newStatement;
   }, [statements, setStatements]);
 
-  const deleteStatement = useCallback(
-    (id: string) => {
-      setStatements(statements.filter((s) => s.Id !== id));
-    },
-    [statements, setStatements],
-  );
-
   const updateStatement = useCallback(
     (newStatement: Statement) => {
       setStatements(
@@ -52,7 +46,40 @@ export function useStatements() {
   return {
     statements,
     createFreshStatement,
-    deleteStatement,
     updateStatement,
   };
+}
+
+/**
+ * Hook to delete statements by their identifiers and any connections to them.
+ */
+export function useStatementDeleter() {
+  const { statements } = useStatements();
+  const { connectionsOfStatement, removeConnections } = useConnections();
+  const removeStatements = useCallback(
+    (ids: string[]) => {
+      const connections2delete: Connection[] = [];
+      for (const id of ids) {
+        // Check statement is unconnected
+        const connections = connectionsOfStatement(id);
+        if (connections.length > 0) {
+          // If statement is connected, ask for confirmation and remove connection as well
+          if (
+            window.confirm(
+              `Statement ${id} is connected to other statement(s). Deleting it will also delete those connections. Are you sure you want to delete it?`,
+            )
+          ) {
+            connections2delete.push(...connections);
+          } else {
+            return;
+          }
+        }
+      }
+      const setStatements = store.getState().setStatements;
+      setStatements(statements.filter((s) => !ids.includes(s.Id)));
+      removeConnections(connections2delete);
+    },
+    [statements, removeConnections, connectionsOfStatement],
+  );
+  return removeStatements;
 }
