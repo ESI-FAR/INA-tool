@@ -80,6 +80,7 @@ function BaseEdgeWithDelete({
   deleteClassName,
   onDelete = deleteDrivenConnection,
   handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
+  data,
 }: EdgeProps<DrivenConnectionEdge> & {
   deleteClassName: string;
   onDelete?: (id: string) => void;
@@ -97,6 +98,19 @@ function BaseEdgeWithDelete({
     handleSize,
   );
   const isInteractive = useIsInteractive();
+  let bendyPath = "";
+  if (data?.sections) {
+    const center = data.sections[0].bendPoints[0];
+    const centerX = center.x;
+    const centerY = center.y;
+    [bendyPath] = getSmoothStepPath({
+      ...endpoints,
+      centerX,
+      centerY,
+    });
+    // bendyPath = ''
+    console.log("sections", data.sections);
+  }
   const [edgePath, labelX, labelY] = getSmoothStepPath(endpoints);
 
   const deleteConnection = useCallback(() => {
@@ -105,7 +119,12 @@ function BaseEdgeWithDelete({
 
   return (
     <>
-      <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
+      <BaseEdge
+        id={id}
+        path={bendyPath !== "" ? bendyPath : edgePath}
+        style={style}
+        markerEnd={markerEnd}
+      />
       {isInteractive && (
         <EdgeLabelRenderer>
           <div

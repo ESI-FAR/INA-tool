@@ -24,8 +24,6 @@ export type ExecutionConstraintNode = Node<
   "Execution Constraint"
 >;
 
-export type ConflictGroupNode = Node<Record<string, never>, "conflict">;
-
 export type ComponentNode =
   | AttributeNode
   | AimNode
@@ -35,7 +33,7 @@ export type ComponentNode =
   | ExecutionConstraintNode;
 
 export type StatementRelatedNode = ComponentNode | StatementNode;
-export type INANode = StatementNode | ComponentNode | ConflictGroupNode;
+export type INANode = StatementNode | ComponentNode;
 
 export function isStatementNode(node: Node): node is StatementNode {
   return node.type === "statement";
@@ -50,8 +48,4 @@ export function isComponentNode(node: INANode): node is ComponentNode {
     node.type === "Activation Condition" ||
     node.type === "Execution Constraint"
   );
-}
-
-export function isConflictGroupNode(node: INANode): node is ConflictGroupNode {
-  return node.type === "conflict";
 }
