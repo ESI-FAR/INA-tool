@@ -95,6 +95,8 @@ function computeAvoidedPath(
     const Avoid = AvoidLib.getInstance();
     const router = new Avoid.Router(Avoid.OrthogonalRouting);
     const pad = 2;
+    let sx = 0;
+    let sy = 0;
     for (const node of nodes) {
       if (isComponentNode(node)) {
         // Exclude component nodes
@@ -107,16 +109,44 @@ function computeAvoidedPath(
       if (!node.measured) {
         continue;
       }
-      new Avoid.ShapeRef(
-        router,
-        new Avoid.Rectangle(
-          new Avoid.Point(node.position.x - pad, node.position.y - pad),
-          new Avoid.Point(
-            node.position.x + node.measured.width! + pad,
-            node.position.y + node.measured.height! + pad,
-          ),
-        ),
+      console.log(
+        JSON.stringify({
+          i: node.id,
+          x: node.position.x,
+          y: node.position.y,
+          w: node.measured.width,
+          h: node.measured.height,
+          d: node.data,
+        }),
       );
+      if (isStatementNode(node)) {
+        sx = node.position.x;
+        sy = node.position.y;
+        new Avoid.ShapeRef(
+          router,
+          new Avoid.Rectangle(
+            new Avoid.Point(node.position.x - pad, node.position.y - pad),
+            new Avoid.Point(
+              node.position.x + node.measured.width! + pad,
+              node.position.y + node.measured.height! + pad,
+            ),
+          ),
+        );
+      } else {
+        new Avoid.ShapeRef(
+          router,
+          new Avoid.Rectangle(
+            new Avoid.Point(
+              node.position.x - pad + sx,
+              node.position.y - pad + sy,
+            ),
+            new Avoid.Point(
+              node.position.x + node.measured.width! + pad + sy,
+              node.position.y + node.measured.height! + pad + sy,
+            ),
+          ),
+        );
+      }
     }
     const connRef = new Avoid.ConnRef(
       router,
