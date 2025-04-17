@@ -28,7 +28,7 @@ import { useCallback, useEffect } from "react";
 import { conflict2id } from "@/stores/component-network";
 import { XIcon } from "lucide-react";
 import { AvoidLib } from "libavoid-js";
-import { INANode, isComponentNode, isStatementNode } from "@/lib/node";
+import { INANode, isStatementNode } from "@/lib/node";
 
 const COMPONENT_HANDLE_SIZE = 4;
 const DRIVEN_CONNECTION_HANDLE_SIZE = 5;
@@ -88,7 +88,6 @@ export function useLibAvoid() {
 function computeAvoidedPath(
   endpoints: EndPoints,
   nodes: INANode[],
-  id: string,
 ): [string, number, number] {
   try {
     // TODO make lazy, do not reconstruct avoid router every time
@@ -98,27 +97,9 @@ function computeAvoidedPath(
     let sx = 0;
     let sy = 0;
     for (const node of nodes) {
-      if (isComponentNode(node)) {
-        // Exclude component nodes
-        // continue;
-      }
-      if (isStatementNode(node) && id.includes(node.id)) {
-        // Exclude statement nodes which are part of the edge
-        // continue;
-      }
       if (!node.measured) {
         continue;
       }
-      console.log(
-        JSON.stringify({
-          i: node.id,
-          x: node.position.x,
-          y: node.position.y,
-          w: node.measured.width,
-          h: node.measured.height,
-          d: node.data,
-        }),
-      );
       if (isStatementNode(node)) {
         sx = node.position.x;
         sy = node.position.y;
@@ -223,7 +204,7 @@ function BaseEdgeWithDelete({
   const isInteractive = useIsInteractive();
 
   const nodes = useNodes<INANode>();
-  const [edgePath, labelX, labelY] = computeAvoidedPath(endpoints, nodes, id);
+  const [edgePath, labelX, labelY] = computeAvoidedPath(endpoints, nodes);
 
   const deleteConnection = useCallback(() => {
     onDelete(id);
