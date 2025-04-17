@@ -20,6 +20,8 @@ import { store } from "@/stores/global";
 import { ComponentLayoutButton, useComponentLayout } from "./LayoutButton";
 import { ScreenshotButton } from "./ScreenshotButton";
 import { useEffect } from "react";
+import { reRouteConnectionsOfComponentNetwork } from "@/lib/reroute";
+import { useReactFlow } from "@xyflow/react";
 
 function exportAsGraphml() {
   const projectName = store.getState().projectName;
@@ -40,6 +42,7 @@ function exportAsGexf() {
 }
 
 export function ComponentNetworkMenu() {
+  const reactFlow = useReactFlow();
   const autoLayout = useComponentLayout();
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -52,6 +55,18 @@ export function ComponentNetworkMenu() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [autoLayout]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        reRouteConnectionsOfComponentNetwork(reactFlow);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [reactFlow]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -75,6 +90,11 @@ export function ComponentNetworkMenu() {
           </DropdownMenuPortal>
         </DropdownMenuSub>
         <ComponentLayoutButton />
+        <DropdownMenuItem
+          onClick={() => reRouteConnectionsOfComponentNetwork(reactFlow)}
+        >
+          Re-route connections
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
