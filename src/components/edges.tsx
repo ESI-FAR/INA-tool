@@ -138,7 +138,12 @@ function BaseEdgeWithDelete({
 
   return (
     <>
-      <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
+      <BaseEdge
+        id={id}
+        path={edgePath}
+        style={style}
+        markerEnd={markerEnd}
+      />
       {isInteractive && (
         <EdgeLabelRenderer>
           <div

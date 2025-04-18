@@ -3,10 +3,11 @@ import { useReactFlow } from "@xyflow/react";
 import ELK from "elkjs/lib/elk-api";
 import ELKworker from "elkjs/lib/elk-worker.js?worker";
 import { LayoutTemplateIcon } from "lucide-react";
-import { isStatementNode } from "@/lib/node";
 import type { INANode, StatementNode } from "@/lib/node";
 import { INASEdge, INACEdge } from "@/lib/edge";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
+import { applyLayoutToReactFlow, reactflow2elk } from "@/lib/elk";
+import { store } from "@/stores/component-network";
 
 const elk = new ELK({
   workerFactory: () => {
@@ -14,77 +15,29 @@ const elk = new ELK({
   },
 });
 
-// TODO make layout multi handle aware
-// see https://reactflow.dev/examples/layout/elkjs-multiple-handles
-const layoutOptions = {
-  "elk.algorithm": "layered",
-  "elk.layered.spacing.nodeNodeBetweenLayers": 100,
-  "elk.spacing.nodeNode": 40,
-  "elk.direction": "RIGHT",
-} as const;
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const useComponentLayout = () => {
-  const { getNodes, setNodes, getEdges, fitView } = useReactFlow<
-    INANode,
-    INACEdge
-  >();
+  const { getNodes, getEdges, fitView } = useReactFlow<INANode, INACEdge>();
 
   const getLayoutedElements = useCallback(() => {
-    const statementNodes = getNodes().filter(isStatementNode);
-    const edges = getEdges();
-    const graph = {
-      id: "root",
-      layoutOptions: {
-        ...layoutOptions,
-        "elk.direction": "RIGHT",
-      },
-      children: statementNodes.map((node) => {
-        return {
-          ...node,
-          children: getNodes()
-            .filter((n) => n.parentId === node.id && !n.hidden)
-            .map((component) => {
-              return {
-                ...component,
-                width: component.measured!.width,
-                height: component.measured!.height,
-              };
-            }),
-          width: node.measured!.width,
-          height: node.measured!.height,
-        };
-      }),
-      edges,
+    const state = {
+      nodes: getNodes(),
+      edges: getEdges(),
     };
+    const graph = reactflow2elk(state);
 
-    // @ts-expect-error copied from react-flow examples
-    elk.layout(graph).then(({ children }) => {
-      // By mutating the children in-place we saves ourselves from creating a
-      // needless copy of the nodes array.
-      const componentNodes: INANode[] = [];
-      children!.forEach((node) => {
-        // @ts-expect-error copied from react-flow examples
-        node.position = { x: node.x, y: node.y };
-        node.children!.forEach((component) => {
-          // @ts-expect-error copied from react-flow examples
-          component.position = {
-            x: component.x,
-            y: component.y,
-          };
-          // @ts-expect-error copied from react-flow examples
-          componentNodes.push(component);
-        });
-        node.children = undefined;
+    elk.layout(graph).then((elkNode) => {
+      const newState = applyLayoutToReactFlow(elkNode, state);
+
+      store.setState({
+        nodes: newState.nodes,
+        edges: newState.edges,
       });
-
-      // @ts-expect-error copied from react-flow examples
-      setNodes([...children, ...componentNodes]);
       window.requestAnimationFrame(() => {
         fitView();
       });
     });
-  }, [fitView, getEdges, getNodes, setNodes]);
+  }, [fitView, getEdges, getNodes]);
 
   return getLayoutedElements;
 };
@@ -101,7 +54,8 @@ export function useStatementLayout() {
     const graph = {
       id: "root",
       layoutOptions: {
-        ...layoutOptions,
+        "elk.algorithm": "layered",
+        "elk.layered.wrapping.strategy": "MULTI_EDGE",
         "elk.direction": "DOWN",
       },
       children: nodes.map((node) => ({

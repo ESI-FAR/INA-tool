@@ -51,7 +51,7 @@ export function isComponentEdge(edge: INACEdge): edge is ComponentEdge {
 }
 
 export function isDrivenConnectionEdge(
-  edge: INACEdge | ConflictingEdge,
+  edge: INACEdge,
 ): edge is DrivenConnectionEdge {
   return (
     edge.type === "actor" || edge.type === "outcome" || edge.type === "sanction"
