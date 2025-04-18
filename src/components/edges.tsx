@@ -124,9 +124,9 @@ function BaseEdgeWithDelete({
   let [edgePath, labelX, labelY] = ["", 0, 0];
   if (data?.bends && Array.isArray(data.bends)) {
     [edgePath, labelX, labelY] = getBendyPath([
-      [sourceX, sourceY],
+      [endpoints.sourceX, endpoints.sourceY],
       ...data.bends,
-      [targetX, targetY],
+      [endpoints.targetX, endpoints.targetY],
     ]);
   } else {
     [edgePath, labelX, labelY] = getSmoothStepPath(endpoints);
@@ -138,12 +138,7 @@ function BaseEdgeWithDelete({
 
   return (
     <>
-      <BaseEdge
-        id={id}
-        path={edgePath}
-        style={style}
-        markerEnd={markerEnd}
-      />
+      <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
       {isInteractive && (
         <EdgeLabelRenderer>
           <div
