@@ -1,8 +1,4 @@
-import {
-  EndPoints,
-  useIsInteractive,
-  usePathEndpoints,
-} from "@/hooks/use-interactive";
+import { useIsInteractive, usePathEndpoints } from "@/hooks/use-interactive";
 import {
   type ComponentEdge,
   type ActorDrivenConnection,
@@ -11,6 +7,7 @@ import {
   drivenColors,
   type ConflictingEdge,
   DrivenConnectionEdge,
+  Bends,
 } from "@/lib/edge";
 import {
   BaseEdge,
@@ -18,17 +15,14 @@ import {
   getStraightPath,
   getSmoothStepPath,
   EdgeLabelRenderer,
-  useNodes,
 } from "@xyflow/react";
 import { textColor } from "./drivenColors";
 import { cn } from "@/lib/utils";
 import { store } from "@/stores/global";
 import { connection2id } from "@/lib/connection2id";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { conflict2id } from "@/stores/component-network";
 import { XIcon } from "lucide-react";
-import { AvoidLib } from "libavoid-js";
-import { INANode, isStatementNode } from "@/lib/node";
 
 const COMPONENT_HANDLE_SIZE = 4;
 const DRIVEN_CONNECTION_HANDLE_SIZE = 5;
@@ -74,91 +68,7 @@ function deleteDrivenConnection(id: string) {
   store.getState().setConnections(newConnections);
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-export function useLibAvoid() {
-  // make sure that AvoidLib is loaded and ready to use
-  useEffect(() => {
-    const libavoidWasm = "./libavoid.wasm";
-    AvoidLib.load(libavoidWasm).catch((e) => {
-      console.error("Failed to load libavoid wasm", e);
-    });
-  }, []);
-}
-
-function computeAvoidedPath(
-  endpoints: EndPoints,
-  nodes: INANode[],
-): [string, number, number] {
-  const [path, centerX, centerY] = getSmoothStepPath(endpoints);
-  return [path, centerX, centerY];
-  try {
-    // TODO make lazy, do not reconstruct avoid router every time
-    const Avoid = AvoidLib.getInstance();
-    const router = new Avoid.Router(Avoid.OrthogonalRouting);
-    const pad = 2;
-    let sx = 0;
-    let sy = 0;
-    for (const node of nodes) {
-      if (!node.measured) {
-        continue;
-      }
-      if (isStatementNode(node)) {
-        sx = node.position.x;
-        sy = node.position.y;
-        new Avoid.ShapeRef(
-          router,
-          new Avoid.Rectangle(
-            new Avoid.Point(node.position.x - pad, node.position.y - pad),
-            new Avoid.Point(
-              node.position.x + node.measured.width! + pad,
-              node.position.y + node.measured.height! + pad,
-            ),
-          ),
-        );
-      } else {
-        new Avoid.ShapeRef(
-          router,
-          new Avoid.Rectangle(
-            new Avoid.Point(
-              node.position.x - pad + sx,
-              node.position.y - pad + sy,
-            ),
-            new Avoid.Point(
-              node.position.x + node.measured.width! + pad + sy,
-              node.position.y + node.measured.height! + pad + sy,
-            ),
-          ),
-        );
-      }
-    }
-    const connRef = new Avoid.ConnRef(
-      router,
-      new Avoid.ConnEnd(new Avoid.Point(endpoints.sourceX, endpoints.sourceY)),
-      new Avoid.ConnEnd(new Avoid.Point(endpoints.targetX, endpoints.targetY)),
-    );
-
-    router.processTransaction();
-    const route = connRef.displayRoute();
-    const nrPoints = route.size();
-    const points = [];
-    for (let i = 0; i < nrPoints; i++) {
-      const point = route.get_ps(i);
-      points.push([point.x, point.y]);
-    }
-
-    const [pathData, centerX, centerY] = getBendyPath(points);
-
-    Avoid.destroy(router);
-    return [pathData, centerX, centerY];
-  } catch {
-    // Could be that the libavoid is not loaded yet
-    console.log("avoid failed, fallback to smooth step path");
-    const [path, centerX, centerY] = getSmoothStepPath(endpoints);
-    return [path, centerX, centerY];
-  }
-}
-
-function getBendyPath(points: any[]): [string, number, number] {
+function getBendyPath(points: Bends): [string, number, number] {
   let pathData = `M${points[0][0]},${points[0][1]}`;
   for (let i = 1; i < points.length; i++) {
     pathData += ` L${points[i][0]},${points[i][1]}`;
@@ -198,7 +108,6 @@ function BaseEdgeWithDelete({
   onDelete?: (id: string) => void;
   handleSize?: number;
 }) {
-  console.log(id, data);
   const endpoints = usePathEndpoints(
     {
       sourceX,

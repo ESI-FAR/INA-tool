@@ -30,4 +30,4 @@ dist-ssr
 /playwright/.cache/
 
 # wasm from libavoid-js
-/public/libavoid.wasm
+/src/lib/reroute/libavoid.wasm

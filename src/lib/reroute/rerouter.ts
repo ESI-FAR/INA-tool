@@ -1,22 +1,27 @@
-import { store as networkStore } from "@/stores/component-network";
-import { Avoid, AvoidLib } from "libavoid-js";
-import { isStatementNode } from "./node";
+import { InternalNode } from "@xyflow/react";
 import { ConnectionMode, EdgeChange, getEdgePosition } from "@xyflow/system";
+import { Avoid, AvoidLib } from "libavoid-js";
+
+import { isStatementNode } from "../node";
 import {
   INACEdge,
   isComponentEdge,
   isConflictingEdge,
   isDrivenConnectionEdge,
-} from "./edge";
-import { ReactFlowInstance } from "@xyflow/react";
+} from "../edge";
+import { INANode } from "../node";
+import libavoidWasm from "./libavoid.wasm?url";
 
-export function reRouteConnectionsOfComponentNetwork(
-  reactflow: ReactFlowInstance,
-) {
-  const nodes = networkStore.getState().nodes;
-  const nodeLookup = new Map(
-    nodes.map((node) => [node.id, reactflow.getInternalNode(node.id)!]),
-  );
+export async function reroute({
+  nodes,
+  edges,
+  nodeLookup,
+}: {
+  nodes: INANode[];
+  edges: INACEdge[];
+  nodeLookup: Map<string, InternalNode>;
+}) {
+  await AvoidLib.load(libavoidWasm);
 
   const Avoid = AvoidLib.getInstance();
   const router = new Avoid.Router(Avoid.OrthogonalRouting);
@@ -57,7 +62,6 @@ export function reRouteConnectionsOfComponentNetwork(
     }
   }
 
-  const edges = networkStore.getState().edges;
   const routes = new Map<string, Avoid["ConnRef"]>();
   for (const edge of edges) {
     if (isComponentEdge(edge)) {
@@ -84,7 +88,6 @@ export function reRouteConnectionsOfComponentNetwork(
       targetHandle: edge.targetHandle,
       connectionMode: ConnectionMode.Loose,
     });
-    console.log("ep", ep);
     if (ep === null) {
       throw new Error(
         `Could not find edge position for edge ${edge.id} from ${edge.source} to ${edge.target}`,
@@ -113,16 +116,17 @@ export function reRouteConnectionsOfComponentNetwork(
     const edge = edges
       .filter((e) => isDrivenConnectionEdge(e) || isConflictingEdge(e))
       .find((edge) => edge.id === edgeId)!;
+    const item = {
+      ...edge,
+      data: {
+        bends,
+      },
+    } as INACEdge;
     changes.push({
       id: edgeId,
       type: "replace",
-      item: {
-        ...edge,
-        data: {
-          bends,
-        },
-      },
+      item,
     });
   }
-  networkStore.getState().onEdgesChange(changes);
+  return changes;
 }

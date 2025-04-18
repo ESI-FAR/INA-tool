@@ -21,7 +21,7 @@ export type ComponentEdge = Edge<
 >;
 
 type Bend = [number, number];
-type Bends = Bend[];
+export type Bends = Bend[];
 
 type BendData = {
   bends?: Bends;

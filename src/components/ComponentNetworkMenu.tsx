@@ -1,4 +1,10 @@
-import { DownloadIcon, MenuIcon } from "lucide-react";
+import {
+  DownloadIcon,
+  FlaskConicalIcon,
+  MenuIcon,
+  RouteIcon,
+  RouteOffIcon,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,8 +26,12 @@ import { store } from "@/stores/global";
 import { ComponentLayoutButton, useComponentLayout } from "./LayoutButton";
 import { ScreenshotButton } from "./ScreenshotButton";
 import { useEffect } from "react";
-import { reRouteConnectionsOfComponentNetwork } from "@/lib/reroute";
+import {
+  reRouteConnections,
+  undoReroutedConnections,
+} from "@/lib/reroute/component";
 import { useReactFlow } from "@xyflow/react";
+import { toast } from "sonner";
 
 function exportAsGraphml() {
   const projectName = store.getState().projectName;
@@ -60,7 +70,7 @@ export function ComponentNetworkMenu() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "c") {
         e.preventDefault();
-        reRouteConnectionsOfComponentNetwork(reactFlow);
+        reRouteConnections(reactFlow);
       }
     };
 
@@ -89,12 +99,36 @@ export function ComponentNetworkMenu() {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-        <ComponentLayoutButton />
-        <DropdownMenuItem
-          onClick={() => reRouteConnectionsOfComponentNetwork(reactFlow)}
-        >
-          Re-route connections
-        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <FlaskConicalIcon />
+            Experimental
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <ComponentLayoutButton />
+              <DropdownMenuItem
+                onClick={() => {
+                  toast.promise(reRouteConnections(reactFlow), {
+                    loading: "Rerouting connections...",
+                    success: "Connections rerouted",
+                    error: (err) => {
+                      console.error(err);
+                      return "Error rerouting connections";
+                    },
+                  });
+                }}
+              >
+                <RouteIcon />
+                Re-route connections
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={undoReroutedConnections}>
+                <RouteOffIcon />
+                Undo rerouted connections
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
       </DropdownMenuContent>
     </DropdownMenu>
   );

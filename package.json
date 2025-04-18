@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "format:check": "prettier --check .",
-    "copy:wasm": "mkdir -p public && cp node_modules/libavoid-js/dist/libavoid.wasm public/",
+    "copy:wasm": "cp node_modules/libavoid-js/dist/libavoid.wasm src/lib/reroute/",
     "postinstall": "npm run copy:wasm",
     "test": "vitest",
     "test:e2e": "playwright test"
