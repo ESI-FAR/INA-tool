@@ -11,6 +11,7 @@ import {
   DownloadIcon,
   EyeOff,
   FilterXIcon,
+  FlaskConicalIcon,
   LayoutTemplateIcon,
   LinkIcon,
   Maximize2Icon,
@@ -18,6 +19,8 @@ import {
   PanelLeft,
   PencilIcon,
   PlusIcon,
+  RouteIcon,
+  RouteOffIcon,
   SaveIcon,
   SearchIcon,
   TrashIcon,
@@ -268,10 +271,36 @@ function RouteComponent() {
             </li>
             <li>
               <strong>
-                <LayoutTemplateIcon className="inline" /> Auto layout:
+                <FlaskConicalIcon className="inline" />
+                Experimental
               </strong>{" "}
-              To layout the graph using a layout algorithm use the auto layout
-              menu item. Keyboard shortcut is CTRL+SHIFT+l.
+              Experimental features, they have some rough edges, but can be
+              useful. Use at your own risk.
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Auto layout:
+                  </strong>{" "}
+                  To layout the graph using a layout algorithm use the auto
+                  layout menu item. Keyboard shortcut is CTRL+SHIFT+l.
+                </li>
+                <li>
+                  <strong>
+                    <RouteIcon className="inline" /> Re-route connections:
+                  </strong>{" "}
+                  Re-route connections so they avoid most nodes. Moving nodes
+                  after re-routing will pin the inner bends of the connections.
+                  Keyboard shortcut is CTRL+SHIFT+c.
+                </li>
+                <li>
+                  <strong>
+                    <RouteOffIcon className="inline" />
+                    Undo rerouted connections
+                  </strong>
+                  {""}
+                  Will make whole connection move with nodes again.
+                </li>
+              </ul>
             </li>
           </ul>
         </li>
@@ -408,10 +437,36 @@ function RouteComponent() {
             </li>
             <li>
               <strong>
-                <LayoutTemplateIcon className="inline" /> Auto layout:
+                <FlaskConicalIcon className="inline" />
+                Experimental
               </strong>{" "}
-              To layout the graph using a layout algorithm use the auto layout
-              menu item. Keyboard shortcut is CTRL+SHIFT+l.
+              Experimental features, they have some rough edges, but can be
+              useful. Use at your own risk.
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Auto layout:
+                  </strong>{" "}
+                  To layout the graph using a layout algorithm use the auto
+                  layout menu item. Keyboard shortcut is CTRL+SHIFT+l.
+                </li>
+                <li>
+                  <strong>
+                    <RouteIcon className="inline" /> Re-route connections:
+                  </strong>{" "}
+                  Re-route connections so they avoid most nodes. Moving nodes
+                  after re-routing will pin the inner bends of the connections.
+                  Keyboard shortcut is CTRL+SHIFT+c.
+                </li>
+                <li>
+                  <strong>
+                    <RouteOffIcon className="inline" />
+                    Undo rerouted connections
+                  </strong>
+                  {""}
+                  Will make whole connection move with nodes again.
+                </li>
+              </ul>
             </li>
           </ul>
         </li>

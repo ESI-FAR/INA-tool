@@ -7,6 +7,7 @@ import {
   drivenColors,
   type ConflictingEdge,
   DrivenConnectionEdge,
+  Bends,
 } from "@/lib/edge";
 import {
   BaseEdge,
@@ -67,6 +68,27 @@ function deleteDrivenConnection(id: string) {
   store.getState().setConnections(newConnections);
 }
 
+function getBendyPath(points: Bends): [string, number, number] {
+  let pathData = `M${points[0][0]},${points[0][1]}`;
+  for (let i = 1; i < points.length; i++) {
+    pathData += ` L${points[i][0]},${points[i][1]}`;
+  }
+
+  let centerX = (points[0][0] + points[points.length - 1][0]) / 2;
+  let centerY = (points[0][1] + points[points.length - 1][1]) / 2;
+  const middleIndex = Math.floor(points.length / 2);
+  if (points.length % 2 === 0) {
+    // If even then odd line segments -> use middle of middle line
+    centerX = (points[middleIndex - 1][0] + points[middleIndex][0]) / 2;
+    centerY = (points[middleIndex - 1][1] + points[middleIndex][1]) / 2;
+  } else {
+    // If odd then even line segments -> use middle corner
+    centerX = points[middleIndex][0];
+    centerY = points[middleIndex][1];
+  }
+  return [pathData, centerX, centerY];
+}
+
 function BaseEdgeWithDelete({
   id,
   sourceX,
@@ -80,6 +102,7 @@ function BaseEdgeWithDelete({
   deleteClassName,
   onDelete = deleteDrivenConnection,
   handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
+  data,
 }: EdgeProps<DrivenConnectionEdge> & {
   deleteClassName: string;
   onDelete?: (id: string) => void;
@@ -97,7 +120,17 @@ function BaseEdgeWithDelete({
     handleSize,
   );
   const isInteractive = useIsInteractive();
-  const [edgePath, labelX, labelY] = getSmoothStepPath(endpoints);
+
+  let [edgePath, labelX, labelY] = ["", 0, 0];
+  if (data?.bends && Array.isArray(data.bends)) {
+    [edgePath, labelX, labelY] = getBendyPath([
+      [endpoints.sourceX, endpoints.sourceY],
+      ...data.bends,
+      [endpoints.targetX, endpoints.targetY],
+    ]);
+  } else {
+    [edgePath, labelX, labelY] = getSmoothStepPath(endpoints);
+  }
 
   const deleteConnection = useCallback(() => {
     onDelete(id);

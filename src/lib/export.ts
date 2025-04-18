@@ -1,4 +1,4 @@
-import { INACEdge, INASEdge } from "./edge";
+import { INACEdge, INASEdge, isComponentEdge } from "./edge";
 import { INANode, StatementNode } from "./node";
 import { Statement } from "./schema";
 
@@ -155,7 +155,9 @@ export function exportComponentNetworkToGraphml(
         </node>
       `);
     }
-    for (const edge of edges.filter((e) => e.data?.statementId === node.id)) {
+    for (const edge of edges.filter(
+      (e) => isComponentEdge(e) && e.data?.statementId === node.id,
+    )) {
       xmlParts.push(
         `<edge id="${edge.id}" source="${edge.source}" target="${edge.target}">`,
       );
@@ -172,7 +174,7 @@ export function exportComponentNetworkToGraphml(
       </node>
     `);
   }
-  for (const edge of edges.filter((e) => !e.data?.statementId)) {
+  for (const edge of edges.filter((e) => !isComponentEdge(e))) {
     xmlParts.push(`
       <edge id="${edge.id}" source="${edge.source}" target="${edge.target}">
       <data key="etype">${edge.type}</data>

@@ -10,7 +10,6 @@ import type {
   InDirectObjectNode,
   ActivationConditionNode,
   ExecutionConstraintNode,
-  ConflictGroupNode,
   INANode,
 } from "@/lib/node";
 import { bgColor } from "./drivenColors";
@@ -522,12 +521,6 @@ export function ExecutionConstraintNode({
         isConnectable={isConnectable}
       />
     </>
-  );
-}
-
-export function ConflictGroupNode() {
-  return (
-    <div className="h-full w-full rounded border-2 bg-red-500 shadow"></div>
   );
 }
 
