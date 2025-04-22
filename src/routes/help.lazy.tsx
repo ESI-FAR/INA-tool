@@ -286,6 +286,13 @@ function RouteComponent() {
                 </li>
                 <li>
                   <strong>
+                    <LayoutTemplateIcon className="inline" /> Reset auto layout:
+                  </strong>{" "}
+                  To reset the auto layout and move all nodes back to their
+                  naive positions. Any manual changes will be lost.
+                </li>
+                <li>
+                  <strong>
                     <RouteIcon className="inline" /> Re-route connections:
                   </strong>{" "}
                   Re-route connections so they avoid most nodes. Moving nodes
@@ -449,6 +456,13 @@ function RouteComponent() {
                   </strong>{" "}
                   To layout the graph using a layout algorithm use the auto
                   layout menu item. Keyboard shortcut is CTRL+SHIFT+l.
+                </li>
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Reset auto layout:
+                  </strong>{" "}
+                  To reset the auto layout and move all nodes back to their
+                  naive positions. Any manual changes will be lost.
                 </li>
                 <li>
                   <strong>

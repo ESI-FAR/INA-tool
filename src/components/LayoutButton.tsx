@@ -7,7 +7,11 @@ import type { INANode, StatementNode } from "@/lib/node";
 import { INASEdge, INACEdge } from "@/lib/edge";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { applyLayoutToReactFlow, reactflow2elk } from "@/lib/elk";
-import { store } from "@/stores/component-network";
+import {
+  store,
+  reset as resetComponentNetwork,
+} from "@/stores/component-network";
+import { reset as resetStatementNetwork } from "@/stores/statement-network";
 
 const elk = new ELK({
   workerFactory: () => {
@@ -19,7 +23,7 @@ const elk = new ELK({
 export const useComponentLayout = () => {
   const { getNodes, getEdges, fitView } = useReactFlow<INANode, INACEdge>();
 
-  const getLayoutedElements = useCallback(() => {
+  const autoLayout = useCallback(() => {
     const state = {
       nodes: getNodes(),
       edges: getEdges(),
@@ -39,7 +43,7 @@ export const useComponentLayout = () => {
     });
   }, [fitView, getEdges, getNodes]);
 
-  return getLayoutedElements;
+  return autoLayout;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -89,19 +93,39 @@ export function useStatementLayout() {
 export function ComponentLayoutButton() {
   const autoLayout = useComponentLayout();
   return (
-    <DropdownMenuItem onClick={autoLayout} title="Auto layout nodes">
-      <LayoutTemplateIcon />
-      Auto layout
-    </DropdownMenuItem>
+    <>
+      <DropdownMenuItem onClick={autoLayout} title="Auto layout nodes">
+        <LayoutTemplateIcon />
+        Auto layout
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() => {
+          resetComponentNetwork();
+        }}
+        title="Reset component network"
+      >
+        <LayoutTemplateIcon /> Reset auto layout
+      </DropdownMenuItem>
+    </>
   );
 }
 
 export function StatementLayoutButton() {
   const autoLayout = useStatementLayout();
   return (
-    <DropdownMenuItem onClick={autoLayout} title="Auto layout nodes">
-      <LayoutTemplateIcon />
-      Auto layout
-    </DropdownMenuItem>
+    <>
+      <DropdownMenuItem onClick={autoLayout} title="Auto layout nodes">
+        <LayoutTemplateIcon />
+        Auto layout
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() => {
+          resetStatementNetwork();
+        }}
+        title="Reset auto layout"
+      >
+        <LayoutTemplateIcon /> Reset auto layout
+      </DropdownMenuItem>
+    </>
   );
 }
