@@ -27,14 +27,8 @@ type Port = {
   height?: number;
 };
 
-function computePorts(node: INANode) {
-  const ports: Port[] = [
-    // { id: node.id }
-  ];
-  if (!isComponentNode(node)) {
-    // TODO add conflict ports
-    return ports;
-  }
+function computePorts(node: ComponentNode) {
+  const ports: Port[] = [];
   switch (node.type) {
     case "Activation Condition":
       return ports.concat([
@@ -259,10 +253,31 @@ function statementNodeToElk(statement: INANode, reactflow: State): ElkNode {
     },
     children,
     edges,
+    ports: [
+      {
+        id: statement.id + "-conflict-target",
+        layoutOptions: { "elk.port.side": "WEST", "elk.port.index": "0" },
+        width: 5,
+        height: 5,
+      },
+      {
+        id: statement.id + "-conflict-source",
+        layoutOptions: { "elk.port.side": "EAST", "elk.port.index": "0" },
+        width: 5,
+        height: 5,
+      },
+    ],
   };
 }
 
 function statementEdgeToElk(edge: INASEdge): ElkExtendedEdge {
+  if (edge.type === "conflict") {
+    return {
+      id: edge.id,
+      sources: [edge.source + "-conflict-source"],
+      targets: [edge.target + "-conflict-target"],
+    };
+  }
   return {
     id: edge.id,
     sources: [edge.source + "-" + edge.type],
