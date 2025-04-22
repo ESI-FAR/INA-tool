@@ -27,13 +27,16 @@ export async function reroute({
   const router = new Avoid.Router(Avoid.OrthogonalRouting);
   const pad = 2;
   // capture statement node positions as component position is relative to the statement node
-  const statementNodePositions = new Map<string, {x: number, y: number}>();
+  const statementNodePositions = new Map<string, { x: number; y: number }>();
   for (const node of nodes) {
     if (!node.measured) {
       continue;
     }
     if (isStatementNode(node)) {
-      statementNodePositions.set(node.id, {x: node.position.x, y: node.position.y});
+      statementNodePositions.set(node.id, {
+        x: node.position.x,
+        y: node.position.y,
+      });
     }
   }
   for (const node of nodes) {
@@ -41,7 +44,10 @@ export async function reroute({
       continue;
     }
     if (isComponentNode(node)) {
-      const {x:sx, y: sy} = statementNodePositions.get(node.parentId!) || {x: 0, y: 0};
+      const { x: sx, y: sy } = statementNodePositions.get(node.parentId!) || {
+        x: 0,
+        y: 0,
+      };
       new Avoid.ShapeRef(
         router,
         new Avoid.Rectangle(
