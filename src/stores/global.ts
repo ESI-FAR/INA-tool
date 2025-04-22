@@ -2,12 +2,15 @@ import { Conflict, Connection, Statement } from "@/lib/schema";
 import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-export type State = {
-  projectName: string;
+export type NamelessState = {
   statements: Statement[];
   connections: Connection[];
   conflicts: Conflict[];
 };
+
+export type State = {
+  projectName: string;
+} & NamelessState;
 
 export type Action = {
   setProjectName: (projectName: string) => void;

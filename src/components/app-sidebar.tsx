@@ -18,6 +18,7 @@ import {
   NetworkIcon,
   Table2Icon,
   TableIcon,
+  ThermometerIcon,
 } from "lucide-react";
 import { UploadButton } from "./UploadButton";
 import { DownloadProjectButton } from "./DownloadProjectButton";
@@ -108,6 +109,19 @@ export function AppSidebar() {
                 </SidebarMenuButton>
                 <SidebarMenuBadge>{nrConflicts}</SidebarMenuBadge>
               </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/analysis/metrics"
+                    activeProps={{ className: "font-bold" }}
+                  >
+                    <ThermometerIcon />
+                    <span>Metrics</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link to="/help" activeProps={{ className: "font-bold" }}>
