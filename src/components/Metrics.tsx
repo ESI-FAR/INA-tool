@@ -118,6 +118,9 @@ function useStatementMetrics(): StatementMetric[] {
   const graph = useStatementGraph();
   const lookup = useStatementLookup();
   const metrics = useMemo(() => {
+    if (graph.order === 0) {
+      return [];
+    }
     const betweenCentralities = betweennessCentrality(graph);
     const outDegreeCentralities = outDegreeCentrality(graph);
     const inDegreeCentralities = inDegreeCentrality(graph);
@@ -172,6 +175,14 @@ function StatementMetricsTable() {
             </TableCell>
           </TableRow>
         ))}
+        {metrics.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={5} className="h-24 text-center text-gray-500">
+              No statements found, so no metrics available. Please add some
+              statements and connections.
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
   );
@@ -268,6 +279,14 @@ function DegreeCentralityTable({
             <TableCell>{centrality.degree}</TableCell>
           </TableRow>
         ))}
+        {centralities.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={3} className="h-24 text-center text-gray-500">
+              No connections found, so no metrics available. Please add some
+              connections.
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
   );
