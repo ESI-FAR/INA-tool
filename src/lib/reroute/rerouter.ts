@@ -2,7 +2,7 @@ import { InternalNode } from "@xyflow/react";
 import { ConnectionMode, EdgeChange, getEdgePosition } from "@xyflow/system";
 import { Avoid, AvoidLib } from "libavoid-js";
 
-import { isStatementNode } from "../node";
+import { isComponentNode, isStatementNode } from "../node";
 import {
   INACEdge,
   isComponentEdge,
@@ -26,26 +26,22 @@ export async function reroute({
   const Avoid = AvoidLib.getInstance();
   const router = new Avoid.Router(Avoid.OrthogonalRouting);
   const pad = 2;
-  let sx = 0;
-  let sy = 0;
+  // capture statement node positions as component position is relative to the statement node
+  const statementNodePositions = new Map<string, {x: number, y: number}>();
   for (const node of nodes) {
     if (!node.measured) {
       continue;
     }
     if (isStatementNode(node)) {
-      sx = node.position.x;
-      sy = node.position.y;
-      new Avoid.ShapeRef(
-        router,
-        new Avoid.Rectangle(
-          new Avoid.Point(node.position.x - pad, node.position.y - pad),
-          new Avoid.Point(
-            node.position.x + node.measured.width! + pad,
-            node.position.y + node.measured.height! + pad,
-          ),
-        ),
-      );
-    } else {
+      statementNodePositions.set(node.id, {x: node.position.x, y: node.position.y});
+    }
+  }
+  for (const node of nodes) {
+    if (!node.measured) {
+      continue;
+    }
+    if (isComponentNode(node)) {
+      const {x:sx, y: sy} = statementNodePositions.get(node.parentId!) || {x: 0, y: 0};
       new Avoid.ShapeRef(
         router,
         new Avoid.Rectangle(
@@ -59,12 +55,24 @@ export async function reroute({
           ),
         ),
       );
+    } else {
+      new Avoid.ShapeRef(
+        router,
+        new Avoid.Rectangle(
+          new Avoid.Point(node.position.x - pad, node.position.y - pad),
+          new Avoid.Point(
+            node.position.x + node.measured.width! + pad,
+            node.position.y + node.measured.height! + pad,
+          ),
+        ),
+      );
     }
   }
 
   const routes = new Map<string, Avoid["ConnRef"]>();
   for (const edge of edges) {
     if (isComponentEdge(edge)) {
+      // component edges are not routed
       continue;
     }
     const sourceNode = nodeLookup.get(edge.source);
