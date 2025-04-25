@@ -1,3 +1,4 @@
+import { removeKnownConnections } from "@/lib/connectionHelpers";
 import { Connection, Statement } from "@/lib/schema";
 import {
   fuzzyIncludesOptimized,
@@ -258,10 +259,14 @@ export async function findConnectionsByType(
 }
 
 // Find all types of connections
-export async function findConnections(
-  statements: Statement[],
-): Promise<Connection[]> {
-  const connections: Connection[] = [];
+export async function findConnections({
+  statements,
+  connections: existingConnections,
+}: {
+  statements: Statement[];
+  connections: Connection[];
+}): Promise<Connection[]> {
+  const newConnections: Connection[] = [];
 
   for (const source of statements) {
     for (const target of statements) {
@@ -280,14 +285,10 @@ export async function findConnections(
         target,
       );
 
-      connections.push(...actorDrivenConnections);
-      connections.push(...outcomeDrivenConnections);
-      connections.push(...sanctionDrivenConnections);
+      newConnections.push(...actorDrivenConnections);
+      newConnections.push(...outcomeDrivenConnections);
+      newConnections.push(...sanctionDrivenConnections);
     }
   }
-
-  return connections;
+  return removeKnownConnections(newConnections, existingConnections);
 }
-
-// call this after calculating connections from client
-// store.getState().setConnections(foundConnections);
