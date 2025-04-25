@@ -11,6 +11,7 @@ import {
   DownloadIcon,
   EyeOff,
   FilterXIcon,
+  FlaskConicalIcon,
   LayoutTemplateIcon,
   LinkIcon,
   Maximize2Icon,
@@ -18,6 +19,8 @@ import {
   PanelLeft,
   PencilIcon,
   PlusIcon,
+  RouteIcon,
+  RouteOffIcon,
   SaveIcon,
   SearchIcon,
   TrashIcon,
@@ -267,11 +270,48 @@ function RouteComponent() {
               </ul>
             </li>
             <li>
+              <a id="experimental-component" />
               <strong>
-                <LayoutTemplateIcon className="inline" /> Auto layout:
+                <FlaskConicalIcon className="inline" />
+                Experimental
               </strong>{" "}
-              To layout the graph using a layout algorithm use the auto layout
-              menu item. Keyboard shortcut is CTRL+SHIFT+l.
+              Experimental features, they have some rough edges, but can be
+              useful. Use at your own risk.
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Auto layout:
+                  </strong>{" "}
+                  To layout the graph using a layout algorithm use the auto
+                  layout menu item. This will move the component and statement
+                  nodes around. Keyboard shortcut is CTRL+SHIFT+l.
+                </li>
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Reset auto layout:
+                  </strong>{" "}
+                  To reset the auto layout and move all nodes back to their
+                  naive positions. Any manual changes will be lost.
+                </li>
+                <li>
+                  <strong>
+                    <RouteIcon className="inline" /> Re-route connections:
+                  </strong>{" "}
+                  Reroutes connections to avoid overlapping nodes. After
+                  re-routing, moving nodes will not update the connection route;
+                  the inner bends of the connections will stay in same
+                  positions, and only the endpoints will move with the connected
+                  nodes. Keyboard shortcut is CTRL+SHIFT+c.
+                </li>
+                <li>
+                  <strong>
+                    <RouteOffIcon className="inline" />
+                    Undo rerouted connections
+                  </strong>
+                  {""}
+                  Will make whole connection move with nodes again.
+                </li>
+              </ul>
             </li>
           </ul>
         </li>
@@ -407,11 +447,48 @@ function RouteComponent() {
               </ul>
             </li>
             <li>
+              <a id="experimental-statement" />
               <strong>
-                <LayoutTemplateIcon className="inline" /> Auto layout:
+                <FlaskConicalIcon className="inline" />
+                Experimental
               </strong>{" "}
-              To layout the graph using a layout algorithm use the auto layout
-              menu item. Keyboard shortcut is CTRL+SHIFT+l.
+              Experimental features, they have some rough edges, but can be
+              useful. Use at your own risk.
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Auto layout:
+                  </strong>{" "}
+                  To layout the graph using a layout algorithm use the auto
+                  layout menu item. This will move the component and statement
+                  nodes around. Keyboard shortcut is CTRL+SHIFT+l.
+                </li>
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Reset auto layout:
+                  </strong>{" "}
+                  To reset the auto layout and move all nodes back to their
+                  naive positions. Any manual changes will be lost.
+                </li>
+                <li>
+                  <strong>
+                    <RouteIcon className="inline" /> Re-route connections:
+                  </strong>{" "}
+                  Re-route connections so they avoid most nodes. After
+                  re-routing, moving nodes will not update the connection route;
+                  the inner bends of the connections will stay in same
+                  positions, and only the endpoints will move with the connected
+                  nodes. Keyboard shortcut is CTRL+SHIFT+c.
+                </li>
+                <li>
+                  <strong>
+                    <RouteOffIcon className="inline" />
+                    Undo rerouted connections
+                  </strong>
+                  {""}
+                  Will make whole connection move with nodes again.
+                </li>
+              </ul>
             </li>
           </ul>
         </li>
