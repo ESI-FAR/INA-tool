@@ -8,7 +8,7 @@ import {
 } from "graphology-metrics/centrality/degree";
 import { useStore } from "zustand";
 import { useMemo } from "react";
-import { NamelessState, store } from "@/stores/global";
+import { State, store } from "@/stores/global";
 import { statementLabel } from "@/lib/utils";
 import {
   Deontic,
@@ -32,6 +32,8 @@ export interface EdgeAttributes {
 }
 
 export type StatementGraph = Graph<NodeAttributes, EdgeAttributes>;
+
+type NamelessState = Omit<State, "projectName">;
 
 export function statementGraph({
   statements,
