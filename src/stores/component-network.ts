@@ -26,7 +26,7 @@ import { createStore } from "zustand";
 import { store as globalStore } from "./global";
 import { Conflict, Connection, Statement } from "../lib/schema";
 import { DEFAULT_STATEMENT_HEIGHT, procesStatement } from "../lib/io";
-import { connection2id } from "../lib/connection2id";
+import { connection2id } from "../lib/connectionHelpers";
 
 export type State = {
   nodes: INANode[];

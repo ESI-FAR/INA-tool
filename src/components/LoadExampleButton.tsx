@@ -1,8 +1,15 @@
 import { Connection, Statement } from "@/lib/schema";
 import { Button } from "./ui/button";
-import { Wand2Icon } from "lucide-react";
+import { ChevronDown, Wand2Icon } from "lucide-react";
 import { store } from "@/stores/global";
 import { useEffect } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { mockStatements } from "@/nlp/testdata/testData";
 
 const statements: Statement[] = [
   {
@@ -124,6 +131,14 @@ function loadExample() {
   store.getState().setProjectName("Example");
   store.getState().setStatements(statements);
   store.getState().setConnections(connections);
+  store.getState().setConflicts([]);
+}
+
+function loadExample2() {
+  store.getState().setProjectName("Example 2");
+  store.getState().setStatements(mockStatements);
+  store.getState().setConnections([]);
+  store.getState().setConflicts([]);
 }
 
 export function LoadExampleButton() {
@@ -141,8 +156,31 @@ export function LoadExampleButton() {
   }, []);
 
   return (
-    <Button title="Load Example" variant="outline" onClick={loadExample}>
-      <Wand2Icon /> Load Example
-    </Button>
+    <div className="flex gap-0">
+      <Button
+        title="Load Example"
+        variant="outline"
+        onClick={loadExample}
+        className="rounded-e-none"
+      >
+        <Wand2Icon /> Load Example
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="rounded-s-none transition-transform data-[state=open]:rotate-180"
+            size="icon"
+          >
+            <ChevronDown />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={loadExample2}>
+            Load example 2
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

@@ -18,7 +18,7 @@ import { StatementNode } from "../lib/node";
 import { createStore } from "zustand";
 import { store as globalStore } from "./global";
 import { Conflict, Connection, Statement } from "../lib/schema";
-import { connection2id } from "@/lib/connection2id";
+import { connection2id } from "@/lib/connectionHelpers";
 import { statementLabel } from "@/lib/utils";
 
 export type State = {

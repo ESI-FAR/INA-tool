@@ -2,7 +2,7 @@ import { ConnectionComponent, Statement } from "@/lib/schema";
 import { useMemo } from "react";
 import { useConnections } from "@/hooks/use-connections";
 import { cn, statementLabel } from "@/lib/utils";
-import { connection2id } from "@/lib/connection2id";
+import { connection2id } from "@/lib/connectionHelpers";
 import { textColor } from "./drivenColors";
 
 function ComponentWithConnections({

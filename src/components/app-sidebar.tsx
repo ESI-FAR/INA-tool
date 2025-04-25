@@ -14,10 +14,13 @@ import {
 import { Link } from "@tanstack/react-router";
 import {
   AlignJustifyIcon,
+  ChevronDown,
   CircleHelpIcon,
   NetworkIcon,
+  ServerCogIcon,
   Table2Icon,
   TableIcon,
+  ThermometerIcon,
 } from "lucide-react";
 import { UploadButton } from "./UploadButton";
 import { DownloadProjectButton } from "./DownloadProjectButton";
@@ -27,6 +30,11 @@ import { useStore } from "zustand";
 import { store } from "@/stores/global";
 import { Footer } from "./Footer";
 import { ProjectName } from "./ProjectName";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
 
 export function AppSidebar() {
   const nrStatements = useStore(store, (state) => state.statements.length);
@@ -47,7 +55,6 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Pages</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -108,6 +115,43 @@ export function AppSidebar() {
                 </SidebarMenuButton>
                 <SidebarMenuBadge>{nrConflicts}</SidebarMenuBadge>
               </SidebarMenuItem>
+              <Collapsible defaultOpen className="group/collapsible">
+                <SidebarGroup>
+                  <SidebarGroupLabel asChild>
+                    <CollapsibleTrigger>
+                      Analysis
+                      <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                    </CollapsibleTrigger>
+                  </SidebarGroupLabel>
+                  <CollapsibleContent>
+                    <SidebarGroupContent>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to="/analysis/metrics"
+                            activeProps={{ className: "font-bold" }}
+                          >
+                            <ThermometerIcon />
+                            <span>Metrics</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to="/analysis/propose-connections"
+                            activeProps={{ className: "font-bold" }}
+                          >
+                            <ServerCogIcon />
+                            <span>Propose connections</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarGroupContent>
+                  </CollapsibleContent>
+                </SidebarGroup>
+              </Collapsible>
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link to="/help" activeProps={{ className: "font-bold" }}>
