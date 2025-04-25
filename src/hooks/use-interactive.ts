@@ -8,7 +8,7 @@ export function useIsInteractive() {
   return useStore(selector, shallow);
 }
 
-interface EndPoints {
+export interface EndPoints {
   sourceX: number;
   sourceY: number;
   targetX: number;
