@@ -8,16 +8,10 @@ import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
 import { useStatementLookup } from "./use-statements";
-
-function compareConnection(a: Connection, b: Connection): boolean {
-  return (
-    a.source_statement === b.source_statement &&
-    a.source_component === b.source_component &&
-    a.target_statement === b.target_statement &&
-    a.target_component === b.target_component &&
-    a.driven_by === b.driven_by
-  );
-}
+import {
+  compareConnection,
+  removeKnownConnections,
+} from "@/lib/connectionHelpers";
 
 export function useConnections() {
   const connections = useStore(
