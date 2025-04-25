@@ -50,7 +50,7 @@ function RouteComponent() {
       <h1 className="mb-4 text-2xl font-bold">Propose connections</h1>
       <p>
         Find connections in current statements using natural language processing
-        with a wordnet subset and fuzzy search.
+        with a wordnet subset powered fuzzy search.
       </p>
       <form className="space-y-6" onSubmit={performAnalysis}>
         <Button type="submit">Find</Button>
