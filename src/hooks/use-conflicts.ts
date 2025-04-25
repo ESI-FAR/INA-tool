@@ -3,7 +3,7 @@ import { store, Store } from "@/stores/global";
 import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
-import { useStatements } from "./use-statements";
+import { useStatementLookup } from "./use-statements";
 
 function equalConflicts(a: Conflict, b: Conflict) {
   return a.formal === b.formal && a.informal === b.informal;
@@ -47,15 +47,12 @@ export interface ConflictWithStatements {
 
 export function useConflictsWithStatements(): ConflictWithStatements[] {
   const { conflicts } = useConflicts();
-  const { statements } = useStatements();
+  const statementLookup = useStatementLookup();
   return useMemo(() => {
-    const statementLookup = new Map<string, Statement>(
-      statements.map((statement) => [statement.Id, statement]),
-    );
     return conflicts.map((conflict) => ({
       ...conflict,
       formalStatement: statementLookup.get(conflict.formal)!,
       informalStatement: statementLookup.get(conflict.informal)!,
     }));
-  }, [conflicts, statements]);
+  }, [conflicts, statementLookup]);
 }
