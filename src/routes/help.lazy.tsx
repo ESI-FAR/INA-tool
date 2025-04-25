@@ -270,6 +270,7 @@ function RouteComponent() {
               </ul>
             </li>
             <li>
+              <a id="experimental-component" />
               <strong>
                 <FlaskConicalIcon className="inline" />
                 Experimental
@@ -282,7 +283,8 @@ function RouteComponent() {
                     <LayoutTemplateIcon className="inline" /> Auto layout:
                   </strong>{" "}
                   To layout the graph using a layout algorithm use the auto
-                  layout menu item. Keyboard shortcut is CTRL+SHIFT+l.
+                  layout menu item. This will move the component and statement
+                  nodes around. Keyboard shortcut is CTRL+SHIFT+l.
                 </li>
                 <li>
                   <strong>
@@ -295,9 +297,11 @@ function RouteComponent() {
                   <strong>
                     <RouteIcon className="inline" /> Re-route connections:
                   </strong>{" "}
-                  Re-route connections so they avoid most nodes. Moving nodes
-                  after re-routing will pin the inner bends of the connections.
-                  Keyboard shortcut is CTRL+SHIFT+c.
+                  Reroutes connections to avoid overlapping nodes. After
+                  re-routing, moving nodes will not update the connection route;
+                  the inner bends of the connections will stay in same
+                  positions, and only the endpoints will move with the connected
+                  nodes. Keyboard shortcut is CTRL+SHIFT+c.
                 </li>
                 <li>
                   <strong>
@@ -443,6 +447,7 @@ function RouteComponent() {
               </ul>
             </li>
             <li>
+              <a id="experimental-statement" />
               <strong>
                 <FlaskConicalIcon className="inline" />
                 Experimental
@@ -455,7 +460,8 @@ function RouteComponent() {
                     <LayoutTemplateIcon className="inline" /> Auto layout:
                   </strong>{" "}
                   To layout the graph using a layout algorithm use the auto
-                  layout menu item. Keyboard shortcut is CTRL+SHIFT+l.
+                  layout menu item. This will move the component and statement
+                  nodes around. Keyboard shortcut is CTRL+SHIFT+l.
                 </li>
                 <li>
                   <strong>
@@ -468,9 +474,11 @@ function RouteComponent() {
                   <strong>
                     <RouteIcon className="inline" /> Re-route connections:
                   </strong>{" "}
-                  Re-route connections so they avoid most nodes. Moving nodes
-                  after re-routing will pin the inner bends of the connections.
-                  Keyboard shortcut is CTRL+SHIFT+c.
+                  Re-route connections so they avoid most nodes. After
+                  re-routing, moving nodes will not update the connection route;
+                  the inner bends of the connections will stay in same
+                  positions, and only the endpoints will move with the connected
+                  nodes. Keyboard shortcut is CTRL+SHIFT+c.
                 </li>
                 <li>
                   <strong>

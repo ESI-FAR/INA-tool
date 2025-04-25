@@ -10,6 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -32,6 +33,7 @@ import {
 } from "@/lib/reroute/component";
 import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 
 function exportAsGraphml() {
   const projectName = store.getState().projectName;
@@ -106,6 +108,12 @@ export function ComponentNetworkMenu() {
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
+              <DropdownMenuItem asChild>
+                <Link to="/help" hash="experimental-component">
+                  Please read help for usage
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <ComponentLayoutButton />
               <DropdownMenuItem
                 onClick={() => {

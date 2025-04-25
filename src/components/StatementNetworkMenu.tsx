@@ -10,6 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -32,6 +33,7 @@ import {
   reRouteConnections,
   undoReroutedConnections,
 } from "@/lib/reroute/statement";
+import { Link } from "@tanstack/react-router";
 
 function exportAsGraphml() {
   const projectName = store.getState().projectName;
@@ -106,6 +108,12 @@ export function StatementNetworkMenu() {
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
+              <DropdownMenuItem asChild>
+                <Link to="/help" hash="experimental-statement">
+                  Please read help for usage
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <StatementLayoutButton />
               <DropdownMenuItem
                 onClick={() => {
