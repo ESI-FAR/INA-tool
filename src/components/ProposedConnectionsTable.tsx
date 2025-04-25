@@ -26,6 +26,28 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { StatementCell } from "./StatementCell";
 import { connection2id } from "@/lib/connectionHelpers";
+import { DataTableColumnHeader } from "./ColumnHeader";
+import { statementLabel } from "@/lib/utils";
+
+const sortByEndpoint =
+  (
+    statementKey: "source_statement_object" | "target_statement_object",
+    componentKey: "source_component" | "target_component",
+  ) =>
+  (
+    rowA: Row<ConnectionWithStatementObjects>,
+    rowB: Row<ConnectionWithStatementObjects>,
+  ) => {
+    const a =
+      statementLabel(rowA.original[statementKey]) +
+      " " +
+      rowA.original[componentKey];
+    const b =
+      statementLabel(rowB.original[statementKey]) +
+      " " +
+      rowB.original[componentKey];
+    return a.localeCompare(b);
+  };
 
 const columns: ColumnDef<ConnectionWithStatementObjects>[] = [
   {
@@ -52,27 +74,35 @@ const columns: ColumnDef<ConnectionWithStatementObjects>[] = [
   },
   {
     accessorKey: "driven_by",
-    header: "Driven by",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Driven by" />
+    ),
   },
   {
     accessorKey: "source_statement",
-    header: "Source",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Source" />
+    ),
     cell: (props) => (
       <StatementCell
         statement={props.row.original.source_statement_object}
         highlight={props.row.original.source_component}
       />
     ),
+    sortingFn: sortByEndpoint("source_statement_object", "source_component"),
   },
   {
     accessorKey: "target_statement",
-    header: "Target",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Target" />
+    ),
     cell: (props) => (
       <StatementCell
         statement={props.row.original.target_statement_object}
         highlight={props.row.original.target_component}
       />
     ),
+    sortingFn: sortByEndpoint("target_statement_object", "target_component"),
   },
 ];
 
