@@ -4,6 +4,7 @@ export const StatementType = z.enum(["formal", "informal"]);
 export type StatementType = z.infer<typeof StatementType>;
 
 export const TypeOfObject = z.enum(["", "animate", "inanimate"]);
+export type TypeOfObject = z.infer<typeof TypeOfObject>;
 
 export const deonticSchema = z.enum([
   "must",
@@ -108,6 +109,7 @@ export const SourceComponentSchema = z.enum([
   "Aim",
   "Execution Constraint",
 ]);
+export type SourceComponentSchema = z.infer<typeof SourceComponentSchema>;
 
 export const TargetComponentSchema = z.enum([
   "Attribute",

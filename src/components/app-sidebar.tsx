@@ -16,8 +16,10 @@ import {
   AlignJustifyIcon,
   CircleHelpIcon,
   NetworkIcon,
+  ServerCogIcon,
   Table2Icon,
   TableIcon,
+  ThermometerIcon,
 } from "lucide-react";
 import { UploadButton } from "./UploadButton";
 import { DownloadProjectButton } from "./DownloadProjectButton";
@@ -47,7 +49,6 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Pages</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -112,18 +113,31 @@ export function AppSidebar() {
                 <SidebarGroupLabel>Analysis</SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/analysis/metrics"
+                    activeProps={{ className: "font-bold" }}
+                  >
+                    <ThermometerIcon />
+                    <span>Metrics</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+                  <SidebarMenuItem>
                     <SidebarMenuButton asChild>
                       <Link
                         to="/analysis/nlp"
                         activeProps={{ className: "font-bold" }}
                       >
-                        <CircleHelpIcon />
-                        <span>NLP Analysis</span>
+                        <ServerCogIcon />
+                        <span>Propose connections</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarGroupContent>
               </SidebarGroup>
+
+              
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link to="/help" activeProps={{ className: "font-bold" }}>
@@ -132,6 +146,7 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+             
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
