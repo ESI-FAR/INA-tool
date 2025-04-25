@@ -19,6 +19,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-collapsible": "^1.1.8",
     "@radix-ui/react-dialog": "^1.1.5",
     "@radix-ui/react-dropdown-menu": "^2.1.4",
     "@radix-ui/react-label": "^2.1.1",
@@ -39,8 +40,8 @@
     "compromise": "^14.14.4",
     "d3-dsv": "^3.0.1",
     "elkjs": "^0.9.3",
-    "fuse.js": "^7.1.0",
     "file-saver": "^2.0.5",
+    "fuse.js": "^7.1.0",
     "graphology": "^0.26.0",
     "graphology-metrics": "^2.3.1",
     "html-to-image": "^1.11.11",
