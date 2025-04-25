@@ -10,7 +10,7 @@ import { useStatements } from "@/hooks/use-statements";
 import { useEffect, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 
-export const Route = createFileRoute("/analysis/nlp")({
+export const Route = createFileRoute("/analysis/propose-connections")({
   component: RouteComponent,
 });
 

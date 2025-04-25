@@ -139,7 +139,7 @@ export function AppSidebar() {
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild>
                           <Link
-                            to="/analysis/nlp"
+                            to="/analysis/propose-connections"
                             activeProps={{ className: "font-bold" }}
                           >
                             <ServerCogIcon />
