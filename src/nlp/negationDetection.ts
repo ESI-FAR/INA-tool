@@ -18,7 +18,7 @@ interface WordRelations {
 }
 
 // for checking proximity of 'not' to verb in sentence
-let vicinity_size = 3;
+const vicinity_size = 3;
 
 // Cast the imported data to the correct type
 const typedWordRelations = wordNetRelations as WordRelations;
@@ -36,7 +36,7 @@ const typedNegationPrefixes = negationPrefixes as NegationPrefixes;
 export function isNegationVerb(verb: string): boolean {
   let verbExists = false;
   // Check if input verb is in our negation prefixes dictionary
-  for (let key in negationPrefixes) {
+  for (const key in negationPrefixes) {
     if (verb in typedNegationPrefixes[key]) {
       verbExists = true;
       break;
@@ -292,7 +292,7 @@ function existsSynonymOrAntonymOccurrence(
   // Use compromise.js to get word variations instead of the dictionary lookup
   const variations = getWordVariations(token, type);
   const variations_syn = getWordVariations(token, "synonyms");
-  let all_synonyms = [
+  const all_synonyms = [
     ...new Set([
       ...wordnet_variations_syn,
       ...wordnet_inflections,
