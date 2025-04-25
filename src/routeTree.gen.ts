@@ -27,6 +27,7 @@ const NetworkCompLazyImport = createFileRoute("/network/comp")();
 const ConnectionsStatementLazyImport = createFileRoute(
   "/connections/$statement",
 )();
+const AnalysisMetricsLazyImport = createFileRoute("/analysis/metrics")();
 
 // Create/Update Routes
 
@@ -90,6 +91,14 @@ const ConnectionsStatementLazyRoute = ConnectionsStatementLazyImport.update({
   import("./routes/connections/$statement.lazy").then((d) => d.Route),
 );
 
+const AnalysisMetricsLazyRoute = AnalysisMetricsLazyImport.update({
+  id: "/analysis/metrics",
+  path: "/analysis/metrics",
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import("./routes/analysis/metrics.lazy").then((d) => d.Route),
+);
+
 // Populate the FileRoutesByPath interface
 
 declare module "@tanstack/react-router" {
@@ -127,6 +136,13 @@ declare module "@tanstack/react-router" {
       path: "/statements";
       fullPath: "/statements";
       preLoaderRoute: typeof StatementsLazyImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/analysis/metrics": {
+      id: "/analysis/metrics";
+      path: "/analysis/metrics";
+      fullPath: "/analysis/metrics";
+      preLoaderRoute: typeof AnalysisMetricsLazyImport;
       parentRoute: typeof rootRoute;
     };
     "/connections/$statement": {
@@ -168,6 +184,7 @@ export interface FileRoutesByFullPath {
   "/conflicts": typeof ConflictsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/analysis/metrics": typeof AnalysisMetricsLazyRoute;
   "/connections/$statement": typeof ConnectionsStatementLazyRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
@@ -180,6 +197,7 @@ export interface FileRoutesByTo {
   "/conflicts": typeof ConflictsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/analysis/metrics": typeof AnalysisMetricsLazyRoute;
   "/connections/$statement": typeof ConnectionsStatementLazyRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
@@ -193,6 +211,7 @@ export interface FileRoutesById {
   "/conflicts": typeof ConflictsLazyRoute;
   "/help": typeof HelpLazyRoute;
   "/statements": typeof StatementsLazyRoute;
+  "/analysis/metrics": typeof AnalysisMetricsLazyRoute;
   "/connections/$statement": typeof ConnectionsStatementLazyRoute;
   "/network/comp": typeof NetworkCompLazyRoute;
   "/network/statement": typeof NetworkStatementLazyRoute;
@@ -207,6 +226,7 @@ export interface FileRouteTypes {
     | "/conflicts"
     | "/help"
     | "/statements"
+    | "/analysis/metrics"
     | "/connections/$statement"
     | "/network/comp"
     | "/network/statement"
@@ -218,6 +238,7 @@ export interface FileRouteTypes {
     | "/conflicts"
     | "/help"
     | "/statements"
+    | "/analysis/metrics"
     | "/connections/$statement"
     | "/network/comp"
     | "/network/statement"
@@ -229,6 +250,7 @@ export interface FileRouteTypes {
     | "/conflicts"
     | "/help"
     | "/statements"
+    | "/analysis/metrics"
     | "/connections/$statement"
     | "/network/comp"
     | "/network/statement"
@@ -242,6 +264,7 @@ export interface RootRouteChildren {
   ConflictsLazyRoute: typeof ConflictsLazyRoute;
   HelpLazyRoute: typeof HelpLazyRoute;
   StatementsLazyRoute: typeof StatementsLazyRoute;
+  AnalysisMetricsLazyRoute: typeof AnalysisMetricsLazyRoute;
   ConnectionsStatementLazyRoute: typeof ConnectionsStatementLazyRoute;
   NetworkCompLazyRoute: typeof NetworkCompLazyRoute;
   NetworkStatementLazyRoute: typeof NetworkStatementLazyRoute;
@@ -254,6 +277,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConflictsLazyRoute: ConflictsLazyRoute,
   HelpLazyRoute: HelpLazyRoute,
   StatementsLazyRoute: StatementsLazyRoute,
+  AnalysisMetricsLazyRoute: AnalysisMetricsLazyRoute,
   ConnectionsStatementLazyRoute: ConnectionsStatementLazyRoute,
   NetworkCompLazyRoute: NetworkCompLazyRoute,
   NetworkStatementLazyRoute: NetworkStatementLazyRoute,
@@ -275,6 +299,7 @@ export const routeTree = rootRoute
         "/conflicts",
         "/help",
         "/statements",
+        "/analysis/metrics",
         "/connections/$statement",
         "/network/comp",
         "/network/statement",
@@ -295,6 +320,9 @@ export const routeTree = rootRoute
     },
     "/statements": {
       "filePath": "statements.lazy.tsx"
+    },
+    "/analysis/metrics": {
+      "filePath": "analysis/metrics.lazy.tsx"
     },
     "/connections/$statement": {
       "filePath": "connections/$statement.lazy.tsx"

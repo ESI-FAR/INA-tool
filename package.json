@@ -39,6 +39,8 @@
     "d3-dsv": "^3.0.1",
     "elkjs": "^0.9.3",
     "file-saver": "^2.0.5",
+    "graphology": "^0.26.0",
+    "graphology-metrics": "^2.3.1",
     "html-to-image": "^1.11.11",
     "libavoid-js": "^0.4.4",
     "lucide-react": "^0.471.1",

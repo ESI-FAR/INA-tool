@@ -2,13 +2,12 @@ import {
   Connection,
   ConnectionComponent,
   ConnectionWithValues,
-  Statement,
 } from "@/lib/schema";
 import { Store, store } from "@/stores/global";
 import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
-import { useStatements } from "./use-statements";
+import { useStatementLookup } from "./use-statements";
 
 function compareConnection(a: Connection, b: Connection): boolean {
   return (
@@ -78,11 +77,8 @@ export function useConnections() {
 
 export function useConnectionsWithValues(): ConnectionWithValues[] {
   const { connections } = useConnections();
-  const { statements } = useStatements();
+  const statementLookup = useStatementLookup();
   return useMemo(() => {
-    const statementLookup = new Map<string, Statement>(
-      statements.map((statement) => [statement.Id, statement]),
-    );
     return connections
       .map((connection) => {
         const sourceStatement = statementLookup.get(
@@ -114,18 +110,15 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
         };
       })
       .filter((c) => c !== undefined);
-  }, [connections, statements]);
+  }, [connections, statementLookup]);
 }
 
 export function useConnectionsWithValuesOfStatement(
   statementId: string,
 ): ConnectionWithValues[] {
   const { connections } = useConnections();
-  const { statements } = useStatements();
+  const statementLookup = useStatementLookup();
   return useMemo(() => {
-    const statementLookup = new Map<string, Statement>(
-      statements.map((statement) => [statement.Id, statement]),
-    );
     return connections
       .filter(
         (connection) =>
@@ -162,5 +155,5 @@ export function useConnectionsWithValuesOfStatement(
         };
       })
       .filter((c) => c !== undefined);
-  }, [connections, statementId, statements]);
+  }, [connections, statementId, statementLookup]);
 }
