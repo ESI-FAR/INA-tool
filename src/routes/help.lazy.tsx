@@ -9,12 +9,18 @@ import {
   AlignVerticalDistributeCenterIcon,
   CameraIcon,
   DownloadIcon,
+  EyeOff,
+  FilterXIcon,
+  FlaskConicalIcon,
   LayoutTemplateIcon,
+  LinkIcon,
   Maximize2Icon,
   MenuIcon,
   PanelLeft,
   PencilIcon,
   PlusIcon,
+  RouteIcon,
+  RouteOffIcon,
   SaveIcon,
   SearchIcon,
   TrashIcon,
@@ -76,6 +82,11 @@ function RouteComponent() {
         Any existing statements will be deleted and replaced by the uploaded
         statements.
       </p>
+      <p>
+        If the "Or Else" column is filled then a sanction driven connection will
+        be made from that rows "Aim" to the "Activation Condition" of the
+        statement with the id in the "Or Else" column.
+      </p>
       <h3 className="py-4 text-xl">Upload your file with connections</h3>
       <p>
         On the{" "}
@@ -119,11 +130,12 @@ function RouteComponent() {
           <a href={screenshot} target="_blank" className="underline">
             Screenshot
           </a>{" "}
-          of web application with example loaded.
+          of web application with example loaded. Keyboard shortcut is
+          CTRL+SHIFT+e.
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after
-          confirmation.
+          confirmation. Keyboard shortcut is CTRL+SHIFT+r.
         </li>
       </ul>
 
@@ -195,7 +207,7 @@ function RouteComponent() {
         <li>
           <strong>Legend:</strong> Click the{" "}
           <AlignVerticalDistributeCenterIcon className="inline" /> Legend button
-          to see a legend of the network. The type components of a statement are
+          to see a legend of the network. The components of a statement are
           shown as a sub-graph. The colors of the statements and connections are
           explained.
         </li>
@@ -258,11 +270,48 @@ function RouteComponent() {
               </ul>
             </li>
             <li>
+              <a id="experimental-component" />
               <strong>
-                <LayoutTemplateIcon className="inline" /> Auto layout:
+                <FlaskConicalIcon className="inline" />
+                Experimental
               </strong>{" "}
-              To layout the graph using a layout algorithm use the auto layout
-              menu item.
+              Experimental features, they have some rough edges, but can be
+              useful. Use at your own risk.
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Auto layout:
+                  </strong>{" "}
+                  To layout the graph using a layout algorithm use the auto
+                  layout menu item. This will move the component and statement
+                  nodes around. Keyboard shortcut is CTRL+SHIFT+l.
+                </li>
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Reset auto layout:
+                  </strong>{" "}
+                  To reset the auto layout and move all nodes back to their
+                  naive positions. Any manual changes will be lost.
+                </li>
+                <li>
+                  <strong>
+                    <RouteIcon className="inline" /> Re-route connections:
+                  </strong>{" "}
+                  Reroutes connections to avoid overlapping nodes. After
+                  re-routing, moving nodes will not update the connection route;
+                  the inner bends of the connections will stay in same
+                  positions, and only the endpoints will move with the connected
+                  nodes. Keyboard shortcut is CTRL+SHIFT+c.
+                </li>
+                <li>
+                  <strong>
+                    <RouteOffIcon className="inline" />
+                    Undo rerouted connections
+                  </strong>
+                  {""}
+                  Will make whole connection move with nodes again.
+                </li>
+              </ul>
             </li>
           </ul>
         </li>
@@ -398,11 +447,48 @@ function RouteComponent() {
               </ul>
             </li>
             <li>
+              <a id="experimental-statement" />
               <strong>
-                <LayoutTemplateIcon className="inline" /> Auto layout:
+                <FlaskConicalIcon className="inline" />
+                Experimental
               </strong>{" "}
-              To layout the graph using a layout algorithm use the auto layout
-              menu item.
+              Experimental features, they have some rough edges, but can be
+              useful. Use at your own risk.
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Auto layout:
+                  </strong>{" "}
+                  To layout the graph using a layout algorithm use the auto
+                  layout menu item. This will move the component and statement
+                  nodes around. Keyboard shortcut is CTRL+SHIFT+l.
+                </li>
+                <li>
+                  <strong>
+                    <LayoutTemplateIcon className="inline" /> Reset auto layout:
+                  </strong>{" "}
+                  To reset the auto layout and move all nodes back to their
+                  naive positions. Any manual changes will be lost.
+                </li>
+                <li>
+                  <strong>
+                    <RouteIcon className="inline" /> Re-route connections:
+                  </strong>{" "}
+                  Re-route connections so they avoid most nodes. After
+                  re-routing, moving nodes will not update the connection route;
+                  the inner bends of the connections will stay in same
+                  positions, and only the endpoints will move with the connected
+                  nodes. Keyboard shortcut is CTRL+SHIFT+c.
+                </li>
+                <li>
+                  <strong>
+                    <RouteOffIcon className="inline" />
+                    Undo rerouted connections
+                  </strong>
+                  {""}
+                  Will make whole connection move with nodes again.
+                </li>
+              </ul>
             </li>
           </ul>
         </li>
@@ -446,7 +532,15 @@ function RouteComponent() {
                 <li>hold SHIFT key and drag a rectangle around nodes.</li>
               </ul>
             </li>
-            <li>To close the details click the X button.</li>
+            <li>
+              To close the details click the <EyeOff className="inline" />{" "}
+              button.
+            </li>
+            <li>
+              To delete selected statement click the{" "}
+              <TrashIcon className="inline" /> button. You will be asked for
+              confirmation.
+            </li>
             <li>To deselect all nodes click on the background.</li>
           </ul>
         </li>
@@ -458,7 +552,8 @@ function RouteComponent() {
         <Link className="underline" to="/statements">
           statements page
         </Link>{" "}
-        allows you to manage the statements.
+        allows you to manage the statements. All sanction driven connections are
+        shown as statement identifiers in the "Or Else" column.
       </p>
       <ul className="list-outside list-disc pl-4">
         <li>
@@ -481,9 +576,10 @@ function RouteComponent() {
           <Undo2Icon className="inline" /> button to cancel the changes.
         </li>
         <li>
-          <strong>Deleting:</strong> A statement can be deleted by pressing the{" "}
-          <TrashIcon className="inline" /> button. Any connections to or from
-          this statement will also be deleted.
+          <strong>Deleting:</strong> A statement can be deleted by selecting it
+          and pressing the <TrashIcon className="inline" /> button. Any
+          connections to or from this statement will also be deleted after
+          confirmation.
         </li>
         <li>
           <strong>Adding:</strong> After pressing the{" "}
@@ -496,6 +592,11 @@ function RouteComponent() {
           <DownloadIcon className="inline" /> download button to download the
           statements as a CSV file.
         </li>
+        <li>
+          <strong>Connections:</strong> To go to the connections of a statement
+          click the <LinkIcon className="inline" /> button. This will open the
+          connections page with the statement selected as target or source.
+        </li>
       </ul>
 
       <h3 className="py-4 text-xl">Connections page</h3>
@@ -507,10 +608,6 @@ function RouteComponent() {
         allows you to view and download the connections between statements.
         <ul className="list-outside list-disc pl-4">
           <li>
-            <strong>Search:</strong> Write text in the search box to search for
-            statements containing the query.
-          </li>
-          <li>
             <strong>Sorting:</strong> Click on the column header to sort the
             data. Initially sorted on the Id column.
           </li>
@@ -519,8 +616,8 @@ function RouteComponent() {
             paging buttons to navigate through the data.
           </li>
           <li>
-            <strong>Deleting:</strong> A connection can be deleted by pressing
-            the <TrashIcon className="inline" /> button.
+            <strong>Deleting:</strong> A connection can be deleted by selecting
+            it and by pressing the <TrashIcon className="inline" /> button.
           </li>
           <li>
             <strong>Adding:</strong> After pressing the{" "}
@@ -542,6 +639,23 @@ function RouteComponent() {
             <UploadIcon className="inline" /> upload button to upload a CSV or
             XLSX file with connections. Existing connections will be deleted and
             replaced by the uploaded connections.
+          </li>
+          <li>
+            <strong>Filtering:</strong>
+            The table header has combo boxes and text boxes to filter the data
+            in that column.
+            <ul className="ml-6 list-inside list-disc">
+              <li>
+                If you have one or more filters applied they can be cleared by
+                pressing the "<FilterXIcon className="inline" />
+                Clear all filters" button.
+              </li>
+              <li>
+                If you came from <LinkIcon className="inline" /> on the
+                statements page, the source and target can be cleared by
+                clicking the "All connections" button in the top left corner.
+              </li>
+            </ul>
           </li>
         </ul>
       </p>
@@ -567,8 +681,8 @@ function RouteComponent() {
           buttons to navigate through the data.
         </li>
         <li>
-          <strong>Deleting:</strong> A conflict can be deleted by pressing the{" "}
-          <TrashIcon className="inline" /> button.
+          <strong>Deleting:</strong> A conflict can be deleted by selecting it
+          and pressing the <TrashIcon className="inline" /> button.
         </li>
         <li>
           <strong>Adding:</strong> After pressing the{" "}

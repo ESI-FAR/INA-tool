@@ -1,6 +1,7 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -24,6 +25,8 @@ import { LoadExampleButton } from "./LoadExampleButton";
 import { ClearButton } from "./ClearButton";
 import { useStore } from "zustand";
 import { store } from "@/stores/global";
+import { Footer } from "./Footer";
+import { ProjectName } from "./ProjectName";
 
 export function AppSidebar() {
   const nrStatements = useStore(store, (state) => state.statements.length);
@@ -36,6 +39,15 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Project</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem className="px-2">
+              <ProjectName />
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Pages</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -151,6 +163,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="p-0">
+        <Footer />
+      </SidebarFooter>
     </Sidebar>
   );
 }

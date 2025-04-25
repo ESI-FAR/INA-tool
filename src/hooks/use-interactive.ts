@@ -8,7 +8,7 @@ export function useIsInteractive() {
   return useStore(selector, shallow);
 }
 
-interface EndPoints {
+export interface EndPoints {
   sourceX: number;
   sourceY: number;
   targetX: number;
@@ -74,5 +74,7 @@ function unpadHandle(
     sourceY: sy,
     targetX: tx,
     targetY: ty,
+    sourcePosition,
+    targetPosition,
   };
 }

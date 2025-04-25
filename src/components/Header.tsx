@@ -1,4 +1,3 @@
-import { ProjectName } from "./ProjectName";
 import { ThemeToggle } from "./theme-toggle";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 
@@ -12,7 +11,6 @@ export function Header() {
           <div className="text-2xl">Institutional Network Analysis Tool</div>
         )}
       </div>
-      <ProjectName />
       <ThemeToggle />
     </header>
   );

@@ -2,7 +2,6 @@ import { Statement, StatementType } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { Handle, NodeProps, NodeResizeControl, Position } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
-import { useMemo } from "react";
 import type {
   StatementNode,
   AttributeNode,
@@ -11,10 +10,12 @@ import type {
   InDirectObjectNode,
   ActivationConditionNode,
   ExecutionConstraintNode,
-  ConflictGroupNode,
   INANode,
 } from "@/lib/node";
 import { bgColor } from "./drivenColors";
+import { hexagonPolygonPoints } from "@/lib/shapes";
+import { wrapText, lines2Box } from "@/lib/textwrap";
+import { useMemo } from "react";
 
 /*
 The statement graph should look like:
@@ -66,7 +67,8 @@ function SourceHandles({
     (statement["Direct Object"] &&
       statement["Type of Direct Object"] === "inanimate") ||
     (statement["Indirect Object"] &&
-      statement["Type of Indirect Object"] === "inanimate");
+      statement["Type of Indirect Object"] === "inanimate") ||
+    statement["Execution Constraint"];
 
   return (
     <>
@@ -316,7 +318,7 @@ export function DirectObjectNode({
   return (
     <div
       className={cn(
-        "border-1 max-w-48 rounded-sm border border-foreground p-2",
+        "border-1 max-w-48 rounded-md border border-foreground p-2",
         selectedClassName(selected),
       )}
     >
@@ -368,7 +370,7 @@ export function InDirectObjectNode({
   return (
     <div
       className={cn(
-        "border-1 max-w-48 rounded-sm border border-foreground p-2",
+        "border-1 max-w-48 rounded-md border border-foreground p-2",
         selectedClassName(selected),
       )}
     >
@@ -407,83 +409,48 @@ export function InDirectObjectNode({
 const drivenConnectionHandleStye = { width: 10, height: 10 } as const;
 
 function Hexagon({
-  children,
+  text,
   selected,
 }: {
-  children: React.ReactNode;
+  text: string;
   selected: boolean | undefined;
 }) {
-  // Extracted from https://html-polygon.com/play
-  // TODO make rectangle inside hexagon wider
+  const sideWidth = 20;
+  const { lines, height, positions, points, width } = useMemo(() => {
+    const { widthInChars, lines } = wrapText(text);
+    const {
+      width: textboxWidth,
+      height,
+      positions,
+    } = lines2Box(lines, { widthInChars: widthInChars });
+    const points = hexagonPolygonPoints(height, textboxWidth, sideWidth);
+    const width = textboxWidth + sideWidth * 2;
+    return { lines, height, positions, points, width, sideWidth };
+  }, [text]);
 
-  // Keep in sync with colors in selectedClassName
-  const borderClassName = useMemo(
-    () =>
-      selected
-        ? "bg-slate-900 dark:bg-slate-100"
-        : "bg-slate-400 dark:bg-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-slate-100",
-    [selected],
-  );
+  const borderClassName = selected
+    ? "stroke-slate-900 dark:stroke-slate-100"
+    : "stroke-slate-400 dark:stroke-slate-400 group-hover:stroke-slate-900 dark:group-hover:stroke-slate-100";
 
   return (
-    <div
-      className="group"
-      style={{
-        clipPath:
-          "polygon(75% 6.699%, 25% 6.699%, 0% 50%, 25% 93.301%, 75% 93.301%, 100% 50%)",
-      }}
-    >
-      <div className="relative h-full w-full overflow-hidden">
-        <div
-          className={cn("absolute h-full w-full", borderClassName)}
-          style={{
-            clipPath:
-              "polygon(74.423% 7.699%, 25.577% 7.699%, 1.155% 50%, 25.577% 92.301%, 74.423% 92.301%, 98.845% 50%, 74.423% 7.699%, 74.423% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 74.423% 0%)",
-          }}
-        />
-        <div style={{ height: "12.699%" }} />
-        <div
-          className="float-left clear-left mx-0"
-          style={{
-            height: "37.301%",
-            width: "28.464%",
-            shapeOutside: "polygon(0% 0%, 100% 0%, 24.34% 100%, 0% 100%)",
-          }}
-        />
-        <div
-          className="float-right clear-right mx-0"
-          style={{
-            height: "37.301%",
-            width: "28.464%",
-            shapeOutside: "polygon(0% 0%, 100% 0%, 100% 100%, 75.66% 100%)",
-          }}
-        />
-        <div
-          className="float-left clear-left mx-0"
-          style={{
-            height: "37.301%",
-            width: "28.464%",
-            shapeOutside: "polygon(0% 0%, 24.34% 0%, 100% 100%, 0% 100%)",
-          }}
-        />
-        <div
-          className="float-right clear-right mx-0"
-          style={{
-            height: "37.301%",
-            width: "28.464%",
-            shapeOutside: "polygon(75.66% 0%, 100% 0%, 100% 100%, 0% 100%)",
-          }}
-        />
-        <div
-          className="float-left clear-left w-full"
-          style={{
-            height: "12.699%",
-            shapeOutside: "polygon(0px 0px, 100% 0px, 100% 100%, 0px 100%)",
-          }}
-        />
-        {children}
-      </div>
-    </div>
+    <svg width={width} height={height} className="group">
+      <polygon
+        points={points}
+        strokeWidth="1"
+        fill="transparent"
+        className={borderClassName}
+      />
+      {lines.map((line, i) => (
+        <text
+          x={sideWidth + positions[i].x}
+          y={positions[i].y}
+          key={line}
+          className="fill-primary"
+        >
+          {line}
+        </text>
+      ))}
+    </svg>
   );
 }
 
@@ -492,24 +459,9 @@ export function ActivationConditionNode({
   isConnectable,
   selected,
 }: NodeProps<ActivationConditionNode>) {
-  /**
-   * <div id="html-polygon"
-   * class="html-polygon html-polygon-sides-6" style="height: 425px;width:
-   * 425px;background-color: rgb(204, 204, 204);color: rgb(0, 0, 0);text-align: justify;
-   * clip-path: polygon(50% 0%, 6.699% 25%, 6.699% 75%, 50% 100%, 93.301% 75%, 93.301% 25%);">
-   * <div id="html-polygon-border-container"
-   * class="html-polygon-border-container" style="height: 100%; position: relative; width: 100%; overflow: hidden;">
-   * <div id="html-polygon-border" class="html-polygon-border"
-   * style="background-color: rgb(0, 0, 0); position: absolute; height: 100%; width: 100%;
-   * clip-path: polygon(50% 1.155%, 7.699% 25.577%, 7.699% 74.423%, 50% 98.845%, 92.301% 74.423%, 92.301% 25.577%, 50% 1.155%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);">
-   * </div><div id="html-polygon-buffer-top" class="html-polygon-buffer html-polygon-buffer-top" style="height: 6.928%;"></div><div id="html-polygon-buffer-side-0" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 25.398% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-1" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 74.602% 100%);"></div><div id="html-polygon-buffer-side-2" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 43.072%; width: 12.699%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-3" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 43.072%; width: 12.699%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-4" class="html-polygon-buffer html-polygon-buffer-side" style="clear: left; float: left; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(0% 0%, 25.398% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-side-5" class="html-polygon-buffer html-polygon-buffer-side" style="clear: right; float: right; height: 21.536%; width: 50%; margin-left: 0px; margin-right: 0px; shape-outside: polygon(74.602% 0%, 100% 0%, 100% 100%, 0% 100%);"></div><div id="html-polygon-buffer-bottom" class="html-polygon-buffer html-polygon-buffer-bottom" style="height: 6.928%; width: 100%; clear: left; float: left; shape-outside: polygon(0px 0px, 100% 0px, 100% 100%, 0px 100%);"></div>Consequat ad esse mollit nostrud mollit. Exercitation exercitation nostrud ut est aliqua laboris velit. Reprehenderit nostrud tempor elit adipisicing culpa officia. Sunt do aliqua minim consectetur consequat amet. In consequat.</div></div>
-   */
-
   return (
     <>
-      <Hexagon selected={selected}>
-        <div className="max-w-48 px-12 py-1">{data.label}</div>
-      </Hexagon>
+      <Hexagon selected={selected} text={data.label}></Hexagon>
       <Handle
         type="source"
         id="statement"
@@ -521,7 +473,7 @@ export function ActivationConditionNode({
         type="target"
         id="outcome"
         className={cn(bgColor.outcome, { invisible: !isConnectable })}
-        style={{ ...drivenConnectionHandleStye, left: "33%", top: "6px" }}
+        style={{ ...drivenConnectionHandleStye, left: "33%" }}
         position={Position.Top}
         isConnectable={isConnectable}
       />
@@ -529,7 +481,7 @@ export function ActivationConditionNode({
         type="target"
         id="sanction"
         className={cn(bgColor.sanction, { invisible: !isConnectable })}
-        style={{ ...drivenConnectionHandleStye, left: "66%", top: "6px" }}
+        style={{ ...drivenConnectionHandleStye, left: "66%" }}
         position={Position.Top}
         isConnectable={isConnectable}
       />
@@ -543,13 +495,8 @@ export function ExecutionConstraintNode({
   selected,
 }: NodeProps<ExecutionConstraintNode>) {
   return (
-    <div
-      className={cn(
-        "border-1 max-w-48 rounded-xl border border-foreground p-2",
-        selectedClassName(selected),
-      )}
-    >
-      <div className="h-fit w-fit">{data.label}</div>
+    <>
+      <Hexagon selected={selected} text={data.label}></Hexagon>
       <Handle
         type="target"
         id="statement"
@@ -561,17 +508,19 @@ export function ExecutionConstraintNode({
         type="source"
         id="actor"
         className={cn(bgColor.actor, { invisible: !isConnectable })}
-        style={drivenConnectionHandleStye}
+        style={{ ...drivenConnectionHandleStye, left: "33%" }}
         position={Position.Bottom}
         isConnectable={isConnectable}
       />
-    </div>
-  );
-}
-
-export function ConflictGroupNode() {
-  return (
-    <div className="h-full w-full rounded border-2 bg-red-500 shadow"></div>
+      <Handle
+        type="source"
+        id="outcome"
+        className={cn(bgColor.outcome, { invisible: !isConnectable })}
+        style={{ ...drivenConnectionHandleStye, left: "66%" }}
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+      />
+    </>
   );
 }
 

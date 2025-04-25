@@ -62,7 +62,7 @@ export const store = createStore<Store>((set, get) => ({
   },
 }));
 
-const NODE_OFFSET = 60;
+const NODE_OFFSET = 100;
 
 function onStatementsChange(statements: Statement[]) {
   const nodes = store.getState().nodes;
@@ -180,3 +180,16 @@ function onConflictsChange(conflicts: Conflict[]) {
 globalStore.subscribe((state) => state.statements, onStatementsChange);
 globalStore.subscribe((state) => state.connections, onConnectionsChange);
 globalStore.subscribe((state) => state.conflicts, onConflictsChange);
+
+export function reset() {
+  const statements = globalStore.getState().statements;
+  const connections = globalStore.getState().connections;
+  const conflicts = globalStore.getState().conflicts;
+  store.setState({
+    nodes: [],
+    edges: [],
+  });
+  onStatementsChange(statements);
+  onConnectionsChange(connections);
+  onConflictsChange(conflicts);
+}

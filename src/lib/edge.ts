@@ -9,6 +9,7 @@ Purple (Actor-driven connection):
 
 Green (Outcome-driven connection):
 - (Inanimate) Direct/Indirect Object -> Activation Condition
+- Execution Constraint -> Activation Condition
 
 Red (Sanction-driven connection):
 - Aim -> Activation Condition
@@ -18,14 +19,22 @@ export type ComponentEdge = Edge<
   { label?: string; statementId: string },
   "component"
 >;
-export type ActorDrivenConnection = Edge<Record<string, unknown>, "actor">; // Purple
-export type OutcomeDrivenConnection = Edge<Record<string, unknown>, "outcome">; // Green
+
+type Bend = [number, number];
+export type Bends = Bend[];
+
+type BendData = {
+  bends?: Bends;
+};
+
+export type ActorDrivenConnection = Edge<BendData, "actor">; // Purple
+export type OutcomeDrivenConnection = Edge<BendData, "outcome">; // Green
 export type SanctionDrivenConnection = Edge<
   Record<string, unknown>,
   "sanction"
 >; // Red
 
-export type ConflictingEdge = Edge<Record<string, unknown>, "conflict">;
+export type ConflictingEdge = Edge<BendData, "conflict">;
 
 export type DrivenConnectionEdge =
   | ActorDrivenConnection
@@ -42,7 +51,7 @@ export function isComponentEdge(edge: INACEdge): edge is ComponentEdge {
 }
 
 export function isDrivenConnectionEdge(
-  edge: INACEdge | ConflictingEdge,
+  edge: INACEdge,
 ): edge is DrivenConnectionEdge {
   return (
     edge.type === "actor" || edge.type === "outcome" || edge.type === "sanction"
@@ -69,7 +78,7 @@ export function builderDrivenConnectionEdge(
   type: DrivenBy,
 ): DrivenConnectionEdge {
   return {
-    id: `${id}-${sourceId}-2-${targetId}`,
+    id,
     source: sourceId,
     target: targetId,
     type,

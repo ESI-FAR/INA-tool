@@ -11,6 +11,7 @@ export function ProjectName() {
   if (editing) {
     return (
       <form
+        className="flex w-full flex-row items-center justify-between"
         onSubmit={(event) => {
           event.preventDefault();
           const newName = inputRef.current?.value;
@@ -22,27 +23,42 @@ export function ProjectName() {
       >
         <input
           defaultValue={name}
-          className="mx-1 rounded border-2 bg-background p-1"
+          className="mx-1 w-44 rounded border-2 bg-background p-1 text-xl"
           maxLength={200}
           minLength={1}
           ref={inputRef}
-          onBlur={() => setEditing(false)}
           onKeyDown={(event) => {
             if (event.key === "Escape") {
               setEditing(false);
             }
           }}
         />
-        <button title="Save" type="submit">
-          🖉
-        </button>
+        <div>
+          <button
+            title="Save"
+            type="submit"
+            className="hover:bg-accent hover:text-accent-foreground"
+          >
+            🖉
+          </button>{" "}
+          <button
+            title="Cancel"
+            type="button"
+            className="hover:bg-accent hover:text-accent-foreground"
+            onClick={() => {
+              setEditing(false);
+            }}
+          >
+            X
+          </button>
+        </div>
       </form>
     );
   }
 
   return (
     <button
-      className="group/name flex flex-row"
+      className="flex w-full flex-row justify-between"
       title="Click to change project name"
       onClick={() => {
         setEditing(true);
@@ -51,8 +67,8 @@ export function ProjectName() {
         }, 0);
       }}
     >
-      {name}
-      <span className="invisible ps-1 group-hover/name:visible">🖉</span>
+      <span className="text-xl">{name}</span>
+      <span className="text-muted-foreground hover:text-foreground">🖉</span>
     </button>
   );
 }

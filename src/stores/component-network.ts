@@ -208,7 +208,7 @@ function onConnectionsChange(connections: Connection[]) {
   store.getState().setEdges(edges);
 }
 
-function conflict2id(conflict: Conflict): string {
+export function conflict2id(conflict: Conflict): string {
   return `conflict-${conflict.formal}-${conflict.informal}`;
 }
 
@@ -246,3 +246,16 @@ function onConflictsChange(conflicts: Conflict[]) {
 globalStore.subscribe((state) => state.statements, onStatementsChange);
 globalStore.subscribe((state) => state.connections, onConnectionsChange);
 globalStore.subscribe((state) => state.conflicts, onConflictsChange);
+
+export function reset() {
+  const statements = globalStore.getState().statements;
+  const connections = globalStore.getState().connections;
+  const conflicts = globalStore.getState().conflicts;
+  store.setState({
+    nodes: [],
+    edges: [],
+  });
+  onStatementsChange(statements);
+  onConnectionsChange(connections);
+  onConflictsChange(conflicts);
+}

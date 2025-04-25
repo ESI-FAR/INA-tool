@@ -161,14 +161,15 @@ export const connectionSchema = connectionUnrefinedSchema
   )
   .refine(
     (data) =>
-      // Cannot check that source_statement object is imanimate, so that is part of add connection logic
+      // Cannot check that source_statement object is inanimate, so that is part of add connection logic
       ((data.source_component === "Direct Object" ||
-        data.source_component === "Indirect Object") &&
+        data.source_component === "Indirect Object" ||
+        data.source_component === "Execution Constraint") &&
         data.target_component === "Activation Condition") ||
       data.driven_by !== "outcome",
     {
       message:
-        'Outcome-driven connection must have source_component as "Direct Object" or "Indirect Object" and target_component as "Activation Condition"',
+        'Outcome-driven connection must have source_component as "Direct Object" or "Indirect Object" or "Execution Constraint" and target_component as "Activation Condition"',
       path: ["driven_by"],
     },
   );

@@ -8,255 +8,283 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router'
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root";
-import { Route as PrivacyPolicyImport } from "./routes/privacy-policy";
-import { Route as AnalysisNlpImport } from "./routes/analysis/nlp";
+import { Route as rootRoute } from './routes/__root'
+import { Route as PrivacyPolicyImport } from './routes/privacy-policy'
+import { Route as AnalysisNlpImport } from './routes/analysis/nlp'
 
 // Create Virtual Routes
 
-const StatementsLazyImport = createFileRoute("/statements")();
-const HelpLazyImport = createFileRoute("/help")();
-const ConnectionsLazyImport = createFileRoute("/connections")();
-const ConflictsLazyImport = createFileRoute("/conflicts")();
-const IndexLazyImport = createFileRoute("/")();
-const NetworkStatementLazyImport = createFileRoute("/network/statement")();
-const NetworkCompLazyImport = createFileRoute("/network/comp")();
+const StatementsLazyImport = createFileRoute('/statements')()
+const HelpLazyImport = createFileRoute('/help')()
+const ConflictsLazyImport = createFileRoute('/conflicts')()
+const IndexLazyImport = createFileRoute('/')()
+const ConnectionsIndexLazyImport = createFileRoute('/connections/')()
+const NetworkStatementLazyImport = createFileRoute('/network/statement')()
+const NetworkCompLazyImport = createFileRoute('/network/comp')()
+const ConnectionsStatementLazyImport = createFileRoute(
+  '/connections/$statement',
+)()
 
 // Create/Update Routes
 
 const StatementsLazyRoute = StatementsLazyImport.update({
-  id: "/statements",
-  path: "/statements",
+  id: '/statements',
+  path: '/statements',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import("./routes/statements.lazy").then((d) => d.Route));
+} as any).lazy(() => import('./routes/statements.lazy').then((d) => d.Route))
 
 const HelpLazyRoute = HelpLazyImport.update({
-  id: "/help",
-  path: "/help",
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import("./routes/help.lazy").then((d) => d.Route));
-
-const ConnectionsLazyRoute = ConnectionsLazyImport.update({
-  id: "/connections",
-  path: "/connections",
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import("./routes/connections.lazy").then((d) => d.Route));
+} as any).lazy(() => import('./routes/help.lazy').then((d) => d.Route))
 
 const ConflictsLazyRoute = ConflictsLazyImport.update({
-  id: "/conflicts",
-  path: "/conflicts",
+  id: '/conflicts',
+  path: '/conflicts',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import("./routes/conflicts.lazy").then((d) => d.Route));
+} as any).lazy(() => import('./routes/conflicts.lazy').then((d) => d.Route))
 
 const PrivacyPolicyRoute = PrivacyPolicyImport.update({
-  id: "/privacy-policy",
-  path: "/privacy-policy",
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const IndexLazyRoute = IndexLazyImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import("./routes/index.lazy").then((d) => d.Route));
+} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const NetworkStatementLazyRoute = NetworkStatementLazyImport.update({
-  id: "/network/statement",
-  path: "/network/statement",
+const ConnectionsIndexLazyRoute = ConnectionsIndexLazyImport.update({
+  id: '/connections/',
+  path: '/connections/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
-  import("./routes/network/statement.lazy").then((d) => d.Route),
-);
+  import('./routes/connections/index.lazy').then((d) => d.Route),
+)
+
+const NetworkStatementLazyRoute = NetworkStatementLazyImport.update({
+  id: '/network/statement',
+  path: '/network/statement',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/network/statement.lazy').then((d) => d.Route),
+)
 
 const NetworkCompLazyRoute = NetworkCompLazyImport.update({
-  id: "/network/comp",
-  path: "/network/comp",
+  id: '/network/comp',
+  path: '/network/comp',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import("./routes/network/comp.lazy").then((d) => d.Route));
+} as any).lazy(() => import('./routes/network/comp.lazy').then((d) => d.Route))
+
+const ConnectionsStatementLazyRoute = ConnectionsStatementLazyImport.update({
+  id: '/connections/$statement',
+  path: '/connections/$statement',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/connections/$statement.lazy').then((d) => d.Route),
+)
 
 const AnalysisNlpRoute = AnalysisNlpImport.update({
-  id: "/analysis/nlp",
-  path: "/analysis/nlp",
+  id: '/analysis/nlp',
+  path: '/analysis/nlp',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 // Populate the FileRoutesByPath interface
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexLazyImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/privacy-policy": {
-      id: "/privacy-policy";
-      path: "/privacy-policy";
-      fullPath: "/privacy-policy";
-      preLoaderRoute: typeof PrivacyPolicyImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/conflicts": {
-      id: "/conflicts";
-      path: "/conflicts";
-      fullPath: "/conflicts";
-      preLoaderRoute: typeof ConflictsLazyImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/connections": {
-      id: "/connections";
-      path: "/connections";
-      fullPath: "/connections";
-      preLoaderRoute: typeof ConnectionsLazyImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/help": {
-      id: "/help";
-      path: "/help";
-      fullPath: "/help";
-      preLoaderRoute: typeof HelpLazyImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/statements": {
-      id: "/statements";
-      path: "/statements";
-      fullPath: "/statements";
-      preLoaderRoute: typeof StatementsLazyImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/analysis/nlp": {
-      id: "/analysis/nlp";
-      path: "/analysis/nlp";
-      fullPath: "/analysis/nlp";
-      preLoaderRoute: typeof AnalysisNlpImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/network/comp": {
-      id: "/network/comp";
-      path: "/network/comp";
-      fullPath: "/network/comp";
-      preLoaderRoute: typeof NetworkCompLazyImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/network/statement": {
-      id: "/network/statement";
-      path: "/network/statement";
-      fullPath: "/network/statement";
-      preLoaderRoute: typeof NetworkStatementLazyImport;
-      parentRoute: typeof rootRoute;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyImport
+      parentRoute: typeof rootRoute
+    }
+    '/conflicts': {
+      id: '/conflicts'
+      path: '/conflicts'
+      fullPath: '/conflicts'
+      preLoaderRoute: typeof ConflictsLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/statements': {
+      id: '/statements'
+      path: '/statements'
+      fullPath: '/statements'
+      preLoaderRoute: typeof StatementsLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/analysis/nlp': {
+      id: '/analysis/nlp'
+      path: '/analysis/nlp'
+      fullPath: '/analysis/nlp'
+      preLoaderRoute: typeof AnalysisNlpImport
+      parentRoute: typeof rootRoute
+    }
+    '/connections/$statement': {
+      id: '/connections/$statement'
+      path: '/connections/$statement'
+      fullPath: '/connections/$statement'
+      preLoaderRoute: typeof ConnectionsStatementLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/network/comp': {
+      id: '/network/comp'
+      path: '/network/comp'
+      fullPath: '/network/comp'
+      preLoaderRoute: typeof NetworkCompLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/network/statement': {
+      id: '/network/statement'
+      path: '/network/statement'
+      fullPath: '/network/statement'
+      preLoaderRoute: typeof NetworkStatementLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/connections/': {
+      id: '/connections/'
+      path: '/connections'
+      fullPath: '/connections'
+      preLoaderRoute: typeof ConnectionsIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexLazyRoute;
-  "/privacy-policy": typeof PrivacyPolicyRoute;
-  "/conflicts": typeof ConflictsLazyRoute;
-  "/connections": typeof ConnectionsLazyRoute;
-  "/help": typeof HelpLazyRoute;
-  "/statements": typeof StatementsLazyRoute;
-  "/analysis/nlp": typeof AnalysisNlpRoute;
-  "/network/comp": typeof NetworkCompLazyRoute;
-  "/network/statement": typeof NetworkStatementLazyRoute;
+  '/': typeof IndexLazyRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/conflicts': typeof ConflictsLazyRoute
+  '/help': typeof HelpLazyRoute
+  '/statements': typeof StatementsLazyRoute
+  '/analysis/nlp': typeof AnalysisNlpRoute
+  '/connections/$statement': typeof ConnectionsStatementLazyRoute
+  '/network/comp': typeof NetworkCompLazyRoute
+  '/network/statement': typeof NetworkStatementLazyRoute
+  '/connections': typeof ConnectionsIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
-  "/": typeof IndexLazyRoute;
-  "/privacy-policy": typeof PrivacyPolicyRoute;
-  "/conflicts": typeof ConflictsLazyRoute;
-  "/connections": typeof ConnectionsLazyRoute;
-  "/help": typeof HelpLazyRoute;
-  "/statements": typeof StatementsLazyRoute;
-  "/analysis/nlp": typeof AnalysisNlpRoute;
-  "/network/comp": typeof NetworkCompLazyRoute;
-  "/network/statement": typeof NetworkStatementLazyRoute;
+  '/': typeof IndexLazyRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/conflicts': typeof ConflictsLazyRoute
+  '/help': typeof HelpLazyRoute
+  '/statements': typeof StatementsLazyRoute
+  '/analysis/nlp': typeof AnalysisNlpRoute
+  '/connections/$statement': typeof ConnectionsStatementLazyRoute
+  '/network/comp': typeof NetworkCompLazyRoute
+  '/network/statement': typeof NetworkStatementLazyRoute
+  '/connections': typeof ConnectionsIndexLazyRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  "/": typeof IndexLazyRoute;
-  "/privacy-policy": typeof PrivacyPolicyRoute;
-  "/conflicts": typeof ConflictsLazyRoute;
-  "/connections": typeof ConnectionsLazyRoute;
-  "/help": typeof HelpLazyRoute;
-  "/statements": typeof StatementsLazyRoute;
-  "/analysis/nlp": typeof AnalysisNlpRoute;
-  "/network/comp": typeof NetworkCompLazyRoute;
-  "/network/statement": typeof NetworkStatementLazyRoute;
+  __root__: typeof rootRoute
+  '/': typeof IndexLazyRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/conflicts': typeof ConflictsLazyRoute
+  '/help': typeof HelpLazyRoute
+  '/statements': typeof StatementsLazyRoute
+  '/analysis/nlp': typeof AnalysisNlpRoute
+  '/connections/$statement': typeof ConnectionsStatementLazyRoute
+  '/network/comp': typeof NetworkCompLazyRoute
+  '/network/statement': typeof NetworkStatementLazyRoute
+  '/connections/': typeof ConnectionsIndexLazyRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/privacy-policy"
-    | "/conflicts"
-    | "/connections"
-    | "/help"
-    | "/statements"
-    | "/analysis/nlp"
-    | "/network/comp"
-    | "/network/statement";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/privacy-policy'
+    | '/conflicts'
+    | '/help'
+    | '/statements'
+    | '/analysis/nlp'
+    | '/connections/$statement'
+    | '/network/comp'
+    | '/network/statement'
+    | '/connections'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/privacy-policy"
-    | "/conflicts"
-    | "/connections"
-    | "/help"
-    | "/statements"
-    | "/analysis/nlp"
-    | "/network/comp"
-    | "/network/statement";
+    | '/'
+    | '/privacy-policy'
+    | '/conflicts'
+    | '/help'
+    | '/statements'
+    | '/analysis/nlp'
+    | '/connections/$statement'
+    | '/network/comp'
+    | '/network/statement'
+    | '/connections'
   id:
-    | "__root__"
-    | "/"
-    | "/privacy-policy"
-    | "/conflicts"
-    | "/connections"
-    | "/help"
-    | "/statements"
-    | "/analysis/nlp"
-    | "/network/comp"
-    | "/network/statement";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/privacy-policy'
+    | '/conflicts'
+    | '/help'
+    | '/statements'
+    | '/analysis/nlp'
+    | '/connections/$statement'
+    | '/network/comp'
+    | '/network/statement'
+    | '/connections/'
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute;
-  PrivacyPolicyRoute: typeof PrivacyPolicyRoute;
-  ConflictsLazyRoute: typeof ConflictsLazyRoute;
-  ConnectionsLazyRoute: typeof ConnectionsLazyRoute;
-  HelpLazyRoute: typeof HelpLazyRoute;
-  StatementsLazyRoute: typeof StatementsLazyRoute;
-  AnalysisNlpRoute: typeof AnalysisNlpRoute;
-  NetworkCompLazyRoute: typeof NetworkCompLazyRoute;
-  NetworkStatementLazyRoute: typeof NetworkStatementLazyRoute;
+  IndexLazyRoute: typeof IndexLazyRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  ConflictsLazyRoute: typeof ConflictsLazyRoute
+  HelpLazyRoute: typeof HelpLazyRoute
+  StatementsLazyRoute: typeof StatementsLazyRoute
+  AnalysisNlpRoute: typeof AnalysisNlpRoute
+  ConnectionsStatementLazyRoute: typeof ConnectionsStatementLazyRoute
+  NetworkCompLazyRoute: typeof NetworkCompLazyRoute
+  NetworkStatementLazyRoute: typeof NetworkStatementLazyRoute
+  ConnectionsIndexLazyRoute: typeof ConnectionsIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ConflictsLazyRoute: ConflictsLazyRoute,
-  ConnectionsLazyRoute: ConnectionsLazyRoute,
   HelpLazyRoute: HelpLazyRoute,
   StatementsLazyRoute: StatementsLazyRoute,
   AnalysisNlpRoute: AnalysisNlpRoute,
+  ConnectionsStatementLazyRoute: ConnectionsStatementLazyRoute,
   NetworkCompLazyRoute: NetworkCompLazyRoute,
   NetworkStatementLazyRoute: NetworkStatementLazyRoute,
-};
+  ConnectionsIndexLazyRoute: ConnectionsIndexLazyRoute,
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {
@@ -267,12 +295,13 @@ export const routeTree = rootRoute
         "/",
         "/privacy-policy",
         "/conflicts",
-        "/connections",
         "/help",
         "/statements",
         "/analysis/nlp",
+        "/connections/$statement",
         "/network/comp",
-        "/network/statement"
+        "/network/statement",
+        "/connections/"
       ]
     },
     "/": {
@@ -284,9 +313,6 @@ export const routeTree = rootRoute
     "/conflicts": {
       "filePath": "conflicts.lazy.tsx"
     },
-    "/connections": {
-      "filePath": "connections.lazy.tsx"
-    },
     "/help": {
       "filePath": "help.lazy.tsx"
     },
@@ -296,11 +322,17 @@ export const routeTree = rootRoute
     "/analysis/nlp": {
       "filePath": "analysis/nlp.tsx"
     },
+    "/connections/$statement": {
+      "filePath": "connections/$statement.lazy.tsx"
+    },
     "/network/comp": {
       "filePath": "network/comp.lazy.tsx"
     },
     "/network/statement": {
       "filePath": "network/statement.lazy.tsx"
+    },
+    "/connections/": {
+      "filePath": "connections/index.lazy.tsx"
     }
   }
 }
