@@ -8,6 +8,7 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import {
   AlignVerticalDistributeCenterIcon,
   CameraIcon,
+  ChevronDown,
   DownloadIcon,
   EyeOff,
   FilterXIcon,
@@ -131,7 +132,12 @@ function RouteComponent() {
             Screenshot
           </a>{" "}
           of web application with example loaded. Keyboard shortcut is
-          CTRL+SHIFT+e.
+          CTRL+SHIFT+e. There is a second example under the{" "}
+          <ChevronDown className="inline" /> button that can be used in the{" "}
+          <Link to="/analysis/propose-connections" className="underline">
+            Propose connections analysis page
+          </Link>
+          .
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after
@@ -708,6 +714,30 @@ function RouteComponent() {
           statement id.
         </li>
       </ul>
+
+      <h3 className="py-4 text-xl">Analysis pages</h3>
+      <ol className="list-inside list-decimal">
+        <li>
+          <strong>
+            {" "}
+            <Link className="underline" to="/analysis/metrics">
+              Metrics
+            </Link>
+            :
+          </strong>{" "}
+          Analysis will show graph metrics of the network.
+        </li>
+        <li>
+          <strong>
+            {" "}
+            <Link className="underline" to="/analysis/propose-connections">
+              Propose connections
+            </Link>
+            :
+          </strong>{" "}
+          Analysis will propose connections between statements based NLP.
+        </li>
+      </ol>
 
       <h3 className="py-4 text-xl">Persistence</h3>
       <ul className="list-outside list-disc pl-4">

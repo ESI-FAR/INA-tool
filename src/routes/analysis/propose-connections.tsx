@@ -49,8 +49,8 @@ function RouteComponent() {
     <div className="flex flex-col gap-4 p-4">
       <h1 className="mb-4 text-2xl font-bold">Propose connections</h1>
       <p>
-        Find connections in current statements using natural language processing
-        with a wordnet subset powered fuzzy search.
+        Find connections between current statements using natural language
+        processing with a wordnet subset powered fuzzy search.
       </p>
       <form className="space-y-6" onSubmit={performAnalysis}>
         <Button type="submit">Find</Button>
