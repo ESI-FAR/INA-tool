@@ -8,6 +8,7 @@ import {
 } from "graphology-metrics/centrality/degree";
 import { useStore } from "zustand";
 import { useMemo } from "react";
+
 import { State, store } from "@/stores/global";
 import { statementLabel } from "@/lib/utils";
 import {
@@ -41,8 +42,13 @@ export function statementGraph({
   conflicts,
 }: NamelessState): StatementGraph {
   const graph = new Graph<NodeAttributes, EdgeAttributes>({
+    // driven connection or conflict can not be against statement itself
     allowSelfLoops: false,
+    // We can have a driven connection and a conflict between the same nodes.
+    // so we allow multiple edges.
     multi: true,
+    // All edges are directed.
+    type: "directed",
   });
   for (const statement of statements) {
     graph.addNode(statement.Id, {
@@ -74,8 +80,7 @@ export function useStatementGraph() {
     () => ({ statements, connections, conflicts }),
     [statements, connections, conflicts],
   );
-  const graph = useMemo(() => statementGraph(state), [state]);
-  return graph;
+  return useMemo(() => statementGraph(state), [state]);
 }
 
 export function statementGraphMetrics(graph: StatementGraph) {
@@ -89,8 +94,7 @@ export function statementGraphMetrics(graph: StatementGraph) {
 
 export function useStatementNetworkMetrics() {
   const graph = useStatementGraph();
-  const metrics = useMemo(() => statementGraphMetrics(graph), [graph]);
-  return metrics;
+  return useMemo(() => statementGraphMetrics(graph), [graph]);
 }
 
 export interface StatementMetric {
