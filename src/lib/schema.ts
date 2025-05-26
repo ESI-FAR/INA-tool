@@ -90,15 +90,17 @@ export const statementColumns = Object.keys(
 
 const unrefinedStatementsSchema = z.array(statementSchemaWithOptionalId);
 export const statementsSchema = unrefinedStatementsSchema.refine(
-  (data)=> {
-    const filledIds = data.map((s) => s.Id).filter(c => c)
-    return new Set(filledIds).size === filledIds.length
+  (data) => {
+    const filledIds = data.map((s) => s.Id).filter((c) => c);
+    return new Set(filledIds).size === filledIds.length;
   },
   {
     message: "Id column must be unique",
-  }
-)
-export type StatementsWithOptionalId = z.infer<typeof unrefinedStatementsSchema>;
+  },
+);
+export type StatementsWithOptionalId = z.infer<
+  typeof unrefinedStatementsSchema
+>;
 
 export const SourceComponentSchema = z.enum([
   "Direct Object",
@@ -186,13 +188,15 @@ export const connectionColumns = Object.keys(
 export const connectionsSchema = z.array(connectionSchema);
 
 export const Conflict = z.object({
-  formal: z.string(),
-  informal: z.string(),
+  group: z.string(),
+  statements: z.set(z.string()).min(1, "Must have at least one statement"),
 });
 export type Conflict = z.infer<typeof Conflict>;
-export const conflictColumns = Object.keys(Conflict.shape) as Array<
-  keyof Conflict
->;
-
-export const Conflicts = z.array(Conflict);
+const UnrefinedConflicts = z.array(Conflict);
+export const Conflicts = UnrefinedConflicts.refine(
+  (data) => new Set(data.map((c) => c.group)).size === data.length,
+  {
+    message: "Conflict groups must be unique",
+  },
+);
 export type Conflicts = z.infer<typeof Conflicts>;

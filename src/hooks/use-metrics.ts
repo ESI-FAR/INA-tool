@@ -26,17 +26,15 @@ export interface NodeAttributes {
 
 export interface EdgeAttributes {
   drivenBy?: string;
-  conflict?: boolean;
 }
 
 export type StatementGraph = Graph<NodeAttributes, EdgeAttributes>;
 
-type NamelessState = Omit<State, "projectName">;
+type NamelessState = Omit<State, "projectName" | "conflicts">;
 
 export function statementGraph({
   statements,
   connections,
-  conflicts,
 }: NamelessState): StatementGraph {
   const graph = new Graph<NodeAttributes, EdgeAttributes>({
     // driven connection or conflict can not be against statement itself
@@ -63,19 +61,15 @@ export function statementGraph({
       },
     );
   }
-  for (const conflict of conflicts) {
-    graph.addDirectedEdge(conflict.formal, conflict.informal, {
-      conflict: true,
-    });
-  }
+  // TODO include conflicts form metrics?
   return graph;
 }
 
 export function useStatementGraph() {
-  const { statements, connections, conflicts } = useStore(store);
+  const { statements, connections } = useStore(store);
   const state = useMemo(
-    () => ({ statements, connections, conflicts }),
-    [statements, connections, conflicts],
+    () => ({ statements, connections }),
+    [statements, connections],
   );
   return useMemo(() => statementGraph(state), [state]);
 }
