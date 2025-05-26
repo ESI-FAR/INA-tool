@@ -88,8 +88,17 @@ export const statementColumns = Object.keys(
   unrefinedStatementSchema.shape,
 ) as Array<keyof Statement>;
 
-export const statementsSchema = z.array(statementSchemaWithOptionalId);
-export type StatementsWithOptionalId = z.infer<typeof statementsSchema>;
+const unrefinedStatementsSchema = z.array(statementSchemaWithOptionalId);
+export const statementsSchema = unrefinedStatementsSchema.refine(
+  (data)=> {
+    const filledIds = data.map((s) => s.Id).filter(c => c)
+    return new Set(filledIds).size === filledIds.length
+  },
+  {
+    message: "Id column must be unique",
+  }
+)
+export type StatementsWithOptionalId = z.infer<typeof unrefinedStatementsSchema>;
 
 export const SourceComponentSchema = z.enum([
   "Direct Object",
