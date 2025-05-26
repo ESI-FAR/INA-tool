@@ -18,6 +18,7 @@ import {
   Connection,
   DrivenBy,
   SourceComponentSchema,
+  TargetComponentSchema,
 } from "@/lib/schema";
 import { useStatementLookup } from "./use-statements";
 
@@ -159,7 +160,7 @@ export function getOutgoingDegreeCentralityOfDrivenConnection(
     const statementData = statementLookup.get(key)!;
     return {
       statement: statementData,
-      label: statementData["Direct Object"]!,
+      label: statementData[sourceComponent]!,
       degree,
     };
   });
@@ -169,12 +170,30 @@ export function getDegreeCentralityOfActors(
   connections: Connection[],
   statementLookup: Map<string, Statement>,
 ): DegreeCentrality[] {
-  return getOutgoingDegreeCentralityOfDrivenConnection(
-    connections,
-    "actor",
-    statementLookup,
-    "Direct Object",
-  );
+  const memory = new Map<string, number>();
+  const drivenBy: DrivenBy = "actor";
+  const targetComponent: TargetComponentSchema = "Attribute";
+  for (const connection of connections) {
+    if (
+      connection.driven_by === drivenBy &&
+      connection.target_component === targetComponent
+    ) {
+      const key = connection.target_statement;
+      if (memory.has(key)) {
+        memory.set(key, memory.get(key)! + 1);
+      } else {
+        memory.set(key, 1);
+      }
+    }
+  }
+  return Array.from(memory.entries()).map(([key, degree]) => {
+    const statementData = statementLookup.get(key)!;
+    return {
+      statement: statementData,
+      label: statementData[targetComponent]!,
+      degree,
+    };
+  });
 }
 
 export function useDegreeCentralityOfActors() {
@@ -186,23 +205,30 @@ export function useDegreeCentralityOfActors() {
   );
 }
 
-export function getDegreeCentralityOfDirectObjects(
+export function getDegreeCentralityOfInanimateObjects(
   connections: Connection[],
   statementLookup: Map<string, Statement>,
 ): DegreeCentrality[] {
-  return getOutgoingDegreeCentralityOfDrivenConnection(
+  const directObjects = getOutgoingDegreeCentralityOfDrivenConnection(
     connections,
     "outcome",
     statementLookup,
     "Direct Object",
   );
+  const indirectObjects = getOutgoingDegreeCentralityOfDrivenConnection(
+    connections,
+    "outcome",
+    statementLookup,
+    "Indirect Object",
+  );
+  return [...directObjects, ...indirectObjects];
 }
 
-export function useDegreeCentralityOfDirectObjects() {
+export function useDegreeCentralityOfInanimateObjects() {
   const { connections } = useStore(store);
   const statementLookup = useStatementLookup();
   return useMemo(
-    () => getDegreeCentralityOfDirectObjects(connections, statementLookup),
+    () => getDegreeCentralityOfInanimateObjects(connections, statementLookup),
     [connections, statementLookup],
   );
 }

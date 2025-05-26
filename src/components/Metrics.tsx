@@ -16,7 +16,7 @@ import {
   useStatementNetworkMetrics,
   useStatementMetrics,
   useDegreeCentralityOfActors,
-  useDegreeCentralityOfDirectObjects,
+  useDegreeCentralityOfInanimateObjects,
   DegreeCentrality,
 } from "@/hooks/use-metrics";
 
@@ -109,8 +109,8 @@ function DegreeCentralityOfActors() {
   return <DegreeCentralityTable centralities={centralities} />;
 }
 
-function DegreeCentralityOfDirectObjects() {
-  const centralities = useDegreeCentralityOfDirectObjects();
+function DegreeCentralityOfInanimateObjects() {
+  const centralities = useDegreeCentralityOfInanimateObjects();
   return <DegreeCentralityTable centralities={centralities} />;
 }
 
@@ -139,17 +139,19 @@ export function Metrics() {
           <p className="text-sm">
             A measure of the importance of actors in the institutional
             environment. Centrality is calculated by counting the number of
-            actor connections for each animate direct object.
+            actor connections incoming to each Attribute component. Attribute
+            components not listed have a degree centrality of 0.
           </p>
           <DegreeCentralityOfActors />
         </article>
-        <article id="degree-centrality-of-direct-objects">
-          <h2 className="text-xl">Degree centrality of direct objects</h2>
+        <article id="degree-centrality-of-objects">
+          <h2 className="text-xl">Degree centrality of objects</h2>
           <p className="text-sm">
             Object Centrality is calculated by counting the number of outcome
-            connections that stem from an inanimate direct object.
+            connections outgoing from each inanimate direct object or inanimate
+            indirect object. Objects not listed have a degree centrality of 0.
           </p>
-          <DegreeCentralityOfDirectObjects />
+          <DegreeCentralityOfInanimateObjects />
         </article>
       </article>
     </div>

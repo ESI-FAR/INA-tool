@@ -103,6 +103,8 @@ export const TargetComponentSchema = z.enum([
   "Attribute",
   "Activation Condition",
 ]);
+export type TargetComponentSchema = z.infer<typeof TargetComponentSchema>;
+
 export type ConnectionComponent =
   | z.infer<typeof SourceComponentSchema>
   | z.infer<typeof TargetComponentSchema>;
