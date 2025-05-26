@@ -129,9 +129,9 @@ export function ConflictsTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -195,7 +195,11 @@ export function ConflictsTable() {
             const toDelete = table
               .getSelectedRowModel()
               .rows.map((row) => row.original);
-            if (window.confirm("Are you sure you want to delete selected conflicts?")) {
+            if (
+              window.confirm(
+                "Are you sure you want to delete selected conflicts?",
+              )
+            ) {
               removeConflicts(toDelete);
               table.resetRowSelection();
             }
@@ -206,7 +210,3 @@ export function ConflictsTable() {
     </div>
   );
 }
-function removeConflicts(arg0: { statements: Set<string>; group: string; }[]) {
-  throw new Error("Function not implemented.");
-}
-
