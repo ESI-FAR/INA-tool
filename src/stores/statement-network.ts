@@ -20,6 +20,7 @@ import { store as globalStore } from "./global";
 import { Conflict, Connection, Statement } from "../lib/schema";
 import { connection2id } from "@/lib/connection2id";
 import { statementLabel } from "@/lib/utils";
+import { conflictAsStatementPairs } from "@/hooks/use-conflicts";
 
 export type State = {
   nodes: StatementNode[];
@@ -143,38 +144,23 @@ function onConnectionsChange(connections: Connection[]) {
 
 function onConflictsChange(conflicts: Conflict[]) {
   const connectionEdges = store.getState().edges.filter(isDrivenConnectionEdge);
-  const conflictIds = new Set(
-    conflicts.map(
-      (conflict) => `conflict-${conflict.formal}-${conflict.informal}`,
-    ),
-  );
-  const unchangedConflictEdges = store
-    .getState()
-    .edges.filter((e) => isConflictingEdge(e) && conflictIds.has(e.id));
-  const unchangedConflictEdgesIds = new Set(
-    unchangedConflictEdges.map((edge) => edge.id),
-  );
+  const newEdges: ConflictingEdge[] = [];
+  for (const pair of conflictAsStatementPairs(conflicts)) {
+    const e: ConflictingEdge = {
+      id: `conflict-${pair.group}-${pair.source}-${pair.target}`,
+      source: pair.source,
+      target: pair.target,
+      sourceHandle: "conflict",
+      targetHandle: "conflict",
+      type: "conflict",
+      data: {
+        group: pair.group,
+      },
+    };
+    newEdges.push(e);
+  }
 
-  const newEdges: ConflictingEdge[] = conflicts
-    .filter(
-      (c) =>
-        !unchangedConflictEdgesIds.has(`conflict-${c.formal}-${c.informal}`),
-    )
-    .map((conflict) => {
-      const e: ConflictingEdge = {
-        id: `conflict-${conflict.formal}-${conflict.informal}`,
-        source: conflict.formal,
-        target: conflict.informal,
-        sourceHandle: "conflict",
-        targetHandle: "conflict",
-        type: "conflict",
-      };
-      return e;
-    });
-
-  store
-    .getState()
-    .setEdges([...unchangedConflictEdges, ...newEdges, ...connectionEdges]);
+  store.getState().setEdges([...newEdges, ...connectionEdges]);
 }
 
 globalStore.subscribe((state) => state.statements, onStatementsChange);

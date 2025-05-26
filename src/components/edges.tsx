@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils";
 import { store } from "@/stores/global";
 import { connection2id } from "@/lib/connection2id";
 import { useCallback } from "react";
-import { conflict2id } from "@/stores/component-network";
 import { XIcon } from "lucide-react";
 
 const COMPONENT_HANDLE_SIZE = 4;
@@ -103,6 +102,7 @@ function BaseEdgeWithDelete({
   onDelete = deleteDrivenConnection,
   handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
   data,
+  label,
 }: EdgeProps<DrivenConnectionEdge> & {
   deleteClassName: string;
   onDelete?: (id: string) => void;
@@ -141,15 +141,16 @@ function BaseEdgeWithDelete({
   return (
     <>
       <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
-      {isInteractive && (
-        <EdgeLabelRenderer>
-          <div
-            className="nodrag nopan absolute z-10 origin-center"
-            style={{
-              pointerEvents: "all",
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            }}
-          >
+      <EdgeLabelRenderer>
+        <div
+          className="nodrag nopan absolute z-10 origin-center"
+          style={{
+            pointerEvents: "all",
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+          }}
+        >
+          {label && <span className={deleteClassName}>{label}</span>}
+          {isInteractive && (
             <button
               className={cn(
                 "cursor-pointer rounded-full bg-background hover:bg-accent",
@@ -159,9 +160,9 @@ function BaseEdgeWithDelete({
             >
               <XIcon size={12} />
             </button>
-          </div>
-        </EdgeLabelRenderer>
-      )}
+          )}
+        </div>
+      </EdgeLabelRenderer>
     </>
   );
 }
@@ -221,20 +222,25 @@ const conflictingStyle = {
   strokeDasharray: "2",
 };
 
-function deleteConflictById(id: string) {
+function deleteConflictByGroup(group: string) {
   const all = store.getState().conflicts;
-  const newConflicts = all.filter((c) => conflict2id(c) !== id);
+  const newConflicts = all.filter((c) => c.group !== group);
   store.getState().setConflicts(newConflicts);
 }
 
 export function ConflictingEdge(props: EdgeProps<ConflictingEdge>) {
+  const group = props.data!.group!.toString();
+  const onDelete = useCallback(() => {
+    deleteConflictByGroup(group);
+  }, [group]);
   return (
     <BaseEdgeWithDelete
       {...props}
       style={conflictingStyle}
       deleteClassName="text-amber-500"
       handleSize={CONFLICT_HANDLE_SIZE}
-      onDelete={deleteConflictById}
+      onDelete={onDelete}
+      label={group}
     />
   );
 }

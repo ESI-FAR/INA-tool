@@ -1,5 +1,6 @@
 import { MarkerType, type Edge } from "@xyflow/react";
 import { DrivenBy } from "./schema";
+import { ReactNode } from "react";
 
 /*
 Connections:
@@ -34,7 +35,7 @@ export type SanctionDrivenConnection = Edge<
   "sanction"
 >; // Red
 
-export type ConflictingEdge = Edge<BendData, "conflict">;
+export type ConflictingEdge = Edge<BendData & { group: ReactNode }, "conflict">;
 
 export type DrivenConnectionEdge =
   | ActorDrivenConnection

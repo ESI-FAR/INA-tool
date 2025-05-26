@@ -1,7 +1,8 @@
-import { Statement, StatementType } from "@/lib/schema";
-import { useCallback, useMemo, useState } from "react";
+import { Conflict, Statement } from "@/lib/schema";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -10,90 +11,42 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { PlusIcon } from "lucide-react";
+import { PencilIcon, PlusIcon } from "lucide-react";
 import { useConflicts } from "@/hooks/use-conflicts";
 import { useStatements } from "@/hooks/use-statements";
-import { StatementComboBox } from "./StatementComboBox";
-import { store } from "@/stores/global";
-
-function StatementField({
-  selected,
-  side,
-  other,
-  onSelect,
-}: {
-  selected: Statement | undefined;
-  side: StatementType;
-  other: Statement | undefined;
-  onSelect: (statement: Statement) => void;
-}) {
-  const { statements: allStatements } = useStatements();
-  const statements = useMemo(() => {
-    const typeStatements = allStatements.filter(
-      (statement) => statement["Statement Type"] === side,
-    );
-    if (other) {
-      // Filter out statements that are already in a conflict with the other side
-      const present = store
-        .getState()
-        .conflicts.filter((c) => {
-          if (side === "formal") {
-            return c.informal === other.Id;
-          } else {
-            return c.formal === other.Id;
-          }
-        })
-        .map((c) => {
-          if (side === "formal") {
-            return c.formal;
-          } else {
-            return c.informal;
-          }
-        });
-      return typeStatements.filter((statement) => {
-        return !present.includes(statement.Id);
-      });
-    }
-    return typeStatements;
-  }, [allStatements, side, other]);
-  return (
-    <>
-      <StatementComboBox
-        statements={statements}
-        value={selected}
-        onChange={onSelect}
-      />
-      {!selected && (
-        <div className="text-[0.8rem] font-medium text-destructive">
-          Please select a statment
-        </div>
-      )}
-    </>
-  );
-}
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { filterStatements, Hit } from "./search";
 
 export function AddConflictButton() {
   const { addConflict } = useConflicts();
   const [open, setOpen] = useState(false);
-  const [formal, setFormal] = useState<Statement | undefined>(undefined);
-  const [informal, setInformal] = useState<Statement | undefined>(undefined);
-
+  const [group, setGroup] = useState("");
+  const [query, setQuery] = useState("");
+  const { statements } = useStatements();
+  const [selectedStatements, setSelectedStatements] = useState<Statement[]>([]);
+  const availableStatements = useMemo(() => {
+    const selectedIds = new Set(selectedStatements.map((s) => s.Id));
+    const eligibleStatements = statements.filter(
+      (statement) => !selectedIds.has(statement.Id),
+    );
+    return filterStatements(query, eligibleStatements);
+  }, [query, selectedStatements, statements]);
   const onPick = useCallback(() => {
-    if (!formal || !informal) {
-      return;
-    }
-    addConflict({ formal: formal.Id, informal: informal.Id });
-    setFormal(undefined);
-    setInformal(undefined);
+    addConflict({
+      group,
+      statements: new Set(selectedStatements.map((s) => s.Id)),
+    });
     setOpen(false);
-  }, [addConflict, formal, informal]);
+  }, [addConflict, group, selectedStatements]);
   return (
     <Dialog
       open={open}
       onOpenChange={() => {
+        setGroup("");
+        setSelectedStatements([]);
+        setQuery("");
         setOpen(!open);
-        setFormal(undefined);
-        setInformal(undefined);
       }}
     >
       <DialogTrigger asChild>
@@ -106,31 +59,181 @@ export function AddConflictButton() {
         <DialogHeader>
           <DialogTitle>Add conflict</DialogTitle>
           <DialogDescription>
-            First select a formal statement and an informal statement then click
-            Add.
+            Give conflict a group name and select its statements.
           </DialogDescription>
         </DialogHeader>
 
-        <fieldset className="border p-1">
-          <legend>Formal</legend>
-          <StatementField
-            selected={formal}
-            side="formal"
-            other={informal}
-            onSelect={setFormal}
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="group">Group</Label>
+          <Input
+            type="group"
+            id="group"
+            required
+            value={group}
+            onChange={(e) => setGroup(e.currentTarget.value)}
           />
-        </fieldset>
-        <fieldset className="border p-1">
-          <legend>Informal</legend>
-          <StatementField
-            selected={informal}
-            side="informal"
-            other={formal}
-            onSelect={setInformal}
-          />
-        </fieldset>
+        </div>
+        <div className="flex flex-row justify-between gap-2">
+          <fieldset className="border p-1">
+            <legend>Available</legend>
+            <Input
+              type="search"
+              placeholder="Search..."
+              value={query}
+              onChange={(e) => setQuery(e.currentTarget.value)}
+            />
+            <ol>
+              {availableStatements.map((statement) => (
+                <li key={statement.Id} className="flex flex-row gap-2">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() =>
+                      setSelectedStatements([...selectedStatements, statement])
+                    }
+                  >
+                    +
+                  </Button>
+                  <Hit statement={statement} query={query} />
+                </li>
+              ))}
+            </ol>
+          </fieldset>
+          <fieldset className="border p-1">
+            <legend>Selected</legend>
+            <ol>
+              {selectedStatements.map((statement) => (
+                <li key={statement.Id} className="flex flex-row gap-2">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() =>
+                      setSelectedStatements(
+                        selectedStatements.filter((s) => s.Id !== statement.Id),
+                      )
+                    }
+                  >
+                    -
+                  </Button>
+                  <Hit statement={statement} query={query} />
+                </li>
+              ))}
+            </ol>
+          </fieldset>
+        </div>
         <DialogFooter>
           <Button onClick={onPick}>Add</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function EditConflictButton({
+  conflict,
+  onSave,
+}: {
+  conflict: Conflict;
+  onSave: (conflict: Conflict) => void;
+}) {
+  const [group, setGroup] = useState(conflict.group);
+  const [query, setQuery] = useState("");
+  const { statements } = useStatements();
+  const [selectedStatements, setSelectedStatements] = useState<Statement[]>([]);
+  useEffect(() => {
+    const init = statements.filter((s) => conflict.statements.has(s.Id));
+    setSelectedStatements(init);
+  }, [conflict, statements]);
+  const availableStatements = useMemo(() => {
+    const selectedIds = new Set(selectedStatements.map((s) => s.Id));
+    const eligibleStatements = statements.filter(
+      (statement) => !selectedIds.has(statement.Id),
+    );
+    return filterStatements(query, eligibleStatements);
+  }, [query, selectedStatements, statements]);
+  const onPick = useCallback(() => {
+    onSave({
+      group,
+      statements: new Set(selectedStatements.map((s) => s.Id)),
+    });
+  }, [group, onSave, selectedStatements]);
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="secondary" title="Edit conflict" size="icon">
+          <PencilIcon />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-fit max-w-fit">
+        <DialogHeader>
+          <DialogTitle>Edit conflict</DialogTitle>
+          <DialogDescription>
+            Give conflict a group name and select its statements.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="group">Group</Label>
+          <Input
+            type="group"
+            id="group"
+            required
+            value={group}
+            onChange={(e) => setGroup(e.currentTarget.value)}
+          />
+        </div>
+        <div className="flex flex-row justify-between gap-2">
+          <fieldset className="border p-1">
+            <legend>Available</legend>
+            <Input
+              type="search"
+              placeholder="Search..."
+              value={query}
+              onChange={(e) => setQuery(e.currentTarget.value)}
+            />
+            <ol>
+              {availableStatements.map((statement) => (
+                <li key={statement.Id} className="flex flex-row gap-2">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() =>
+                      setSelectedStatements([...selectedStatements, statement])
+                    }
+                  >
+                    +
+                  </Button>
+                  <Hit statement={statement} query={query} />
+                </li>
+              ))}
+            </ol>
+          </fieldset>
+          <fieldset className="border p-1">
+            <legend>Selected</legend>
+            <ol>
+              {selectedStatements.map((statement) => (
+                <li key={statement.Id} className="flex flex-row gap-2">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() =>
+                      setSelectedStatements(
+                        selectedStatements.filter((s) => s.Id !== statement.Id),
+                      )
+                    }
+                  >
+                    -
+                  </Button>
+                  <Hit statement={statement} query={query} />
+                </li>
+              ))}
+            </ol>
+          </fieldset>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button onClick={onPick}>Save</Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

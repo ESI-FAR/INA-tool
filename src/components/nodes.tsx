@@ -1,4 +1,4 @@
-import { Statement, StatementType } from "@/lib/schema";
+import { Statement } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { Handle, NodeProps, NodeResizeControl, Position } from "@xyflow/react";
 import { Maximize2Icon } from "lucide-react";
@@ -148,9 +148,9 @@ function TargetHandles({
   );
 }
 
-function ConflictHandles({ type }: { type: StatementType }) {
-  if (type === "formal") {
-    return (
+function ConflictHandles() {
+  return (
+    <>
       <Handle
         type="source"
         id="conflict"
@@ -158,16 +158,14 @@ function ConflictHandles({ type }: { type: StatementType }) {
         position={Position.Right}
         isConnectable={false}
       />
-    );
-  }
-  return (
-    <Handle
-      type="target"
-      id="conflict"
-      className="invisible"
-      position={Position.Left}
-      isConnectable={false}
-    />
+      <Handle
+        type="target"
+        id="conflict"
+        className="invisible"
+        position={Position.Left}
+        isConnectable={false}
+      />
+    </>
   );
 }
 
@@ -182,7 +180,7 @@ export function CollapsedStatementNode({
     <>
       <SourceHandles isConnectable={isConnectable} statement={statement} />
       <TargetHandles isConnectable={isConnectable} statement={statement} />
-      <ConflictHandles type={statement["Statement Type"]} />
+      <ConflictHandles />
       <div
         className={cn(
           "min-w-12 cursor-pointer rounded border-2 p-1",
@@ -222,7 +220,7 @@ export function StatementNode({
           <Maximize2Icon className="absolute bottom-2 right-2 h-2 w-2 rotate-90" />
         </NodeResizeControl>
       )}
-      <ConflictHandles type={data.raw["Statement Type"]} />
+      <ConflictHandles />
       <legend>{data.label}</legend>
     </fieldset>
   );

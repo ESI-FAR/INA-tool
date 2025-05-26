@@ -1,12 +1,16 @@
 import { store } from "@/stores/global";
 import { store as componentGraphStore } from "../stores/component-network";
 import { store as statementGraphStore } from "../stores/statement-network";
+import { Conflict } from "./schema";
 
 export function project2json() {
   const body = {
     statements: store.getState().statements,
     connections: store.getState().connections,
-    conflicts: store.getState().conflicts,
+    conflicts: store.getState().conflicts.map((conflict) => ({
+      group: conflict.group,
+      statements: Array.from(conflict.statements),
+    })),
     graph: {
       component: {
         nodes: componentGraphStore.getState().nodes,
@@ -36,6 +40,9 @@ export function json2project(content: string, projectName: string) {
     projectName,
     statements: state.statements,
     connections: state.connections,
-    conflicts: state.conflicts,
+    conflicts: state.conflicts.map((conflict: Conflict) => ({
+      group: conflict.group,
+      statements: new Set(conflict.statements),
+    })),
   });
 }

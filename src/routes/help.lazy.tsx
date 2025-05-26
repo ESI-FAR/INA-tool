@@ -697,15 +697,29 @@ function RouteComponent() {
         <li>
           <strong>Download:</strong> Click on the{" "}
           <DownloadIcon className="inline" /> download button to download the
-          connections as a CSV file.
+          connections as a JSON file.
         </li>
         <li>
           <strong>Upload:</strong> Click on the{" "}
-          <UploadIcon className="inline" /> upload button to upload a CSV or
-          XLSX file with conflicts. Existing conflicts will be deleted and
-          replaced by the uploaded conflicts. The file should have a "formal"
-          column and "informal" column. Both columns should contain the
-          statement id.
+          <UploadIcon className="inline" /> upload button to upload a JSON file
+          with conflicts. Existing conflicts will be deleted and replaced by the
+          uploaded conflicts.
+          <details className="inline-block cursor-pointer">
+            <summary>Example</summary>
+
+            <pre>
+              {JSON.stringify(
+                [
+                  {
+                    group: "Group name1",
+                    statements: ["statementId1", "statementId2"],
+                  },
+                ],
+                undefined,
+                2,
+              )}
+            </pre>
+          </details>
         </li>
       </ul>
 
