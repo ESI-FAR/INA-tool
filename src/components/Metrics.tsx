@@ -40,9 +40,9 @@ function StatementMetricsTable() {
             <TableCell>
               <StatementCell statement={statement.statement} />
             </TableCell>
-            <TableCell>{statement.betweennessCentrality.toFixed(3)}</TableCell>
-            <TableCell>{statement.outDegreeCentrality.toFixed(3)}</TableCell>
-            <TableCell>{statement.inDegreeCentrality.toFixed(3)}</TableCell>
+            <TableCell>{statement.betweennessCentrality}</TableCell>
+            <TableCell>{statement.outDegreeCentrality}</TableCell>
+            <TableCell>{statement.inDegreeCentrality}</TableCell>
             <TableCell>
               <Button variant="secondary" size="icon" asChild>
                 <Link

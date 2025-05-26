@@ -2,10 +2,6 @@ import Graph from "graphology";
 import { density } from "graphology-metrics/graph/density";
 import diameter from "graphology-metrics/graph/diameter";
 import betweennessCentrality from "graphology-metrics/centrality/betweenness";
-import {
-  inDegreeCentrality,
-  outDegreeCentrality,
-} from "graphology-metrics/centrality/degree";
 import { useStore } from "zustand";
 import { useMemo } from "react";
 
@@ -105,6 +101,22 @@ export interface StatementMetric {
   inDegreeCentrality: number;
 }
 
+function outDegreeCentrality(graph: StatementGraph) {
+  const result: Record<string, number> = {};
+  graph.forEachNode((node) => {
+    result[node] = graph.outDegree(node);
+  });
+  return result;
+}
+
+function inDegreeCentrality(graph: StatementGraph) {
+  const result: Record<string, number> = {};
+  graph.forEachNode((node) => {
+    result[node] = graph.inDegree(node);
+  });
+  return result;
+}
+
 export function useStatementMetrics(): StatementMetric[] {
   const graph = useStatementGraph();
   const lookup = useStatementLookup();
@@ -112,18 +124,26 @@ export function useStatementMetrics(): StatementMetric[] {
     if (graph.order === 0) {
       return [];
     }
-    const betweenCentralities = betweennessCentrality(graph);
+    const betweenCentralities = betweennessCentrality(graph, {
+      normalized: false,
+    });
     const outDegreeCentralities = outDegreeCentrality(graph);
     const inDegreeCentralities = inDegreeCentrality(graph);
 
     const result: StatementMetric[] = [];
     graph.forEachNode((node) => {
-      result.push({
-        statement: lookup.get(node)!,
-        betweennessCentrality: betweenCentralities[node],
-        outDegreeCentrality: outDegreeCentralities[node],
-        inDegreeCentrality: inDegreeCentralities[node],
-      });
+      const outDegreeCentrality = outDegreeCentralities[node];
+      const inDegreeCentrality = inDegreeCentralities[node];
+
+      // Skip statements without connections
+      if (outDegreeCentrality > 0 || inDegreeCentrality > 0) {
+        result.push({
+          statement: lookup.get(node)!,
+          betweennessCentrality: betweenCentralities[node],
+          outDegreeCentrality,
+          inDegreeCentrality,
+        });
+      }
     });
     return result;
   }, [graph, lookup]);
