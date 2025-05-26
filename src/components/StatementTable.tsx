@@ -414,7 +414,7 @@ function ShowRow({
       data-state={row.getIsSelected() && "selected"}
       aria-label={row.original["Id"]}
     >
-      <TableCell className="flex- flex gap-1">
+      <TableCell className="flex gap-1">
         <ButtonWithTooltip
           onClick={() => setEditing(row.original)}
           disabled={editingId !== undefined && row.original["Id"] !== editingId}

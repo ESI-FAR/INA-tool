@@ -141,16 +141,16 @@ function BaseEdgeWithDelete({
   return (
     <>
       <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
-      {isInteractive && (
-        <EdgeLabelRenderer>
-          <div
-            className="nodrag nopan absolute z-10 origin-center"
-            style={{
-              pointerEvents: "all",
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            }}
-          >
-            {label && <span className={deleteClassName}>{label}</span>}
+      <EdgeLabelRenderer>
+        <div
+          className="nodrag nopan absolute z-10 origin-center"
+          style={{
+            pointerEvents: "all",
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+          }}
+        >
+          {label && <span className={deleteClassName}>{label}</span>}
+          {isInteractive && (
             <button
               className={cn(
                 "cursor-pointer rounded-full bg-background hover:bg-accent",
@@ -160,9 +160,9 @@ function BaseEdgeWithDelete({
             >
               <XIcon size={12} />
             </button>
-          </div>
-        </EdgeLabelRenderer>
-      )}
+          )}
+        </div>
+      </EdgeLabelRenderer>
     </>
   );
 }
@@ -231,9 +231,7 @@ function deleteConflictByGroup(group: string) {
 export function ConflictingEdge(props: EdgeProps<ConflictingEdge>) {
   const group = props.data!.group!.toString();
   const onDelete = useCallback(() => {
-    if (window.confirm("Are you sure you want to delete this conflict?")) {
-      deleteConflictByGroup(group);
-    }
+    deleteConflictByGroup(group);
   }, [group]);
   return (
     <BaseEdgeWithDelete

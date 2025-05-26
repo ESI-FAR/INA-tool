@@ -34,27 +34,24 @@ import { Hit } from "./search.tsx";
 import { DeleteSelectedButton } from "./DeleteSelectedButton.tsx";
 import { selectColumnDefinition } from "./selectColumnDefinition.tsx";
 import { Conflict, Statement } from "@/lib/schema.ts";
-import { Edit, PencilIcon, Trash2Icon } from "lucide-react";
-import { Button } from "./ui/button.tsx";
 import { store } from "@/stores/global.ts";
-import { ButtonWithTooltip } from "./ButtonWithTooltip.tsx";
 
 function StatementsList({
   statements,
   query = "",
 }: {
- statements: Statement[]
+  statements: Statement[];
   query?: string;
 }) {
   return (
     <ol>
       {statements.map((statement) => (
-        <li key={statement.Id} >
+        <li key={statement.Id}>
           <Hit statement={statement} query={query} />
         </li>
       ))}
     </ol>
-  )
+  );
 }
 
 const columns: ColumnDef<ConflictWithStatements>[] = [
@@ -71,8 +68,7 @@ const columns: ColumnDef<ConflictWithStatements>[] = [
       <DataTableColumnHeader column={column} title="Statements" />
     ),
     cell: (props) => (
-      <StatementsList statements={props.row.original.fullStatements}
-      />
+      <StatementsList statements={props.row.original.fullStatements} />
     ),
   },
 ];
@@ -122,7 +118,7 @@ export function ConflictsTable() {
         </div>
       </div>
       <div className="w-full rounded-md border">
-        <Table>
+        <Table className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -149,22 +145,22 @@ export function ConflictsTable() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  <TableCell className="flex- flex gap-1">
-        <EditConflictButton
-          tooltip="Edit"
-          size="icon"
-          conflict={row.original}
-          onSave={(conflict: Conflict) => {
-            store.getState().setConflicts(
-              store.getState().conflicts.map((c) =>
-                c.group === conflict.group ? conflict : c,
-              ),
-            );
-          }
-        >
-          <PencilIcon />
-        </EditConflictButton>
-      </TableCell>
+                  <TableCell>
+                    <EditConflictButton
+                      conflict={row.original}
+                      onSave={(conflict: Conflict) => {
+                        store
+                          .getState()
+                          .setConflicts(
+                            store
+                              .getState()
+                              .conflicts.map((c, i) =>
+                                row.index === i ? conflict : c,
+                              ),
+                          );
+                      }}
+                    />
+                  </TableCell>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -178,7 +174,7 @@ export function ConflictsTable() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={4}
                   className="h-24 text-center text-gray-500"
                 >
                   No conflicts. Please add one, by presssing button below or by

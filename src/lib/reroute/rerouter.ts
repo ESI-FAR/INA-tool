@@ -133,6 +133,7 @@ export async function reroute({
     const item = {
       ...edge,
       data: {
+        ...edge.data,
         bends,
       },
     } as INACEdge;

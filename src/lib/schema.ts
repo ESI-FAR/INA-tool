@@ -189,7 +189,7 @@ export const connectionsSchema = z.array(connectionSchema);
 
 export const Conflict = z.object({
   group: z.string(),
-  statements: z.set(z.string()).min(1, "Must have at least one statement"),
+  statements: z.set(z.string()).min(2, "Must have at least two statements"),
 });
 export type Conflict = z.infer<typeof Conflict>;
 const UnrefinedConflicts = z.array(Conflict);
