@@ -73,6 +73,12 @@ export function useStatementDeleter() {
           } else {
             return;
           }
+        } else {
+          if (
+            !window.confirm(`Are you sure you want to delete statement ${id}?`)
+          ) {
+            return;
+          }
         }
       }
       const setStatements = store.getState().setStatements;

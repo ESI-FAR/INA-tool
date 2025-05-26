@@ -133,7 +133,9 @@ function BaseEdgeWithDelete({
   }
 
   const deleteConnection = useCallback(() => {
-    onDelete(id);
+    if (window.confirm("Are you sure you want to delete this connection?")) {
+      onDelete(id);
+    }
   }, [id, onDelete]);
 
   return (
