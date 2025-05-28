@@ -666,7 +666,9 @@ function RouteComponent() {
           </li>
         </ul>
       </p>
-      <h3 className="py-4 text-xl">Conflicts page</h3>
+      <h3 id="help-conflicts-page" className="py-4 text-xl">
+        Conflicts page
+      </h3>
       <p>
         The{" "}
         <Link className="underline" to="/conflicts">
@@ -746,6 +748,51 @@ function RouteComponent() {
           in different web browser tabs open.
         </li>
       </ul>
+
+      <h3 className="py-4 text-xl">Manual edge editing</h3>
+      <div>
+        <p>
+          If you do not like how the edges are routed you can edit edges
+          manually. To edit an edge:
+        </p>
+        <ol className="list-inside list-decimal">
+          <li>
+            Press "Re-route connections" button in the experimental sub menu.
+            Only edges that have been re-routed can be edited.
+          </li>
+          <li>
+            Select driven connection or conflict edge by clicking on it. You can
+            only select edges from outside a statement box. When selected the
+            edge is a bit thicker.
+          </li>
+          <li>
+            Select corner (circle icon) of an edge. By clicking on it if it is
+            outside the statement box. Or by pressing "Tab" key to cycle through
+            the corners of the edge.
+          </li>
+          <li>
+            Manipulate corner with keyboard:
+            <ul className="ml-6 list-outside list-disc pl-4">
+              <li>
+                Arrow keys: To move corner around.
+                <ul className="ml-10 list-outside list-disc pl-4">
+                  <li>Hold "shift" key to move with bigger steps.</li>
+                  <li>Hold "ctrl" key to keep neighbouring corners pinned.</li>
+                </ul>
+              </li>
+              <li>Delete or Backspace key: To remove corner.</li>
+              <li>
+                "p" key: To add an extra corner after the selected corner.
+              </li>
+              <li>"s" key: To snap corner to get 90&deg; corners.</li>
+            </ul>
+          </li>
+          <li>
+            To complete editing, unselect the edge by click on background or
+            node or another edge.
+          </li>
+        </ol>
+      </div>
 
       <h3 className="py-4 text-xl">Support and Discussion</h3>
       <p>

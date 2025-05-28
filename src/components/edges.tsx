@@ -23,6 +23,7 @@ import { store } from "@/stores/global";
 import { connection2id } from "@/lib/connection2id";
 import { useCallback, type KeyboardEvent } from "react";
 import { XIcon } from "lucide-react";
+import { keyboardEventOnHandle } from "@/lib/edit-edge";
 
 const COMPONENT_HANDLE_SIZE = 4;
 const DRIVEN_CONNECTION_HANDLE_SIZE = 5;
@@ -68,40 +69,6 @@ function deleteDrivenConnection(id: string) {
   store.getState().setConnections(newConnections);
 }
 
-function moveHandle(
-  key: string,
-  index: number,
-  bends: Bends,
-  _endpoints: EndPoints,
-  updateBends: (bends: Bends) => void,
-) {
-  const bend = bends[index];
-  if (key === "Delete" || key === "Backspace") {
-    const newBends = bends.filter((_, i) => i !== index);
-    updateBends(newBends);
-  }
-  if (key === "ArrowUp") {
-    const newBends = [...bends];
-    newBends[index] = [bend[0], bend[1] - 1];
-    updateBends(newBends);
-  }
-  if (key === "ArrowDown") {
-    const newBends = [...bends];
-    newBends[index] = [bend[0], bend[1] + 1];
-    updateBends(newBends);
-  }
-  if (key === "ArrowLeft") {
-    const newBends = [...bends];
-    newBends[index] = [bend[0] - 1, bend[1]];
-    updateBends(newBends);
-  }
-  if (key === "ArrowRight") {
-    const newBends = [...bends];
-    newBends[index] = [bend[0] + 1, bend[1]];
-    updateBends(newBends);
-  }
-}
-
 function EditHandle({
   bend,
   index,
@@ -119,7 +86,15 @@ function EditHandle({
 }) {
   const onKeyDown = useCallback(
     (e: KeyboardEvent<SVGCircleElement>) => {
-      moveHandle(e.key, index, bends, endpoints, updateBends);
+      keyboardEventOnHandle(
+        e.key,
+        index,
+        bends,
+        endpoints,
+        updateBends,
+        e.shiftKey,
+        e.ctrlKey,
+      );
     },
     [bends, endpoints, index, updateBends],
   );
