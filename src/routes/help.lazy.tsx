@@ -788,6 +788,10 @@ function RouteComponent() {
             </ul>
           </li>
           <li>
+            Optionally goto another corner, by clicking it or pressing "Tab" or
+            shift+"Tab" key to cycle through corners.
+          </li>
+          <li>
             To complete editing, unselect the edge by click on background or
             node or another edge.
           </li>
