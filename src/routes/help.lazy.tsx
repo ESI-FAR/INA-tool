@@ -22,6 +22,7 @@ import {
   RouteIcon,
   RouteOffIcon,
   SaveIcon,
+  ScalingIcon,
   SearchIcon,
   TrashIcon,
   Undo2Icon,
@@ -306,10 +307,17 @@ function RouteComponent() {
                 <li>
                   <strong>
                     <RouteOffIcon className="inline" />
-                    Undo rerouted connections
-                  </strong>
-                  {""}
+                    Undo rerouted connections:
+                  </strong>{" "}
                   Will make whole connection move with nodes again.
+                </li>
+                <li>
+                  <strong>
+                    <ScalingIcon className="inline" /> Reset component size:
+                  </strong>{" "}
+                  Resets the size of all components nodes to their default size.
+                  This actions fixes it when edges between component nodes are
+                  not connected.
                 </li>
               </ul>
             </li>
@@ -483,9 +491,8 @@ function RouteComponent() {
                 <li>
                   <strong>
                     <RouteOffIcon className="inline" />
-                    Undo rerouted connections
-                  </strong>
-                  {""}
+                    Undo rerouted connections:
+                  </strong>{" "}
                   Will make whole connection move with nodes again.
                 </li>
               </ul>
