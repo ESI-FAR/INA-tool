@@ -1,4 +1,5 @@
-import { useIsInteractive, usePathEndpoints } from "@/hooks/use-interactive";
+import { useIsInteractive } from "@/hooks/use-interactive";
+import { useBendyPath, usePathEndpoints } from "@/hooks/use-path";
 import {
   type ComponentEdge,
   type ActorDrivenConnection,
@@ -13,7 +14,6 @@ import {
   BaseEdge,
   EdgeProps,
   getStraightPath,
-  getSmoothStepPath,
   EdgeLabelRenderer,
 } from "@xyflow/react";
 import { textColor } from "./drivenColors";
@@ -67,27 +67,6 @@ function deleteDrivenConnection(id: string) {
   store.getState().setConnections(newConnections);
 }
 
-function getBendyPath(points: Bends): [string, number, number] {
-  let pathData = `M${points[0][0]},${points[0][1]}`;
-  for (let i = 1; i < points.length; i++) {
-    pathData += ` L${points[i][0]},${points[i][1]}`;
-  }
-
-  let centerX = (points[0][0] + points[points.length - 1][0]) / 2;
-  let centerY = (points[0][1] + points[points.length - 1][1]) / 2;
-  const middleIndex = Math.floor(points.length / 2);
-  if (points.length % 2 === 0) {
-    // If even then odd line segments -> use middle of middle line
-    centerX = (points[middleIndex - 1][0] + points[middleIndex][0]) / 2;
-    centerY = (points[middleIndex - 1][1] + points[middleIndex][1]) / 2;
-  } else {
-    // If odd then even line segments -> use middle corner
-    centerX = points[middleIndex][0];
-    centerY = points[middleIndex][1];
-  }
-  return [pathData, centerX, centerY];
-}
-
 function BaseEdgeWithDelete({
   id,
   sourceX,
@@ -108,7 +87,7 @@ function BaseEdgeWithDelete({
   onDelete?: (id: string) => void;
   handleSize?: number;
 }) {
-  const endpoints = usePathEndpoints(
+  const { edgePath, labelX, labelY } = useBendyPath(
     {
       sourceX,
       sourceY,
@@ -117,20 +96,10 @@ function BaseEdgeWithDelete({
       sourcePosition,
       targetPosition,
     },
+    data?.bends as Bends | undefined,
     handleSize,
   );
   const isInteractive = useIsInteractive();
-
-  let [edgePath, labelX, labelY] = ["", 0, 0];
-  if (data?.bends && Array.isArray(data.bends)) {
-    [edgePath, labelX, labelY] = getBendyPath([
-      [endpoints.sourceX, endpoints.sourceY],
-      ...data.bends,
-      [endpoints.targetX, endpoints.targetY],
-    ]);
-  } else {
-    [edgePath, labelX, labelY] = getSmoothStepPath(endpoints);
-  }
 
   const deleteConnection = useCallback(() => {
     if (window.confirm("Are you sure you want to delete this connection?")) {
