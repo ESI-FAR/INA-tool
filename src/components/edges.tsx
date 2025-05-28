@@ -1,5 +1,5 @@
 import { useIsInteractive } from "@/hooks/use-interactive";
-import { useBendyPath, usePathEndpoints } from "@/hooks/use-path";
+import { EndPoints, useBendyPath, usePathEndpoints } from "@/hooks/use-path";
 import {
   type ComponentEdge,
   type ActorDrivenConnection,
@@ -15,6 +15,7 @@ import {
   EdgeProps,
   getStraightPath,
   EdgeLabelRenderer,
+  useReactFlow,
 } from "@xyflow/react";
 import { textColor } from "./drivenColors";
 import { cn } from "@/lib/utils";
@@ -67,6 +68,53 @@ function deleteDrivenConnection(id: string) {
   store.getState().setConnections(newConnections);
 }
 
+function EditHandles({
+  endpoints,
+  bends,
+  updateBends,
+  handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
+}: {
+  endpoints: EndPoints;
+  bends?: Bends;
+  updateBends: (bends: Bends) => void;
+  handleSize?: number;
+}) {
+  /*
+   * <div class="nodrag nopan absolute z-10 origin-center" style="pointer-events: all; transform: translate(-50%, -50%) translate(433.654px, 182.84px);">
+  <button class="cursor-pointer rounded-full bg-background hover:bg-accent text-purple-500">
+  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+  <path d="M18 6 6 18"></path>
+  <path d="m6 6 12 12"></path>
+  </svg>
+  </button>
+  </div>
+
+  <circle tabindex="0" id="spline-b39a4ab5-ac24-4581-b038-aed4d596370c" 
+  class="nopan nodrag" cx="76.5" cy="150" r="3" 
+  stroke-opacity="0.3" stroke="#0375ff" 
+  fill="white" style="pointer-events: all;">
+  </circle>
+   */
+  if (bends === undefined) {
+    return <></>;
+  }
+  return (
+    <>
+      {bends.map((bend, index) => {
+        return (
+          <circle
+            key={index}
+            cx={bend[0]}
+            cy={bend[1]}
+            r={handleSize}
+            className="dark:fill-blacck cursor-move fill-white stroke-black dark:stroke-white"
+          ></circle>
+        );
+      })}
+    </>
+  );
+}
+
 function BaseEdgeWithDelete({
   id,
   sourceX,
@@ -82,20 +130,22 @@ function BaseEdgeWithDelete({
   handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
   data,
   label,
+  selected,
 }: EdgeProps<DrivenConnectionEdge> & {
   deleteClassName: string;
   onDelete?: (id: string) => void;
   handleSize?: number;
 }) {
+  const endpoints: EndPoints = {
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+  };
   const { edgePath, labelX, labelY } = useBendyPath(
-    {
-      sourceX,
-      sourceY,
-      targetX,
-      targetY,
-      sourcePosition,
-      targetPosition,
-    },
+    endpoints,
     data?.bends as Bends | undefined,
     handleSize,
   );
@@ -107,9 +157,27 @@ function BaseEdgeWithDelete({
     }
   }, [id, onDelete]);
 
+  const reactFlow = useReactFlow();
+  const updateBends = useCallback(
+    (bends: Bends) => {
+      reactFlow.updateEdgeData(id, {
+        bends,
+      });
+    },
+    [id, reactFlow],
+  );
+
+  const myStyle = selected ? { ...style, strokeWidth: 3 } : style;
   return (
     <>
-      <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
+      <BaseEdge id={id} path={edgePath} style={myStyle} markerEnd={markerEnd} />
+      {selected && isInteractive && (
+        <EditHandles
+          endpoints={endpoints}
+          bends={data?.bends as Bends | undefined}
+          updateBends={updateBends}
+        />
+      )}
       <EdgeLabelRenderer>
         <div
           className="nodrag nopan absolute z-10 origin-center"
@@ -119,7 +187,7 @@ function BaseEdgeWithDelete({
           }}
         >
           {label && <span className={deleteClassName}>{label}</span>}
-          {isInteractive && (
+          {isInteractive && !selected && (
             <button
               className={cn(
                 "cursor-pointer rounded-full bg-background hover:bg-accent",
