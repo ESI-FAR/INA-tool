@@ -21,7 +21,7 @@ import { textColor } from "./drivenColors";
 import { cn } from "@/lib/utils";
 import { store } from "@/stores/global";
 import { connection2id } from "@/lib/connection2id";
-import { useCallback } from "react";
+import { useCallback, type KeyboardEvent } from "react";
 import { XIcon } from "lucide-react";
 
 const COMPONENT_HANDLE_SIZE = 4;
@@ -68,6 +68,76 @@ function deleteDrivenConnection(id: string) {
   store.getState().setConnections(newConnections);
 }
 
+function moveHandle(
+  key: string,
+  index: number,
+  bends: Bends,
+  _endpoints: EndPoints,
+  updateBends: (bends: Bends) => void,
+) {
+  const bend = bends[index];
+  if (key === "Delete" || key === "Backspace") {
+    const newBends = bends.filter((_, i) => i !== index);
+    updateBends(newBends);
+  }
+  if (key === "ArrowUp") {
+    const newBends = [...bends];
+    newBends[index] = [bend[0], bend[1] - 1];
+    updateBends(newBends);
+  }
+  if (key === "ArrowDown") {
+    const newBends = [...bends];
+    newBends[index] = [bend[0], bend[1] + 1];
+    updateBends(newBends);
+  }
+  if (key === "ArrowLeft") {
+    const newBends = [...bends];
+    newBends[index] = [bend[0] - 1, bend[1]];
+    updateBends(newBends);
+  }
+  if (key === "ArrowRight") {
+    const newBends = [...bends];
+    newBends[index] = [bend[0] + 1, bend[1]];
+    updateBends(newBends);
+  }
+}
+
+function EditHandle({
+  bend,
+  index,
+  handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
+  bends,
+  endpoints,
+  updateBends,
+}: {
+  bend: [number, number];
+  index: number;
+  handleSize?: number;
+  bends: Bends;
+  endpoints: EndPoints;
+  updateBends: (bends: Bends) => void;
+}) {
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent<SVGCircleElement>) => {
+      moveHandle(e.key, index, bends, endpoints, updateBends);
+    },
+    [bends, endpoints, index, updateBends],
+  );
+
+  return (
+    <circle
+      key={index}
+      cx={bend[0]}
+      cy={bend[1]}
+      r={handleSize}
+      tabIndex={0}
+      pointerEvents="all"
+      className="cursor-move fill-white stroke-black dark:fill-black dark:stroke-white"
+      onKeyDown={onKeyDown}
+    ></circle>
+  );
+}
+
 function EditHandles({
   endpoints,
   bends,
@@ -79,38 +149,22 @@ function EditHandles({
   updateBends: (bends: Bends) => void;
   handleSize?: number;
 }) {
-  /*
-   * <div class="nodrag nopan absolute z-10 origin-center" style="pointer-events: all; transform: translate(-50%, -50%) translate(433.654px, 182.84px);">
-  <button class="cursor-pointer rounded-full bg-background hover:bg-accent text-purple-500">
-  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
-  <path d="M18 6 6 18"></path>
-  <path d="m6 6 12 12"></path>
-  </svg>
-  </button>
-  </div>
-
-  <circle tabindex="0" id="spline-b39a4ab5-ac24-4581-b038-aed4d596370c" 
-  class="nopan nodrag" cx="76.5" cy="150" r="3" 
-  stroke-opacity="0.3" stroke="#0375ff" 
-  fill="white" style="pointer-events: all;">
-  </circle>
-   */
   if (bends === undefined) {
     return <></>;
   }
   return (
     <>
-      {bends.map((bend, index) => {
-        return (
-          <circle
-            key={index}
-            cx={bend[0]}
-            cy={bend[1]}
-            r={handleSize}
-            className="dark:fill-blacck cursor-move fill-white stroke-black dark:stroke-white"
-          ></circle>
-        );
-      })}
+      {bends.map((bend, index) => (
+        <EditHandle
+          key={index}
+          bend={bend}
+          index={index}
+          handleSize={handleSize}
+          bends={bends}
+          updateBends={updateBends}
+          endpoints={endpoints}
+        />
+      ))}
     </>
   );
 }
