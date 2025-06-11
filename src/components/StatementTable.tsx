@@ -156,6 +156,16 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Or Else" />
     ),
+    cell: (v) => {
+      const orElse = v.row.original["Or Else"];
+      const orElseStatement = v.table
+        .getRowModel()
+        .rows.find((r) => r.original.Id === orElse);
+      if (!orElse || !orElseStatement) {
+        return "";
+      }
+      return statementLabel(orElseStatement.original);
+    },
     meta: {
       editable:
         "To edit sanction connection goto to connections table page or network pages",

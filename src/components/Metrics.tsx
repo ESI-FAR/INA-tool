@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { statementLabel } from "@/lib/utils";
 import { StatementCell } from "./StatementCell";
 import { Button } from "./ui/button";
 import {
@@ -17,7 +16,6 @@ import {
   useStatementMetrics,
   useDegreeCentralityOfActors,
   useDegreeCentralityOfInanimateObjects,
-  DegreeCentrality,
   ComponentDegreeCentrality,
 } from "@/hooks/use-metrics";
 

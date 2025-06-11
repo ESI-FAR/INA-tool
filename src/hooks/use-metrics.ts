@@ -225,7 +225,7 @@ export function useDegreeCentralityOfActors() {
 export function getDegreeCentralityOfInanimateObjects(
   connections: Connection[],
   statementLookup: Map<string, Statement>,
-): DegreeCentrality[] {
+): ComponentDegreeCentrality[] {
   const directObjects = getOutgoingDegreeCentralityOfDrivenConnection(
     connections,
     "outcome",
@@ -238,7 +238,19 @@ export function getDegreeCentralityOfInanimateObjects(
     statementLookup,
     "Indirect Object",
   );
-  return [...directObjects, ...indirectObjects];
+  // Merge the two arrays into a single array of ComponentDegreeCentrality
+  const lookup = new Map<string, ComponentDegreeCentrality>();
+  for (const obj of directObjects) {
+    lookup.set(obj.component, obj);
+  }
+  for (const obj of indirectObjects) {
+    if (lookup.has(obj.component)) {
+      lookup.get(obj.component)!.degree += obj.degree;
+    } else {
+      lookup.set(obj.component, obj);
+    }
+  }
+  return Array.from(lookup.values());
 }
 
 export function useDegreeCentralityOfInanimateObjects() {
