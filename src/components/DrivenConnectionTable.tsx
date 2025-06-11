@@ -27,7 +27,7 @@ import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
 import { DownloadConnectionButton } from "./DownloadConnectionButton";
 import { UploadConnectionButton } from "./UploadConnectionButton";
-import { Connection, ConnectionWithValues } from "@/lib/schema";
+import { ConnectionWithValues } from "@/lib/schema";
 import { AddConnectionButton } from "./AddConnectionButton";
 import { useConnections } from "@/hooks/use-connections";
 import { selectColumnDefinition } from "./selectColumnDefinition";
@@ -38,7 +38,7 @@ import { Button } from "./ui/button";
 import { FilterXIcon } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
-const columns: ColumnDef<Connection>[] = [
+const columns: ColumnDef<ConnectionWithValues>[] = [
   selectColumnDefinition(),
   {
     accessorKey: "driven_by",

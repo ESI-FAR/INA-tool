@@ -65,6 +65,7 @@ import { selectColumnDefinition } from "./selectColumnDefinition";
 import { DeleteSelectedButton } from "./DeleteSelectedButton";
 import { useSidebar } from "./ui/sidebar";
 import { getSanctionedStatements } from "@/lib/io";
+import { statementLabel } from "@/lib/utils";
 
 const columns: ColumnDef<Statement>[] = [
   selectColumnDefinition(),
@@ -73,6 +74,7 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Id" />
     ),
+    cell: ({ row }) => statementLabel(row.original),
     meta: {
       editable: false,
     },
