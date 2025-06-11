@@ -88,6 +88,10 @@ function RouteComponent() {
         be made from that rows "Aim" to the "Activation Condition" of the
         statement with the id in the "Or Else" column.
       </p>
+      <p>
+        If you do not have an Id column then values in the OrElse column should
+        be a number where first row is 1.
+      </p>
       <h3 className="py-4 text-xl">Upload your file with connections</h3>
       <p>
         On the{" "}
