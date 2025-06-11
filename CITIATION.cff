@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+title: Institutional network analysis tool
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - orcid: 'https://orcid.org/0000-0002-5821-2060'
+    affiliation: Netherlands eScience center
+    given-names: Stefan
+    family-names: Verhoeven
+  - orcid: 'https://orcid.org/0000-0002-7257-8034'
+    affiliation: Netherlands eScience center
+    given-names: Ermanno
+    family-names: Lo Cascio
+  - family-names: Rijn
+    given-names: Sander
+    orcid: 'https://orcid.org/0000-0001-6159-041X'
+    email: s.vanrijn@esciencecenter.nl
+    affiliation: Netherlands eScience Center
+    name-particle: van
+  - family-names: Moodley
+    given-names: Kody
+    orcid: 'https://orcid.org/0000-0001-5666-1658'
+    affiliation: Netherlands eScience Center
+  - family-names: Ghorbani
+    given-names: Amineh
+    orcid: 'https://orcid.org/0000-0002-9985-8239'
+    affiliation: Delft University of Technology
+  - family-names: Veer
+    given-names: Renske
+    orcid: 'https://orcid.org/0000-0001-6162-9345'
+    affiliation: Delft University of Technology
+    name-particle: "van 't"
+repository-code: 'https://github.com/ESI-FAR/INA-tool/'
+abstract: >-
+  INA Tool is an open-source digital tool developed by the
+  eScience Center aimed at supporting the regulatory
+  framework design process by facilitating the study,
+  analysis, and decision-making through data visualization
+  and interaction.
