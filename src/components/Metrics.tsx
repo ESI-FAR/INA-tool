@@ -18,6 +18,7 @@ import {
   useDegreeCentralityOfActors,
   useDegreeCentralityOfInanimateObjects,
   DegreeCentrality,
+  ComponentDegreeCentrality,
 } from "@/hooks/use-metrics";
 
 function StatementMetricsTable() {
@@ -72,22 +73,20 @@ function StatementMetricsTable() {
 function DegreeCentralityTable({
   centralities,
 }: {
-  centralities: DegreeCentrality[];
+  centralities: ComponentDegreeCentrality[];
 }) {
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Statement ID</TableHead>
           <TableHead>Component</TableHead>
           <TableHead>Degree centrality</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {centralities.map((centrality) => (
-          <TableRow key={centrality.statement.Id}>
-            <TableCell>{statementLabel(centrality.statement)}</TableCell>
-            <TableCell className="w-full">{centrality.label}</TableCell>
+          <TableRow key={centrality.component}>
+            <TableCell className="w-full">{centrality.component}</TableCell>
             <TableCell>{centrality.degree}</TableCell>
           </TableRow>
         ))}

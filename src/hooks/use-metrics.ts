@@ -150,19 +150,25 @@ export interface DegreeCentrality {
   degree: number;
 }
 
+export interface ComponentDegreeCentrality {
+  component: string;
+  degree: number;
+}
+
 export function getOutgoingDegreeCentralityOfDrivenConnection(
   connections: Connection[],
   drivenBy: DrivenBy,
   statementLookup: Map<string, Statement>,
   sourceComponent: SourceComponentSchema,
-): DegreeCentrality[] {
+): ComponentDegreeCentrality[] {
   const memory = new Map<string, number>();
   for (const connection of connections) {
     if (
       connection.driven_by === drivenBy &&
       connection.source_component === sourceComponent
     ) {
-      const key = connection.source_statement;
+      const statementData = statementLookup.get(connection.source_statement)!;
+      const key = statementData[connection.source_component]!;
       if (memory.has(key)) {
         memory.set(key, memory.get(key)! + 1);
       } else {
@@ -170,11 +176,9 @@ export function getOutgoingDegreeCentralityOfDrivenConnection(
       }
     }
   }
-  return Array.from(memory.entries()).map(([key, degree]) => {
-    const statementData = statementLookup.get(key)!;
+  return Array.from(memory.entries()).map(([component, degree]) => {
     return {
-      statement: statementData,
-      label: statementData[sourceComponent]!,
+      component,
       degree,
     };
   });
@@ -183,7 +187,7 @@ export function getOutgoingDegreeCentralityOfDrivenConnection(
 export function getDegreeCentralityOfActors(
   connections: Connection[],
   statementLookup: Map<string, Statement>,
-): DegreeCentrality[] {
+): ComponentDegreeCentrality[] {
   const memory = new Map<string, number>();
   const drivenBy: DrivenBy = "actor";
   const targetComponent: TargetComponentSchema = "Attribute";
@@ -192,7 +196,8 @@ export function getDegreeCentralityOfActors(
       connection.driven_by === drivenBy &&
       connection.target_component === targetComponent
     ) {
-      const key = connection.target_statement;
+      const statementData = statementLookup.get(connection.target_statement)!;
+      const key = statementData[connection.target_component];
       if (memory.has(key)) {
         memory.set(key, memory.get(key)! + 1);
       } else {
@@ -200,11 +205,9 @@ export function getDegreeCentralityOfActors(
       }
     }
   }
-  return Array.from(memory.entries()).map(([key, degree]) => {
-    const statementData = statementLookup.get(key)!;
+  return Array.from(memory.entries()).map(([component, degree]) => {
     return {
-      statement: statementData,
-      label: statementData[targetComponent]!,
+      component,
       degree,
     };
   });
