@@ -821,6 +821,14 @@ function RouteComponent() {
         </a>{" "}
         on the GitHub repository.
       </p>
+
+      <h3 className="py-4 text-xl">Citing</h3>
+      <p>
+        To cite the INA tool software please use{" "}
+        <a href="https://doi.org/10.5281/zenodo.15639732" className="underline">
+          https://doi.org/10.5281/zenodo.15639732
+        </a>
+      </p>
     </main>
   );
 }
