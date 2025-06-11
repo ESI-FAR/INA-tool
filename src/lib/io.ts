@@ -294,8 +294,11 @@ export async function parseXLSXFile<T>(
   const content = await file.arrayBuffer();
   const workbook = readXLSX(content);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const rawConnections = utilsXLSX.sheet_to_json(sheet, { defval: "" });
-  return schema.parse(rawConnections);
+  const rawRows = utilsXLSX.sheet_to_json(sheet, {
+    defval: "",
+    raw: false, // Prevent automatic type conversion, keep everything as string
+  });
+  return schema.parse(rawRows);
 }
 
 export async function parseFile<T>(file: File, schema: ZodType<T>): Promise<T> {

@@ -8,6 +8,7 @@ import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
 import { useStatementLookup } from "./use-statements";
+import { statementLabel } from "@/lib/utils";
 
 function compareConnection(a: Connection, b: Connection): boolean {
   return (
@@ -107,6 +108,8 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
           ...connection,
           source_value,
           target_value,
+          source_statement: statementLabel(sourceStatement),
+          target_statement: statementLabel(targetStatement),
         };
       })
       .filter((c) => c !== undefined);
@@ -152,6 +155,8 @@ export function useConnectionsWithValuesOfStatement(
           ...connection,
           source_value,
           target_value,
+          source_statement: statementLabel(sourceStatement),
+          target_statement: statementLabel(targetStatement),
         };
       })
       .filter((c) => c !== undefined);

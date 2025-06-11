@@ -65,6 +65,7 @@ import { selectColumnDefinition } from "./selectColumnDefinition";
 import { DeleteSelectedButton } from "./DeleteSelectedButton";
 import { useSidebar } from "./ui/sidebar";
 import { getSanctionedStatements } from "@/lib/io";
+import { statementLabel } from "@/lib/utils";
 
 const columns: ColumnDef<Statement>[] = [
   selectColumnDefinition(),
@@ -73,6 +74,7 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Id" />
     ),
+    cell: ({ row }) => statementLabel(row.original),
     meta: {
       editable: false,
     },
@@ -154,6 +156,16 @@ const columns: ColumnDef<Statement>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Or Else" />
     ),
+    cell: (v) => {
+      const orElse = v.row.original["Or Else"];
+      const orElseStatement = v.table
+        .getRowModel()
+        .rows.find((r) => r.original.Id === orElse);
+      if (!orElse || !orElseStatement) {
+        return "";
+      }
+      return statementLabel(orElseStatement.original);
+    },
     meta: {
       editable:
         "To edit sanction connection goto to connections table page or network pages",
