@@ -26,17 +26,17 @@ authors:
     orcid: "https://orcid.org/0000-0002-5821-2060"
   - family-names: Moodley
     given-names: Kody
-    orcid: 'https://orcid.org/0000-0001-5666-1658'
+    orcid: "https://orcid.org/0000-0001-5666-1658"
     affiliation: Netherlands eScience Center
   - family-names: Ghorbani
     given-names: Amineh
-    orcid: 'https://orcid.org/0000-0002-9985-8239'
+    orcid: "https://orcid.org/0000-0002-9985-8239"
     affiliation: Delft University of Technology
   - family-names: Veer
     given-names: Renske
-    orcid: 'https://orcid.org/0000-0001-6162-9345'
+    orcid: "https://orcid.org/0000-0001-6162-9345"
     affiliation: Delft University of Technology
-    name-particle: "van 't"    
+    name-particle: "van 't"
 repository-code: "https://github.com/ESI-FAR/INA-tool"
 url: "https://esi-far.github.io/INA-tool/"
 keywords:
