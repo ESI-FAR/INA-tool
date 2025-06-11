@@ -3,11 +3,7 @@ import { store, Store } from "@/stores/global";
 import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
-import { useStatements } from "./use-statements";
-
-function equalConflicts(a: Conflict, b: Conflict) {
-  return a.formal === b.formal && a.informal === b.informal;
-}
+import { useStatementLookup } from "./use-statements";
 
 export function useConflicts() {
   const conflicts = useStore(
@@ -20,7 +16,7 @@ export function useConflicts() {
     (conflictsToRemove: Conflict[]) => {
       return setConflicts(
         conflicts.filter(
-          (c) => !conflictsToRemove.some((c2) => equalConflicts(c, c2)),
+          (c) => !conflictsToRemove.some((c2) => c.group === c2.group),
         ),
       );
     },
@@ -39,23 +35,45 @@ export function useConflicts() {
 }
 
 export interface ConflictWithStatements {
-  formal: string;
-  informal: string;
-  formalStatement: Statement;
-  informalStatement: Statement;
+  group: string;
+  statements: Set<string>;
+  fullStatements: Statement[];
 }
 
 export function useConflictsWithStatements(): ConflictWithStatements[] {
   const { conflicts } = useConflicts();
-  const { statements } = useStatements();
+  const statementLookup = useStatementLookup();
   return useMemo(() => {
-    const statementLookup = new Map<string, Statement>(
-      statements.map((statement) => [statement.Id, statement]),
-    );
     return conflicts.map((conflict) => ({
       ...conflict,
-      formalStatement: statementLookup.get(conflict.formal)!,
-      informalStatement: statementLookup.get(conflict.informal)!,
+      fullStatements: Array.from(conflict.statements).map(
+        (statementId) => statementLookup.get(statementId)!,
+      ),
     }));
-  }, [conflicts, statements]);
+  }, [conflicts, statementLookup]);
+}
+
+export interface GroupedStatementPair {
+  group: string;
+  source: string;
+  target: string;
+}
+// TODO move to better place?
+export function* conflictAsStatementPairs(
+  conflicts: Conflict[],
+): Generator<GroupedStatementPair, void, unknown> {
+  for (const conflict of conflicts) {
+    for (const source of conflict.statements) {
+      for (const target of conflict.statements) {
+        if (source < target) {
+          const pair: GroupedStatementPair = {
+            group: conflict.group,
+            source,
+            target,
+          };
+          yield pair;
+        }
+      }
+    }
+  }
 }

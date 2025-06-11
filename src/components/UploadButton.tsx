@@ -27,9 +27,12 @@ async function processJSONFile(file: File) {
  */
 function fillIds(data: StatementsWithOptionalId): Statement[] {
   return data.map((row, index) => {
+    if (row.Id) {
+      return row as Statement; // Already has an Id, return as is
+    }
     return {
-      Id: (index + 1).toString(),
       ...row,
+      Id: (index + 1).toString(),
     };
   });
 }

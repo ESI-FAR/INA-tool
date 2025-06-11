@@ -4,6 +4,7 @@ export const StatementType = z.enum(["formal", "informal"]);
 export type StatementType = z.infer<typeof StatementType>;
 
 export const TypeOfObject = z.enum(["", "animate", "inanimate"]);
+export type TypeOfObject = z.infer<typeof TypeOfObject>;
 
 export const deonticSchema = z.enum(["must", "may", "may not", "shall", ""]);
 export type Deontic = z.infer<typeof deonticSchema>;
@@ -87,8 +88,19 @@ export const statementColumns = Object.keys(
   unrefinedStatementSchema.shape,
 ) as Array<keyof Statement>;
 
-export const statementsSchema = z.array(statementSchemaWithOptionalId);
-export type StatementsWithOptionalId = z.infer<typeof statementsSchema>;
+const unrefinedStatementsSchema = z.array(statementSchemaWithOptionalId);
+export const statementsSchema = unrefinedStatementsSchema.refine(
+  (data) => {
+    const filledIds = data.map((s) => s.Id).filter((c) => c);
+    return new Set(filledIds).size === filledIds.length;
+  },
+  {
+    message: "Id column must be unique",
+  },
+);
+export type StatementsWithOptionalId = z.infer<
+  typeof unrefinedStatementsSchema
+>;
 
 export const SourceComponentSchema = z.enum([
   "Direct Object",
@@ -96,11 +108,14 @@ export const SourceComponentSchema = z.enum([
   "Aim",
   "Execution Constraint",
 ]);
+export type SourceComponentSchema = z.infer<typeof SourceComponentSchema>;
 
 export const TargetComponentSchema = z.enum([
   "Attribute",
   "Activation Condition",
 ]);
+export type TargetComponentSchema = z.infer<typeof TargetComponentSchema>;
+
 export type ConnectionComponent =
   | z.infer<typeof SourceComponentSchema>
   | z.infer<typeof TargetComponentSchema>;
@@ -173,13 +188,15 @@ export const connectionColumns = Object.keys(
 export const connectionsSchema = z.array(connectionSchema);
 
 export const Conflict = z.object({
-  formal: z.string(),
-  informal: z.string(),
+  group: z.string(),
+  statements: z.set(z.string()).min(2, "Must have at least two statements"),
 });
 export type Conflict = z.infer<typeof Conflict>;
-export const conflictColumns = Object.keys(Conflict.shape) as Array<
-  keyof Conflict
->;
-
-export const Conflicts = z.array(Conflict);
+const UnrefinedConflicts = z.array(Conflict);
+export const Conflicts = UnrefinedConflicts.refine(
+  (data) => new Set(data.map((c) => c.group)).size === data.length,
+  {
+    message: "Conflict groups must be unique",
+  },
+);
 export type Conflicts = z.infer<typeof Conflicts>;

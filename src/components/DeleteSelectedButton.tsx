@@ -21,7 +21,7 @@ export function DeleteSelectedButton({
         title="Delete selected"
         disabled={!nrTotalRows || !nrSelectedRows}
         onClick={() => {
-          if (nrSelectedRows >= nrTotalRows / 2 && nrTotalRows > 1) {
+          if (nrSelectedRows >= 1 && nrTotalRows >= 1) {
             if (
               !window.confirm(
                 `Are you sure you want to delete ${nrSelectedRows} ${what}?`,
@@ -29,8 +29,8 @@ export function DeleteSelectedButton({
             ) {
               return;
             }
+            onDelete();
           }
-          onDelete();
         }}
       >
         <TrashIcon />

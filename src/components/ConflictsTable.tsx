@@ -1,6 +1,5 @@
 import {
   ColumnDef,
-  FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -28,42 +27,51 @@ import {
   TableRow,
 } from "./ui/table";
 import { DataTablePagination } from "./DataTablePagination";
-import { AddConflictButton } from "./AddConflictButton.tsx";
+import { AddConflictButton, EditConflictButton } from "./AddConflictButton.tsx";
 import { DownloadConflictButton } from "./DownloadConflictButton.tsx";
 import { UploadConflictButton } from "./UploadConflictButton.tsx";
-import { StatementCell } from "./StatementCell.tsx";
-import { searchStatement } from "./search.tsx";
+import { Hit } from "./search.tsx";
 import { DeleteSelectedButton } from "./DeleteSelectedButton.tsx";
 import { selectColumnDefinition } from "./selectColumnDefinition.tsx";
+import { Conflict, Statement } from "@/lib/schema.ts";
+import { store } from "@/stores/global.ts";
+
+function StatementsList({
+  statements,
+  query = "",
+}: {
+  statements: Statement[];
+  query?: string;
+}) {
+  return (
+    <ol>
+      {statements.map((statement) => (
+        <li key={statement.Id}>
+          <Hit statement={statement} query={query} />
+        </li>
+      ))}
+    </ol>
+  );
+}
 
 const columns: ColumnDef<ConflictWithStatements>[] = [
   selectColumnDefinition(),
   {
-    accessorKey: "formal",
+    accessorKey: "group",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Formal statement" />
-    ),
-    cell: (props) => (
-      <StatementCell statement={props.row.original.formalStatement} />
+      <DataTableColumnHeader column={column} title="Group" />
     ),
   },
   {
-    accessorKey: "informal",
+    accessorKey: "statements",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Informal statement" />
+      <DataTableColumnHeader column={column} title="Statements" />
     ),
     cell: (props) => (
-      <StatementCell statement={props.row.original.informalStatement} />
+      <StatementsList statements={props.row.original.fullStatements} />
     ),
   },
 ];
-
-const search: FilterFn<ConflictWithStatements> = (row, _, filterValue) => {
-  return Boolean(
-    searchStatement(filterValue, row.original.formalStatement) ||
-      searchStatement(filterValue, row.original.informalStatement),
-  );
-};
 
 export function ConflictsTable() {
   const { removeConflicts } = useConflicts();
@@ -81,7 +89,6 @@ export function ConflictsTable() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
-    globalFilterFn: search,
     onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
@@ -94,7 +101,7 @@ export function ConflictsTable() {
     <div className="w-full">
       <h1 className="text-xl">Conflicts</h1>
       <p>
-        Mark a formal and an informal statement pair as conflicting with each
+        Institutional discrepancies. Group of statements that conflict with each
         other.
       </p>
       <div className="flex justify-between gap-4 py-2">
@@ -111,10 +118,11 @@ export function ConflictsTable() {
         </div>
       </div>
       <div className="w-full rounded-md border">
-        <Table>
+        <Table className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
+                <TableHead></TableHead>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
@@ -137,6 +145,22 @@ export function ConflictsTable() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
+                  <TableCell>
+                    <EditConflictButton
+                      conflict={row.original}
+                      onSave={(conflict: Conflict) => {
+                        store
+                          .getState()
+                          .setConflicts(
+                            store
+                              .getState()
+                              .conflicts.map((c, i) =>
+                                row.index === i ? conflict : c,
+                              ),
+                          );
+                      }}
+                    />
+                  </TableCell>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -150,11 +174,11 @@ export function ConflictsTable() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={4}
                   className="h-24 text-center text-gray-500"
                 >
                   No conflicts. Please add one, by presssing button below or by
-                  uploading or by creating on a network page.
+                  uploading.
                 </TableCell>
               </TableRow>
             )}
@@ -171,8 +195,14 @@ export function ConflictsTable() {
             const toDelete = table
               .getSelectedRowModel()
               .rows.map((row) => row.original);
-            removeConflicts(toDelete);
-            table.resetRowSelection();
+            if (
+              window.confirm(
+                "Are you sure you want to delete selected conflicts?",
+              )
+            ) {
+              removeConflicts(toDelete);
+              table.resetRowSelection();
+            }
           }}
         />
         <DataTablePagination table={table} />

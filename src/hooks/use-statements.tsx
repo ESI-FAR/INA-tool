@@ -1,6 +1,6 @@
 import { Connection, Statement } from "@/lib/schema";
 import { Store, store } from "@/stores/global";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
 import { useConnections } from "./use-connections";
@@ -73,6 +73,12 @@ export function useStatementDeleter() {
           } else {
             return;
           }
+        } else {
+          if (
+            !window.confirm(`Are you sure you want to delete statement ${id}?`)
+          ) {
+            return;
+          }
         }
       }
       const setStatements = store.getState().setStatements;
@@ -82,4 +88,16 @@ export function useStatementDeleter() {
     [statements, removeConnections, connectionsOfStatement],
   );
   return removeStatements;
+}
+
+export function useStatementLookup(): Map<string, Statement> {
+  const { statements } = useStore(store);
+  const statementLookup = useMemo(
+    () =>
+      new Map<string, Statement>(
+        statements.map((statement) => [statement.Id, statement]),
+      ),
+    [statements],
+  );
+  return statementLookup;
 }

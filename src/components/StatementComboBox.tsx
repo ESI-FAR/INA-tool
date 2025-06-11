@@ -4,7 +4,7 @@ import { Statement } from "@/lib/schema";
 import { useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
-import { Hit, searchStatement } from "./search";
+import { filterStatements, Hit } from "./search";
 import {
   Command,
   CommandEmpty,
@@ -13,13 +13,6 @@ import {
   CommandItem,
   CommandList,
 } from "./ui/command";
-
-function filterStatements(query: string, statements: Statement[]) {
-  if (query === "") {
-    return statements;
-  }
-  return statements.filter((statement) => searchStatement(query, statement));
-}
 
 export function StatementComboBox({
   statements,

@@ -22,6 +22,7 @@ import {
   RouteIcon,
   RouteOffIcon,
   SaveIcon,
+  ScalingIcon,
   SearchIcon,
   TrashIcon,
   Undo2Icon,
@@ -306,10 +307,17 @@ function RouteComponent() {
                 <li>
                   <strong>
                     <RouteOffIcon className="inline" />
-                    Undo rerouted connections
-                  </strong>
-                  {""}
+                    Undo rerouted connections:
+                  </strong>{" "}
                   Will make whole connection move with nodes again.
+                </li>
+                <li>
+                  <strong>
+                    <ScalingIcon className="inline" /> Reset component size:
+                  </strong>{" "}
+                  Resets the size of all components nodes to their default size.
+                  This actions fixes it when edges between component nodes are
+                  not connected.
                 </li>
               </ul>
             </li>
@@ -483,9 +491,8 @@ function RouteComponent() {
                 <li>
                   <strong>
                     <RouteOffIcon className="inline" />
-                    Undo rerouted connections
-                  </strong>
-                  {""}
+                    Undo rerouted connections:
+                  </strong>{" "}
                   Will make whole connection move with nodes again.
                 </li>
               </ul>
@@ -659,7 +666,9 @@ function RouteComponent() {
           </li>
         </ul>
       </p>
-      <h3 className="py-4 text-xl">Conflicts page</h3>
+      <h3 id="help-conflicts-page" className="py-4 text-xl">
+        Conflicts page
+      </h3>
       <p>
         The{" "}
         <Link className="underline" to="/conflicts">
@@ -697,15 +706,29 @@ function RouteComponent() {
         <li>
           <strong>Download:</strong> Click on the{" "}
           <DownloadIcon className="inline" /> download button to download the
-          connections as a CSV file.
+          connections as a JSON file.
         </li>
         <li>
           <strong>Upload:</strong> Click on the{" "}
-          <UploadIcon className="inline" /> upload button to upload a CSV or
-          XLSX file with conflicts. Existing conflicts will be deleted and
-          replaced by the uploaded conflicts. The file should have a "formal"
-          column and "informal" column. Both columns should contain the
-          statement id.
+          <UploadIcon className="inline" /> upload button to upload a JSON file
+          with conflicts. Existing conflicts will be deleted and replaced by the
+          uploaded conflicts.
+          <details className="inline-block cursor-pointer">
+            <summary>Example</summary>
+
+            <pre>
+              {JSON.stringify(
+                [
+                  {
+                    group: "Group name1",
+                    statements: ["statementId1", "statementId2"],
+                  },
+                ],
+                undefined,
+                2,
+              )}
+            </pre>
+          </details>
         </li>
       </ul>
 
@@ -725,6 +748,55 @@ function RouteComponent() {
           in different web browser tabs open.
         </li>
       </ul>
+
+      <h3 className="py-4 text-xl">Manual edge editing</h3>
+      <div>
+        <p>
+          If you do not like how the edges are routed you can edit edges
+          manually. To edit an edge:
+        </p>
+        <ol className="list-inside list-decimal">
+          <li>
+            Press "Re-route connections" button in the experimental sub menu.
+            Only edges that have been re-routed can be edited.
+          </li>
+          <li>
+            Select driven connection or conflict edge by clicking on it. You can
+            only select edges from outside a statement box. When selected the
+            edge is a bit thicker.
+          </li>
+          <li>
+            Select corner (circle icon) of an edge. By clicking on it if it is
+            outside the statement box. Or by pressing "Tab" key to cycle through
+            the corners of the edge.
+          </li>
+          <li>
+            Manipulate corner with keyboard:
+            <ul className="ml-6 list-outside list-disc pl-4">
+              <li>
+                Arrow keys: To move corner around.
+                <ul className="ml-10 list-outside list-disc pl-4">
+                  <li>Hold "shift" key to move with bigger steps.</li>
+                  <li>Hold "ctrl" key to keep neighbouring corners pinned.</li>
+                </ul>
+              </li>
+              <li>Delete or Backspace key: To remove corner.</li>
+              <li>
+                "p" key: To add an extra corner after the selected corner.
+              </li>
+              <li>"s" key: To snap corner to get 90&deg; corners.</li>
+            </ul>
+          </li>
+          <li>
+            Optionally goto another corner, by clicking it or pressing "Tab" or
+            shift+"Tab" key to cycle through corners.
+          </li>
+          <li>
+            To complete editing, unselect the edge by click on background or
+            node or another edge.
+          </li>
+        </ol>
+      </div>
 
       <h3 className="py-4 text-xl">Support and Discussion</h3>
       <p>

@@ -41,6 +41,7 @@ export function undoReroutedConnections() {
       const item = {
         ...edge,
         data: {
+          ...edge.data,
           bends: undefined,
         },
       } as INACEdge;

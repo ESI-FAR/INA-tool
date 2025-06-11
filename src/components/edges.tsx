@@ -1,4 +1,5 @@
-import { useIsInteractive, usePathEndpoints } from "@/hooks/use-interactive";
+import { useIsInteractive } from "@/hooks/use-interactive";
+import { EndPoints, useBendyPath, usePathEndpoints } from "@/hooks/use-path";
 import {
   type ComponentEdge,
   type ActorDrivenConnection,
@@ -13,16 +14,16 @@ import {
   BaseEdge,
   EdgeProps,
   getStraightPath,
-  getSmoothStepPath,
   EdgeLabelRenderer,
+  useReactFlow,
 } from "@xyflow/react";
 import { textColor } from "./drivenColors";
 import { cn } from "@/lib/utils";
 import { store } from "@/stores/global";
 import { connection2id } from "@/lib/connection2id";
-import { useCallback } from "react";
-import { conflict2id } from "@/stores/component-network";
+import { useCallback, type KeyboardEvent } from "react";
 import { XIcon } from "lucide-react";
+import { keyboardEventOnHandle } from "@/lib/edit-edge";
 
 const COMPONENT_HANDLE_SIZE = 4;
 const DRIVEN_CONNECTION_HANDLE_SIZE = 5;
@@ -68,25 +69,79 @@ function deleteDrivenConnection(id: string) {
   store.getState().setConnections(newConnections);
 }
 
-function getBendyPath(points: Bends): [string, number, number] {
-  let pathData = `M${points[0][0]},${points[0][1]}`;
-  for (let i = 1; i < points.length; i++) {
-    pathData += ` L${points[i][0]},${points[i][1]}`;
-  }
+function EditHandle({
+  bend,
+  index,
+  handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
+  bends,
+  endpoints,
+  updateBends,
+}: {
+  bend: [number, number];
+  index: number;
+  handleSize?: number;
+  bends: Bends;
+  endpoints: EndPoints;
+  updateBends: (bends: Bends) => void;
+}) {
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent<SVGCircleElement>) => {
+      keyboardEventOnHandle(
+        e.key,
+        index,
+        bends,
+        endpoints,
+        updateBends,
+        e.shiftKey,
+        e.ctrlKey,
+      );
+    },
+    [bends, endpoints, index, updateBends],
+  );
 
-  let centerX = (points[0][0] + points[points.length - 1][0]) / 2;
-  let centerY = (points[0][1] + points[points.length - 1][1]) / 2;
-  const middleIndex = Math.floor(points.length / 2);
-  if (points.length % 2 === 0) {
-    // If even then odd line segments -> use middle of middle line
-    centerX = (points[middleIndex - 1][0] + points[middleIndex][0]) / 2;
-    centerY = (points[middleIndex - 1][1] + points[middleIndex][1]) / 2;
-  } else {
-    // If odd then even line segments -> use middle corner
-    centerX = points[middleIndex][0];
-    centerY = points[middleIndex][1];
+  return (
+    <circle
+      key={index}
+      cx={bend[0]}
+      cy={bend[1]}
+      r={handleSize}
+      tabIndex={0}
+      pointerEvents="all"
+      className="cursor-move fill-white stroke-black dark:fill-black dark:stroke-white"
+      onKeyDown={onKeyDown}
+    ></circle>
+  );
+}
+
+function EditHandles({
+  endpoints,
+  bends,
+  updateBends,
+  handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
+}: {
+  endpoints: EndPoints;
+  bends?: Bends;
+  updateBends: (bends: Bends) => void;
+  handleSize?: number;
+}) {
+  if (bends === undefined) {
+    return <></>;
   }
-  return [pathData, centerX, centerY];
+  return (
+    <>
+      {bends.map((bend, index) => (
+        <EditHandle
+          key={index}
+          bend={bend}
+          index={index}
+          handleSize={handleSize}
+          bends={bends}
+          updateBends={updateBends}
+          endpoints={endpoints}
+        />
+      ))}
+    </>
+  );
 }
 
 function BaseEdgeWithDelete({
@@ -103,51 +158,65 @@ function BaseEdgeWithDelete({
   onDelete = deleteDrivenConnection,
   handleSize = DRIVEN_CONNECTION_HANDLE_SIZE,
   data,
+  label,
+  selected,
 }: EdgeProps<DrivenConnectionEdge> & {
   deleteClassName: string;
   onDelete?: (id: string) => void;
   handleSize?: number;
 }) {
-  const endpoints = usePathEndpoints(
-    {
-      sourceX,
-      sourceY,
-      targetX,
-      targetY,
-      sourcePosition,
-      targetPosition,
-    },
+  const endpoints: EndPoints = {
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+  };
+  const { edgePath, labelX, labelY } = useBendyPath(
+    endpoints,
+    data?.bends as Bends | undefined,
     handleSize,
   );
   const isInteractive = useIsInteractive();
 
-  let [edgePath, labelX, labelY] = ["", 0, 0];
-  if (data?.bends && Array.isArray(data.bends)) {
-    [edgePath, labelX, labelY] = getBendyPath([
-      [endpoints.sourceX, endpoints.sourceY],
-      ...data.bends,
-      [endpoints.targetX, endpoints.targetY],
-    ]);
-  } else {
-    [edgePath, labelX, labelY] = getSmoothStepPath(endpoints);
-  }
-
   const deleteConnection = useCallback(() => {
-    onDelete(id);
+    if (window.confirm("Are you sure you want to delete this connection?")) {
+      onDelete(id);
+    }
   }, [id, onDelete]);
 
+  const reactFlow = useReactFlow();
+  const updateBends = useCallback(
+    (bends: Bends) => {
+      reactFlow.updateEdgeData(id, {
+        bends,
+      });
+    },
+    [id, reactFlow],
+  );
+
+  const myStyle = selected ? { ...style, strokeWidth: 3 } : style;
   return (
     <>
-      <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
-      {isInteractive && (
-        <EdgeLabelRenderer>
-          <div
-            className="nodrag nopan absolute z-10 origin-center"
-            style={{
-              pointerEvents: "all",
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            }}
-          >
+      <BaseEdge id={id} path={edgePath} style={myStyle} markerEnd={markerEnd} />
+      {selected && isInteractive && (
+        <EditHandles
+          endpoints={endpoints}
+          bends={data?.bends as Bends | undefined}
+          updateBends={updateBends}
+        />
+      )}
+      <EdgeLabelRenderer>
+        <div
+          className="nodrag nopan absolute z-10 origin-center"
+          style={{
+            pointerEvents: "all",
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+          }}
+        >
+          {label && <span className={deleteClassName}>{label}</span>}
+          {isInteractive && !selected && (
             <button
               className={cn(
                 "cursor-pointer rounded-full bg-background hover:bg-accent",
@@ -157,9 +226,9 @@ function BaseEdgeWithDelete({
             >
               <XIcon size={12} />
             </button>
-          </div>
-        </EdgeLabelRenderer>
-      )}
+          )}
+        </div>
+      </EdgeLabelRenderer>
     </>
   );
 }
@@ -219,20 +288,25 @@ const conflictingStyle = {
   strokeDasharray: "2",
 };
 
-function deleteConflictById(id: string) {
+function deleteConflictByGroup(group: string) {
   const all = store.getState().conflicts;
-  const newConflicts = all.filter((c) => conflict2id(c) !== id);
+  const newConflicts = all.filter((c) => c.group !== group);
   store.getState().setConflicts(newConflicts);
 }
 
 export function ConflictingEdge(props: EdgeProps<ConflictingEdge>) {
+  const group = props.data!.group!.toString();
+  const onDelete = useCallback(() => {
+    deleteConflictByGroup(group);
+  }, [group]);
   return (
     <BaseEdgeWithDelete
       {...props}
       style={conflictingStyle}
       deleteClassName="text-amber-500"
       handleSize={CONFLICT_HANDLE_SIZE}
-      onDelete={deleteConflictById}
+      onDelete={onDelete}
+      label={group}
     />
   );
 }
