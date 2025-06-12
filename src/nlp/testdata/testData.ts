@@ -1,6 +1,7 @@
 import { Statement, Connection } from "@/lib/schema";
 
-export const mockStatements: Statement[] = [
+// Flood risk network
+export const statements: Statement[] = [
   {
     Id: "1",
     "Statement Type": "formal",
@@ -241,7 +242,7 @@ export const negationData: Record<string, NegationEntry[]> = {
   ],
 };
 
-export const statements: Statement[] = [
+export const mockStatements: Statement[] = [
   {
     Id: "1",
     "Statement Type": "formal",
