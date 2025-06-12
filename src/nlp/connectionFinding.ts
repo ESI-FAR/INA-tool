@@ -183,30 +183,8 @@ async function findSanctionDrivenConnections(
   const aimBase = sourceAim.replace(/s$/, ""); // Remove trailing 's' if present
 
   const targetActivationCondition = target["Activation Condition"] ?? "";
-  // const targetExecutionConstraint = target["Execution Constraint"] ?? "";
-  // const targetDirectObject = target["Direct Object"] ?? "";
-  // const targetIndirectObject = target["Indirect Object"] ?? "";
-  // const targetAttribute = target.Attribute ?? "";
-  // const targetAim = target.Aim ?? "";
-  // const targetOrElse = target["Or Else"] ?? "";
-
-  // const targetSentence =
-  //   targetAttribute +
-  //   " " +
-  //   targetAim +
-  //   " " +
-  //   targetDirectObject +
-  //   " " +
-  //   targetIndirectObject +
-  //   " " +
-  //   targetActivationCondition +
-  //   " " +
-  //   targetExecutionConstraint +
-  //   " " +
-  //   targetOrElse;
 
   try {
-    // const rule = await checkWordOccurrence(aimBase, true, targetSentence);
     const rule = await checkWordOccurrence(aimBase, true, targetActivationCondition);
     if (rule) {
       connections.push({
@@ -273,22 +251,17 @@ export async function findConnections({
     for (const target of statements) {
       if (source.Id === target.Id) continue; // don't compare the same rule to itself
 
-      // const actorDrivenConnections = await findActorDrivenConnections(
-      //   source,
-      //   target,
-      // );
-      // const outcomeDrivenConnections = await findOutcomeDrivenConnections(
-      //   source,
-      //   target,
-      // );
-      const sanctionDrivenConnections = await findSanctionDrivenConnections(
+      const actorDrivenConnections = await findActorDrivenConnections(
+        source,
+        target,
+      );
+      const outcomeDrivenConnections = await findOutcomeDrivenConnections(
         source,
         target,
       );
 
-      // newConnections.push(...actorDrivenConnections);
-      // newConnections.push(...outcomeDrivenConnections);
-      newConnections.push(...sanctionDrivenConnections);
+      newConnections.push(...actorDrivenConnections);
+      newConnections.push(...outcomeDrivenConnections);
     }
   }
   return removeKnownConnections(newConnections, existingConnections);

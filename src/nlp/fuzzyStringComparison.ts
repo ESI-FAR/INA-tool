@@ -156,10 +156,6 @@ async function getWordForms(word: string): Promise<string[]> {
     // Get verb conjugations
     const verbs = doc.verbs();
     if (verbs.found) {
-      // if (lowerWord in ['pay', 'pays', 'paid', 'payment']) {
-      //   console.log('verb forms of ' + lowerWord + ': ', verbs);
-      // }
-
       // Get verb conjugation result with proper typing
       const conjugations = verbs.conjugate()[0] as VerbConjugation;
 
@@ -168,10 +164,6 @@ async function getWordForms(word: string): Promise<string[]> {
         conjugations?.PresentTense &&
         !wordForms.includes(conjugations.PresentTense)
       ) {
-        // if (lowerWord in ['pay', 'pays', 'paid', 'payment']) {
-        //   console.log('present tense of ' + lowerWord + ': ', conjugations.PresentTense);
-        // }
-
         wordForms.push(conjugations.PresentTense);
       }
 
@@ -180,26 +172,17 @@ async function getWordForms(word: string): Promise<string[]> {
         conjugations?.PastTense &&
         !wordForms.includes(conjugations.PastTense)
       ) {
-        // if (lowerWord in ['pay', 'pays', 'paid', 'payment']) {
-        //   console.log('past tense of ' + lowerWord + ': ', conjugations.PastTense);
-        // }
         wordForms.push(conjugations.PastTense);
       }
 
       // Get future tense (remove 'will ' prefix)
       if (conjugations?.FutureTense) {
         const future = conjugations.FutureTense.replace("will ", "");
-        // if (lowerWord in ['pay', 'pays', 'paid', 'payment']) {
-        //   console.log('future tense of ' + lowerWord + ': ', future);
-        // }
         if (!wordForms.includes(future)) wordForms.push(future);
       }
 
       // Get gerund form (using verbs ending as 'ing' as nouns e.g., 'we both love the activity of hiking')
       if (conjugations?.Gerund && !wordForms.includes(conjugations.Gerund)) {
-        // if (lowerWord) {
-        //   console.log('gerund form of ' + lowerWord + ': ', conjugations.Gerund);
-        // }
         wordForms.push(conjugations.Gerund);
       }
     }
@@ -214,10 +197,6 @@ async function getWordForms(word: string): Promise<string[]> {
       // Get singular form
       const singular = nouns.toSingular().text();
       if (singular && !wordForms.includes(singular)) wordForms.push(singular);
-
-      // if (lowerWord) {
-      //     console.log('noun forms of ' + lowerWord + ': ', ' plural - ', plural, ' | singular - ', singular);
-      // }
     }
 
     // Get adjective forms
@@ -231,10 +210,6 @@ async function getWordForms(word: string): Promise<string[]> {
         adjConjugations?.Comparative &&
         !wordForms.includes(adjConjugations.Comparative)
       ) {
-        // if (lowerWord) {
-        //     console.log('adjective comparative form of ' + lowerWord + ': ', adjConjugations.Comparative);
-        // }
-
         wordForms.push(adjConjugations.Comparative);
       }
 
@@ -243,10 +218,6 @@ async function getWordForms(word: string): Promise<string[]> {
         adjConjugations?.Superlative &&
         !wordForms.includes(adjConjugations.Superlative)
       ) {
-        // if (lowerWord) {
-        //     console.log('adjective superlative form of ' + lowerWord + ': ', adjConjugations.Superlative);
-        // }
-
         wordForms.push(adjConjugations.Superlative);
       }
     }
