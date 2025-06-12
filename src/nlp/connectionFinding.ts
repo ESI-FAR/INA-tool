@@ -9,7 +9,7 @@ import { checkWordOccurrence } from "@/nlp/negationDetection";
 /**
  * Defines the rules for Actor-driven connections.
  *
- * - The (in)animate object of a statement is connected to the attribute of another statement.
+ * - The animate object of a statement is connected to the attribute of another statement.
  * - A connection is valid if:
  *   - Rule 1: `(StatementA.attribute and StatementA.aim)`
  *              or `(properties of the objects and StatementA.aim)`
@@ -183,30 +183,31 @@ async function findSanctionDrivenConnections(
   const aimBase = sourceAim.replace(/s$/, ""); // Remove trailing 's' if present
 
   const targetActivationCondition = target["Activation Condition"] ?? "";
-  const targetExecutionConstraint = target["Execution Constraint"] ?? "";
-  const targetDirectObject = target["Direct Object"] ?? "";
-  const targetIndirectObject = target["Indirect Object"] ?? "";
-  const targetAttribute = target.Attribute ?? "";
-  const targetAim = target.Aim ?? "";
-  const targetOrElse = target["Or Else"] ?? "";
+  // const targetExecutionConstraint = target["Execution Constraint"] ?? "";
+  // const targetDirectObject = target["Direct Object"] ?? "";
+  // const targetIndirectObject = target["Indirect Object"] ?? "";
+  // const targetAttribute = target.Attribute ?? "";
+  // const targetAim = target.Aim ?? "";
+  // const targetOrElse = target["Or Else"] ?? "";
 
-  const targetSentence =
-    targetAttribute +
-    " " +
-    targetAim +
-    " " +
-    targetDirectObject +
-    " " +
-    targetIndirectObject +
-    " " +
-    targetActivationCondition +
-    " " +
-    targetExecutionConstraint +
-    " " +
-    targetOrElse;
+  // const targetSentence =
+  //   targetAttribute +
+  //   " " +
+  //   targetAim +
+  //   " " +
+  //   targetDirectObject +
+  //   " " +
+  //   targetIndirectObject +
+  //   " " +
+  //   targetActivationCondition +
+  //   " " +
+  //   targetExecutionConstraint +
+  //   " " +
+  //   targetOrElse;
 
   try {
-    const rule = await checkWordOccurrence(aimBase, true, targetSentence);
+    // const rule = await checkWordOccurrence(aimBase, true, targetSentence);
+    const rule = await checkWordOccurrence(aimBase, true, targetActivationCondition);
     if (rule) {
       connections.push({
         source_statement: source.Id,
@@ -272,21 +273,21 @@ export async function findConnections({
     for (const target of statements) {
       if (source.Id === target.Id) continue; // don't compare the same rule to itself
 
-      const actorDrivenConnections = await findActorDrivenConnections(
-        source,
-        target,
-      );
-      const outcomeDrivenConnections = await findOutcomeDrivenConnections(
-        source,
-        target,
-      );
+      // const actorDrivenConnections = await findActorDrivenConnections(
+      //   source,
+      //   target,
+      // );
+      // const outcomeDrivenConnections = await findOutcomeDrivenConnections(
+      //   source,
+      //   target,
+      // );
       const sanctionDrivenConnections = await findSanctionDrivenConnections(
         source,
         target,
       );
 
-      newConnections.push(...actorDrivenConnections);
-      newConnections.push(...outcomeDrivenConnections);
+      // newConnections.push(...actorDrivenConnections);
+      // newConnections.push(...outcomeDrivenConnections);
       newConnections.push(...sanctionDrivenConnections);
     }
   }

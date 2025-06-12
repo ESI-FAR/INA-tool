@@ -1,4 +1,4 @@
-import { Statement } from "@/lib/schema";
+import { Statement, Connection } from "@/lib/schema";
 
 export const mockStatements: Statement[] = [
   {
@@ -325,5 +325,63 @@ export const statements: Statement[] = [
     "Activation Condition": "",
     "Execution Constraint": "at least once every two years",
     "Or Else": "",
+  },
+] as const;
+
+export const actorConnections: Connection[] = [
+  {
+    driven_by: "actor",
+    source_component: "Direct Object",
+    source_statement: "6",
+    target_component: "Attribute",
+    target_statement: "12",
+  },
+  {
+    driven_by: "actor",
+    source_component: "Direct Object",
+    source_statement: "7",
+    target_component: "Attribute",
+    target_statement: "8",
+  },
+  {
+    driven_by: "actor",
+    source_component: "Indirect Object",
+    source_statement: "10",
+    target_component: "Attribute",
+    target_statement: "11",
+  },
+] as const;
+
+export const outcomeConnections: Connection[] = [
+  {
+    driven_by: "outcome",
+    source_component: "Direct Object",
+    source_statement: "13",
+    target_component: "Activation Condition",
+    target_statement: "14",
+  },
+  {
+    driven_by: "outcome",
+    source_component: "Execution Constraint",
+    source_statement: "16",
+    target_component: "Activation Condition",
+    target_statement: "17",
+  },
+  {
+    driven_by: "outcome",
+    source_component: "Direct Object",
+    source_statement: "15",
+    target_component: "Activation Condition",
+    target_statement: "18",
+  },
+] as const;
+
+export const sanctionConnections: Connection[] = [
+  {
+    driven_by: "sanction",
+    source_component: "Aim",
+    source_statement: "1",
+    target_component: "Activation Condition",
+    target_statement: "2",
   },
 ] as const;

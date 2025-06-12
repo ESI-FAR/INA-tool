@@ -163,6 +163,7 @@ function negationIsInWordVicinity(
 
   // If the word doesn't appear in the tokens, return false
   if (wordIndices.length === 0) {
+    console.log('word: ', word);
     return false;
   }
 
@@ -174,7 +175,7 @@ function negationIsInWordVicinity(
 
     // Check each token in the vicinity
     for (let i = startIdx; i <= endIdx; i++) {
-      if (i !== index && sent_tokens[i] === "not") {
+      if ((i !== index) && (sent_tokens[i] == "not" || sent_tokens[i] == "no")) {
         return true;
       }
     }
@@ -197,11 +198,15 @@ function getWordVariations(
 ): string[] {
   // Create a doc with the token
   const doc = nlp(token);
+
   let variations: string[] = [];
+
+  variations.push(doc.verbs().toPastTense().text());
 
   // Get all forms of the word
   if (doc.has("#Verb")) {
     // Get verb conjugations - use only the methods with definite TypeScript support
+
     variations = [
       doc.verbs().toInfinitive().text(),
       doc.verbs().toPresentTense().text(),
@@ -290,7 +295,7 @@ function existsSynonymOrAntonymOccurrence(
     wordnet_inflections = typedWordRelations[token].inflections || [];
   }
   // Use compromise.js to get word variations instead of the dictionary lookup
-  const variations = getWordVariations(token, type);
+  // const variations = getWordVariations(token, type);
   const variations_syn = getWordVariations(token, "synonyms");
   const all_synonyms = [
     ...new Set([
@@ -299,7 +304,7 @@ function existsSynonymOrAntonymOccurrence(
       ...variations_syn,
     ]),
   ];
-  let combined = [...new Set([...variations, ...wordnet_variations])];
+  let combined = [...new Set([...variations_syn, ...wordnet_variations])];
 
   if (type == "synonyms") {
     combined = [...new Set([...combined, ...wordnet_inflections])];
@@ -325,9 +330,9 @@ function existsSynonymOrAntonymOccurrence(
   for (const syn of all_synonyms) {
     if (sent_tokens.includes(syn)) {
       if (type == "synonyms") {
-        if (!negationIsInWordVicinity(sent_tokens, syn, vicinity_size))
-          return true;
-        else return false;
+        if (negationIsInWordVicinity(sent_tokens, syn, vicinity_size))
+          return false;
+        else return true;
       } else {
         // antonyms
         if (negationIsInWordVicinity(sent_tokens, syn, vicinity_size)) {
@@ -377,7 +382,7 @@ export async function checkWordOccurrence(
   const word_phrase_tokens = word_phrase.split(" ");
   // sent must be a valid sentence to continue
   if (!isValidSentence(sent)) return false;
-
+  
   // word_phrase must be exactly one or two tokens long
   if (word_phrase_tokens.length > 2 || word_phrase_tokens.length < 1) {
     console.error("incorrect number of tokens for input word phrase...");
@@ -402,7 +407,6 @@ export async function checkWordOccurrence(
         // 10 not engage (is_negative_word_phrase = 1)
         // 11 not disengage (is_negative_word_phrase = 0)
         // strategy is to search for second_token and synonyms in sent (and to ensure there is no negation related to second_token)
-
         return existsSynonymOrAntonymOccurrence(
           word_phrase_tokens[1],
           sent,
@@ -417,6 +421,7 @@ export async function checkWordOccurrence(
         );
       }
     } else {
+      
       // can only be 1 token
       // word must be a valid word to continue
       if (!isValidWord(word_phrase_tokens[0])) {
@@ -429,14 +434,20 @@ export async function checkWordOccurrence(
         // 00 engage (is_negative_word_phrase = 0)
         // strategy is to search for antonyms for token and check presence in sent (ensure no negation relevant to the antonyms)
 
-        return existsSynonymOrAntonymOccurrence(
+        const containsAntonym = existsSynonymOrAntonymOccurrence(
           word_phrase_tokens[0],
           sent,
           "antonyms",
         );
+        const containsSynonym = existsSynonymOrAntonymOccurrence(
+          word_phrase_tokens[0],
+          sent,
+          "synonyms",
+        );
+        return containsAntonym || containsSynonym;
       } else {
         // strategy is to search for synonyms for token and check presence in sent (ensure no negation relevant to the synonyms)
-        return existsSynonymOrAntonymOccurrence(
+        return !existsSynonymOrAntonymOccurrence(
           word_phrase_tokens[0],
           sent,
           "synonyms",

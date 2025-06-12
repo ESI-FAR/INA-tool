@@ -41,8 +41,8 @@ export const wordNetRelations: object = {
     synonyms: ["write"],
   },
   overwrite: {
-    antonyms: [],
-    synonyms: [],
+    antonyms: ["underwrite"],
+    synonyms: ["overdub"],
   },
   tape_record: {
     antonyms: [],
@@ -66,7 +66,7 @@ export const wordNetRelations: object = {
   },
   erase: {
     antonyms: [],
-    synonyms: ["delete"],
+    synonyms: ["delete", "remove", "eliminate"],
   },
   delete: {
     antonyms: [],
@@ -589,7 +589,7 @@ export const wordNetRelations: object = {
     synonyms: ["drive_home", "ram_home"],
   },
   testify: {
-    antonyms: [],
+    antonyms: ["detestify"],
     synonyms: ["bear_witness", "take_the_stand", "attest"],
   },
   attest: {
@@ -865,7 +865,7 @@ export const wordNetRelations: object = {
     synonyms: ["specify", "specialise", "specialize", "particularize"],
   },
   specialize: {
-    antonyms: [],
+    antonyms: ["generalize", "generalise"],
     synonyms: ["specify", "particularise", "particularize", "specialise"],
   },
   specialise: {
@@ -925,7 +925,7 @@ export const wordNetRelations: object = {
     synonyms: ["name", "advert", "refer", "mention", "cite"],
   },
   name: {
-    antonyms: [],
+    antonyms: ["anonymize", "anonymise"],
     synonyms: ["advert", "refer", "bring_up", "mention", "cite"],
   },
   refer: {
@@ -937,20 +937,20 @@ export const wordNetRelations: object = {
     synonyms: [],
   },
   invoke: {
-    antonyms: [],
-    synonyms: ["appeal"],
+    antonyms: ["dismiss", "renounce", "reject", "terminate", "ignore", "cancel", "bypass", "suppress"],
+    synonyms: ["appeal", "summon", "call_for", "call_upon", "conjure", "adduce", "trigger", "elicit", "induce"],
   },
   appeal: {
-    antonyms: [],
-    synonyms: ["invoke"],
+    antonyms: ["dismiss", "renounce", "reject", "terminate", "ignore", "cancel", "bypass", "suppress"],
+    synonyms: ["appeal", "summon", "call_for", "call_upon", "conjure", "adduce", "trigger", "elicit", "induce"],
   },
   namedrop: {
     antonyms: [],
     synonyms: [],
   },
   raise: {
-    antonyms: [],
-    synonyms: ["bring_up"],
+    antonyms: ["suppress", "withhold", "ignore", "conceal", "dismiss", "overlook", "silence"],
+    synonyms: ["bring_up", "mention", "introduce", "present", "propose", "submit", "suggest", "air", "voice", "pose"],
   },
   drivel: {
     antonyms: [],
@@ -997,8 +997,8 @@ export const wordNetRelations: object = {
     synonyms: ["stick_in", "slip_in", "insert"],
   },
   insert: {
-    antonyms: [],
-    synonyms: ["stick_in", "slip_in", "sneak_in"],
+    antonyms: ["remove", "eliminate", "extract"],
+    synonyms: ["stick_in", "slip_in", "sneak_in", "add", "append"],
   },
   drag_up: {
     antonyms: [],
@@ -1013,16 +1013,16 @@ export const wordNetRelations: object = {
     synonyms: [],
   },
   identify: {
-    antonyms: [],
-    synonyms: ["name"],
+    antonyms: ["deidentify", "anonymize", "anonymise"],
+    synonyms: ["name", "determine", "recognize", "recognise"],
   },
   apply: {
-    antonyms: [],
-    synonyms: [],
+    antonyms: ["withdraw", "decline", "abstain", "forego"],
+    synonyms: ["solicit", "register", "request", "seek", "petition", "administer"],
   },
   allude: {
-    antonyms: [],
-    synonyms: ["touch", "advert"],
+    antonyms: ["declare", "state", "specify", "announce", "detail", "explain"],
+    synonyms: ["touch_upon", "touch_on", "advert", "hint", "imply", "indicate"],
   },
   touch: {
     antonyms: [],
@@ -1041,12 +1041,12 @@ export const wordNetRelations: object = {
     synonyms: ["drive", "get"],
   },
   add: {
-    antonyms: [],
-    synonyms: ["append", "supply"],
+    antonyms: ["remove", "eliminate"],
+    synonyms: ["append", "supply", "insert", "introduce"],
   },
   append: {
-    antonyms: [],
-    synonyms: ["supply", "add"],
+    antonyms: ["remove", "eliminate"],
+    synonyms: ["supply", "add", "insert"],
   },
   supply: {
     antonyms: ["recall"],
@@ -1133,7 +1133,7 @@ export const wordNetRelations: object = {
     synonyms: ["flush", "crimson", "blush"],
   },
   call: {
-    antonyms: [],
+    antonyms: ["ignore"],
     synonyms: ["name", "know_as", "be_known_as"],
   },
   know_as: {
@@ -1165,12 +1165,12 @@ export const wordNetRelations: object = {
     synonyms: [],
   },
   tag: {
-    antonyms: [],
-    synonyms: [],
+    antonyms: ["detag", "detitle", "unlabel"],
+    synonyms: ["label", "annotate", "title"],
   },
   label: {
     antonyms: [],
-    synonyms: [],
+    synonyms: ["annotate", "title"],
   },
   designate: {
     antonyms: [],
@@ -1361,14 +1361,10 @@ export const wordNetRelations: object = {
     synonyms: [],
   },
   agree: {
-    antonyms: ["disagree", "differ", "dissent", "take_issue"],
-    synonyms: [],
+    antonyms: ["disagree", "differ", "dissent", "take_issue", "contest", "retaliate", "contravene"],
+    synonyms: ["accept", "concede", "comply"],
   },
   suntan: {
-    antonyms: [],
-    synonyms: [],
-  },
-  whore: {
     antonyms: [],
     synonyms: [],
   },

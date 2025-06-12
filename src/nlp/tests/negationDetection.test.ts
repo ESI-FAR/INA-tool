@@ -19,7 +19,6 @@ describe("detectNegations", () => {
         }
       }
       const expectedResult = new Array(negationData["true"].length).fill(true);
-      // console.log("incorrect ones: ", incorrect);
 
       expect(result).toEqual(expect.arrayContaining(expectedResult));
       expect(expectedResult).toEqual(expect.arrayContaining(result));
@@ -34,7 +33,7 @@ describe("detectNegations", () => {
       for (let i = 0; i < negationData["false"].length; i++) {
         const res = await checkWordOccurrence(
           negationData["false"][i]["word"],
-          true,
+          false,
           negationData["false"][i]["sent"],
         );
         result.push(res);
@@ -46,7 +45,6 @@ describe("detectNegations", () => {
       const expectedResult = new Array(negationData["false"].length).fill(
         false,
       );
-      // console.log("incorrect ones: ", incorrect);
 
       expect(result).toEqual(expect.arrayContaining(expectedResult));
       expect(expectedResult).toEqual(expect.arrayContaining(result));
