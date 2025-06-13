@@ -89,7 +89,7 @@ export function isNegationVerb(verb: string): boolean {
  * @param vicinity_size - Number of tokens to check on each side of the target word
  * @returns boolean - True if 'not' is found within the vicinity, otherwise false
  */
-function negationIsInWordVicinity(
+export function negationIsInWordVicinity(
   sent_tokens: string[],
   word: string,
   vicinity_size: number,
@@ -105,7 +105,6 @@ function negationIsInWordVicinity(
 
   // If the word doesn't appear in the tokens, return false
   if (wordIndices.length === 0) {
-    console.log('word: ', word);
     return false;
   }
 
@@ -117,7 +116,7 @@ function negationIsInWordVicinity(
 
     // Check each token in the vicinity
     for (let i = startIdx; i <= endIdx; i++) {
-      if ((i !== index) && (sent_tokens[i] == "not" || sent_tokens[i] == "no")) {
+      if (i !== index && (sent_tokens[i] == "not" || sent_tokens[i] == "no")) {
         return true;
       }
     }
@@ -134,7 +133,7 @@ function negationIsInWordVicinity(
  * @param type - Whether to get synonyms or antonyms
  * @returns string[] - Array of word variations
  */
-function getWordVariations(
+export function getWordVariations(
   token: string,
   type: "synonyms" | "antonyms",
 ): string[] {
@@ -215,6 +214,11 @@ function getWordVariations(
     return typedWordRelations[token].antonyms;
   }
 
+  const wn_rels = wordNetRelations[token];
+  if (wn_rels && wn_rels.synonyms.length > 0) {
+    variations = [...new Set([...variations, ...wn_rels.synonyms])];
+  }
+
   return variations;
 }
 
@@ -227,29 +231,28 @@ function existsSynonymOrAntonymOccurrence(
 
   // Initialize with empty arrays in case token is not in the dictionary
   let wordnet_variations: string[] = [];
-  let wordnet_inflections: string[] = [];
   let wordnet_variations_syn: string[] = [];
 
   // Safely access the dictionary - only if token exists
   if (token in typedWordRelations) {
     wordnet_variations = typedWordRelations[token][type] || [];
     wordnet_variations_syn = typedWordRelations[token].synonyms || [];
-    wordnet_inflections = typedWordRelations[token].inflections || [];
   }
   // Use compromise.js to get word variations instead of the dictionary lookup
   // const variations = getWordVariations(token, type);
   const variations_syn = getWordVariations(token, "synonyms");
   const all_synonyms = [
-    ...new Set([
-      ...wordnet_variations_syn,
-      ...wordnet_inflections,
-      ...variations_syn,
-    ]),
+    ...new Set([...wordnet_variations_syn, ...variations_syn]),
   ];
   let combined = [...new Set([...variations_syn, ...wordnet_variations])];
 
   if (type == "synonyms") {
-    combined = [...new Set([...combined, ...wordnet_inflections])];
+    for (const word_token of combined) {
+      const relatedWords = wordNetRelations[word_token];
+      if (relatedWords && relatedWords.synonyms.length > 0) {
+        combined = [...new Set([...combined, ...relatedWords.synonyms])];
+      }
+    }
   }
 
   // easy case: exact token match
@@ -324,7 +327,7 @@ export async function checkWordOccurrence(
   const word_phrase_tokens = word_phrase.split(" ");
   // sent must be a valid sentence to continue
   if (!isValidSentence(sent)) return false;
-  
+
   // word_phrase must be exactly one or two tokens long
   if (word_phrase_tokens.length > 2 || word_phrase_tokens.length < 1) {
     console.error("incorrect number of tokens for input word phrase...");
@@ -363,7 +366,6 @@ export async function checkWordOccurrence(
         );
       }
     } else {
-      
       // can only be 1 token
       // word must be a valid word to continue
       if (!isValidWord(word_phrase_tokens[0])) {

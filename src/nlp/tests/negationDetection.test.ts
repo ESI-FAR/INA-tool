@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { checkWordOccurrence } from "@/nlp/negationDetection";
 import { negationData } from "@/nlp/testdata/testData";
 
-describe("detectNegations", () => {
+describe("negationDetection", () => {
   test("true cases", async () => {
     if (negationData["true"]) {
       const result = [];
@@ -14,11 +14,13 @@ describe("detectNegations", () => {
           negationData["true"][i]["sent"],
         );
         result.push(res);
-        if (!res) {
+        if (res === false) {
           incorrect.push(negationData["true"][i]);
         }
       }
       const expectedResult = new Array(negationData["true"].length).fill(true);
+
+      // console.log('incorrect (should be true but found false): ', incorrect);
 
       expect(result).toEqual(expect.arrayContaining(expectedResult));
       expect(expectedResult).toEqual(expect.arrayContaining(result));
@@ -38,13 +40,15 @@ describe("detectNegations", () => {
         );
         result.push(res);
 
-        if (res) {
+        if (res === true) {
           incorrect.push(negationData["false"][i]);
         }
       }
       const expectedResult = new Array(negationData["false"].length).fill(
         false,
       );
+
+      // console.log('incorrect (should be false but found true): ', incorrect);
 
       expect(result).toEqual(expect.arrayContaining(expectedResult));
       expect(expectedResult).toEqual(expect.arrayContaining(result));

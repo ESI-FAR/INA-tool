@@ -1,6 +1,8 @@
 import Fuse from "fuse.js";
 import nlp from "compromise";
 import { Statement } from "@/lib/schema";
+import { wordNetRelations } from "./resources/wordNetRelations";
+import { getWordVariations } from "@/nlp/negationDetection";
 
 // Define interfaces for compromise.js conjugation results
 interface VerbConjugation {
@@ -255,7 +257,7 @@ export async function matchWithWordFormsCached(
   ]);
 
   // Check if any forms match
-  const hasMatch = forms1.some((form1) =>
+  let hasMatch = forms1.some((form1) =>
     forms2.some((form2) => form1 === form2),
   );
 
@@ -264,6 +266,17 @@ export async function matchWithWordFormsCached(
   similarityCache[word1][word2] = hasMatch;
   similarityCache[word2] = similarityCache[word2] || {};
   similarityCache[word2][word1] = hasMatch;
+
+  const variations_word1 = getWordVariations(word1, "synonyms");
+  const variations_word2 = getWordVariations(word2, "synonyms");
+  variations_word1.push(word1);
+  variations_word2.push(word2);
+
+  const setWord2 = new Set(variations_word2);
+  const setWord1 = new Set(variations_word1);
+  const intersection = new Set([...setWord1].filter((x) => setWord2.has(x)));
+
+  hasMatch = hasMatch || intersection.size > 0;
 
   return hasMatch;
 }
@@ -305,7 +318,7 @@ export async function fuzzyIncludesOptimized(
   const word_words = word.split(/\s+/);
 
   // Map to an array of promises for matching each word
-  const matchPromises: Promise<any>[] = [];
+  const matchPromises: Promise<boolean>[] = [];
 
   for (const word_token of word_words) {
     const currentMatches = sent_words.map((w) =>
@@ -314,9 +327,42 @@ export async function fuzzyIncludesOptimized(
     matchPromises.push(...currentMatches);
   }
 
+  // Adjustable threshold for "most"
+  const majorityThreshold = 0.6; // e.g. 60% or more
+
   // Wait for all matches to complete and check if any are true
   const matchResults = await Promise.all(matchPromises);
-  return matchResults.some((result) => result);
+
+  let res: boolean;
+
+  if (word_words.length > 2) {
+    // Check if most matchResults are true based on threshold
+    const trueCount = matchResults.filter((r) => r === true).length;
+    const ratio = trueCount / word_words.length;
+    res = ratio >= majorityThreshold;
+  } else {
+    // Check if any are true (original behavior)
+    res = matchResults.some((result) => result);
+  }
+
+  // const res = matchResults.some((result) => result);
+
+  if (res === false) {
+    if (word_words.length === 1) {
+      for (const word_token of word_words) {
+        const relatedWords = wordNetRelations[word_token];
+        if (relatedWords && relatedWords.synonyms.length > 0) {
+          for (const syn of relatedWords.synonyms) {
+            if (sent_words.includes(syn)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return res;
 }
 
 /**

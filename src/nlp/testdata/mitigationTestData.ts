@@ -230,6 +230,7 @@ export const actorConnections: Connection[] = [
     target_component: "Attribute",
     driven_by: "actor",
   },
+
   // extra connections identified by NLP (that humans don't):
   {
     driven_by: "actor",
@@ -255,18 +256,12 @@ export const outcomeConnections: Connection[] = [
     target_component: "Activation Condition",
     driven_by: "outcome",
   },
+
+  // extra connections identified by humans (that NLP doesn't agree with):
   {
     source_statement: "12",
     source_component: "Direct Object",
     target_statement: "14",
-    target_component: "Activation Condition",
-    driven_by: "outcome",
-  },
-  // extra connections identified by NLP (that humans don't):
-  {
-    source_statement: "7",
-    source_component: "Direct Object",
-    target_statement: "8",
     target_component: "Activation Condition",
     driven_by: "outcome",
   },

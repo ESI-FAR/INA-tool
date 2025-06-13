@@ -4,7 +4,10 @@ import {
   fuzzyIncludesOptimized,
   fuzzyMatchOptimized,
 } from "@/nlp/fuzzyStringComparison";
-import { checkWordOccurrence } from "@/nlp/negationDetection";
+import {
+  checkWordOccurrence,
+  negationIsInWordVicinity,
+} from "@/nlp/negationDetection";
 
 /**
  * Defines the rules for Actor-driven connections.
@@ -101,7 +104,7 @@ async function findActorDrivenConnections(
  * - A connection is valid if:
  *      - Rule 1: StatementA.direct_object and StatementA.aim
  *                appears in StatementB.activation_condition
- *      - Rule 2: Statement.execution_constraint and StatementA.aim
+ *      - Rule 2: StatementA.execution_constraint and StatementA.aim
  *                appears in StatementB.activation_condition
  * - Color: green
  */
@@ -115,18 +118,54 @@ async function findOutcomeDrivenConnections(
   const sourceDirectObject = source["Direct Object"] ?? "";
   const sourceDirectObjectType = source["Type of Direct Object"] ?? "";
   const sourceExecutionConstraint = source["Execution Constraint"] ?? "";
-
   const targetActivationCondition = target["Activation Condition"] ?? "";
 
   try {
+    const directObjInActivation = await fuzzyIncludesOptimized(
+      sourceDirectObject,
+      targetActivationCondition,
+    );
+
+    const sourceAimInActivation = await fuzzyIncludesOptimized(
+      sourceAim,
+      targetActivationCondition,
+    );
+    const targetActivationConditionTokens =
+      targetActivationCondition.split(/\s+/);
+    const sourceDirectObjectTokens = sourceDirectObject.split(/\s+/);
+    const sourceAimTokens = sourceAim.split(/\s+/);
+    let negationInVicinity = false;
+
+    for (const t of sourceDirectObjectTokens) {
+      const res = negationIsInWordVicinity(
+        targetActivationConditionTokens,
+        t,
+        3,
+      );
+      if (res === true) {
+        negationInVicinity = true;
+        break;
+      }
+    }
+
+    for (const t of sourceAimTokens) {
+      const res = negationIsInWordVicinity(
+        targetActivationConditionTokens,
+        t,
+        3,
+      );
+      if (res === true) {
+        negationInVicinity = true;
+        break;
+      }
+    }
+
     const rule_one_match =
       sourceDirectObjectType == "inanimate" &&
       sourceDirectObject &&
-      (await fuzzyIncludesOptimized(
-        sourceDirectObject,
-        targetActivationCondition,
-      )) &&
-      (await fuzzyIncludesOptimized(sourceAim, targetActivationCondition));
+      directObjInActivation &&
+      sourceAimInActivation &&
+      negationInVicinity === false;
     if (rule_one_match) {
       connections.push({
         source_statement: source.Id,
@@ -185,7 +224,11 @@ async function findSanctionDrivenConnections(
   const targetActivationCondition = target["Activation Condition"] ?? "";
 
   try {
-    const rule = await checkWordOccurrence(aimBase, true, targetActivationCondition);
+    const rule = await checkWordOccurrence(
+      aimBase,
+      true,
+      targetActivationCondition,
+    );
     if (rule) {
       connections.push({
         source_statement: source.Id,

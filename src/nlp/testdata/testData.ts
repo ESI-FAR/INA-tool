@@ -207,6 +207,30 @@ type NegationEntry = {
   sent: string;
 };
 
+type FuzzyMatchingEntry = {
+  text1: string;
+  text2: string;
+};
+
+export const fuzzyMatchingData: Record<string, FuzzyMatchingEntry[]> = {
+  true: [
+    {
+      text1: "joint project with French side",
+      text2: "joint ventures with French side",
+    },
+  ],
+  false: [
+    {
+      text1: "joint project with French side",
+      text2: "if requested by VROMI new projects dept.",
+    },
+    {
+      text1: "joint project with French side",
+      text2: "if requested by the French side",
+    },
+  ],
+};
+
 export const negationData: Record<string, NegationEntry[]> = {
   true: [
     {

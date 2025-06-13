@@ -1,7 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { findConnectionsByType } from "@/nlp/connectionFinding";
 import { preloadWordNetForStatements } from "@/nlp/fuzzyStringComparison";
-import { statements, actorConnections, outcomeConnections } from "@/nlp/testdata/testData";
+import {
+  statements,
+  actorConnections,
+  outcomeConnections,
+} from "@/nlp/testdata/mitigationTestData";
 
 // Preload WordNet before running tests
 if (statements) {
