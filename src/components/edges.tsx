@@ -21,7 +21,6 @@ import { textColor } from "./drivenColors";
 import { cn } from "@/lib/utils";
 import { store } from "@/stores/global";
 
-import { conflict2id } from "@/stores/component-network";
 import { connection2id } from "@/lib/connection2id";
 import { useCallback, type KeyboardEvent } from "react";
 import { XIcon } from "lucide-react";
