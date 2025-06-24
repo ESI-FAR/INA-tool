@@ -1,13 +1,25 @@
-import { Statement } from "@/lib/schema";
+import { ConnectionComponent, Statement } from "@/lib/schema";
+import { cn } from "@/lib/utils";
 
-export function StatementCell({ statement }: { statement: Statement }) {
+export function StatementCell({
+  statement,
+  highlight,
+}: {
+  statement: Statement;
+  highlight?: ConnectionComponent;
+}) {
   return (
     <div>
-      <span title="Statement Id" className="hover:underline">
+      <span title="Statement Id" className={"hover:underline"}>
         {statement["Statement Type"] === "formal" ? "F" : "I"}
         {statement.Id}:
       </span>{" "}
-      <span className="hover:underline" title="Attribute">
+      <span
+        className={cn("hover:underline", {
+          "font-extrabold": highlight === "Attribute",
+        })}
+        title="Attribute"
+      >
         {statement["Attribute"]}
       </span>{" "}
       {statement.Deontic && (
@@ -17,13 +29,20 @@ export function StatementCell({ statement }: { statement: Statement }) {
           </span>{" "}
         </>
       )}
-      <span className="hover:underline" title="Aim">
+      <span
+        className={cn("hover:underline", {
+          "font-extrabold": highlight === "Aim",
+        })}
+        title="Aim"
+      >
         {statement["Aim"]}
       </span>{" "}
       {statement["Direct Object"] && (
         <>
           <span
-            className="hover:underline"
+            className={cn("hover:underline", {
+              "font-extrabold": highlight === "Direct Object",
+            })}
             title={`Direct Object ${statement["Type of Direct Object"]}`}
           >
             {statement["Direct Object"]}
@@ -33,7 +52,9 @@ export function StatementCell({ statement }: { statement: Statement }) {
       {statement["Indirect Object"] && (
         <>
           <span
-            className="hover:underline"
+            className={cn("hover:underline", {
+              "font-extrabold": highlight === "Indirect Object",
+            })}
             title={`InDirect Object ${statement["Type of Indirect Object"]}`}
           >
             {statement["Indirect Object"]}
@@ -42,14 +63,24 @@ export function StatementCell({ statement }: { statement: Statement }) {
       )}
       {statement["Activation Condition"] && (
         <>
-          <span className="hover:underline" title="Activation Condition">
+          <span
+            className={cn("hover:underline", {
+              "font-extrabold": highlight === "Activation Condition",
+            })}
+            title="Activation Condition"
+          >
             {statement["Activation Condition"]}{" "}
           </span>{" "}
         </>
       )}
       {statement["Execution Constraint"] && (
         <>
-          <span className="hover:underline" title="Execution Constraint">
+          <span
+            className={cn("hover:underline", {
+              "font-extrabold": highlight === "Execution Constraint",
+            })}
+            title="Execution Constraint"
+          >
             {statement["Execution Constraint"]}{" "}
           </span>{" "}
         </>

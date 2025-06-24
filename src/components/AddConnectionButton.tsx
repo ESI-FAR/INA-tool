@@ -11,7 +11,7 @@ import { Connection, Statement } from "@/lib/schema";
 import { useCallback, useMemo, useState } from "react";
 import { useConnections } from "@/hooks/use-connections";
 import { statementPair2PossibleConnections } from "@/lib/possibleConnections";
-import { connection2id } from "@/lib/connection2id";
+import { connection2id } from "@/lib/connectionHelpers";
 import { textColor } from "./drivenColors";
 import { useStatements } from "@/hooks/use-statements";
 import { DialogDescription } from "@radix-ui/react-dialog";

@@ -8,6 +8,7 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import {
   AlignVerticalDistributeCenterIcon,
   CameraIcon,
+  ChevronDown,
   DownloadIcon,
   EyeOff,
   FilterXIcon,
@@ -136,7 +137,12 @@ function RouteComponent() {
             Screenshot
           </a>{" "}
           of web application with example loaded. Keyboard shortcut is
-          CTRL+SHIFT+e.
+          CTRL+SHIFT+e. There is a second example under the{" "}
+          <ChevronDown className="inline" /> button that can be used in the{" "}
+          <Link to="/analysis/propose-connections" className="underline">
+            Propose connections analysis page
+          </Link>
+          .
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after
@@ -735,6 +741,134 @@ function RouteComponent() {
           </details>
         </li>
       </ul>
+
+      <h3 className="py-4 text-xl">Analysis pages</h3>
+      <ol className="list-inside list-decimal">
+        <li>
+          <strong>
+            {" "}
+            <Link className="underline" to="/analysis/metrics">
+              Metrics
+            </Link>
+            :
+          </strong>{" "}
+          Analysis will show graph metrics of the network.
+        </li>
+        <li>
+          The{" "}
+          <Link className="underline" to="/analysis/propose-connections">
+            Propose connections
+          </Link>{" "}
+          page allows you to automatically identify potential connections
+          between statements based on NLP.
+          <br />
+          <ul className="ml-6 list-inside list-disc">
+            <li>
+              <strong>Find:</strong> Click the "Find" button to find potential
+              connections. The results will be displayed in a table with the
+              following three columns.
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <strong>Driven_by:</strong> which displays the connection type
+                </li>
+                <li>
+                  <strong>Source:</strong> the ID and text of the source rule
+                  for the proposed connection
+                </li>
+                <li>
+                  <strong>Target:</strong> the ID and text of the target rule
+                  for the proposed connection
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Select:</strong> To accept or add proposed connections to
+              your network:
+              <ol className="ml-6 list-inside list-decimal">
+                <li>
+                  Use the checkboxes on the left of each row to select valid
+                  connections.
+                </li>
+                <li>
+                  Click the <strong>"Add X of Y connections"</strong> button at
+                  the bottom of the page
+                  <ul className="ml-6 list-inside list-disc">
+                    <li>
+                      <em>X = number of selected connections</em>
+                    </li>
+                    <li>
+                      <em>Y = total proposed connections</em>
+                    </li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+
+            <li>
+              <strong>How it works:</strong> Connections are automatically
+              suggested by comparing all pairs of rules in the current network
+              using <strong>semantic text matching</strong>. Each match is
+              classified as <strong>actor-driven</strong>,{" "}
+              <strong>outcome-driven</strong>, or{" "}
+              <strong>sanction-driven</strong>, based on criteria described in{" "}
+              <a
+                href="https://www.jstor.org/stable/pdf/48807695.pdf?casa_token=skuKGRQ8aPwAAAAA:gUzrtWr7BFv7t5eYhvUy62hSpHRd2KoaqNOQ-Fk82QB1M7y7BjS8TIzk-Gkbt2hNE-w2xI-de43SsYnqUazgYpC5Icv_7rMNZN63QB1afB6DIqxjJL4Z"
+                className="underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                this paper{" "}
+              </a>{" "}
+              (Section 4.2) and the INA methodology. The system analyzes rule
+              components (e.g., aim, activation conditions) and allows matches
+              based on:
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  Exact or fuzzy text matches (using{" "}
+                  <a
+                    href="https://www.npmjs.com/package/fuse.js/v/2.2.0"
+                    className="underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Fuse.js
+                  </a>
+                  ) for small word inflections such as pluralisation. E.g.,
+                  "pay" and "pays"; and "clean" and "clean-up"
+                </li>
+                <li>
+                  Inflections and synonyms, via{" "}
+                  <a
+                    href="https://www.npmjs.com/package/compromise"
+                    className="underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    compromise.js
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="https://wordnet.princeton.edu/"
+                    className="underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    WordNet
+                  </a>{" "}
+                  e.g. "pays" and "paid"
+                </li>
+                <li>
+                  Negation handling, by using custom dictionaries of negation
+                  expressing words (words that have negation prefixes such as
+                  "de", "mis", "dis" etc., as well as antonyms), also from
+                  WordNet. E.g., "should allow" and "must disallow"; and "may
+                  accept" and "should reject".
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ol>
 
       <h3 className="py-4 text-xl">Persistence</h3>
       <ul className="list-outside list-disc pl-4">
