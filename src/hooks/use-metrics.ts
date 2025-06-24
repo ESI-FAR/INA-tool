@@ -2,10 +2,6 @@ import Graph from "graphology";
 import { density } from "graphology-metrics/graph/density";
 import diameter from "graphology-metrics/graph/diameter";
 import betweennessCentrality from "graphology-metrics/centrality/betweenness";
-import {
-  inDegreeCentrality,
-  outDegreeCentrality,
-} from "graphology-metrics/centrality/degree";
 import { useStore } from "zustand";
 import { useMemo } from "react";
 
@@ -18,6 +14,7 @@ import {
   Connection,
   DrivenBy,
   SourceComponentSchema,
+  TargetComponentSchema,
 } from "@/lib/schema";
 import { useStatementLookup } from "./use-statements";
 
@@ -29,17 +26,15 @@ export interface NodeAttributes {
 
 export interface EdgeAttributes {
   drivenBy?: string;
-  conflict?: boolean;
 }
 
 export type StatementGraph = Graph<NodeAttributes, EdgeAttributes>;
 
-type NamelessState = Omit<State, "projectName">;
+type NamelessState = Omit<State, "projectName" | "conflicts">;
 
 export function statementGraph({
   statements,
   connections,
-  conflicts,
 }: NamelessState): StatementGraph {
   const graph = new Graph<NodeAttributes, EdgeAttributes>({
     // driven connection or conflict can not be against statement itself
@@ -66,19 +61,15 @@ export function statementGraph({
       },
     );
   }
-  for (const conflict of conflicts) {
-    graph.addDirectedEdge(conflict.formal, conflict.informal, {
-      conflict: true,
-    });
-  }
+  // TODO include conflicts form metrics?
   return graph;
 }
 
 export function useStatementGraph() {
-  const { statements, connections, conflicts } = useStore(store);
+  const { statements, connections } = useStore(store);
   const state = useMemo(
-    () => ({ statements, connections, conflicts }),
-    [statements, connections, conflicts],
+    () => ({ statements, connections }),
+    [statements, connections],
   );
   return useMemo(() => statementGraph(state), [state]);
 }
@@ -104,6 +95,22 @@ export interface StatementMetric {
   inDegreeCentrality: number;
 }
 
+function outDegreeCentrality(graph: StatementGraph) {
+  const result: Record<string, number> = {};
+  graph.forEachNode((node) => {
+    result[node] = graph.outDegree(node);
+  });
+  return result;
+}
+
+function inDegreeCentrality(graph: StatementGraph) {
+  const result: Record<string, number> = {};
+  graph.forEachNode((node) => {
+    result[node] = graph.inDegree(node);
+  });
+  return result;
+}
+
 export function useStatementMetrics(): StatementMetric[] {
   const graph = useStatementGraph();
   const lookup = useStatementLookup();
@@ -111,18 +118,26 @@ export function useStatementMetrics(): StatementMetric[] {
     if (graph.order === 0) {
       return [];
     }
-    const betweenCentralities = betweennessCentrality(graph);
+    const betweenCentralities = betweennessCentrality(graph, {
+      normalized: false,
+    });
     const outDegreeCentralities = outDegreeCentrality(graph);
     const inDegreeCentralities = inDegreeCentrality(graph);
 
     const result: StatementMetric[] = [];
     graph.forEachNode((node) => {
-      result.push({
-        statement: lookup.get(node)!,
-        betweennessCentrality: betweenCentralities[node],
-        outDegreeCentrality: outDegreeCentralities[node],
-        inDegreeCentrality: inDegreeCentralities[node],
-      });
+      const outDegreeCentrality = outDegreeCentralities[node];
+      const inDegreeCentrality = inDegreeCentralities[node];
+
+      // Skip statements without connections
+      if (outDegreeCentrality > 0 || inDegreeCentrality > 0) {
+        result.push({
+          statement: lookup.get(node)!,
+          betweennessCentrality: betweenCentralities[node],
+          outDegreeCentrality,
+          inDegreeCentrality,
+        });
+      }
     });
     return result;
   }, [graph, lookup]);
@@ -135,19 +150,25 @@ export interface DegreeCentrality {
   degree: number;
 }
 
+export interface ComponentDegreeCentrality {
+  component: string;
+  degree: number;
+}
+
 export function getOutgoingDegreeCentralityOfDrivenConnection(
   connections: Connection[],
   drivenBy: DrivenBy,
   statementLookup: Map<string, Statement>,
   sourceComponent: SourceComponentSchema,
-): DegreeCentrality[] {
+): ComponentDegreeCentrality[] {
   const memory = new Map<string, number>();
   for (const connection of connections) {
     if (
       connection.driven_by === drivenBy &&
       connection.source_component === sourceComponent
     ) {
-      const key = connection.source_statement;
+      const statementData = statementLookup.get(connection.source_statement)!;
+      const key = statementData[connection.source_component]!;
       if (memory.has(key)) {
         memory.set(key, memory.get(key)! + 1);
       } else {
@@ -155,11 +176,9 @@ export function getOutgoingDegreeCentralityOfDrivenConnection(
       }
     }
   }
-  return Array.from(memory.entries()).map(([key, degree]) => {
-    const statementData = statementLookup.get(key)!;
+  return Array.from(memory.entries()).map(([component, degree]) => {
     return {
-      statement: statementData,
-      label: statementData["Direct Object"]!,
+      component,
       degree,
     };
   });
@@ -168,13 +187,30 @@ export function getOutgoingDegreeCentralityOfDrivenConnection(
 export function getDegreeCentralityOfActors(
   connections: Connection[],
   statementLookup: Map<string, Statement>,
-): DegreeCentrality[] {
-  return getOutgoingDegreeCentralityOfDrivenConnection(
-    connections,
-    "actor",
-    statementLookup,
-    "Direct Object",
-  );
+): ComponentDegreeCentrality[] {
+  const memory = new Map<string, number>();
+  const drivenBy: DrivenBy = "actor";
+  const targetComponent: TargetComponentSchema = "Attribute";
+  for (const connection of connections) {
+    if (
+      connection.driven_by === drivenBy &&
+      connection.target_component === targetComponent
+    ) {
+      const statementData = statementLookup.get(connection.target_statement)!;
+      const key = statementData[connection.target_component];
+      if (memory.has(key)) {
+        memory.set(key, memory.get(key)! + 1);
+      } else {
+        memory.set(key, 1);
+      }
+    }
+  }
+  return Array.from(memory.entries()).map(([component, degree]) => {
+    return {
+      component,
+      degree,
+    };
+  });
 }
 
 export function useDegreeCentralityOfActors() {
@@ -186,23 +222,42 @@ export function useDegreeCentralityOfActors() {
   );
 }
 
-export function getDegreeCentralityOfDirectObjects(
+export function getDegreeCentralityOfInanimateObjects(
   connections: Connection[],
   statementLookup: Map<string, Statement>,
-): DegreeCentrality[] {
-  return getOutgoingDegreeCentralityOfDrivenConnection(
+): ComponentDegreeCentrality[] {
+  const directObjects = getOutgoingDegreeCentralityOfDrivenConnection(
     connections,
     "outcome",
     statementLookup,
     "Direct Object",
   );
+  const indirectObjects = getOutgoingDegreeCentralityOfDrivenConnection(
+    connections,
+    "outcome",
+    statementLookup,
+    "Indirect Object",
+  );
+  // Merge the two arrays into a single array of ComponentDegreeCentrality
+  const lookup = new Map<string, ComponentDegreeCentrality>();
+  for (const obj of directObjects) {
+    lookup.set(obj.component, obj);
+  }
+  for (const obj of indirectObjects) {
+    if (lookup.has(obj.component)) {
+      lookup.get(obj.component)!.degree += obj.degree;
+    } else {
+      lookup.set(obj.component, obj);
+    }
+  }
+  return Array.from(lookup.values());
 }
 
-export function useDegreeCentralityOfDirectObjects() {
+export function useDegreeCentralityOfInanimateObjects() {
   const { connections } = useStore(store);
   const statementLookup = useStatementLookup();
   return useMemo(
-    () => getDegreeCentralityOfDirectObjects(connections, statementLookup),
+    () => getDegreeCentralityOfInanimateObjects(connections, statementLookup),
     [connections, statementLookup],
   );
 }

@@ -4,6 +4,7 @@ import {
   MenuIcon,
   RouteIcon,
   RouteOffIcon,
+  ScalingIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -34,6 +35,7 @@ import {
 import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
+import { isComponentNode } from "@/lib/node";
 
 function exportAsGraphml() {
   const projectName = store.getState().projectName;
@@ -51,6 +53,19 @@ function exportAsGexf() {
 
   const file = exportComponentNetworkToGEXF(projectName, nodes, edges);
   download(file);
+}
+
+function resetComponentSize() {
+  const nodes = networkStore.getState().nodes;
+  const componentNodes = nodes.filter(isComponentNode).map((node) => {
+    // Drop size properties and let React flow re-compute them
+    const { width: _w, height: _h, measured: _m, ...newNode } = node;
+    return newNode;
+  });
+
+  const nonComponentNodes = nodes.filter((node) => !isComponentNode(node));
+
+  networkStore.getState().setNodes([...nonComponentNodes, ...componentNodes]);
 }
 
 export function ComponentNetworkMenu() {
@@ -133,6 +148,10 @@ export function ComponentNetworkMenu() {
               <DropdownMenuItem onClick={undoReroutedConnections}>
                 <RouteOffIcon />
                 Undo rerouted connections
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={resetComponentSize}>
+                <ScalingIcon />
+                Reset component size
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>

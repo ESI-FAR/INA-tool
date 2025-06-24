@@ -26,7 +26,9 @@ import { createStore } from "zustand";
 import { store as globalStore } from "./global";
 import { Conflict, Connection, Statement } from "../lib/schema";
 import { DEFAULT_STATEMENT_HEIGHT, procesStatement } from "../lib/io";
+
 import { connection2id } from "../lib/connectionHelpers";
+import { conflictAsStatementPairs } from "@/hooks/use-conflicts";
 
 export type State = {
   nodes: INANode[];
@@ -208,39 +210,28 @@ function onConnectionsChange(connections: Connection[]) {
   store.getState().setEdges(edges);
 }
 
-export function conflict2id(conflict: Conflict): string {
-  return `conflict-${conflict.formal}-${conflict.informal}`;
-}
-
 function onConflictsChange(conflicts: Conflict[]) {
   const nonConflictEdges = store
     .getState()
     .edges.filter((e) => !isConflictingEdge(e));
-  const conflictIds = new Set(conflicts.map(conflict2id));
-  const unchangedConflictEdges = store
-    .getState()
-    .edges.filter((e) => isConflictingEdge(e) && conflictIds.has(e.id));
-  const unchangedConflictEdgesIds = new Set(
-    unchangedConflictEdges.map((edge) => edge.id),
-  );
 
-  const newEdges: ConflictingEdge[] = conflicts
-    .filter((c) => !unchangedConflictEdgesIds.has(conflict2id(c)))
-    .map((conflict) => {
-      const e: ConflictingEdge = {
-        id: conflict2id(conflict),
-        source: conflict.formal,
-        target: conflict.informal,
-        sourceHandle: "conflict",
-        targetHandle: "conflict",
-        type: "conflict",
-      };
-      return e;
-    });
+  const newEdges: ConflictingEdge[] = [];
+  for (const pair of conflictAsStatementPairs(conflicts)) {
+    const e: ConflictingEdge = {
+      id: `conflict-${pair.group}-${pair.source}-${pair.target}`,
+      source: pair.source,
+      target: pair.target,
+      sourceHandle: "conflict",
+      targetHandle: "conflict",
+      type: "conflict",
+      data: {
+        group: pair.group,
+      },
+    };
+    newEdges.push(e);
+  }
 
-  store
-    .getState()
-    .setEdges([...unchangedConflictEdges, ...newEdges, ...nonConflictEdges]);
+  store.getState().setEdges([...newEdges, ...nonConflictEdges]);
 }
 
 globalStore.subscribe((state) => state.statements, onStatementsChange);

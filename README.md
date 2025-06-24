@@ -4,6 +4,7 @@
 [![Deploy app to GH Pages](https://github.com/ESI-FAR/INA-tool/actions/workflows/deploy.yml/badge.svg)](https://github.com/ESI-FAR/INA-tool/actions/workflows/deploy.yml)
 [![Build](https://github.com/ESI-FAR/INA-tool/actions/workflows/build.yml/badge.svg)](https://github.com/ESI-FAR/INA-tool/actions/workflows/build.yml)
 [![Research Software Directory Badge](https://img.shields.io/badge/rsd-ina_tool-00a3e3.svg)](https://research-software-directory.org/software/ina-tool)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15639732.svg)](https://doi.org/10.5281/zenodo.15639732)
 
 INA Tool is an open-source digital tool developed by the eScience Center aimed at supporting the regulatory framework design process by facilitating the study, analysis, and decision-making through data visualization and interaction.
 

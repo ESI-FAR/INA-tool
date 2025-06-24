@@ -56,3 +56,11 @@ export function searchStatement(query: string, statement: Statement) {
     statement["Or Else"]?.includes(query)
   );
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function filterStatements(query: string, statements: Statement[]) {
+  if (query === "") {
+    return statements;
+  }
+  return statements.filter((statement) => searchStatement(query, statement));
+}

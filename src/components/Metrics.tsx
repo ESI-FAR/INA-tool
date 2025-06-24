@@ -9,15 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { statementLabel } from "@/lib/utils";
 import { StatementCell } from "./StatementCell";
 import { Button } from "./ui/button";
 import {
   useStatementNetworkMetrics,
   useStatementMetrics,
   useDegreeCentralityOfActors,
-  useDegreeCentralityOfDirectObjects,
-  DegreeCentrality,
+  useDegreeCentralityOfInanimateObjects,
+  ComponentDegreeCentrality,
 } from "@/hooks/use-metrics";
 
 function StatementMetricsTable() {
@@ -40,9 +39,9 @@ function StatementMetricsTable() {
             <TableCell>
               <StatementCell statement={statement.statement} />
             </TableCell>
-            <TableCell>{statement.betweennessCentrality.toFixed(3)}</TableCell>
-            <TableCell>{statement.outDegreeCentrality.toFixed(3)}</TableCell>
-            <TableCell>{statement.inDegreeCentrality.toFixed(3)}</TableCell>
+            <TableCell>{statement.betweennessCentrality}</TableCell>
+            <TableCell>{statement.outDegreeCentrality}</TableCell>
+            <TableCell>{statement.inDegreeCentrality}</TableCell>
             <TableCell>
               <Button variant="secondary" size="icon" asChild>
                 <Link
@@ -72,22 +71,20 @@ function StatementMetricsTable() {
 function DegreeCentralityTable({
   centralities,
 }: {
-  centralities: DegreeCentrality[];
+  centralities: ComponentDegreeCentrality[];
 }) {
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Statement ID</TableHead>
           <TableHead>Component</TableHead>
           <TableHead>Degree centrality</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {centralities.map((centrality) => (
-          <TableRow key={centrality.statement.Id}>
-            <TableCell>{statementLabel(centrality.statement)}</TableCell>
-            <TableCell className="w-full">{centrality.label}</TableCell>
+          <TableRow key={centrality.component}>
+            <TableCell className="w-full">{centrality.component}</TableCell>
             <TableCell>{centrality.degree}</TableCell>
           </TableRow>
         ))}
@@ -109,8 +106,8 @@ function DegreeCentralityOfActors() {
   return <DegreeCentralityTable centralities={centralities} />;
 }
 
-function DegreeCentralityOfDirectObjects() {
-  const centralities = useDegreeCentralityOfDirectObjects();
+function DegreeCentralityOfInanimateObjects() {
+  const centralities = useDegreeCentralityOfInanimateObjects();
   return <DegreeCentralityTable centralities={centralities} />;
 }
 
@@ -139,17 +136,19 @@ export function Metrics() {
           <p className="text-sm">
             A measure of the importance of actors in the institutional
             environment. Centrality is calculated by counting the number of
-            actor connections for each animate direct object.
+            actor connections incoming to each Attribute component. Attribute
+            components not listed have a degree centrality of 0.
           </p>
           <DegreeCentralityOfActors />
         </article>
-        <article id="degree-centrality-of-direct-objects">
-          <h2 className="text-xl">Degree centrality of direct objects</h2>
+        <article id="degree-centrality-of-objects">
+          <h2 className="text-xl">Degree centrality of objects</h2>
           <p className="text-sm">
             Object Centrality is calculated by counting the number of outcome
-            connections that stem from an inanimate direct object.
+            connections outgoing from each inanimate direct object or inanimate
+            indirect object. Objects not listed have a degree centrality of 0.
           </p>
-          <DegreeCentralityOfDirectObjects />
+          <DegreeCentralityOfInanimateObjects />
         </article>
       </article>
     </div>

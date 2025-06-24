@@ -5,10 +5,6 @@ import { useStore } from "zustand";
 import { useShallow } from "zustand/shallow";
 import { useStatementLookup } from "./use-statements";
 
-function equalConflicts(a: Conflict, b: Conflict) {
-  return a.formal === b.formal && a.informal === b.informal;
-}
-
 export function useConflicts() {
   const conflicts = useStore(
     store,
@@ -20,7 +16,7 @@ export function useConflicts() {
     (conflictsToRemove: Conflict[]) => {
       return setConflicts(
         conflicts.filter(
-          (c) => !conflictsToRemove.some((c2) => equalConflicts(c, c2)),
+          (c) => !conflictsToRemove.some((c2) => c.group === c2.group),
         ),
       );
     },
@@ -39,10 +35,9 @@ export function useConflicts() {
 }
 
 export interface ConflictWithStatements {
-  formal: string;
-  informal: string;
-  formalStatement: Statement;
-  informalStatement: Statement;
+  group: string;
+  statements: Set<string>;
+  fullStatements: Statement[];
 }
 
 export function useConflictsWithStatements(): ConflictWithStatements[] {
@@ -51,8 +46,34 @@ export function useConflictsWithStatements(): ConflictWithStatements[] {
   return useMemo(() => {
     return conflicts.map((conflict) => ({
       ...conflict,
-      formalStatement: statementLookup.get(conflict.formal)!,
-      informalStatement: statementLookup.get(conflict.informal)!,
+      fullStatements: Array.from(conflict.statements).map(
+        (statementId) => statementLookup.get(statementId)!,
+      ),
     }));
   }, [conflicts, statementLookup]);
+}
+
+export interface GroupedStatementPair {
+  group: string;
+  source: string;
+  target: string;
+}
+// TODO move to better place?
+export function* conflictAsStatementPairs(
+  conflicts: Conflict[],
+): Generator<GroupedStatementPair, void, unknown> {
+  for (const conflict of conflicts) {
+    for (const source of conflict.statements) {
+      for (const target of conflict.statements) {
+        if (source < target) {
+          const pair: GroupedStatementPair = {
+            group: conflict.group,
+            source,
+            target,
+          };
+          yield pair;
+        }
+      }
+    }
+  }
 }

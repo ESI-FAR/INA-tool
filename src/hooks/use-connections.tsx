@@ -14,6 +14,8 @@ import {
   removeKnownConnections,
 } from "@/lib/connectionHelpers";
 
+import { statementLabel } from "@/lib/utils";
+
 export function useConnections() {
   const connections = useStore(
     store,
@@ -113,6 +115,8 @@ export function useConnectionsWithValues(): ConnectionWithValues[] {
           ...connection,
           source_value,
           target_value,
+          source_statement: statementLabel(sourceStatement),
+          target_statement: statementLabel(targetStatement),
         };
       })
       .filter((c) => c !== undefined);
@@ -192,6 +196,8 @@ export function useConnectionsWithValuesOfStatement(
           ...connection,
           source_value,
           target_value,
+          source_statement: statementLabel(sourceStatement),
+          target_statement: statementLabel(targetStatement),
         };
       })
       .filter((c) => c !== undefined);
