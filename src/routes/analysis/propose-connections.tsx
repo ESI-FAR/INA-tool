@@ -7,7 +7,7 @@ import { useStatements } from "@/hooks/use-statements";
 import { useEffect, useRef } from "react";
 import { useConnections, useConnectionsWithValues } from "@/hooks/use-connections";
 import { ProposeConnectionsTable } from "@/components/ProposedConnectionsTable";
-import { DrivenConnectionTable } from "@/components/DrivenConnectionTable";
+import { ReadOnlyDrivenConnectionTable } from "@/components/ReadOnlyDrivenConnectionTable";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/analysis/propose-connections")({
@@ -64,7 +64,7 @@ function RouteComponent() {
       </div>
       <div>
         <h2 className="text-xl font-semibold mb-2">Existing Connections</h2>
-        <DrivenConnectionTable connections={connectionsWithValues} />
+        <ReadOnlyDrivenConnectionTable connections={connectionsWithValues} />
       </div>
     </div>
   );
