@@ -8,7 +8,7 @@
 
 INA Tool is an open-source digital tool developed by the eScience Center aimed at supporting the regulatory framework design process by facilitating the study, analysis, and decision-making through data visualization and interaction.
 
-The web application is running at [https://esi-far.github.io/INA-tool/](https://esi-far.github.io/INA-tool/).
+The web application is running at [https://ina-editor.tpm.tudelft.nl/](https:/ina-editor.tpm.tudelft.nl/).
 
 ![INA](src/help/network.png)
 
