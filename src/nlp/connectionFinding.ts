@@ -71,7 +71,7 @@ async function findActorDrivenConnections(
         source_component: sourceComponent,
         target_statement: target.Id,
         target_component: "Attribute",
-        driven_by: "actor",
+        driven_by: "actor"
       });
     } else {
       const rule_two_match =
