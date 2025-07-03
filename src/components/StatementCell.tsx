@@ -4,10 +4,49 @@ import { cn } from "@/lib/utils";
 export function StatementCell({
   statement,
   highlight,
+  matchedItems = [],
+  isSourceStatement = true,
 }: {
   statement: Statement;
   highlight?: ConnectionComponent;
+  matchedItems?: { source_item: string; target_item: string }[];
+  isSourceStatement?: boolean;
 }) {
+  // Define colors for different matched pairs
+  const matchColors = [
+    "bg-[rgba(134,239,172,0.4)]", // green with 40% opacity
+    "bg-[rgba(147,197,253,0.4)]", // blue with 40% opacity
+  ];
+
+  // Helper function to get the background color for matched items
+  const getMatchedItemColor = (text: string | undefined): string => {
+    if (!text || matchedItems.length === 0) return "";
+
+    for (let i = 0; i < matchedItems.length; i++) {
+      const item = matchedItems[i];
+      const itemToCheck = isSourceStatement
+        ? item.source_item
+        : item.target_item;
+
+      if (text.toLowerCase().includes(itemToCheck.toLowerCase())) {
+        return matchColors[i % matchColors.length];
+      }
+    }
+
+    return "";
+  };
+
+  // Helper function to get all CSS classes for a component
+  const getComponentClasses = (
+    component: ConnectionComponent,
+    text: string | undefined,
+  ) => {
+    return cn("hover:underline", {
+      "font-extrabold": highlight === component,
+      [getMatchedItemColor(text)]: !!getMatchedItemColor(text),
+    });
+  };
+
   return (
     <div>
       <span title="Statement Id" className={"hover:underline"}>
@@ -15,9 +54,7 @@ export function StatementCell({
         {statement.Id}:
       </span>{" "}
       <span
-        className={cn("hover:underline", {
-          "font-extrabold": highlight === "Attribute",
-        })}
+        className={getComponentClasses("Attribute", statement["Attribute"])}
         title="Attribute"
       >
         {statement["Attribute"]}
@@ -30,9 +67,7 @@ export function StatementCell({
         </>
       )}
       <span
-        className={cn("hover:underline", {
-          "font-extrabold": highlight === "Aim",
-        })}
+        className={getComponentClasses("Aim", statement["Aim"])}
         title="Aim"
       >
         {statement["Aim"]}
@@ -40,9 +75,10 @@ export function StatementCell({
       {statement["Direct Object"] && (
         <>
           <span
-            className={cn("hover:underline", {
-              "font-extrabold": highlight === "Direct Object",
-            })}
+            className={getComponentClasses(
+              "Direct Object",
+              statement["Direct Object"],
+            )}
             title={`Direct Object ${statement["Type of Direct Object"]}`}
           >
             {statement["Direct Object"]}
@@ -52,9 +88,10 @@ export function StatementCell({
       {statement["Indirect Object"] && (
         <>
           <span
-            className={cn("hover:underline", {
-              "font-extrabold": highlight === "Indirect Object",
-            })}
+            className={getComponentClasses(
+              "Indirect Object",
+              statement["Indirect Object"],
+            )}
             title={`InDirect Object ${statement["Type of Indirect Object"]}`}
           >
             {statement["Indirect Object"]}
@@ -64,9 +101,10 @@ export function StatementCell({
       {statement["Activation Condition"] && (
         <>
           <span
-            className={cn("hover:underline", {
-              "font-extrabold": highlight === "Activation Condition",
-            })}
+            className={getComponentClasses(
+              "Activation Condition",
+              statement["Activation Condition"],
+            )}
             title="Activation Condition"
           >
             {statement["Activation Condition"]}{" "}
@@ -76,9 +114,10 @@ export function StatementCell({
       {statement["Execution Constraint"] && (
         <>
           <span
-            className={cn("hover:underline", {
-              "font-extrabold": highlight === "Execution Constraint",
-            })}
+            className={getComponentClasses(
+              "Execution Constraint",
+              statement["Execution Constraint"],
+            )}
             title="Execution Constraint"
           >
             {statement["Execution Constraint"]}{" "}

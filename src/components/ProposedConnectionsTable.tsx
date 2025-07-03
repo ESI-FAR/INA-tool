@@ -87,6 +87,8 @@ const columns: ColumnDef<ConnectionWithStatementObjects>[] = [
       <StatementCell
         statement={props.row.original.source_statement_object}
         highlight={props.row.original.source_component}
+        matchedItems={props.row.original.matched_items}
+        isSourceStatement={true}
       />
     ),
     sortingFn: sortByEndpoint("source_statement_object", "source_component"),
@@ -100,6 +102,8 @@ const columns: ColumnDef<ConnectionWithStatementObjects>[] = [
       <StatementCell
         statement={props.row.original.target_statement_object}
         highlight={props.row.original.target_component}
+        matchedItems={props.row.original.matched_items}
+        isSourceStatement={true}
       />
     ),
     sortingFn: sortByEndpoint("target_statement_object", "target_component"),
@@ -113,6 +117,7 @@ function rowToConnection(row: Row<ConnectionWithStatementObjects>): Connection {
     source_component: row.original.source_component,
     target_statement: row.original.target_statement,
     target_component: row.original.target_component,
+    matched_items: row.original.matched_items,
   };
 }
 

@@ -311,7 +311,6 @@ export async function findConnectionsByType(
   test: boolean,
 ): Promise<Connection[]> {
   const connections: Connection[] = [];
-  console.log(test);
 
   for (const source of statements) {
     for (const target of statements) {
