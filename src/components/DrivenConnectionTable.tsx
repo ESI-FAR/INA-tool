@@ -215,8 +215,8 @@ export function DrivenConnectionTable({
                   colSpan={7}
                   className="h-24 text-center text-gray-500"
                 >
-                  No connections. Please add one, by pressing button below or
-                  by uploading or by creating on a network page.
+                  No connections. Please add one, by pressing button below or by
+                  uploading or by creating on a network page.
                 </TableCell>
               </TableRow>
             )}

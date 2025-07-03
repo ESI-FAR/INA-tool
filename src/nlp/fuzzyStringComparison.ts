@@ -1,4 +1,4 @@
-import Fuse from "fuse.js";
+import Fuse, { FuseResult } from "fuse.js";
 import nlp from "compromise";
 import { Statement } from "@/lib/schema";
 import { wordNetRelations } from "./resources/wordNetRelations";
@@ -125,10 +125,10 @@ async function precomputeSimilarities(words: string[]): Promise<void> {
       const word2 = words[j];
       const similarity = await matchWithWordFormsCached(word1, word2);
 
-      similarityCache[word1][word2] = similarity;
+      similarityCache[word1][word2] = similarity.isMatch;
       // Store the reverse relationship too
       similarityCache[word2] = similarityCache[word2] || {};
-      similarityCache[word2][word1] = similarity;
+      similarityCache[word2][word1] = similarity.isMatch;
     }
   }
 
@@ -234,20 +234,26 @@ async function getWordForms(word: string): Promise<string[]> {
 
 /**
  * Match two words using their different forms with cached results
+ * Now returns both match result and the matched strings
  */
 export async function matchWithWordFormsCached(
   word1: string,
   word2: string,
-): Promise<boolean> {
+): Promise<{ isMatch: boolean; matchedWord1?: string; matchedWord2?: string }> {
   // Check if words are the same (optimization)
-  if (word1 === word2) return true;
+  if (word1 === word2)
+    return { isMatch: true, matchedWord1: word1, matchedWord2: word2 };
 
   // Handle empty strings
-  if (!word1 || !word2) return false;
+  if (!word1 || !word2) return { isMatch: false };
 
   // Check cached similarity result
   if (similarityCache[word1]?.[word2] !== undefined) {
-    return similarityCache[word1][word2];
+    // For cached results, we'll return the original words if there was a match
+    const cachedMatch = similarityCache[word1][word2];
+    return cachedMatch
+      ? { isMatch: true, matchedWord1: word1, matchedWord2: word2 }
+      : { isMatch: false };
   }
 
   // Get word forms for both words from cache or compute them
@@ -256,29 +262,55 @@ export async function matchWithWordFormsCached(
     getWordForms(word2),
   ]);
 
-  // Check if any forms match
-  let hasMatch = forms1.some((form1) =>
-    forms2.some((form2) => form1 === form2),
-  );
+  // Check if any forms match and capture the matched forms
+  let matchedForm1: string | undefined;
+  let matchedForm2: string | undefined;
+  let hasMatch = false;
 
-  // Cache the result
+  for (const form1 of forms1) {
+    for (const form2 of forms2) {
+      if (form1 === form2) {
+        hasMatch = true;
+        matchedForm1 = form1;
+        matchedForm2 = form2;
+        break;
+      }
+    }
+    if (hasMatch) break;
+  }
+
+  // Check synonyms/variations if no direct form match
+  if (!hasMatch) {
+    const variations_word1 = getWordVariations(word1, "synonyms");
+    const variations_word2 = getWordVariations(word2, "synonyms");
+    variations_word1.push(word1);
+    variations_word2.push(word2);
+
+    const setWord2 = new Set(variations_word2);
+    const setWord1 = new Set(variations_word1);
+    const intersection = new Set([...setWord1].filter((x) => setWord2.has(x)));
+
+    if (intersection.size > 0) {
+      hasMatch = true;
+      const matchedVariation = [...intersection][0];
+      matchedForm1 = matchedVariation;
+      matchedForm2 = matchedVariation;
+    }
+  }
+
+  // Cache the result (boolean only for cache compatibility)
   similarityCache[word1] = similarityCache[word1] || {};
   similarityCache[word1][word2] = hasMatch;
   similarityCache[word2] = similarityCache[word2] || {};
   similarityCache[word2][word1] = hasMatch;
 
-  const variations_word1 = getWordVariations(word1, "synonyms");
-  const variations_word2 = getWordVariations(word2, "synonyms");
-  variations_word1.push(word1);
-  variations_word2.push(word2);
-
-  const setWord2 = new Set(variations_word2);
-  const setWord1 = new Set(variations_word1);
-  const intersection = new Set([...setWord1].filter((x) => setWord2.has(x)));
-
-  hasMatch = hasMatch || intersection.size > 0;
-
-  return hasMatch;
+  return hasMatch
+    ? {
+        isMatch: true,
+        matchedWord1: matchedForm1 || word1,
+        matchedWord2: matchedForm2 || word2,
+      }
+    : { isMatch: false };
 }
 
 /**
@@ -297,18 +329,35 @@ export function resetWordNetCache(): void {
 export async function fuzzyIncludesOptimized(
   word: string,
   sentence: string,
-): Promise<boolean> {
+): Promise<{
+  isMatch: boolean;
+  matchedItems: { source_item: string; target_item: string };
+}> {
   // Check for null values
-  if (!word || !sentence) return false;
+  if (!word || !sentence)
+    return {
+      isMatch: false,
+      matchedItems: { source_item: "", target_item: "" },
+    };
 
   // Simple substring check first (optimization)
   if (sentence.toLowerCase().includes(word.toLowerCase())) {
-    return true;
+    return {
+      isMatch: true,
+      matchedItems: { source_item: word, target_item: word },
+    };
   }
 
   // Standard fuzzy string matching second (optimization)
-  if (fuzzyIncludesNonWN(word, sentence)) {
-    return true;
+  const fuzzyIncludesNonWNComparison = fuzzyIncludesNonWN(word, sentence);
+  if (fuzzyIncludesNonWNComparison.result) {
+    return {
+      isMatch: true,
+      matchedItems: {
+        source_item: word,
+        target_item: fuzzyIncludesNonWNComparison.matchedString,
+      },
+    };
   }
 
   // Now use compromise...
@@ -318,7 +367,11 @@ export async function fuzzyIncludesOptimized(
   const word_words = word.split(/\s+/);
 
   // Map to an array of promises for matching each word
-  const matchPromises: Promise<boolean>[] = [];
+  const matchPromises: Promise<{
+    isMatch: boolean;
+    matchedWord1?: string;
+    matchedWord2?: string;
+  }>[] = [];
 
   for (const word_token of word_words) {
     const currentMatches = sent_words.map((w) =>
@@ -334,18 +387,25 @@ export async function fuzzyIncludesOptimized(
   const matchResults = await Promise.all(matchPromises);
 
   let res: boolean;
+  let matchedSource = "";
+  let matchedTarget = "";
+
+  // Find the first successful match to use for return values
+  const firstMatch = matchResults.find((result) => result.isMatch);
+  if (firstMatch) {
+    matchedSource = firstMatch.matchedWord1 || "";
+    matchedTarget = firstMatch.matchedWord2 || "";
+  }
 
   if (word_words.length > 2) {
     // Check if most matchResults are true based on threshold
-    const trueCount = matchResults.filter((r) => r === true).length;
+    const trueCount = matchResults.filter((r) => r.isMatch === true).length;
     const ratio = trueCount / word_words.length;
     res = ratio >= majorityThreshold;
   } else {
     // Check if any are true (original behavior)
-    res = matchResults.some((result) => result);
+    res = matchResults.some((result) => result.isMatch);
   }
-
-  // const res = matchResults.some((result) => result);
 
   if (res === false) {
     if (word_words.length === 1) {
@@ -354,7 +414,10 @@ export async function fuzzyIncludesOptimized(
         if (relatedWords && relatedWords.synonyms.length > 0) {
           for (const syn of relatedWords.synonyms) {
             if (sent_words.includes(syn)) {
-              return true;
+              return {
+                isMatch: true,
+                matchedItems: { source_item: syn, target_item: syn },
+              };
             }
           }
         }
@@ -362,7 +425,14 @@ export async function fuzzyIncludesOptimized(
     }
   }
 
-  return res;
+  // Return with proper matched items
+  return {
+    isMatch: res,
+    matchedItems: {
+      source_item: res ? matchedSource : "",
+      target_item: res ? matchedTarget : "",
+    },
+  };
 }
 
 /**
@@ -419,34 +489,40 @@ export function fuzzyIncludesNonWN(
   stringA: string,
   stringB: string,
   threshold = 0.5,
-): boolean {
+): { result: boolean; matchedString: string } {
   // Handle empty strings
-  if (!stringA || !stringB) return false;
+  if (!stringA || !stringB) return { result: false, matchedString: "" };
 
   // Create a list containing the second string
   const list = [{ name: stringB }];
 
   // Configure Fuse
   const options = {
-    includeScore: true, // Return the score
-    keys: ["name"], // The property to search in
-    threshold: threshold, // Set threshold
-    // By default, Fuse.js uses 0 for perfect match and 1 is no match
+    includeScore: true,
+    includeMatches: true,
+    keys: ["name"],
+    threshold: threshold,
   };
 
   const fuse = new Fuse(list, options);
-
-  // Search for the first string
   const result = fuse.search(stringA);
 
-  // If we have a match and its score is below our threshold, consider it a match
-  if (result.length > 0) {
-    if (result[0].score !== undefined) {
-      return result[0].score <= threshold;
-    } else {
-      return false;
-    }
+  if (result.length === 0) {
+    return { result: false, matchedString: "" };
   }
 
-  return false;
+  // Extract matched string
+  const getMatchedString = (result: FuseResult<{ name: string }>) => {
+    if (!result.matches || result.matches.length === 0) return "";
+
+    const match = result.matches[0];
+    if (!match.indices || match.indices.length === 0 || !match.value) return "";
+
+    const [start, end] = match.indices[0];
+    return match.value.substring(start, end + 1);
+  };
+
+  const matchedString = getMatchedString(result[0]);
+
+  return { result: true, matchedString: matchedString };
 }

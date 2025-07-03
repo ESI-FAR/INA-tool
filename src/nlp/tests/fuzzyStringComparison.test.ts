@@ -12,8 +12,8 @@ describe("fuzzyStringComparison", () => {
           fuzzyMatchingData["true"][i]["text1"],
           fuzzyMatchingData["true"][i]["text2"],
         );
-        result.push(res);
-        if (res === false) {
+        result.push(res.isMatch);
+        if (res.isMatch === false) {
           incorrect.push(fuzzyMatchingData["true"][i]);
         }
       }
@@ -36,9 +36,9 @@ describe("fuzzyStringComparison", () => {
           fuzzyMatchingData["false"][i]["text1"],
           fuzzyMatchingData["false"][i]["text2"],
         );
-        result.push(res);
+        result.push(res.isMatch);
 
-        if (res === true) {
+        if (res.isMatch === true) {
           incorrect.push(fuzzyMatchingData["false"][i]);
         }
       }

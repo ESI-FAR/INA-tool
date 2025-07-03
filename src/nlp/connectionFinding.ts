@@ -59,26 +59,44 @@ async function findActorDrivenConnections(
     : "Indirect Object";
 
   try {
+    const sourceAttrTargetActComparison = await fuzzyIncludesOptimized(
+      sourceAttribute,
+      targetActivationCondition,
+    );
+    const sourceAimTargetActComparison = await fuzzyIncludesOptimized(
+      sourceAim,
+      targetActivationCondition,
+    );
+
     const rule_one_match =
-      (await fuzzyIncludesOptimized(
-        sourceAttribute,
-        targetActivationCondition,
-      )) &&
-      (await fuzzyIncludesOptimized(sourceAim, targetActivationCondition));
+      sourceAttrTargetActComparison.isMatch &&
+      sourceAimTargetActComparison.isMatch;
     if (rule_one_match) {
       connections.push({
         source_statement: source.Id,
         source_component: sourceComponent,
         target_statement: target.Id,
         target_component: "Attribute",
-        driven_by: "actor"
+        driven_by: "actor",
+        matched_items: [
+          {
+            source_item: sourceAttrTargetActComparison.matchedItems.source_item,
+            target_item: sourceAttrTargetActComparison.matchedItems.target_item,
+          },
+          {
+            source_item: sourceAimTargetActComparison.matchedItems.source_item,
+            target_item: sourceAimTargetActComparison.matchedItems.target_item,
+          },
+        ],
       });
     } else {
+      const targetAttrSourceExecComparison = await fuzzyIncludesOptimized(
+        targetAttribute,
+        sourceExecutionConstraint,
+      );
       const rule_two_match =
-        (await fuzzyIncludesOptimized(
-          targetAttribute,
-          sourceExecutionConstraint,
-        )) && fuzzyMatchOptimized(sourceAim, targetAim);
+        targetAttrSourceExecComparison.isMatch &&
+        fuzzyMatchOptimized(sourceAim, targetAim);
       if (rule_two_match) {
         connections.push({
           source_statement: source.Id,
@@ -86,6 +104,18 @@ async function findActorDrivenConnections(
           target_statement: target.Id,
           target_component: "Attribute",
           driven_by: "actor",
+          matched_items: [
+            {
+              source_item:
+                targetAttrSourceExecComparison.matchedItems.source_item,
+              target_item:
+                targetAttrSourceExecComparison.matchedItems.target_item,
+            },
+            {
+              source_item: sourceAim,
+              target_item: targetAim,
+            },
+          ],
         });
       }
     }
@@ -121,15 +151,16 @@ async function findOutcomeDrivenConnections(
   const targetActivationCondition = target["Activation Condition"] ?? "";
 
   try {
-    const directObjInActivation = await fuzzyIncludesOptimized(
+    const directObjTargetActivationComparison = await fuzzyIncludesOptimized(
       sourceDirectObject,
       targetActivationCondition,
     );
 
-    const sourceAimInActivation = await fuzzyIncludesOptimized(
+    const sourceAimTargetActivationComparison = await fuzzyIncludesOptimized(
       sourceAim,
       targetActivationCondition,
     );
+
     const targetActivationConditionTokens =
       targetActivationCondition.split(/\s+/);
     const sourceDirectObjectTokens = sourceDirectObject.split(/\s+/);
@@ -163,8 +194,8 @@ async function findOutcomeDrivenConnections(
     const rule_one_match =
       sourceDirectObjectType == "inanimate" &&
       sourceDirectObject &&
-      directObjInActivation &&
-      sourceAimInActivation &&
+      directObjTargetActivationComparison.isMatch &&
+      sourceAimTargetActivationComparison.isMatch &&
       negationInVicinity === false;
     if (rule_one_match) {
       connections.push({
@@ -173,15 +204,30 @@ async function findOutcomeDrivenConnections(
         target_statement: target.Id,
         target_component: "Activation Condition",
         driven_by: "outcome",
+        matched_items: [
+          {
+            source_item:
+              directObjTargetActivationComparison.matchedItems.source_item,
+            target_item:
+              directObjTargetActivationComparison.matchedItems.target_item,
+          },
+          {
+            source_item: sourceAim,
+            target_item:
+              sourceAimTargetActivationComparison.matchedItems.target_item,
+          },
+        ],
       });
     } else {
+      const sourceExecTargetActivationComparison = await fuzzyIncludesOptimized(
+        sourceExecutionConstraint,
+        targetActivationCondition,
+      );
+
       const rule_two_match =
         sourceExecutionConstraint &&
-        (await fuzzyIncludesOptimized(
-          sourceExecutionConstraint,
-          targetActivationCondition,
-        )) &&
-        (await fuzzyIncludesOptimized(sourceAim, targetActivationCondition));
+        sourceExecTargetActivationComparison.isMatch &&
+        sourceAimTargetActivationComparison.isMatch;
 
       if (rule_two_match) {
         connections.push({
@@ -190,6 +236,19 @@ async function findOutcomeDrivenConnections(
           target_statement: target.Id,
           target_component: "Activation Condition",
           driven_by: "outcome",
+          matched_items: [
+            {
+              source_item:
+                sourceExecTargetActivationComparison.matchedItems.source_item,
+              target_item:
+                sourceExecTargetActivationComparison.matchedItems.target_item,
+            },
+            {
+              source_item: sourceAim,
+              target_item:
+                sourceAimTargetActivationComparison.matchedItems.target_item,
+            },
+          ],
         });
       }
     }
@@ -249,8 +308,10 @@ async function findSanctionDrivenConnections(
 export async function findConnectionsByType(
   statements: Statement[],
   connectionType = "action",
+  test: boolean,
 ): Promise<Connection[]> {
   const connections: Connection[] = [];
+  console.log(test);
 
   for (const source of statements) {
     for (const target of statements) {
@@ -261,25 +322,49 @@ export async function findConnectionsByType(
           source,
           target,
         );
+
+        // Remove matched_items if test is true
+        if (test) {
+          actorDrivenConnections.forEach((connection) => {
+            delete connection.matched_items;
+          });
+        }
+
         connections.push(...actorDrivenConnections);
       } else if (connectionType == "outcome") {
         const outcomeDrivenConnections = await findOutcomeDrivenConnections(
           source,
           target,
         );
+
+        // Remove matched_items if test is true
+        if (test) {
+          outcomeDrivenConnections.forEach((connection) => {
+            delete connection.matched_items;
+          });
+        }
+
         connections.push(...outcomeDrivenConnections);
       } else {
         const sanctionDrivenConnections = await findSanctionDrivenConnections(
           source,
           target,
         );
+
+        // Remove matched_items if test is true
+        if (test) {
+          sanctionDrivenConnections.forEach((connection) => {
+            delete connection.matched_items;
+          });
+        }
+
         connections.push(...sanctionDrivenConnections);
       }
     }
   }
+
   return connections;
 }
-
 // Find all types of connections
 export async function findConnections({
   statements,

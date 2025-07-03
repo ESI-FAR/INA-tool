@@ -5,7 +5,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { useStatements } from "@/hooks/use-statements";
 import { useEffect, useRef } from "react";
-import { useConnections, useConnectionsWithValues } from "@/hooks/use-connections";
+import {
+  useConnections,
+  useConnectionsWithValues,
+} from "@/hooks/use-connections";
 import { ProposeConnectionsTable } from "@/components/ProposedConnectionsTable";
 import { ReadOnlyDrivenConnectionTable } from "@/components/ReadOnlyDrivenConnectionTable";
 import { Button } from "@/components/ui/button";
@@ -59,11 +62,11 @@ function RouteComponent() {
         <Button type="submit">Find</Button>
       </form>
       <div>
-        <h2 className="text-xl font-semibold mb-2">Suggested Connections</h2>
+        <h2 className="mb-2 text-xl font-semibold">Suggested Connections</h2>
         <ProposeConnectionsTable connections={results} />
       </div>
       <div>
-        <h2 className="text-xl font-semibold mb-2">Existing Connections</h2>
+        <h2 className="mb-2 text-xl font-semibold">Existing Connections</h2>
         <ReadOnlyDrivenConnectionTable connections={connectionsWithValues} />
       </div>
     </div>
