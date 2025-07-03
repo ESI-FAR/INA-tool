@@ -138,6 +138,9 @@ export type DrivenBy = z.infer<typeof drivenbySchema>;
 const matchedItemSchema = z.object({
   source_item: z.string(),
   target_item: z.string(),
+  source_component: z.union([SourceComponentSchema, TargetComponentSchema]),
+  target_component: z.union([SourceComponentSchema, TargetComponentSchema]),
+  reverse_connection: z.boolean(),
 });
 
 const connectionUnrefinedSchema = z.object({

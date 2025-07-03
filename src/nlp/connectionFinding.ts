@@ -82,10 +82,16 @@ async function findActorDrivenConnections(
           {
             source_item: sourceAttrTargetActComparison.matchedItems.source_item,
             target_item: sourceAttrTargetActComparison.matchedItems.target_item,
+            source_component: "Attribute",
+            target_component: "Activation Condition",
+            reverse_connection: false,
           },
           {
             source_item: sourceAimTargetActComparison.matchedItems.source_item,
             target_item: sourceAimTargetActComparison.matchedItems.target_item,
+            source_component: "Aim",
+            target_component: "Activation Condition",
+            reverse_connection: false,
           },
         ],
       });
@@ -110,10 +116,16 @@ async function findActorDrivenConnections(
                 targetAttrSourceExecComparison.matchedItems.source_item,
               target_item:
                 targetAttrSourceExecComparison.matchedItems.target_item,
+              source_component: "Attribute",
+              target_component: "Execution Constraint",
+              reverse_connection: true,
             },
             {
               source_item: sourceAim,
               target_item: targetAim,
+              source_component: "Aim",
+              target_component: "Aim",
+              reverse_connection: false,
             },
           ],
         });
@@ -210,11 +222,17 @@ async function findOutcomeDrivenConnections(
               directObjTargetActivationComparison.matchedItems.source_item,
             target_item:
               directObjTargetActivationComparison.matchedItems.target_item,
+            source_component: "Direct Object",
+            target_component: "Activation Condition",
+            reverse_connection: false,
           },
           {
             source_item: sourceAim,
             target_item:
               sourceAimTargetActivationComparison.matchedItems.target_item,
+            source_component: "Aim",
+            target_component: "Activation Condition",
+            reverse_connection: false,
           },
         ],
       });
@@ -242,11 +260,17 @@ async function findOutcomeDrivenConnections(
                 sourceExecTargetActivationComparison.matchedItems.source_item,
               target_item:
                 sourceExecTargetActivationComparison.matchedItems.target_item,
+              source_component: "Execution Constraint",
+              target_component: "Activation Condition",
+              reverse_connection: false,
             },
             {
               source_item: sourceAim,
               target_item:
                 sourceAimTargetActivationComparison.matchedItems.target_item,
+              source_component: "Aim",
+              target_component: "Activation Condition",
+              reverse_connection: false,
             },
           ],
         });

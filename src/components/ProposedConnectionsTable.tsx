@@ -103,7 +103,7 @@ const columns: ColumnDef<ConnectionWithStatementObjects>[] = [
         statement={props.row.original.target_statement_object}
         highlight={props.row.original.target_component}
         matchedItems={props.row.original.matched_items}
-        isSourceStatement={true}
+        isSourceStatement={false}
       />
     ),
     sortingFn: sortByEndpoint("target_statement_object", "target_component"),
