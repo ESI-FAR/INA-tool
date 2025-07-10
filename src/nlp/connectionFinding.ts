@@ -332,7 +332,6 @@ async function findSanctionDrivenConnections(
 export async function findConnectionsByType(
   statements: Statement[],
   connectionType = "action",
-  test: boolean,
 ): Promise<Connection[]> {
   const connections: Connection[] = [];
 
@@ -346,13 +345,6 @@ export async function findConnectionsByType(
           target,
         );
 
-        // Remove matched_items if test is true
-        if (test) {
-          actorDrivenConnections.forEach((connection) => {
-            delete connection.matched_items;
-          });
-        }
-
         connections.push(...actorDrivenConnections);
       } else if (connectionType == "outcome") {
         const outcomeDrivenConnections = await findOutcomeDrivenConnections(
@@ -360,26 +352,12 @@ export async function findConnectionsByType(
           target,
         );
 
-        // Remove matched_items if test is true
-        if (test) {
-          outcomeDrivenConnections.forEach((connection) => {
-            delete connection.matched_items;
-          });
-        }
-
         connections.push(...outcomeDrivenConnections);
       } else {
         const sanctionDrivenConnections = await findSanctionDrivenConnections(
           source,
           target,
         );
-
-        // Remove matched_items if test is true
-        if (test) {
-          sanctionDrivenConnections.forEach((connection) => {
-            delete connection.matched_items;
-          });
-        }
 
         connections.push(...sanctionDrivenConnections);
       }

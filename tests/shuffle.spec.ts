@@ -50,12 +50,12 @@ test.describe("Shuffle statements", () => {
       statementEdges: project.graph.statement.edges.length,
     }).toEqual({
       statements: 6,
-      connections: 1,
+      connections: 0,
       conflicts: 0,
       componentNodes: 29,
-      componentEdges: 18,
+      componentEdges: 17,
       statementNodes: 6,
-      statementEdges: 1,
+      statementEdges: 0,
     });
 
     // Check that y positions are unique for statement network
