@@ -95,6 +95,8 @@ export function StatementCell({
     }> = [];
     matches.forEach((match) => {
       const lowerMatchText = match.text.toLowerCase();
+      if (lowerMatchText.length === 0) return; // Prevent infinite loop
+
       let searchIndex = 0;
       let foundIndex = lowerText.indexOf(lowerMatchText, searchIndex);
 

@@ -9,7 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { mockStatements } from "@/nlp/testdata/testData";
+import { statements as statements2 } from "@/nlp/testdata/testData";
+import { statements as statements3 } from "@/nlp/testdata/mitigationTestData";
+import { statements as statements4 } from "@/nlp/testdata/inspectionsTestData";
 
 const statements: Statement[] = [
   {
@@ -36,7 +38,7 @@ const statements: Statement[] = [
     "Type of Direct Object": "inanimate",
     "Indirect Object": "from Dutch Kingdom",
     "Type of Indirect Object": "animate",
-    "Activation Condition": "if requested by Prime minister",
+    "Activation Condition": "if ordered by VROMI",
     "Execution Constraint": "",
     "Or Else": "",
   },
@@ -105,13 +107,6 @@ const statements: Statement[] = [
 
 const connections: Connection[] = [
   {
-    source_statement: "1",
-    source_component: "Aim",
-    target_statement: "2",
-    target_component: "Activation Condition",
-    driven_by: "sanction",
-  },
-  {
     source_statement: "2",
     source_component: "Indirect Object",
     target_statement: "3",
@@ -136,7 +131,21 @@ function loadExample() {
 
 function loadExample2() {
   store.getState().setProjectName("Example 2");
-  store.getState().setStatements(mockStatements);
+  store.getState().setStatements(statements2);
+  store.getState().setConnections([]);
+  store.getState().setConflicts([]);
+}
+
+function loadExample3() {
+  store.getState().setProjectName("Example 3");
+  store.getState().setStatements(statements3);
+  store.getState().setConnections([]);
+  store.getState().setConflicts([]);
+}
+
+function loadExample4() {
+  store.getState().setProjectName("Example 4");
+  store.getState().setStatements(statements4);
   store.getState().setConnections([]);
   store.getState().setConflicts([]);
 }
@@ -178,6 +187,12 @@ export function LoadExampleButton() {
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={loadExample2}>
             Load example 2
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={loadExample3}>
+            Load example 3
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={loadExample4}>
+            Load example 4
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
