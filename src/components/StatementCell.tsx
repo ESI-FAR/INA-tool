@@ -1,5 +1,6 @@
 import { ConnectionComponent, Statement } from "@/lib/schema";
 import { cn } from "@/lib/utils";
+import { MatchedItem } from "@/lib/schema";
 
 export function StatementCell({
   statement,
@@ -9,13 +10,7 @@ export function StatementCell({
 }: {
   statement: Statement;
   highlight?: ConnectionComponent;
-  matchedItems?: {
-    source_item: string;
-    target_item: string;
-    source_component: ConnectionComponent;
-    target_component: ConnectionComponent;
-    reverse_connection: boolean;
-  }[];
+  matchedItems?: MatchedItem[];
   isSourceStatement?: boolean;
 }) {
   // Define colors for different matched pairs

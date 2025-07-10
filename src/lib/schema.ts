@@ -143,6 +143,8 @@ const matchedItemSchema = z.object({
   reverse_connection: z.boolean(),
 });
 
+export type MatchedItem = z.infer<typeof matchedItemSchema>;
+
 const connectionUnrefinedSchema = z.object({
   source_statement: z.string().min(1),
   source_component: SourceComponentSchema,
