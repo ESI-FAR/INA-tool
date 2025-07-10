@@ -243,7 +243,7 @@ export function DrivenConnectionTable({
   );
 }
 
-function FilterSelect({
+export function FilterSelect({
   value,
   onValueChange,
   options,
@@ -275,7 +275,7 @@ function FilterSelect({
   );
 }
 
-function Filter({
+export function Filter({
   column,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
