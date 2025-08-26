@@ -55082,9 +55082,20 @@ export const wordNetRelations: Record<string, WordRelation> = {
     synonyms: ["acquaint", "familiarize"],
   },
   suggest: {
-    antonyms: [],
+    antonyms: [
+      "answer",
+      "reply",
+      "compel",
+      "force",
+      "coerce",
+      "oblige",
+      "deny",
+      "appeal",
+      "demand",
+    ],
     synonyms: [
       "advise",
+      "suggested",
       "propose",
       "suggests",
       "requests",
@@ -55093,9 +55104,20 @@ export const wordNetRelations: Record<string, WordRelation> = {
     ],
   },
   suggests: {
-    antonyms: [],
+    antonyms: [
+      "answer",
+      "reply",
+      "compel",
+      "force",
+      "coerce",
+      "oblige",
+      "deny",
+      "appeal",
+      "demand",
+    ],
     synonyms: [
       "advise",
+      "suggested",
       "propose",
       "suggest",
       "requests",
