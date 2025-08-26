@@ -70,7 +70,9 @@ async function findActorDrivenConnections(
 
     const rule_one_match =
       sourceAttrTargetActComparison.isMatch &&
-      sourceAimTargetActComparison.isMatch;
+      sourceAimTargetActComparison.isMatch &&
+      (!/\bno\b/.test(targetActivationCondition.toLowerCase())) &&
+      (!/\bnot\b/.test(targetActivationCondition.toLowerCase()));
     if (rule_one_match) {
       connections.push({
         source_statement: source.Id,
