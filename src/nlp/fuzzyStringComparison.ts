@@ -306,10 +306,10 @@ export async function matchWithWordFormsCached(
 
   return hasMatch
     ? {
-      isMatch: true,
-      matchedWord1: matchedForm1 || word1,
-      matchedWord2: matchedForm2 || word2,
-    }
+        isMatch: true,
+        matchedWord1: matchedForm1 || word1,
+        matchedWord2: matchedForm2 || word2,
+      }
     : { isMatch: false };
 }
 

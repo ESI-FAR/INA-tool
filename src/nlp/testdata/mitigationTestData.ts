@@ -240,12 +240,11 @@ export const outcomeConnections: Connection[] = [
     target_component: "Activation Condition",
     driven_by: "outcome",
   },
-//   {
-//     source_statement: "12",
-//     source_component: "Direct Object",
-//     target_statement: "13",
-//     target_component: "Activation Condition",
-//     driven_by: "outcome",
-//   },
+  //   {
+  //     source_statement: "12",
+  //     source_component: "Direct Object",
+  //     target_statement: "13",
+  //     target_component: "Activation Condition",
+  //     driven_by: "outcome",
+  //   },
 ] as const;
-
