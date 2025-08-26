@@ -230,22 +230,6 @@ export const actorConnections: Connection[] = [
     target_component: "Attribute",
     driven_by: "actor",
   },
-
-  // extra connections identified by NLP (that humans don't):
-  {
-    driven_by: "actor",
-    source_component: "Direct Object",
-    source_statement: "1",
-    target_component: "Attribute",
-    target_statement: "5",
-  },
-  {
-    driven_by: "actor",
-    source_component: "Direct Object",
-    source_statement: "1",
-    target_component: "Attribute",
-    target_statement: "13",
-  },
 ] as const;
 
 // export const outcomeConnections: Connection[] = [

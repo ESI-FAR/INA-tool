@@ -306,10 +306,10 @@ export async function matchWithWordFormsCached(
 
   return hasMatch
     ? {
-        isMatch: true,
-        matchedWord1: matchedForm1 || word1,
-        matchedWord2: matchedForm2 || word2,
-      }
+      isMatch: true,
+      matchedWord1: matchedForm1 || word1,
+      matchedWord2: matchedForm2 || word2,
+    }
     : { isMatch: false };
 }
 
@@ -329,6 +329,7 @@ export function resetWordNetCache(): void {
 export async function fuzzyIncludesOptimized(
   word: string,
   sentence: string,
+  percOfTokensToMatch: number = 0.6,
 ): Promise<{
   isMatch: boolean;
   matchedItems: { source_item: string; target_item: string };
@@ -380,9 +381,6 @@ export async function fuzzyIncludesOptimized(
     matchPromises.push(...currentMatches);
   }
 
-  // Adjustable threshold for "most"
-  const majorityThreshold = 0.6; // e.g. 60% or more
-
   // Wait for all matches to complete and check if any are true
   const matchResults = await Promise.all(matchPromises);
 
@@ -397,11 +395,11 @@ export async function fuzzyIncludesOptimized(
     matchedTarget = firstMatch.matchedWord2 || "";
   }
 
-  if (word_words.length > 2) {
+  if (word_words.length >= 2) {
     // Check if most matchResults are true based on threshold
     const trueCount = matchResults.filter((r) => r.isMatch === true).length;
     const ratio = trueCount / word_words.length;
-    res = ratio >= majorityThreshold;
+    res = ratio >= percOfTokensToMatch;
   } else {
     // Check if any are true (original behavior)
     res = matchResults.some((result) => result.isMatch);

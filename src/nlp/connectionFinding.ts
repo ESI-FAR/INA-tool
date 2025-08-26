@@ -61,7 +61,7 @@ async function findActorDrivenConnections(
   try {
     const sourceAttrTargetActComparison = await fuzzyIncludesOptimized(
       sourceAttribute,
-      targetActivationCondition,
+      targetActivationCondition, 1.0
     );
     const sourceAimTargetActComparison = await fuzzyIncludesOptimized(
       sourceAim,
@@ -100,7 +100,7 @@ async function findActorDrivenConnections(
     } else {
       const targetAttrSourceExecComparison = await fuzzyIncludesOptimized(
         targetAttribute,
-        sourceExecutionConstraint,
+        sourceExecutionConstraint, 1.0
       );
       const rule_two_match =
         targetAttrSourceExecComparison.isMatch &&
