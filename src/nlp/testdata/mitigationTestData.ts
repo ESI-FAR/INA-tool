@@ -251,23 +251,9 @@ export const actorConnections: Connection[] = [
 
 export const outcomeConnections: Connection[] = [
   {
-    source_statement: "9",
-    source_component: "Direct Object",
-    target_statement: "13",
-    target_component: "Activation Condition",
-    driven_by: "outcome",
-  },
-  {
     source_statement: "10",
     source_component: "Direct Object",
     target_statement: "1",
-    target_component: "Activation Condition",
-    driven_by: "outcome",
-  },
-  {
-    source_statement: "12",
-    source_component: "Direct Object",
-    target_statement: "14",
     target_component: "Activation Condition",
     driven_by: "outcome",
   },

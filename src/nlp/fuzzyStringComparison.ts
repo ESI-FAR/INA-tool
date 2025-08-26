@@ -349,18 +349,6 @@ export async function fuzzyIncludesOptimized(
     };
   }
 
-  // Standard fuzzy string matching second (optimization)
-  const fuzzyIncludesNonWNComparison = fuzzyIncludesNonWN(word, sentence);
-  if (fuzzyIncludesNonWNComparison.result) {
-    return {
-      isMatch: true,
-      matchedItems: {
-        source_item: word,
-        target_item: fuzzyIncludesNonWNComparison.matchedString,
-      },
-    };
-  }
-
   // Now use compromise...
 
   // Process all words in parallel using cached lookups
