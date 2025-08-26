@@ -163,10 +163,10 @@ export const statements: Statement[] = [
     Attribute: "VROMI new projects dept.",
     Deontic: "may",
     Aim: "suggest",
-    "Direct Object": "joint project with French side",
+    "Direct Object": "joint projects",
     "Type of Direct Object": "inanimate",
-    "Indirect Object": "",
-    "Type of Indirect Object": "",
+    "Indirect Object": "with French side",
+    "Type of Indirect Object": "animate",
     "Activation Condition": "",
     "Execution Constraint": "",
     "Or Else": "",
@@ -232,23 +232,6 @@ export const actorConnections: Connection[] = [
   },
 ] as const;
 
-// export const outcomeConnections: Connection[] = [
-//   {
-//     source_statement: "10",
-//     source_component: "Direct Object",
-//     target_statement: "1",
-//     target_component: "Activation Condition",
-//     driven_by: "outcome",
-//   },
-//   {
-//     source_statement: "12",
-//     source_component: "Direct Object",
-//     target_statement: "13",
-//     target_component: "Activation Condition",
-//     driven_by: "outcome",
-//   },
-// ] as const;
-
 export const outcomeConnections: Connection[] = [
   {
     source_statement: "10",
@@ -257,5 +240,12 @@ export const outcomeConnections: Connection[] = [
     target_component: "Activation Condition",
     driven_by: "outcome",
   },
+//   {
+//     source_statement: "12",
+//     source_component: "Direct Object",
+//     target_statement: "13",
+//     target_component: "Activation Condition",
+//     driven_by: "outcome",
+//   },
 ] as const;
 
