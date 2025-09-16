@@ -1,6 +1,6 @@
 import { Statement, Connection } from "@/lib/schema";
 
-// Flood risk network
+// Clean-up network
 export const statements: Statement[] = [
   {
     Id: "1",

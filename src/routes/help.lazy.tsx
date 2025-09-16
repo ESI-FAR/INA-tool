@@ -137,12 +137,20 @@ function RouteComponent() {
             Screenshot
           </a>{" "}
           of web application with example loaded. Keyboard shortcut is
-          CTRL+SHIFT+e. There is a second example under the{" "}
+          CTRL+SHIFT+e. There are three other examples under the{" "}
           <ChevronDown className="inline" /> button that can be used in the{" "}
           <Link to="/analysis/propose-connections" className="underline">
             Propose connections analysis page
           </Link>
-          .
+          . All example statements are sourced from{" "}
+          <a
+            href="https://thecommonsjournal.org/articles/10.5334/ijc.1351"
+            className="underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            this paper
+          </a>.{" "}
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after

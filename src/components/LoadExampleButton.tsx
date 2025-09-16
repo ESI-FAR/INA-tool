@@ -186,13 +186,13 @@ export function LoadExampleButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={loadExample2}>
-            Load example 2
+            Load Clean-up Example
           </DropdownMenuItem>
           <DropdownMenuItem onClick={loadExample3}>
-            Load example 3
+            Load Budgeting Example
           </DropdownMenuItem>
           <DropdownMenuItem onClick={loadExample4}>
-            Load example 4
+            Load Inspections Example
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
