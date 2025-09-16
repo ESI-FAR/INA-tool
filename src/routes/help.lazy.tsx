@@ -150,7 +150,8 @@ function RouteComponent() {
             rel="noopener noreferrer"
           >
             this paper
-          </a>.{" "}
+          </a>
+          .{" "}
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after
