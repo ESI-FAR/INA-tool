@@ -135,12 +135,23 @@ export type ConnectionComponent =
 export const drivenbySchema = z.enum(["actor", "outcome", "sanction"]);
 export type DrivenBy = z.infer<typeof drivenbySchema>;
 
+const matchedItemSchema = z.object({
+  source_item: z.string(),
+  target_item: z.string(),
+  source_component: z.union([SourceComponentSchema, TargetComponentSchema]),
+  target_component: z.union([SourceComponentSchema, TargetComponentSchema]),
+  reverse_connection: z.boolean(),
+});
+
+export type MatchedItem = z.infer<typeof matchedItemSchema>;
+
 const connectionUnrefinedSchema = z.object({
   source_statement: z.string().min(1),
   source_component: SourceComponentSchema,
   target_statement: z.string().min(1),
   target_component: TargetComponentSchema,
   driven_by: drivenbySchema,
+  matched_items: z.array(matchedItemSchema).optional(),
 });
 export const connectionSchema = connectionUnrefinedSchema
   .refine((data) => data.source_statement !== data.target_statement, {

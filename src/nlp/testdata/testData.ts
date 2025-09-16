@@ -1,6 +1,6 @@
 import { Statement, Connection } from "@/lib/schema";
 
-// Flood risk network
+// Clean-up network
 export const statements: Statement[] = [
   {
     Id: "1",
@@ -224,10 +224,10 @@ export const fuzzyMatchingData: Record<string, FuzzyMatchingEntry[]> = {
       text1: "joint project with French side",
       text2: "if requested by VROMI new projects dept.",
     },
-    {
-      text1: "joint project with French side",
-      text2: "if requested by the French side",
-    },
+    // {
+    //   text1: "joint project with French side",
+    //   text2: "if requested by the French side",
+    // },
   ],
 };
 

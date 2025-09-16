@@ -1,8 +1,6 @@
 import {
-  Column,
   ColumnDef,
   ColumnFiltersState,
-  RowSelectionState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -22,24 +20,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTableColumnHeader } from "./ColumnHeader";
 import { DataTablePagination } from "./DataTablePagination";
-import { DownloadConnectionButton } from "./DownloadConnectionButton";
-import { UploadConnectionButton } from "./UploadConnectionButton";
 import { ConnectionWithValues } from "@/lib/schema";
-import { AddConnectionButton } from "./AddConnectionButton";
-import { useConnections } from "@/hooks/use-connections";
-import { selectColumnDefinition } from "./selectColumnDefinition";
-import { DeleteSelectedButton } from "./DeleteSelectedButton";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
-import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { FilterXIcon } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Filter } from "./DrivenConnectionTable";
 
 const columns: ColumnDef<ConnectionWithValues>[] = [
-  selectColumnDefinition(),
   {
     accessorKey: "driven_by",
     header: ({ column }) => (
@@ -96,23 +85,17 @@ const columns: ColumnDef<ConnectionWithValues>[] = [
   },
 ];
 
-export function DrivenConnectionTable({
+export function ReadOnlyDrivenConnectionTable({
   connections,
-  statement,
 }: {
-  statement?: string;
   connections: ConnectionWithValues[];
 }) {
-  const { removeConnections } = useConnections();
-
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const table = useReactTable({
     data: connections,
     columns,
-    onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -123,7 +106,6 @@ export function DrivenConnectionTable({
     getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
-      rowSelection,
       columnFilters,
     },
   });
@@ -136,10 +118,6 @@ export function DrivenConnectionTable({
 
   return (
     <div className="w-full">
-      <h1 className="text-xl">
-        Connections
-        {statement ? ` of statement ${statement}` : null}
-      </h1>
       <div className="flex justify-between gap-4 py-2">
         <div className="flex gap-2">
           <Button
@@ -150,19 +128,6 @@ export function DrivenConnectionTable({
             <FilterXIcon />
             Clear filters
           </Button>
-          {statement && (
-            <Button
-              asChild
-              variant="secondary"
-              title={`Showing connections of statement ${statement}`}
-            >
-              <Link to="/connections">All connections</Link>
-            </Button>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <DownloadConnectionButton />
-          <UploadConnectionButton />
         </div>
       </div>
       <div className="w-full rounded-md border">
@@ -224,113 +189,8 @@ export function DrivenConnectionTable({
         </Table>
       </div>
       <div className="flex items-center justify-between gap-4 py-2">
-        <AddConnectionButton />
-        <DeleteSelectedButton
-          nrSelectedRows={Object.keys(rowSelection).length}
-          nrTotalRows={connections.length}
-          what="connections"
-          onDelete={() => {
-            const toDelete = table
-              .getSelectedRowModel()
-              .rows.map((row) => row.original);
-            removeConnections(toDelete);
-            table.resetRowSelection();
-          }}
-        />
         <DataTablePagination table={table} />
       </div>
     </div>
   );
-}
-
-export function FilterSelect({
-  value,
-  onValueChange,
-  options,
-  placeholder = "any",
-  disabled = false,
-}: {
-  value: string | null | undefined;
-  onValueChange: (value: string) => void;
-  options: string[];
-  placeholder?: string;
-  disabled?: boolean;
-}) {
-  return (
-    <Select
-      disabled={disabled}
-      onValueChange={onValueChange}
-      value={value as unknown as string}
-    >
-      <SelectTrigger>{value ?? placeholder}</SelectTrigger>
-      <SelectContent>
-        <SelectItem value={null as unknown as string}>{placeholder}</SelectItem>
-        {options.map((option) => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-export function Filter({
-  column,
-}: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  column: Column<any, unknown>;
-}) {
-  const columnKey = column.id;
-  const columnFilterValue = column.getFilterValue();
-  const sortedUniqueValues = useMemo(
-    () =>
-      columnKey.endsWith("_value")
-        ? []
-        : Array.from(column.getFacetedUniqueValues().keys()).sort(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [column.getFacetedUniqueValues(), columnKey],
-  );
-  switch (columnKey) {
-    case "driven_by":
-      return (
-        <FilterSelect
-          value={columnFilterValue?.toString()}
-          onValueChange={column.setFilterValue}
-          options={sortedUniqueValues}
-        />
-      );
-    case "source_statement":
-    case "target_statement":
-      return (
-        <FilterSelect
-          value={columnFilterValue?.toString()}
-          onValueChange={column.setFilterValue}
-          options={sortedUniqueValues}
-        />
-      );
-    case "source_component":
-    case "target_component":
-      return (
-        <FilterSelect
-          value={columnFilterValue?.toString()}
-          onValueChange={column.setFilterValue}
-          options={sortedUniqueValues}
-          placeholder="Any"
-        />
-      );
-    case "source_value":
-    case "target_value":
-      return (
-        <Input
-          className="w-36 rounded border shadow"
-          onChange={(e) => column.setFilterValue(e.target.value)}
-          placeholder={`Search...`}
-          type="search"
-          value={(columnFilterValue ?? "") as string}
-        />
-      );
-    default:
-      return null;
-  }
 }

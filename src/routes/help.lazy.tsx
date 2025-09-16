@@ -137,12 +137,21 @@ function RouteComponent() {
             Screenshot
           </a>{" "}
           of web application with example loaded. Keyboard shortcut is
-          CTRL+SHIFT+e. There is a second example under the{" "}
+          CTRL+SHIFT+e. There are three other examples under the{" "}
           <ChevronDown className="inline" /> button that can be used in the{" "}
           <Link to="/analysis/propose-connections" className="underline">
             Propose connections analysis page
           </Link>
-          .
+          . All example statements are sourced from{" "}
+          <a
+            href="https://thecommonsjournal.org/articles/10.5334/ijc.1351"
+            className="underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            this paper
+          </a>
+          .{" "}
         </li>
         <li>
           <strong>Clear:</strong>To delete all statements and connections after
@@ -863,6 +872,35 @@ function RouteComponent() {
                   "de", "mis", "dis" etc., as well as antonyms), also from
                   WordNet. E.g., "should allow" and "must disallow"; and "may
                   accept" and "should reject".
+                </li>
+              </ul>
+            </li>
+
+            <li>
+              <strong>Visual info:</strong> There are a few visual cues in the
+              "Suggested Connections" table to help understand the output of the
+              propose connections algorithm:
+              <ul className="ml-6 list-inside list-disc">
+                <li>
+                  <u> Tooltips for components of statement:</u> hovering over a
+                  part of a statement in "Source" or "Target" columns will show
+                  tooltips indicating what the type of component it is e.g.,
+                  Activation Condition, Deontic, Aim etc.
+                </li>
+                <li>
+                  <u> Bold face for connection-point components:</u> specific
+                  components within the source and target statements are
+                  connected when a connection is made. These are rendered in
+                  bold face to easily identify them.
+                </li>
+                <li>
+                  <u> Color highlighting for matching tokens:</u> in the
+                  connection finding algorithm, specific pairs of tokens from
+                  the source and target statements are compared for similarity
+                  to determine if a connection should be made between the
+                  statements. We highlight each pair of matching tokens with a
+                  different color so the user can validate the connections and
+                  identify any errors the algorithm might have made.
                 </li>
               </ul>
             </li>

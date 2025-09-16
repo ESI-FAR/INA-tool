@@ -16,6 +16,9 @@ describe("findConnections", () => {
   test("actor-driven connections", async () => {
     if (statements) {
       const result = await findConnectionsByType(statements, "action");
+      result.forEach((connection) => {
+        delete connection.matched_items;
+      });
       expect(result).toEqual(expect.arrayContaining(actorConnections));
       expect(actorConnections).toEqual(expect.arrayContaining(result));
       expect(result.length).toBe(actorConnections.length);
@@ -25,6 +28,9 @@ describe("findConnections", () => {
   test("outcome-driven connections", async () => {
     if (statements) {
       const result = await findConnectionsByType(statements, "outcome");
+      result.forEach((connection) => {
+        delete connection.matched_items;
+      });
       expect(result).toEqual(expect.arrayContaining(outcomeConnections));
       expect(outcomeConnections).toEqual(expect.arrayContaining(result));
       expect(result.length).toBe(outcomeConnections.length);

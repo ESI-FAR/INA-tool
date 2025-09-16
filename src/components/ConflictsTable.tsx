@@ -177,7 +177,7 @@ export function ConflictsTable() {
                   colSpan={4}
                   className="h-24 text-center text-gray-500"
                 >
-                  No conflicts. Please add one, by presssing button below or by
+                  No conflicts. Please add one, by pressing button below or by
                   uploading.
                 </TableCell>
               </TableRow>
